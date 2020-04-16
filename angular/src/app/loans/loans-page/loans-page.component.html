@@ -1,0 +1,115 @@
+<div style="width: 1000px; margin: 20px auto;">
+    <table
+        mat-table
+        [dataSource]="loans"
+        multiTemplateDataRows
+        class="mat-elevation-z8"
+    >
+        <ng-container matColumnDef="loanTime">
+            <th mat-header-cell *matHeaderCellDef>Loan time</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.loanTime | date }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="returnedTime">
+            <th mat-header-cell *matHeaderCellDef>Returned time</th>
+            <td mat-cell *matCellDef="let element">
+                {{
+                    element.returnedTime
+                        ? (element.returnedTime | date)
+                        : 'Not returned yet'
+                }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="bookISBN">
+            <th mat-header-cell *matHeaderCellDef>Book ISBN</th>
+            <td mat-cell *matCellDef="let element">{{ element.book.isbn }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="studentReaderTicket">
+            <th mat-header-cell *matHeaderCellDef>Reader ticket</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.student.readerTicket }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="librarianEmail">
+            <th mat-header-cell *matHeaderCellDef>Librarian email</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.librarian.email }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+            <td
+                mat-cell
+                *matCellDef="let element"
+                [attr.colspan]="columnsToDisplay.length"
+            >
+                <div
+                    class="loan-detail"
+                    [@detailExpand]="
+                        element == expandedElement ? 'expanded' : 'collapsed'
+                    "
+                >
+                    <div class="loan-diagram">
+                        <div class="loan-info">
+                            <h4>Student:</h4>
+                            <p>
+                                name: <b>{{ element.student.name }}</b>
+                            </p>
+                            <p>
+                                email:
+                                <b>{{ element.student.email }}</b>
+                            </p>
+                        </div>
+                        <div class="loan-info">
+                            <h4>Book:</h4>
+                            <p>
+                                name:
+                                <b>{{ element.book.name }}</b>
+                            </p>
+                            <p>
+                                year:
+                                <b>{{ element.book.year }}</b>
+                            </p>
+                            <p>
+                                author:
+                                <b>{{ element.book.author }}</b>
+                            </p>
+                        </div>
+                        <div class="loan-info">
+                            <h4>Department:</h4>
+                            <p>
+                                Librarian name:
+                                <b>{{ element.librarian.name }}</b>
+                            </p>
+                            <p>
+                                Department address:
+                                <b>{{ element.department.address }}</b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr
+            mat-row
+            *matRowDef="let element; columns: columnsToDisplay"
+            class="element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="
+                expandedElement = expandedElement === element ? null : element
+            "
+        ></tr>
+        <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="detail-row"
+        ></tr>
+    </table>
+</div>

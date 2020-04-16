@@ -1,0 +1,48 @@
+<div class="card">
+    <section class="chart-options">
+        <mat-form-field style="margin: 1% 1% 0 3%;">
+            <mat-label>Select an option</mat-label>
+            <mat-select [(value)]="model" required>
+                <mat-option value="user">User</mat-option>
+                <mat-option value="book">Book</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>{{
+                model === 'user' ? 'Reader ticket' : 'ISBN'
+            }}</mat-label>
+            <input matInput [(ngModel)]="modelValue" [disabled]="!model" />
+        </mat-form-field>
+        <button
+            style="margin: 0 1%;"
+            mat-button
+            type="button"
+            class="btn"
+            matTooltip="Show statistic"
+            [disabled]="!model || !modelValue"
+            (click)="showStatistic()"
+        >
+            Show statistic
+        </button>
+        <mat-divider></mat-divider>
+    </section>
+    <div class="chart">
+        <ngx-charts-line-chart
+            [view]="view"
+            [scheme]="colorScheme"
+            [legend]="legend"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            [yAxisLabel]="yAxisLabel"
+            [timeline]="timeline"
+            [results]="multi"
+            (select)="onSelect($event)"
+            (activate)="onActivate($event)"
+            (deactivate)="onDeactivate($event)"
+        >
+        </ngx-charts-line-chart>
+    </div>
+</div>

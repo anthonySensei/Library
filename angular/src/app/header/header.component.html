@@ -1,0 +1,122 @@
+<mat-toolbar class="navbar">
+    <img src="assets/main.png" alt="logo" style="width: 40px;" />
+    <a [routerLink]="links.HOME" class="navbar-name">Library</a>
+    <mat-divider
+        [vertical]="true"
+        style="height: 80%; background-color: black; margin: 0 0.3% 0 0;"
+    ></mat-divider>
+    <div class="not-small-screen-container" *ngIf="!isSmallScreen">
+        <ul class="main-header-item-list">
+            <li class="main-header-item" routerLinkActive="active">
+                <a [routerLink]="'/' + links.BOOKS" class="navbar-link"
+                    >Books</a
+                >
+            </li>
+            <li
+                *ngIf="role === userRoles.MANAGER"
+                class="main-header-item"
+                routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.CREATE_USER" class="navbar-link"
+                    >Add user</a
+                >
+            </li>
+            <li
+                *ngIf="role === userRoles.LIBRARIAN"
+                class="main-header-item"
+                routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.LOANS" class="navbar-link"
+                    >Loans</a
+                >
+            </li>
+            <li
+                *ngIf="role === userRoles.LIBRARIAN"
+                class="main-header-item"
+                routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.LOANS_CHART" class="navbar-link"
+                    >Statistic</a
+                >
+            </li>
+        </ul>
+    </div>
+
+    <span class="fill-remaining-space"></span>
+
+    <ul class="main-header-item-list">
+        <li *ngIf="!isLoggedIn; else logout">
+            <a [routerLink]="'/' + links.LOGIN" class="navbar-link">Login</a>
+        </li>
+        <ng-template #logout>
+            <mat-menu #appMenu="matMenu">
+                <a
+                    mat-menu-item
+                    routerLinkActive="menu-active"
+                    [routerLink]="'/' + links.MY_ACCOUNT"
+                    class="mat-menu-item"
+                >
+                    Profile
+                </a>
+                <div class="small-screen-container" *ngIf="isSmallScreen">
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.BOOKS"
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Books
+                    </a>
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.CREATE_USER"
+                        *ngIf="role === 'admin'"
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Add user
+                    </a>
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.LOANS"
+                        *ngIf="role === 'LIBRARIAN'"
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Loans
+                    </a>
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.LOANS_CHART"
+                        *ngIf="role === 'LIBRARIAN'"
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Statistic
+                    </a>
+                </div>
+                <button
+                    mat-menu-item
+                    (click)="onLogoutUser()"
+                    class="mat-menu-item"
+                >
+                    Logout
+                </button>
+            </mat-menu>
+
+            <button mat-icon-button [matMenuTriggerFor]="appMenu">
+                <div class="image-cropper">
+                    <img
+                        class="navbar-profile-image"
+                        src="{{
+                            user.profileImage
+                                ? user.profileImage
+                                : 'https://www.w3schools.com/w3css/img_avatar3.png'
+                        }}"
+                        alt="profile_image"
+                    />
+                </div>
+            </button>
+        </ng-template>
+    </ul>
+</mat-toolbar>

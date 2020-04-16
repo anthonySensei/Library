@@ -1,0 +1,33 @@
+import {
+    ActivatedRouteSnapshot,
+    CanActivate,
+    Router,
+    RouterStateSnapshot
+} from '@angular/router';
+import { Injectable } from '@angular/core';
+
+import { Observable } from 'rxjs';
+
+import { AuthService } from '../auth/auth.service';
+import { angularLinks } from '../constants/angularLinks';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class ManagerGuard implements CanActivate {
+    constructor(private authService: AuthService, private router: Router) {}
+
+    canActivate(
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot
+    ): Observable<boolean> | Promise<boolean> | boolean {
+        return this.authService.isManager().then((manager: boolean) => {
+            if (manager) {
+                return true;
+            } else {
+                this.router.navigate([angularLinks.HOME]);
+                return false;
+            }
+        });
+    }
+}
