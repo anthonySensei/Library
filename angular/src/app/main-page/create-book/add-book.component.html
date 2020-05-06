@@ -1,0 +1,133 @@
+<div class="wrapper">
+    <div class="form-content">
+        <span class="page-title">New book</span>
+        <hr style="background-color: #0d0d0d;" />
+        <div *ngIf="isLoading && editMode" style="text-align: center;">
+            <app-loading-spinner></app-loading-spinner>
+        </div>
+        <form
+            [formGroup]="addBookForm"
+            *ngIf="!isLoading"
+            (ngSubmit)="onAddBook()"
+            enctype="multipart/form-data"
+        >
+            <button
+                type="button"
+                mat-raised-button
+                (click)="openChoosePostImageDialog()"
+            >
+                Choose image
+            </button>
+            <div>
+                <mat-form-field class="d-block form-input">
+                    <input
+                        type="text"
+                        matInput
+                        formControlName="isbn"
+                        placeholder="Ex. 12321312321312"
+                    />
+                    <span matPrefix>ISBN </span>
+                    <mat-error *ngIf="hasError('isbn', 'required') && !error">
+                        ISBN is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="d-block form-input">
+                    <mat-label>Book name</mat-label>
+                    <input
+                        type="text"
+                        matInput
+                        formControlName="name"
+                        placeholder="Ex. Angels and Demons"
+                    />
+                    <mat-error *ngIf="hasError('name', 'required') && !error">
+                        Book name is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-input">
+                    <mat-label>Book description</mat-label>
+                    <textarea
+                        matInput
+                        rows="1"
+                        cdkTextareaAutosize
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="5"
+                        formControlName="description"
+                        #bookDescription
+                        placeholder="Ex. This book describes event..."
+                        maxlength="512"
+                    ></textarea>
+                    <mat-hint align="end"
+                        >{{ bookDescription.value?.length || 0 }}/512</mat-hint
+                    >
+                    <mat-error
+                        *ngIf="hasError('description', 'required') && !error"
+                    >
+                        Description is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="d-block form-input">
+                    <mat-label>Author</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        name="author"
+                        formControlName="author"
+                        placeholder="Ex. Dan Brown"
+                    />
+                    <mat-error *ngIf="hasError('author', 'required') && !error">
+                        Author is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="d-block form-input">
+                    <mat-label>Genre</mat-label>
+                    <input
+                        matInput
+                        type="text"
+                        name="genre"
+                        formControlName="genre"
+                        placeholder="Ex. comedy"
+                    />
+                    <mat-error *ngIf="hasError('genre', 'required') && !error">
+                        Genre is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="d-block form-input">
+                    <mat-label>Year</mat-label>
+                    <input
+                        matInput
+                        type="number"
+                        name="year"
+                        formControlName="year"
+                        placeholder="Ex. 2000"
+                    />
+                    <mat-error *ngIf="hasError('year', 'required') && !error">
+                        Year is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="d-block form-input">
+                    <mat-label>Department address</mat-label>
+                    <mat-select name="address" formControlName="address">
+                        <mat-option
+                            *ngFor="let department of departments"
+                            [value]="department.address"
+                        >
+                            {{ department.address }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error
+                        *ngIf="hasError('address', 'required') && !error"
+                    >
+                        Department is required
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <button
+                type="submit"
+                class="form-button"
+                [disabled]="addBookForm.invalid"
+            >
+                {{ editMode ? 'Update' : 'Add' }}
+            </button>
+        </form>
+    </div>
+</div>

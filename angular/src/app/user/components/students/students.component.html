@@ -1,0 +1,116 @@
+<div style="width: 1000px; margin: 20px auto;">
+    <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" />
+    </mat-form-field>
+    <table
+        mat-table
+        [dataSource]="dataSource"
+        multiTemplateDataRows
+        class="mat-elevation-z8"
+        matSort
+    >
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.name ? element.name : 'No name' }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Email
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.email }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="readerTicket">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Reader ticket
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.readerTicket }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Status
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.status }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+            <td
+                mat-cell
+                *matCellDef="let element"
+                [attr.colspan]="columnsToDisplay.length"
+            >
+                <div
+                    class="loan-detail"
+                    [@detailExpand]="
+                        element == expandedElement ? 'expanded' : 'collapsed'
+                    "
+                >
+                    <div class="profile-image-container">
+                        <img
+                            class="profile-image"
+                            src="{{
+                                element.profileImage
+                                    ? element.profileImage
+                                    : 'https://www.w3schools.com/w3css/img_avatar3.png'
+                            }}"
+                            alt="profile image"
+                        />
+                    </div>
+                    <div class="main-info">
+                        <p>
+                            Name: <b>{{ element.name }}</b>
+                        </p>
+                        <p>
+                            Email: <b>{{ element.email }}</b>
+                        </p>
+                        <p>
+                            Reader ticket: <b>{{ element.readerTicket }}</b>
+                        </p>
+                        <p>
+                            Status: <b>{{ element.status }}</b>
+                        </p>
+                    </div>
+                    <div class="user-link">
+                        <a
+                            mat-icon-button
+                            color="primary"
+                            class="user-link-button"
+                            matTooltip="More"
+                            [routerLink]="'/' + links.STUDENTS + '/' + element.id"
+                        >
+                            <mat-icon>arrow_forward_ios</mat-icon>
+                        </a>
+                    </div>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr
+            mat-row
+            *matRowDef="let element; columns: columnsToDisplay"
+            class="element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="
+                expandedElement = expandedElement === element ? null : element
+            "
+        ></tr>
+        <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="detail-row"
+        ></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 15]"></mat-paginator>
+</div>

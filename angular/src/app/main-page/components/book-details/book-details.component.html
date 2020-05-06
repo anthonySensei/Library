@@ -1,0 +1,34 @@
+<div class="wrapper">
+    <div class="form-content">
+        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+        <div class="book-container" *ngIf="!isLoading">
+            <h2>{{ book.name }}</h2>
+            <img class="book-detail-image" src="{{ book.image }}" alt="img" />
+            <section class="book-info">
+                <p>Author: {{ book.author }}</p>
+                <p class="book-description">
+                    Description: {{ book.description }}
+                </p>
+                <p>Genre: {{ book.genre }}</p>
+                <p>Year: {{ book.year }}</p>
+            </section>
+            <section class="additional-info">
+                <span class="book-location">
+                    <i class="material-icons">location_on</i>
+                    {{ book.department.address }}
+                </span>
+                <span class="book-status">#{{ book.status }}</span>
+            </section>
+            <div class="btn-group" *ngIf="userRole === roles.LIBRARIAN">
+                <button
+                    mat-button
+                    class="btn btn-green"
+                    matTooltip="Loan book"
+                    (click)="openLoanBookModal()"
+                >
+                    Loan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

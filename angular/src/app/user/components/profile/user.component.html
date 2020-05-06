@@ -1,0 +1,76 @@
+<div class="wrapper">
+    <div class="form-content">
+        <span class="page-title">Profile</span>
+        <hr style="background-color: #0d0d0d;" />
+        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+        <div *ngIf="!isLoading">
+            <img
+                class="profile-image"
+                src="{{
+                    user.profileImage
+                        ? user.profileImage
+                        : 'https://www.w3schools.com/w3css/img_avatar3.png'
+                }}"
+                alt="Avatar"
+            />
+            <form (ngSubmit)="onChangeUserData()" [formGroup]="profileForm">
+                <button
+                    type="button"
+                    mat-raised-button
+                    style="margin-right: 5px;"
+                    (click)="openChangeProfileImageDialog()"
+                >
+                    Change image
+                </button>
+                <button
+                    type="button"
+                    mat-raised-button
+                    (click)="openChangePasswordDialog()"
+                >
+                    Change password
+                </button>
+                <br />
+                <mat-form-field class="form-input">
+                    <mat-label>Full name</mat-label>
+                    <input
+                        matInput
+                        name="name"
+                        formControlName="name"
+                        placeholder="Ex. Anthony"
+                    />
+                </mat-form-field>
+                <mat-form-field class="form-input">
+                    <mat-label>Email</mat-label>
+                    <input
+                        matInput
+                        name="email"
+                        formControlName="email"
+                        placeholder="Ex. example@mail.com"
+                    />
+                    <mat-error *ngIf="error">
+                        {{ error }}
+                    </mat-error>
+                    <mat-error *ngIf="hasError('email', 'required') && !error">
+                        Email is required
+                    </mat-error>
+                    <mat-error
+                        *ngIf="
+                            (hasError('email', 'email') ||
+                                hasError('email', 'pattern')) &&
+                            !error
+                        "
+                    >
+                        Email is not valid
+                    </mat-error>
+                </mat-form-field>
+                <button
+                    class="form-button"
+                    type="submit"
+                    [disabled]="profileForm.invalid"
+                >
+                    Save
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

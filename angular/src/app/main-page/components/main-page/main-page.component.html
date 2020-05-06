@@ -1,0 +1,75 @@
+<mat-drawer-container class="page-container" autosize>
+    <div class="header">
+        <h1>Books catalog</h1>
+    </div>
+
+    <div class="post-features-container">
+        <div style="overflow: hidden;">
+            <a
+                *ngIf="isLoggedIn"
+                mat-button
+                class="btn"
+                style="float: right;"
+                matTooltip="Add book"
+                [routerLink]="'/add-book'"
+            >
+                <i class="material-icons">add</i> Add book
+            </a>
+        </div>
+        <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
+    </div>
+    <div *ngIf="isLoading" style="text-align: center;">
+        <app-loading-spinner></app-loading-spinner>
+    </div>
+    <div class="books-container" *ngIf="books.length > 0; else noBooks">
+        <div class="flex-container" *ngIf="!isLoading">
+            <div class="card" style="width: 100%;" *ngFor="let book of books">
+                <div class="image-container">
+                    <img
+                        src="{{
+                            book.image
+                                ? book.image
+                                : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png'
+                        }}"
+                        alt="Book image"
+                        class="card-image"
+                    />
+                    <div class="data-on-image">
+                        <a
+                            [routerLink]="['/books', book.bookId]"
+                            class="card-details-link"
+                            >Details</a
+                        >
+                    </div>
+                </div>
+                <div class="card-container">
+                    <span class="card-details">
+                        <span class="characteristic-name">Title</span>:
+                        {{ book.name }}
+                    </span>
+                    <span class="card-details">
+                        <span class="characteristic-name">Author</span>:
+                        {{ book.author }}
+                    </span>
+                    <span class="card-details">
+                        <span class="characteristic-name">Genre</span>:
+                        {{ book.genre }}
+                    </span>
+                    <span class="card-details">
+                        <span class="characteristic-name">Book location</span>:
+                        {{ book.department.address }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-drawer-container>
+
+<ng-template #noBooks>
+    <div
+        style="text-align: center; font-size: 3rem; margin-top: 20px;"
+        *ngIf="!isLoading"
+    >
+        <span>There are no books</span>
+    </div>
+</ng-template>
