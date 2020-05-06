@@ -69,4 +69,18 @@ export class LibrarianService {
             })
         );
     }
+
+    getLibrarianHttp(librarianId: number) {
+        const headers = new HttpHeaders();
+        headers.append('Content-type', 'application/json');
+        return this.http
+            .get(`${this.GET_LIBRARIAN_URL}?librarianId=${librarianId}`, {
+                headers
+            })
+            .pipe(
+                map((response: any) => {
+                    this.setLibrarian(response.data.librarian);
+                })
+            );
+    }
 }

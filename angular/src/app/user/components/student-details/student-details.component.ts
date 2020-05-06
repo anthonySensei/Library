@@ -47,7 +47,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        document.title = 'Library';
+        document.title = 'Student';
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {

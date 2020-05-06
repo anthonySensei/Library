@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
@@ -64,7 +65,8 @@ import { UsersRoutingModule } from '../user/users-routing.module';
         MatTableModule,
         BrowserAnimationsModule,
         MatSortModule,
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatTabsModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]
