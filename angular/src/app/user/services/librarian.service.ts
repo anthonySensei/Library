@@ -65,7 +65,7 @@ export class LibrarianService {
         headers.append('Content-type', 'application/json');
         return this.http.get(this.GET_LIBRARIANS_URL, { headers }).pipe(
             map((response: any) => {
-                this.setLibrarian(response.data.librarians);
+                this.setLibrarians(response.data.librarians);
             })
         );
     }

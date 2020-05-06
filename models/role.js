@@ -3,8 +3,8 @@ const Sequelize = require('sequelize');
 const sequelize = require('../config/database');
 
 const Role = sequelize.define('role_', {
-    id: {
-        field: 'user_id',
+    librarian_id: {
+        field: 'librarian_id',
         type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
