@@ -125,7 +125,7 @@ form.ng-valid .form-button:disabled:hover, .form-button:disabled:hover
   display: inline-block
   margin-right: 10px
 
-  //btn
+//btn
 
 .btn, .filter-button, .close-sidenav
   color: $color-main
@@ -194,6 +194,59 @@ a
 .underlineHover:hover:after
   width: 100%
 
+//Table
+
+table
+  width: 100%
+
+
+tr.detail-row
+  height: 0
+
+
+tr.element-row:not(.expanded-row):hover
+  background: whitesmoke
+
+
+tr.element-row:not(.expanded-row):active
+  background: #efefef
+
+
+.element-row td
+  border-bottom-width: 0
+
+// user-table-expand
+
+.user-table-expand-detail
+  overflow: hidden
+  display: flex
+
+  .profile-image-container
+    flex: 10%
+    border: 1px solid black
+    padding: 8px
+    margin: 8px 0
+
+  .info-section
+    flex: 80%
+    margin-left: 10px
+
+  .user-link
+    display: flex
+    flex: 10%
+    align-items: center
+    justify-content: center
+    .user-link-button
+      display: block
+      color: $color-main
+
+
+
+  .profile-image
+    max-height: 112.5px
+    min-height: 112.5px
+    max-width: 112.5px
+    min-width: 112.5px
 
 /* Simple CSS3 Fade-in-down Animation */
 

@@ -51,7 +51,7 @@
                 [attr.colspan]="columnsToDisplay.length"
             >
                 <div
-                    class="loan-detail"
+                    class="user-table-expand-detail"
                     [@detailExpand]="
                         element == expandedElement ? 'expanded' : 'collapsed'
                     "
@@ -67,7 +67,7 @@
                             alt="profile image"
                         />
                     </div>
-                    <div class="main-info">
+                    <div class="info-section">
                         <p>
                             Name: <b>{{ element.name }}</b>
                         </p>

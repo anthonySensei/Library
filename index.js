@@ -123,7 +123,7 @@ Librarian.belongsTo(Department, { foreignKey: { allowNull: true } });
 Librarian.hasMany(Loan);
 Librarian.hasMany(Schedule);
 
-Role.belongsTo(Librarian, { foreignKey: 'id' });
+Role.belongsTo(Librarian, { foreignKey: 'librarian_id' });
 
 Department.hasMany(Librarian);
 Department.hasMany(Loan);

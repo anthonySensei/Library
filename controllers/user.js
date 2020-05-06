@@ -25,7 +25,7 @@ exports.getUser = (req, res) => {
 
     Student.findOne({ where: { email: email } })
         .then(user => {
-            Role.findOne({ where: { user_id: user.dataValues.id } })
+            Role.findOne({ where: { librarian_id: user.dataValues.id } })
                 .then(role => {
                     if (user.dataValues.profile_image) {
                         user.dataValues.profile_image = base64Img.base64Sync(

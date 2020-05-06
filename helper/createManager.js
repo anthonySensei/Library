@@ -19,7 +19,7 @@ exports.createManager = (name, email, password, departmentId) => {
                 .save()
                 .then(manager => {
                     Role.create({
-                        id: manager.dataValues.id,
+                        librarian_id: manager.dataValues.id,
                         role: roles.MANAGER
                     })
                         .then()

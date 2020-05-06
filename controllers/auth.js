@@ -43,7 +43,7 @@ exports.postLoginUser = (req, res, next) => {
         } else {
             let profileImage;
             if (!user.role) {
-                Role.findOne({ where: { user_id: user.id } })
+                Role.findOne({ where: { librarian_id: user.id } })
                     .then(role => {
                         profileImage = handleProfileImage(user.profile_image);
                         handleAuth(
