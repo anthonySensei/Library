@@ -41,7 +41,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) loansPaginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) loansSort: MatSort;
 
-    scheduleDataSource: MatTableDataSource<Loan>;
+    scheduleDataSource: MatTableDataSource<{}>;
     @ViewChild(MatSort, { static: true }) scheduleSort: MatSort;
 
     showLabels = true;
@@ -95,8 +95,8 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
                 this.schedule = this.librarian.schedule;
                 this.scheduleDataSource = new MatTableDataSource(this.schedule);
                 this.scheduleDataSource.sort = this.scheduleSort;
-                this.isLoading = false;
                 this.setStatisticToChart(this.librarian.statistic);
+                this.isLoading = false;
             }
         );
         this.librarian = this.librarianService.getLibrarian();
