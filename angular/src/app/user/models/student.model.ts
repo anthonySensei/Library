@@ -6,6 +6,9 @@ export class Student {
     readerTicket: string;
     password: string;
     status?: string;
+    loans?;
+    statistic?;
+    orders?;
 
     constructor(
         id: number,

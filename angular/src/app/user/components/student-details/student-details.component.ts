@@ -6,6 +6,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Loan } from '../../../loans/models/loan.model';
 import { LoansService } from '../../../loans/services/loans.service';
 import { StudentService } from '../../services/student.service';
+import { Order } from '../../models/order.model';
 
 @Component({
     selector: 'app-user-details',
@@ -14,6 +15,7 @@ import { StudentService } from '../../services/student.service';
 })
 export class StudentDetailsComponent implements OnInit, OnDestroy {
     loans: Loan[];
+    orders: Order[];
 
     loansSubscription: Subscription;
     loansChangedSubscription: Subscription;
@@ -28,7 +30,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
 
     isLoading = false;
 
-    displayedColumns: string[] = [
+    displayedLoanColumns: string[] = [
         'loanTime',
         'returnedTime',
         'bookISBN',
@@ -36,9 +38,40 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         'departmentAddress'
     ];
 
-    dataSource: MatTableDataSource<Loan>;
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) sort: MatSort;
+    displayedOrderColumns: string[] = [
+        'orderTime',
+        'bookISBN',
+        'departmentAddress'
+    ];
+
+    loansDataSource: MatTableDataSource<Loan>;
+    @ViewChild(MatPaginator, { static: true }) loansPaginator: MatPaginator;
+    @ViewChild(MatSort, { static: true }) loansSort: MatSort;
+
+    ordersDataSource: MatTableDataSource<Order>;
+    @ViewChild(MatPaginator, { static: true }) ordersPaginator: MatPaginator;
+    @ViewChild(MatSort, { static: true }) ordersSort: MatSort;
+
+    showLabels = true;
+    animations = true;
+    xAxis = true;
+    yAxis = true;
+    showYAxisLabel = true;
+    showXAxisLabel = true;
+    xAxisLabel = 'Date';
+    yAxisLabel = 'Quantity of books';
+    timeline = true;
+
+    model: string;
+    modelValue: string;
+
+    colorScheme = {
+        domain: ['#ffaa00']
+    };
+
+    view: any[] = [700, 300];
+
+    multi: any;
 
     constructor(
         private studentService: StudentService,
@@ -52,10 +85,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {
                 this.studentId = +params.id;
-                this.loanSubscriptionHandle();
+                this.studentSubscriptionHandle();
             }
         );
-        this.studentSubscriptionHandle();
     }
 
     studentSubscriptionHandle() {
@@ -65,35 +97,54 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         this.userChangedSubscription = this.studentService.studentChanged.subscribe(
             student => {
                 this.student = student;
+                this.loans = this.student.loans;
+                this.orders = this.student.orders;
+
+                this.loansDataSource = new MatTableDataSource(this.loans);
+                this.loansDataSource.paginator = this.loansPaginator;
+                this.loansDataSource.sort = this.loansSort;
+
+                this.ordersDataSource = new MatTableDataSource(this.orders);
+                this.ordersDataSource.paginator = this.loansPaginator;
+                this.ordersDataSource.sort = this.loansSort;
+                this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
             }
         );
         this.student = this.studentService.getStudent();
     }
 
-    loanSubscriptionHandle() {
-        this.loansSubscription = this.loansService
-            .fetchStudentLoansHttp(this.studentId)
-            .subscribe();
-        this.loansChangedSubscription = this.loansService.loansChanged.subscribe(
-            loans => {
-                this.loans = loans;
-                this.dataSource = new MatTableDataSource(this.loans);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-            }
-        );
-        this.loans = this.loansService.getLoans();
-    }
-
     applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
+        this.loansDataSource.filter = filterValue.trim().toLowerCase();
 
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
+        if (this.loansDataSource.paginator) {
+            this.loansDataSource.paginator.firstPage();
         }
     }
+
+    setStatisticToChart(statistic) {
+        const seriesArr = [];
+        for (const stat of statistic) {
+            const item = {
+                name: stat.loanTime,
+                value: stat.books
+            };
+            seriesArr.push(item);
+        }
+        this.multi = [
+            {
+                name: this.student.name,
+                series: seriesArr
+            }
+        ];
+    }
+
+    onSelect(data): void {}
+
+    onActivate(data): void {}
+
+    onDeactivate(data): void {}
 
     ngOnDestroy(): void {
         this.userSubscription.unsubscribe();

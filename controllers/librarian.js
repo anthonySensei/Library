@@ -6,12 +6,15 @@ const Role = require('../models/role');
 const Schedule = require('../models/schedule');
 const Student = require('../models/student');
 
+const loanController = require('./loan');
+
 const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
+const models = require('../constants/models');
 
 const getLibrarianRole = async librarianId => {
     try {
@@ -45,65 +48,6 @@ const getLibrarianSchedule = async librarianId => {
     } catch (error) {
         return null;
     }
-};
-
-const getLibrarianLoans = async librarianId => {
-    try {
-        const loans = await Loan.findAll({
-            where: { librarianId: librarianId },
-            include: [
-                {
-                    model: Student,
-                },
-                { model: Book }
-            ],
-            order: [['loan_time', 'ASC']]
-        });
-        const loansArr = [];
-        if (loans.length > 0) {
-            loans.forEach(loan => {
-                const loanData = loan.dataValues;
-                const studentData = loanData.student_.dataValues;
-                const bookData = loanData.book_.dataValues;
-                loansArr.push({
-                    loanTime: loanData.loan_time,
-                    returnedTime: loanData.returned_time,
-                    bookISBN: bookData.isbn,
-                    studentTicketReader: studentData.reader_ticket
-                });
-            });
-            return loansArr;
-        }
-        return null;
-    } catch (error) {
-        return null;
-    }
-};
-
-const getLibrarianLoanStatistic = (librarianLoans,)  => {
-    const last30 = [...librarianLoans].splice(0, 30);
-    const loansStatisticArr = [];
-    for (const loan of last30) {
-        loan.loanTime.setHours(0, 0, 0, 0);
-        const loanObj = {
-            books: 1,
-            loanTime: loan.loanTime.toLocaleDateString()
-        };
-        if (loansStatisticArr.length > 0) {
-            let index;
-            index = loansStatisticArr.findIndex(
-                statistic => statistic.loanTime === loanObj.loanTime
-            );
-            if (index !== -1) {
-                loansStatisticArr[index].books += 1;
-            } else {
-                loansStatisticArr.push(loanObj);
-            }
-        } else {
-            loansStatisticArr.push(loanObj);
-        }
-    }
-    return loansStatisticArr;
 };
 
 exports.getLibrarians = async (req, res) => {
@@ -143,7 +87,7 @@ exports.getLibrarians = async (req, res) => {
                 return helper.responseHandle(res, 200, data);
             }
         } catch (error) {
-            return helper.responseErrorHandle(res, 400, error);
+            return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
         }
     }
 };
@@ -168,14 +112,18 @@ exports.getLibrarian = async (req, res) => {
         const librarianSchedule = await getLibrarianSchedule(
             librarianValues.id
         );
-        const librarianLoans = await getLibrarianLoans(librarianValues.id);
-        const librarianStatistic = await getLibrarianLoanStatistic(librarianLoans);
+        const librarianLoans = await loanController.getLoans(librarianValues.id, models.LIBRARIAN);
+        const librarianStatistic = await loanController.getLoanStatistic(
+            librarianLoans
+        );
         const librarianData = {
             id: librarianValues.id,
             name: librarianValues.name,
             email: librarianValues.email,
             profileImage: librarianValues.profile_image,
-            department: {address: librarianValues.department_.dataValues.address},
+            department: {
+                address: librarianValues.department_.dataValues.address
+            },
             schedule: librarianSchedule,
             loans: librarianLoans,
             statistic: librarianStatistic

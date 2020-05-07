@@ -8,6 +8,10 @@ const Order = sequelize.define('order_', {
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
+    },
+    order_time: {
+        type: Sequelize.DATE,
+        allowNull: false
     }
 });
 

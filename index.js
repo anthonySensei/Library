@@ -135,6 +135,7 @@ Loan.belongsTo(Department);
 
 Order.belongsTo(Student);
 Order.belongsTo(Book);
+Order.belongsTo(Department);
 
 sequelize
     .sync()

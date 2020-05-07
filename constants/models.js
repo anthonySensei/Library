@@ -1,4 +1,6 @@
 module.exports = {
     USER: 'user',
-    BOOK: 'book'
+    BOOK: 'book',
+    LIBRARIAN: 'librarian',
+    STUDENT: 'student'
 };

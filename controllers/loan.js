@@ -10,6 +10,85 @@ const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
 
+exports.getLoanStatistic = loans => {
+    const last30 = [...loans].splice(0, 30);
+    const loansStatisticArr = [];
+    for (const loan of last30) {
+        loan.loanTime.setHours(0, 0, 0, 0);
+        const loanObj = {
+            books: 1,
+            loanTime: loan.loanTime.toLocaleDateString()
+        };
+        if (loansStatisticArr.length > 0) {
+            let index;
+            index = loansStatisticArr.findIndex(
+                statistic => statistic.loanTime === loanObj.loanTime
+            );
+            if (index !== -1) {
+                loansStatisticArr[index].books += 1;
+            } else {
+                loansStatisticArr.push(loanObj);
+            }
+        } else {
+            loansStatisticArr.push(loanObj);
+        }
+    }
+    return loansStatisticArr;
+};
+
+exports.getLoans = async (modelId, modelName) => {
+    let model;
+    let condition;
+    let info;
+    if (modelName === models.LIBRARIAN) {
+        condition = { librarianId: modelId };
+        model = Student;
+    } else if (modelName === models.STUDENT) {
+        condition = { studentId: modelId };
+        model = Librarian;
+    }
+    try {
+        const loans = await Loan.findAll({
+            where: condition,
+            include: [
+                {
+                    model: model
+                },
+                { model: Book },
+                {model: Department}
+            ],
+            order: [['loan_time', 'ASC']]
+        });
+        const loansArr = [];
+        if (loans.length > 0) {
+            loans.forEach(loan => {
+                const loanData = loan.dataValues;
+
+                if (modelName === models.LIBRARIAN)
+                    info = {
+                        studentTicketReader: loanData.student_.dataValues.reader_ticket
+                    };
+                else if (modelName === models.STUDENT)
+                    info = {
+                        librarianEmail: loanData.librarian_.dataValues.email,
+                        departmentAddress: loanData.department_.address
+                    };
+
+                loansArr.push({
+                    ...info,
+                    loanTime: loanData.loan_time,
+                    returnedTime: loanData.returned_time,
+                    bookISBN: loanData.book_.dataValues.isbn
+                });
+            });
+            return loansArr;
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+};
+
 exports.getAllLoans = (req, res) => {
     Loan.findAll({
         include: [
