@@ -13,7 +13,6 @@ import { Statistic } from '../models/statistic.model';
 })
 export class LoansService {
     GET_BOOK_LOANS_URL = 'http://localhost:3000/loans';
-    GET_LOANS_BY_STUDENT_URL = 'http://localhost:3000/student-loans';
     GET_LOANS_STATISTIC_URL = 'http://localhost:3000/loans-statistic';
     GET_TOP5_LOANS_URL = 'http://localhost:3000/loans-top';
 
@@ -57,20 +56,6 @@ export class LoansService {
             );
     }
 
-    fetchStudentLoansHttp(studentId: number) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http
-            .get(`${this.GET_LOANS_BY_STUDENT_URL}?studentId=${studentId}`, {
-                headers
-            })
-            .pipe(
-                map((response: any) => {
-                    this.setLoans(response.data.loans);
-                })
-            );
-    }
-
     fetchLoansStatisticHttp(model: string, value: string) {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
@@ -92,12 +77,9 @@ export class LoansService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(
-                `${this.GET_TOP5_LOANS_URL}?model=${model}`,
-                {
-                    headers
-                }
-            )
+            .get(`${this.GET_TOP5_LOANS_URL}?model=${model}`, {
+                headers
+            })
             .pipe(
                 map((response: any) => {
                     this.setStatistic(response.data.statistic);

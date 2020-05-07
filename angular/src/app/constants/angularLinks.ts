@@ -3,6 +3,7 @@ export enum angularLinks {
     MY_ACCOUNT = 'my-account',
     BOOKS = 'books',
     LOANS = 'loans',
+    ORDERS = 'orders',
     CREATE_USER = 'create-user',
     LOGIN = 'login',
     ORDER_REQUESTS = 'order-requests',

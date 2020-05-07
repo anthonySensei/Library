@@ -14,6 +14,7 @@ import { StudentDetailsComponent } from './components/student-details/student-de
 import { LibrarianScheduleComponent } from './components/librarian-schedule/librarian-schedule.component';
 import { LibrariansComponent } from './components/librarians/librarians.component';
 import { LibrarianDetailsComponent } from './components/librarian-details/librarian-details.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { LibrarianDetailsComponent } from './components/librarian-details/librar
         StudentDetailsComponent,
         LibrarianScheduleComponent,
         LibrariansComponent,
-        LibrarianDetailsComponent
+        LibrarianDetailsComponent,
+        OrdersComponent
     ],
     imports: [CommonModule, FormsModule, SharedModule, UsersRoutingModule],
     entryComponents: [

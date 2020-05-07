@@ -22,6 +22,7 @@ const multer = require('multer');
 
 const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
+const orderRoutes = require('./routes/order');
 const userRoutes = require('./routes/user');
 const studentRoutes = require('./routes/student');
 const librarianRoutes = require('./routes/librarian');
@@ -102,6 +103,7 @@ app.use((req, res, next) => {
 
 app.use(bookRoutes);
 app.use(loanRoutes);
+app.use(orderRoutes);
 app.use(userRoutes);
 app.use(studentRoutes);
 app.use(librarianRoutes);

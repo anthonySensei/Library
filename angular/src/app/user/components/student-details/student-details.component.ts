@@ -17,9 +17,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     loans: Loan[];
     orders: Order[];
 
-    loansSubscription: Subscription;
-    loansChangedSubscription: Subscription;
-
     student: Student;
     studentId: number;
 
@@ -149,8 +146,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.userSubscription.unsubscribe();
         this.userChangedSubscription.unsubscribe();
-        this.loansSubscription.unsubscribe();
-        this.loansChangedSubscription.unsubscribe();
         this.paramsSubscription.unsubscribe();
     }
 }

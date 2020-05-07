@@ -149,56 +149,6 @@ exports.getAllLoans = (req, res) => {
         });
 };
 
-exports.getStudentLoans = (req, res) => {
-    const studentId = req.query.studentId;
-
-    Loan.findAll({
-        include: [
-            {
-                model: Student,
-                where: {
-                    id: studentId
-                }
-            },
-            {
-                model: Librarian
-            },
-            { model: Book },
-            { model: Department }
-        ]
-    })
-        .then(loans => {
-            const loansArr = [];
-            loans.forEach((loan, index) => {
-                const loanData = loan.dataValues;
-                const librarianData = loanData.librarian_.dataValues;
-                const departmentData = loanData.department_.dataValues;
-                const bookData = loan.dataValues.book_.dataValues;
-                const loanObj = {
-                    loanTime: loanData.loan_time,
-                    returnedTime: loanData.returned_time,
-                    librarianEmail: librarianData.email,
-                    departmentAddress: departmentData.address,
-                    bookISBN: bookData.isbn
-                };
-                loansArr.push(loanObj);
-            });
-
-            const data = {
-                loans: loansArr,
-                message: successMessages.SUCCESSFULLY_FETCHED
-            };
-            return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.CANNOT_FETCH
-            );
-        });
-};
-
 exports.getLoansStatistic = (req, res) => {
     const model = req.query.model;
     const value = req.query.value;
