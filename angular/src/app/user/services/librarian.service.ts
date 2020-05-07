@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+
 import { Librarian } from '../models/librarian.model';
 
 @Injectable({
@@ -68,5 +70,19 @@ export class LibrarianService {
                 this.setLibrarians(response.data.librarians);
             })
         );
+    }
+
+    getLibrarianHttp(librarianId: number) {
+        const headers = new HttpHeaders();
+        headers.append('Content-type', 'application/json');
+        return this.http
+            .get(`${this.GET_LIBRARIAN_URL}?librarianId=${librarianId}`, {
+                headers
+            })
+            .pipe(
+                map((response: any) => {
+                    this.setLibrarian(response.data.librarian);
+                })
+            );
     }
 }

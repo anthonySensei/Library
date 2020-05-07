@@ -92,8 +92,8 @@ exports.getStudentLoans = (req, res) => {
             const loansArr = [];
             loans.forEach((loan, index) => {
                 const loanData = loan.dataValues;
-                const librarianData = loan.dataValues.librarian_.dataValues;
-                const departmentData = loan.dataValues.department_.dataValues;
+                const librarianData = loanData.librarian_.dataValues;
+                const departmentData = loanData.department_.dataValues;
                 const bookData = loan.dataValues.book_.dataValues;
                 const loanObj = {
                     loanTime: loanData.loan_time,

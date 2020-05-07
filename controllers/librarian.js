@@ -1,7 +1,10 @@
+const Book = require('../models/book');
 const Librarian = require('../models/librarian');
+const Loan = require('../models/loan');
 const Department = require('../models/department');
 const Role = require('../models/role');
 const Schedule = require('../models/schedule');
+const Student = require('../models/student');
 
 const roles = require('../constants/roles');
 
@@ -44,9 +47,68 @@ const getLibrarianSchedule = async librarianId => {
     }
 };
 
+const getLibrarianLoans = async librarianId => {
+    try {
+        const loans = await Loan.findAll({
+            where: { librarianId: librarianId },
+            include: [
+                {
+                    model: Student,
+                },
+                { model: Book }
+            ],
+            order: [['loan_time', 'ASC']]
+        });
+        const loansArr = [];
+        if (loans.length > 0) {
+            loans.forEach(loan => {
+                const loanData = loan.dataValues;
+                const studentData = loanData.student_.dataValues;
+                const bookData = loanData.book_.dataValues;
+                loansArr.push({
+                    loanTime: loanData.loan_time,
+                    returnedTime: loanData.returned_time,
+                    bookISBN: bookData.isbn,
+                    studentTicketReader: studentData.reader_ticket
+                });
+            });
+            return loansArr;
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const getLibrarianLoanStatistic = (librarianLoans,)  => {
+    const last30 = [...librarianLoans].splice(0, 30);
+    const loansStatisticArr = [];
+    for (const loan of last30) {
+        loan.loanTime.setHours(0, 0, 0, 0);
+        const loanObj = {
+            books: 1,
+            loanTime: loan.loanTime.toLocaleDateString()
+        };
+        if (loansStatisticArr.length > 0) {
+            let index;
+            index = loansStatisticArr.findIndex(
+                statistic => statistic.loanTime === loanObj.loanTime
+            );
+            if (index !== -1) {
+                loansStatisticArr[index].books += 1;
+            } else {
+                loansStatisticArr.push(loanObj);
+            }
+        } else {
+            loansStatisticArr.push(loanObj);
+        }
+    }
+    return loansStatisticArr;
+};
+
 exports.getLibrarians = async (req, res) => {
     const librarians = await Librarian.findAll({
-        include: [{ model: Department }]
+        include: { model: Department }
     });
     const librariansArr = [];
     for (const librarian of librarians) {
@@ -69,7 +131,8 @@ exports.getLibrarians = async (req, res) => {
                     name: librarianValues.name,
                     email: librarianValues.email,
                     profileImage: librarianValues.profile_image,
-                    departmentAddress: librarianValues.department_.dataValues.address,
+                    departmentAddress:
+                        librarianValues.department_.dataValues.address,
                     schedule: librarianSchedule
                 };
                 librariansArr.push(librarianData);
@@ -85,28 +148,44 @@ exports.getLibrarians = async (req, res) => {
     }
 };
 
-exports.getLibrarian = (req, res) => {
-    const studentId = req.query.studentId;
-    Student.findOne({
-        where: {
-            id: studentId
-        }
-    })
-        .then(student => {
-            const studentData = {
-                name: student.dataValues.name,
-                email: student.dataValues.email,
-                profileImage: student.dataValues.profile_image,
-                readerTicket: student.dataValues.reader_ticket,
-                status: student.dataValues.status
-            };
-            const data = {
-                message: successMessages.SUCCESSFULLY_FETCHED,
-                student: studentData
-            };
-            return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(res, 400, err);
+exports.getLibrarian = async (req, res) => {
+    const librarianId = req.query.librarianId;
+    try {
+        const librarian = await Librarian.findOne({
+            where: {
+                id: librarianId
+            },
+            include: { model: Department }
         });
+        const librarianValues = librarian.dataValues;
+        if (librarianValues.profile_image) {
+            librarianValues.profile_image = base64Img.base64Sync(
+                librarianValues.profile_image
+            );
+        } else {
+            librarianValues.profile_image = '';
+        }
+        const librarianSchedule = await getLibrarianSchedule(
+            librarianValues.id
+        );
+        const librarianLoans = await getLibrarianLoans(librarianValues.id);
+        const librarianStatistic = await getLibrarianLoanStatistic(librarianLoans);
+        const librarianData = {
+            id: librarianValues.id,
+            name: librarianValues.name,
+            email: librarianValues.email,
+            profileImage: librarianValues.profile_image,
+            department: {address: librarianValues.department_.dataValues.address},
+            schedule: librarianSchedule,
+            loans: librarianLoans,
+            statistic: librarianStatistic
+        };
+        const data = {
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            librarian: librarianData
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(res, 400, err);
+    }
 };
