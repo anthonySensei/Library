@@ -30,7 +30,9 @@ import { CanDeactivateGuard } from './services/can-deactivate-guard.service';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
-import { UsersRoutingModule } from '../user/users-routing.module';
+
+import { LineChartModule } from '@swimlane/ngx-charts';
+
 
 @NgModule({
     declarations: [LoadingSpinnerComponent, DiscardChangesModalComponent],
@@ -66,7 +68,8 @@ import { UsersRoutingModule } from '../user/users-routing.module';
         BrowserAnimationsModule,
         MatSortModule,
         MatPaginatorModule,
-        MatTabsModule
+        MatTabsModule,
+        LineChartModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

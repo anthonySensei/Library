@@ -1,10 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { LibrarianService } from '../../services/librarian.service';
-import { Loan } from '../../../loans/models/loan.model';
-import { Subscription } from 'rxjs';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { Librarian } from '../../models/librarian.model';
 import { ActivatedRoute, Params } from '@angular/router';
+
+import { LibrarianService } from '../../services/librarian.service';
+
+import { Subscription } from 'rxjs';
+
+import { Loan } from '../../../loans/models/loan.model';
+import { Librarian } from '../../models/librarian.model';
 
 @Component({
     selector: 'app-librarian-details',
@@ -41,6 +44,27 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     scheduleDataSource: MatTableDataSource<Loan>;
     @ViewChild(MatSort, { static: true }) scheduleSort: MatSort;
 
+    showLabels = true;
+    animations = true;
+    xAxis = true;
+    yAxis = true;
+    showYAxisLabel = true;
+    showXAxisLabel = true;
+    xAxisLabel = 'Date';
+    yAxisLabel = 'Quantity of books';
+    timeline = true;
+
+    model: string;
+    modelValue: string;
+
+    colorScheme = {
+        domain: ['#ffaa00']
+    };
+
+    view: any[] = [700, 300];
+
+    multi: any;
+
     constructor(
         private librarianService: LibrarianService,
         private route: ActivatedRoute
@@ -72,9 +96,27 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
                 this.scheduleDataSource = new MatTableDataSource(this.schedule);
                 this.scheduleDataSource.sort = this.scheduleSort;
                 this.isLoading = false;
+                this.setStatisticToChart(this.librarian.statistic);
             }
         );
         this.librarian = this.librarianService.getLibrarian();
+    }
+
+    setStatisticToChart(statistic) {
+        const seriesArr = [];
+        for (const stat of statistic) {
+            const item = {
+                name: stat.loanTime,
+                value: stat.books
+            };
+            seriesArr.push(item);
+        }
+        this.multi = [
+            {
+                name: this.librarian.name,
+                series: seriesArr
+            }
+        ];
     }
 
     applyLoansFilter(event: Event) {
@@ -85,6 +127,12 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             this.loansDataSource.paginator.firstPage();
         }
     }
+
+    onSelect(data): void {}
+
+    onActivate(data): void {}
+
+    onDeactivate(data): void {}
 
     ngOnDestroy(): void {
         this.librarianSubscription.unsubscribe();

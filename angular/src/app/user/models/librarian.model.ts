@@ -11,6 +11,7 @@ export class Librarian {
     department: Department;
     loans?;
     schedule?;
+    statistic?;
 
     constructor(
         id: number,

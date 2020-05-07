@@ -56,7 +56,8 @@ const getLibrarianLoans = async librarianId => {
                     model: Student,
                 },
                 { model: Book }
-            ]
+            ],
+            order: [['loan_time', 'ASC']]
         });
         const loansArr = [];
         if (loans.length > 0) {
@@ -77,6 +78,32 @@ const getLibrarianLoans = async librarianId => {
     } catch (error) {
         return null;
     }
+};
+
+const getLibrarianLoanStatistic = (librarianLoans,)  => {
+    const last30 = [...librarianLoans].splice(0, 30);
+    const loansStatisticArr = [];
+    for (const loan of last30) {
+        loan.loanTime.setHours(0, 0, 0, 0);
+        const loanObj = {
+            books: 1,
+            loanTime: loan.loanTime.toLocaleDateString()
+        };
+        if (loansStatisticArr.length > 0) {
+            let index;
+            index = loansStatisticArr.findIndex(
+                statistic => statistic.loanTime === loanObj.loanTime
+            );
+            if (index !== -1) {
+                loansStatisticArr[index].books += 1;
+            } else {
+                loansStatisticArr.push(loanObj);
+            }
+        } else {
+            loansStatisticArr.push(loanObj);
+        }
+    }
+    return loansStatisticArr;
 };
 
 exports.getLibrarians = async (req, res) => {
@@ -142,6 +169,7 @@ exports.getLibrarian = async (req, res) => {
             librarianValues.id
         );
         const librarianLoans = await getLibrarianLoans(librarianValues.id);
+        const librarianStatistic = await getLibrarianLoanStatistic(librarianLoans);
         const librarianData = {
             id: librarianValues.id,
             name: librarianValues.name,
@@ -149,7 +177,8 @@ exports.getLibrarian = async (req, res) => {
             profileImage: librarianValues.profile_image,
             department: {address: librarianValues.department_.dataValues.address},
             schedule: librarianSchedule,
-            loans: librarianLoans
+            loans: librarianLoans,
+            statistic: librarianStatistic
         };
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
