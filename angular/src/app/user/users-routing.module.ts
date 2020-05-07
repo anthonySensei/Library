@@ -16,6 +16,7 @@ import { CanDeactivateGuard } from '../shared/services/can-deactivate-guard.serv
 import { angularLinks } from '../constants/angularLinks';
 import { LibrariansComponent } from './components/librarians/librarians.component';
 import { LibrarianDetailsComponent } from './components/librarian-details/librarian-details.component';
+import { OrdersComponent } from './components/orders/orders.component';
 
 const routes: Routes = [
     {
@@ -53,6 +54,11 @@ const routes: Routes = [
     {
         path: angularLinks.LIBRARIAN_SCHEDULE,
         component: LibrarianScheduleComponent,
+        canActivate: [AuthGuard, LibrarianGuard]
+    },
+    {
+        path: angularLinks.ORDERS,
+        component: OrdersComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     }
 ];

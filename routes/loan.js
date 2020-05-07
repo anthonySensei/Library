@@ -12,12 +12,6 @@ router.get(
 );
 
 router.get(
-    '/student-loans',
-    passport.authenticate('jwt', { session: false }),
-    loanController.getStudentLoans
-);
-
-router.get(
     '/loans-statistic',
     passport.authenticate('jwt', { session: false }),
     loanController.getLoansStatistic

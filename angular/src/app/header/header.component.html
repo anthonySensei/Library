@@ -33,6 +33,15 @@
                 >
             </li>
             <li
+                *ngIf="role === userRoles.LIBRARIAN"
+                class="main-header-item"
+                routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.ORDERS" class="navbar-link"
+                    >Orders</a
+                >
+            </li>
+            <li
                 *ngIf="
                     role === userRoles.LIBRARIAN || role === userRoles.MANAGER
                 "
@@ -99,6 +108,15 @@
                         class="mat-menu-item"
                     >
                         Loans
+                    </a>
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.ORDERS"
+                        *ngIf="role === userRoles.LIBRARIAN"
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Orders
                     </a>
                     <a
                         routerLinkActive="menu-active"
