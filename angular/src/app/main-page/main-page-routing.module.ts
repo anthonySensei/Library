@@ -9,18 +9,18 @@ import { OrderRequestComponent } from './components/order-request/order-request.
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { LibrarianGuard } from '../user/guards/librarian.guard';
 import { CanDeactivateGuard } from '../shared/services/can-deactivate-guard.service';
-import { angularLinks } from '../constants/angularLinks';
+import { AngularLinks } from '../constants/angularLinks';
 
 const routes: Routes = [
-    { path: angularLinks.BOOKS, component: MainPageComponent },
+    { path: AngularLinks.BOOKS, component: MainPageComponent },
     {
-        path: angularLinks.ORDER_REQUESTS,
+        path: AngularLinks.ORDER_REQUESTS,
         canActivate: [AuthGuard, LibrarianGuard],
         component: OrderRequestComponent
     },
-    { path: `${angularLinks.BOOKS}/:id`, component: BookDetailsComponent },
+    { path: `${AngularLinks.BOOKS}/:id`, component: BookDetailsComponent },
     {
-        path: angularLinks.ADD_BOOK,
+        path: AngularLinks.ADD_BOOK,
         canActivate: [AuthGuard],
         canDeactivate: [CanDeactivateGuard],
         component: AddBookComponent

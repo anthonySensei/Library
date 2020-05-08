@@ -14,8 +14,8 @@ import { MaterialService } from '../../../shared/services/material.service';
 
 import { LoanBookModalComponent } from '../loan-book-modal/loan-book-modal.component';
 
-import { userRoles } from '../../../constants/userRoles';
-import { angularLinks } from '../../../constants/angularLinks';
+import { UserRoles } from '../../../constants/userRoles';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
@@ -25,7 +25,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
     styleUrls: ['./book-details.component.sass']
 })
 export class BookDetailsComponent implements OnInit, OnDestroy {
-    roles = userRoles;
+    roles = UserRoles;
     book: Book;
     user: Student;
 
@@ -71,7 +71,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.bookSubscription = this.bookService.bookChanged.subscribe(book => {
             this.book = book;
             if (!this.book) {
-                this.router.navigate([angularLinks.ERROR_PAGE]);
+                this.router.navigate([AngularLinks.ERROR_PAGE]);
             }
             this.isLoading = false;
         });

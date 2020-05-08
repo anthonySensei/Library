@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { userRoles } from '../../constants/userRoles';
+import { UserRoles } from '../../constants/userRoles';
 
 import { User } from '../models/user.model';
 
@@ -113,7 +113,7 @@ export class AuthService {
                 let userRole;
                 if (response.data.user && response.data.user.readerTicket) {
                     this.setUser(response.data.user);
-                    userRole = userRoles.STUDENT;
+                    userRole = UserRoles.STUDENT;
                 } else if (response.data.user) {
                     this.setUser(response.data.user);
                     userRole = this.user.role.role;
@@ -166,7 +166,7 @@ export class AuthService {
                     profileImage: userData.profileImage,
                     readerTicket: userData.readerTicket
                 };
-                this.setRole(userRoles.STUDENT);
+                this.setRole(UserRoles.STUDENT);
             } else {
                 user = {
                     name: userData.name,
@@ -190,10 +190,10 @@ export class AuthService {
     }
 
     setRole(role: string) {
-        if (role === userRoles.MANAGER) {
+        if (role === UserRoles.MANAGER) {
             this.setIsManager(true);
             this.setIsLibrarian(true);
-        } else if (role === userRoles.LIBRARIAN) {
+        } else if (role === UserRoles.LIBRARIAN) {
             this.setIsManager(false);
             this.setIsLibrarian(true);
         } else {

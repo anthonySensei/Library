@@ -5,17 +5,17 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { LibrarianGuard } from '../user/guards/librarian.guard';
 
 import { LoansPageComponent } from './components/loans-page/loans-page.component';
-import { angularLinks } from '../constants/angularLinks';
+import { AngularLinks } from '../constants/angularLinks';
 import { LoansChartComponent } from './components/loans-chart/loans-chart.component';
 
 const routes: Routes = [
     {
-        path: angularLinks.LOANS,
+        path: AngularLinks.LOANS,
         canActivate: [AuthGuard, LibrarianGuard],
         component: LoansPageComponent
     },
     {
-        path: angularLinks.LOANS_CHART,
+        path: AngularLinks.LOANS_CHART,
         canActivate: [AuthGuard, LibrarianGuard],
         component: LoansChartComponent
     }

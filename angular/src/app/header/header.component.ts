@@ -6,8 +6,8 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../auth/services/auth.service';
 
-import { angularLinks } from '../constants/angularLinks';
-import { userRoles } from '../constants/userRoles';
+import { AngularLinks } from '../constants/angularLinks';
+import { UserRoles } from '../constants/userRoles';
 import { Librarian } from '../user/models/librarian.model';
 import { User } from '../auth/models/user.model';
 
@@ -20,8 +20,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isLoggedIn = false;
     isSmallScreen = false;
 
-    links = angularLinks;
-    userRoles = userRoles;
+    links = AngularLinks;
+    userRoles = UserRoles;
 
     userChangedSubscription: Subscription;
     breakpointSubscription: Subscription;
@@ -58,7 +58,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 this.isLoggedIn = !!user;
                 if (user) {
                     if (user.readerTicket) {
-                        this.role = userRoles.STUDENT;
+                        this.role = UserRoles.STUDENT;
                     } else {
                         this.role = user.role.role;
                     }
@@ -75,7 +75,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             .logout()
             .subscribe(() => {
                 this.authService.setIsLoggedIn(false);
-                this.router.navigate([angularLinks.LOGIN]);
+                this.router.navigate([AngularLinks.LOGIN]);
             });
     }
 

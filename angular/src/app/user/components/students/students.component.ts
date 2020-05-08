@@ -11,7 +11,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 import { Student } from '../../models/student.model';
-import { angularLinks } from '../../../constants/angularLinks';
+import { AngularLinks } from '../../../constants/angularLinks';
 import { StudentService } from '../../services/student.service';
 
 @Component({
@@ -31,7 +31,7 @@ import { StudentService } from '../../services/student.service';
 export class StudentsComponent implements OnInit, OnDestroy {
     students: Student[];
 
-    links = angularLinks;
+    links = AngularLinks;
 
     studentsSubscription: Subscription;
     studentsChangedSubscription: Subscription;

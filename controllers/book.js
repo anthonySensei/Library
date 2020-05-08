@@ -63,7 +63,6 @@ exports.getAllBooks = async (req, res) => {
 
         return helper.responseHandle(res, 200, data);
     } catch (error) {
-        console.log(error);
         return helper.responseErrorHandle(
             res,
             500,

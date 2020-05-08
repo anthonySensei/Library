@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from '../../auth/services/auth.service';
 
-import { angularLinks } from '../../constants/angularLinks';
+import { AngularLinks } from '../../constants/angularLinks';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +24,7 @@ export class LibrarianGuard implements CanActivate {
     ): Observable<boolean> | Promise<boolean> | boolean {
         return this.authService.isLibrarian().then((librarian: boolean) => {
             if (!librarian) {
-                this.router.navigate([angularLinks.HOME]);
+                this.router.navigate([AngularLinks.HOME]);
                 return false;
             }
             return librarian;

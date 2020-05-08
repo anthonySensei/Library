@@ -160,7 +160,7 @@ export class UserComponent implements OnInit, OnDestroy {
                 this.onChangeProfileImage(this.profileImageBase64);
             } else {
                 this.openSnackBar(
-                    'Image was not selected',
+                    'Image was not filterName',
                     SnackBarClasses.Warn,
                     this.snackbarDuration
                 );

@@ -1,4 +1,4 @@
-export enum angularLinks {
+export enum AngularLinks {
     HOME = '',
     MY_ACCOUNT = 'my-account',
     BOOKS = 'books',

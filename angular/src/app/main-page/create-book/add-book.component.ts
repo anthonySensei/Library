@@ -178,7 +178,7 @@ export class AddBookComponent
         );
         if (!this.imageToUploadBase64 && !this.editMode) {
             this.openSnackBar(
-                'Image was not selected',
+                'Image was not filterName',
                 SnackBarClasses.Warn,
                 this.snackbarDuration
             );

@@ -1,4 +1,109 @@
+<button
+    mat-fab
+    class="filter-button"
+    (click)="drawer.toggle(); toggleFilterButton()"
+    [style.display]="showFilterButton ? 'block' : 'none'"
+    matTooltip="Open filter panel"
+>
+    <i class="material-icons">arrow_forward_ios</i>
+</button>
 <mat-drawer-container class="page-container" autosize>
+    <mat-drawer #drawer [disableClose]="true" class="sidenav" mode="over">
+        <button
+            class="close-sidenav"
+            (click)="toggleFilterButton(); drawer.toggle()"
+        >
+            <i class="material-icons">close</i>
+        </button>
+        <h2>Choose filter</h2>
+        <div class="d-block">
+            <mat-form-field class="d-block" style="margin: 0 1% 0 1%;">
+                <mat-label>Select an option</mat-label>
+                <mat-select [(value)]="filterName" required>
+                    <mat-option value="all">All</mat-option>
+                    <mat-option
+                        *ngFor="let filter of bookFilters"
+                        [value]="filter.value"
+                        >{{ filter.name }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Value</mat-label>
+                <input
+                    matInput
+                    name="value"
+                    [(ngModel)]="filterValue"
+                    [disabled]="filterName === 'all'"
+                />
+            </mat-form-field>
+            <mat-divider></mat-divider>
+            <mat-form-field class="d-block">
+                <mat-label>From</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    name="yearFrom"
+                    placeholder="Ex. 1689"
+                    [(ngModel)]="fromYear"
+                />
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>To</mat-label>
+                <input
+                    matInput
+                    name="yearTo"
+                    [(ngModel)]="toYear"
+                    placeholder="Ex. 2010"
+                />
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Author</mat-label>
+                <mat-select [(value)]="authorSelect" required>
+                    <mat-option value="''"></mat-option>
+                    <mat-option
+                        *ngFor="let author of authors"
+                        [value]="author.id"
+                        >{{ author.name }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Genre</mat-label>
+                <mat-select [(value)]="genreSelect" required>
+                    <mat-option value="''"></mat-option>
+                    <mat-option
+                        *ngFor="let genre of genres"
+                        [value]="genre.id"
+                        >{{ genre.name }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Department address</mat-label>
+                <mat-select [(value)]="departmentSelect" required>
+                    <mat-option value="''"></mat-option>
+                    <mat-option
+                        *ngFor="let department of departments"
+                        [value]="department.id"
+                        >{{ department.address }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <div class="button-group">
+                <button
+                    mat-button
+                    class="btn filter-form-button"
+                    (click)="search(); drawer.toggle(); toggleFilterButton()"
+                >
+                    <i class="material-icons">search</i>
+                </button>
+                <button mat-button class="btn filter-form-button" (click)="clearInputs()">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </mat-drawer>
     <div class="header">
         <h1>Books catalog</h1>
     </div>

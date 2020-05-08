@@ -13,51 +13,51 @@ import { LibrarianScheduleComponent } from './components/librarian-schedule/libr
 
 import { CanDeactivateGuard } from '../shared/services/can-deactivate-guard.service';
 
-import { angularLinks } from '../constants/angularLinks';
+import { AngularLinks } from '../constants/angularLinks';
 import { LibrariansComponent } from './components/librarians/librarians.component';
 import { LibrarianDetailsComponent } from './components/librarian-details/librarian-details.component';
 import { OrdersComponent } from './components/orders/orders.component';
 
 const routes: Routes = [
     {
-        path: angularLinks.MY_ACCOUNT,
+        path: AngularLinks.MY_ACCOUNT,
         canDeactivate: [CanDeactivateGuard],
         component: UserComponent,
         canActivate: [AuthGuard]
     },
     {
-        path: angularLinks.CREATE_USER,
+        path: AngularLinks.CREATE_USER,
         canDeactivate: [CanDeactivateGuard],
         component: AddLibrarianComponent,
         canActivate: [AuthGuard, ManagerGuard]
     },
     {
-        path: angularLinks.STUDENTS,
+        path: AngularLinks.STUDENTS,
         component: StudentsComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },
     {
-        path: angularLinks.STUDENTS + '/:id',
+        path: AngularLinks.STUDENTS + '/:id',
         component: StudentDetailsComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },
     {
-        path: angularLinks.LIBRARIANS,
+        path: AngularLinks.LIBRARIANS,
         component: LibrariansComponent,
         canActivate: [AuthGuard, ManagerGuard]
     },
     {
-        path: angularLinks.LIBRARIANS + '/:id',
+        path: AngularLinks.LIBRARIANS + '/:id',
         component: LibrarianDetailsComponent,
         canActivate: [AuthGuard, ManagerGuard]
     },
     {
-        path: angularLinks.LIBRARIAN_SCHEDULE,
+        path: AngularLinks.LIBRARIAN_SCHEDULE,
         component: LibrarianScheduleComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },
     {
-        path: angularLinks.ORDERS,
+        path: AngularLinks.ORDERS,
         component: OrdersComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     }
