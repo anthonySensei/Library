@@ -1,4 +1,5 @@
 const Book = require('../models/book');
+const Author = require('../models/author');
 const Department = require('../models/department');
 
 const uuidv4 = require('uuid/v4');
@@ -13,65 +14,62 @@ const ITEMS_PER_PAGE = 8;
 
 const helper = require('../helper/responseHandle');
 
-exports.getAllBooks = (req, res) => {
+exports.getAllBooks = async (req, res) => {
     const page = +req.query.page || 1;
 
-    let totalBooks;
-
-    Book.count({
-        include: {
-            model: Department
-        }
-    })
-        .then(bookNumber => {
-            totalBooks = bookNumber;
-            return Book.findAll({
-                include: {
-                    model: Department
-                },
-                limit: ITEMS_PER_PAGE,
-                offset: (page - 1) * ITEMS_PER_PAGE
-            });
-        })
-        .then(result => {
-            let books = [];
-
-            for (let book of result) {
-                book.dataValues.image = base64Img.base64Sync(
-                    book.dataValues.image
-                );
-                books.push({
-                    bookId: book.dataValues.id,
-                    name: book.dataValues.name,
-                    author: book.dataValues.author,
-                    genre: book.dataValues.genre,
-                    image: book.dataValues.image,
-                    description: book.dataValues.description,
-                    status: book.dataValues.status,
-                    department: book.dataValues.department_.dataValues
-                });
+    try {
+        const totalBooks = await Book.count({
+            include: {
+                model: Department
             }
-            const data = {
-                books: books,
-                message: successMessages.SUCCESSFULLY_FETCHED,
-                paginationData: {
-                    currentPage: page,
-                    hasNextPage: ITEMS_PER_PAGE * page < totalBooks,
-                    hasPreviousPage: page > 1,
-                    nextPage: page + 1,
-                    previousPage: page - 1,
-                    lastPage: Math.ceil(totalBooks / ITEMS_PER_PAGE)
-                }
-            };
-            return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.SOMETHING_WENT_WRONG
-            );
         });
+        const books = await Book.findAll({
+            include: [{
+                model: Department
+            },
+                {
+                    model: Author
+                }],
+            limit: ITEMS_PER_PAGE,
+            offset: (page - 1) * ITEMS_PER_PAGE
+        });
+        const booksArr = [];
+        books.forEach(book => {
+            const bookValues = book.dataValues;
+            bookValues.image = base64Img.base64Sync(bookValues.image);
+            booksArr.push({
+                bookId: bookValues.id,
+                name: bookValues.name,
+                author: bookValues.author_.dataValues,
+                genre: bookValues.genre,
+                image: bookValues.image,
+                description: bookValues.description,
+                status: bookValues.status,
+                department: bookValues.department_.dataValues
+            });
+        });
+        const data = {
+            books: booksArr,
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            paginationData: {
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < totalBooks,
+                hasPreviousPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(totalBooks / ITEMS_PER_PAGE)
+            }
+        };
+
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        console.log(error);
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
 };
 
 exports.getBook = (req, res) => {
