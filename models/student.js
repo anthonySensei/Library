@@ -4,7 +4,6 @@ const sequelize = require('../config/database');
 
 const Student = sequelize.define('student_', {
     id: {
-        field: 'id',
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,

@@ -31,13 +31,6 @@ const Book = sequelize.define('book_', {
             notNull: { args: true, msg: 'Please fill in book name' }
         }
     },
-    genre: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'Please fill in book genre' }
-        }
-    },
     year: {
         type: Sequelize.INTEGER,
         allowNull: false,
