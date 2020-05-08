@@ -7,8 +7,7 @@ const departmentController = require('../controllers/department');
 
 router.get(
     '/departments',
-    passport.authenticate('jwt', { session: false }),
-    departmentController.getDepartmentsForSelect
+    departmentController.getDepartments
 );
 
 module.exports = router;

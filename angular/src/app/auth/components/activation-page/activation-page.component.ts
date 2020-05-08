@@ -4,7 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { MaterialService } from '../../../shared/services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { angularLinks } from '../../../constants/angularLinks';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-activation-page',
@@ -51,7 +51,7 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
                         SnackBarClasses.Success,
                         5000
                     );
-                    this.router.navigate(['/' + angularLinks.LOGIN]);
+                    this.router.navigate(['/' + AngularLinks.LOGIN]);
                 } else {
                     this.error = this.response.data.message;
                     this.openSnackBar(

@@ -9,7 +9,7 @@ import { ValidationService } from '../../../shared/services/validation.service';
 import { MaterialService } from '../../../shared/services/material.service';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { angularLinks } from '../../../constants/angularLinks';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-auth',
@@ -31,7 +31,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     emailValidation;
 
-    links = angularLinks;
+    links = AngularLinks;
 
     constructor(
         private validationService: ValidationService,
@@ -97,7 +97,7 @@ export class AuthComponent implements OnInit, OnDestroy {
                 return false;
             } else {
                 this.authService.setIsLoggedIn(this.loggedIn);
-                this.router.navigate([angularLinks.HOME]);
+                this.router.navigate([AngularLinks.HOME]);
                 this.loginForm.reset();
                 this.message = 'You was logged in successfully';
                 this.openSnackBar(

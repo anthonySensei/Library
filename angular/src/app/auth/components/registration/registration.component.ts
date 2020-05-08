@@ -7,7 +7,7 @@ import { Subject, Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { MaterialService } from '../../../shared/services/material.service';
-import { angularLinks } from '../../../constants/angularLinks';
+import { AngularLinks } from '../../../constants/angularLinks';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 @Component({
@@ -38,7 +38,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     isDone = false;
 
-    links = angularLinks;
+    links = AngularLinks;
     emailError: string;
 
     constructor(

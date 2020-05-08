@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
-import { angularLinks } from '../../constants/angularLinks';
+import { AngularLinks } from '../../constants/angularLinks';
 
 @Injectable({
     providedIn: 'root'
@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
             .isAuthenticated()
             .then((authenticated: boolean) => {
                 if (!authenticated) {
-                    this.router.navigate(['/' + angularLinks.LOGIN]);
+                    this.router.navigate(['/' + AngularLinks.LOGIN]);
                     return false;
                 }
                 return authenticated;

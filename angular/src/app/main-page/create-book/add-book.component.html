@@ -74,7 +74,7 @@
                         formControlName="author"
                         placeholder="Ex. Dan Brown"
                     />
-                    <mat-error *ngIf="hasError('author', 'required') && !error">
+                    <mat-error *ngIf="hasError('authorSelect', 'required') && !error">
                         Author is required
                     </mat-error>
                 </mat-form-field>
@@ -87,7 +87,7 @@
                         formControlName="genre"
                         placeholder="Ex. comedy"
                     />
-                    <mat-error *ngIf="hasError('genre', 'required') && !error">
+                    <mat-error *ngIf="hasError('genreSelect', 'required') && !error">
                         Genre is required
                     </mat-error>
                 </mat-form-field>

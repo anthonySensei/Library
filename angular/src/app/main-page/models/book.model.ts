@@ -1,12 +1,13 @@
 import { Department } from './department.model';
 import { Author } from './author.model';
+import { Genre } from './genre.model';
 
 export class Book {
     bookId: number;
     isbn: number;
     name: string;
     author: Author;
-    genre: string;
+    genre: Genre;
     image: string;
     status: string;
     description: string;
@@ -18,7 +19,7 @@ export class Book {
         isbn: number,
         name: string,
         author: Author,
-        genre: string,
+        genre: Genre,
         image: string,
         status: string,
         description: string,

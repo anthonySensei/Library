@@ -28,6 +28,8 @@ const studentRoutes = require('./routes/student');
 const librarianRoutes = require('./routes/librarian');
 const authRoutes = require('./routes/auth');
 const departmentRoutes = require('./routes/department');
+const authorRoutes = require('./routes/author');
+const genreRoutes = require('./routes/genre');
 
 const Student = require('./models/student');
 const Librarian = require('./models/librarian');
@@ -110,10 +112,12 @@ app.use(studentRoutes);
 app.use(librarianRoutes);
 app.use(authRoutes);
 app.use(departmentRoutes);
+app.use(authorRoutes);
+app.use(genreRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });
 Book.belongsTo(Author);
-Book.belongsTo(Genre); 
+Book.belongsTo(Genre);
 Book.hasMany(Loan);
 
 Department.hasMany(Book);

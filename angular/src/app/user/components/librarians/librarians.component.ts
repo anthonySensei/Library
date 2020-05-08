@@ -4,7 +4,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 import { LibrarianService } from '../../services/librarian.service';
-import { angularLinks } from '../../../constants/angularLinks';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 import { Librarian } from '../../models/librarian.model';
 import {
@@ -32,7 +32,7 @@ import {
 export class LibrariansComponent implements OnInit, OnDestroy {
     librarians: Librarian[];
 
-    links = angularLinks;
+    links = AngularLinks;
 
     librariansSubscription: Subscription;
     librariansChangedSubscription: Subscription;
