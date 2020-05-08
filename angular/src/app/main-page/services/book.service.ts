@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
 import { Department } from '../models/department.model';
+import { Author } from '../models/author.model';
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +19,7 @@ export class BookService {
     LOAN_BOOK_URL = 'http://localhost:3000/loan-book';
 
     GET_DEPARTMENT_URL = 'http://localhost:3000/departments';
+    GET_AUTHORS_URL = 'http://localhost:3000/authors';
 
     responseChanged = new Subject();
     response;
@@ -27,6 +29,9 @@ export class BookService {
 
     departmentsChanged = new Subject<Department[]>();
     departments: Department[] = [];
+
+    authorsChanged = new Subject<Author[]>();
+    authors: Author[] = [];
 
     bookChanged = new Subject<Book>();
     book: Book;
@@ -51,6 +56,15 @@ export class BookService {
         return this.departments;
     }
 
+    setAuthors(authors: Author[]) {
+        this.authors = authors;
+        this.authorsChanged.next(this.authors);
+    }
+
+    getAuthors() {
+        return this.authors;
+    }
+
     setBook(book: Book) {
         this.book = book;
         this.bookChanged.next(book);
@@ -65,13 +79,32 @@ export class BookService {
         this.responseChanged.next(this.response);
     }
 
-    fetchAllBooksHttp(page: number) {
+    fetchAllBooksHttp(
+        page: number,
+        author: number,
+        genre: number,
+        department: number,
+        yearFrom: number,
+        yearTo: number,
+        filterName: string,
+        filterValue: number
+    ) {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_ALL_BOOKS_URL}?page=${page}`, {
-                headers
-            })
+            .get(
+                `${this.GET_ALL_BOOKS_URL}?page=${page}` +
+                    `&yFrom=${yearFrom}` +
+                    `&yTo=${yearTo}` +
+                    `&author=${author}` +
+                    `&genre=${genre}` +
+                    `&department=${department}` +
+                    `&filterName=${filterName}` +
+                    `&filterValue=${filterValue}`,
+                {
+                    headers
+                }
+            )
             .pipe(
                 map((response: any) => {
                     this.setBooks(response.data.books);
@@ -89,6 +122,20 @@ export class BookService {
             .pipe(
                 map((response: any) => {
                     this.setDepartments(response.data.departments);
+                })
+            );
+    }
+
+    fetchAllAuthorsHttp() {
+        const headers = new HttpHeaders();
+        headers.append('Content-type', 'application/json');
+        return this.http
+            .get(`${this.GET_AUTHORS_URL}`, {
+                headers
+            })
+            .pipe(
+                map((response: any) => {
+                    this.setAuthors(response.data.authors);
                 })
             );
     }

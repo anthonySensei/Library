@@ -25,24 +25,30 @@ export class MainPageComponent implements OnInit, OnDestroy {
     departments: Department[] = [];
 
     paramsSubscription: Subscription;
-    booksSubscription: Subscription;
+    booksChangeSubscription: Subscription;
+    booksFetchSubscription: Subscription;
     loggedInSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
+    departmentChangeSubscription: Subscription;
+    authorsFetchSubscription: Subscription;
+    authorsChangeSubscription: Subscription;
 
     isLoading = false;
     isLoggedIn = false;
     showFilterButton = true;
 
-    filterName = 'all';
-    authorSelect = '';
-    genreSelect = '';
-    departmentSelect = '';
-    filterValue = '';
+    filterName = Filters.NOTHING;
+    authorSelect = null;
+    genreSelect = null;
+    departmentSelect = null;
+    filterValue = null;
 
     fromYear: number;
     toYear: number;
 
     bookFilters = [
-        { name: 'Title', value: Filters.BOOK_NAME },
+        { name: 'Nothing', value: Filters.NOTHING },
+        { name: 'Title', value: Filters.TITLE },
         { name: 'ISBN', value: Filters.ISBN }
     ];
 
@@ -72,8 +78,19 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     subscriptionsHandle() {
-        this.bookService.fetchAllBooksHttp(this.currentPage).subscribe();
-        this.booksSubscription = this.bookService.booksChanged.subscribe(
+        this.booksFetchSubscription = this.bookService
+            .fetchAllBooksHttp(
+                this.currentPage,
+                this.authorSelect,
+                this.genreSelect,
+                this.departmentSelect,
+                this.fromYear,
+                this.toYear,
+                this.filterName,
+                this.filterValue
+            )
+            .subscribe();
+        this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
             (books: Book[]) => {
                 this.books = books;
                 this.isLoading = false;
@@ -84,6 +101,22 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.isLoggedIn = isLoggedIn;
             }
         );
+        this.departmentsFetchSubscription = this.bookService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentChangeSubscription = this.bookService.departmentsChanged.subscribe(
+            departments => {
+                this.departments = departments;
+            }
+        );
+        this.authorsFetchSubscription = this.bookService
+            .fetchAllAuthorsHttp()
+            .subscribe();
+        this.authorsChangeSubscription = this.bookService.authorsChanged.subscribe(
+            authors => {
+                this.authors = authors;
+            }
+        );
     }
 
     toggleFilterButton() {
@@ -91,7 +124,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     clearInputs() {
-        this.filterName = 'all';
+        this.filterName = Filters.NOTHING;
         this.filterValue = '';
         this.genreSelect = '';
         this.authorSelect = '';
@@ -99,9 +132,30 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.toYear = null;
     }
 
+    search() {
+        this.bookService
+            .fetchAllBooksHttp(
+                this.currentPage,
+                this.authorSelect,
+                this.genreSelect,
+                this.departmentSelect,
+                this.fromYear,
+                this.toYear,
+                this.filterName,
+                this.filterValue
+            )
+            .subscribe();
+        this.books = this.bookService.getBooks();
+    }
+
     ngOnDestroy(): void {
         this.loggedInSubscription.unsubscribe();
         this.paramsSubscription.unsubscribe();
-        this.booksSubscription.unsubscribe();
+        this.booksChangeSubscription.unsubscribe();
+        this.booksFetchSubscription.unsubscribe();
+        this.departmentsFetchSubscription.unsubscribe();
+        this.departmentChangeSubscription.unsubscribe();
+        this.authorsFetchSubscription.unsubscribe();
+        this.authorsChangeSubscription.unsubscribe();
     }
 }

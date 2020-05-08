@@ -1,4 +1,5 @@
 export enum Filters {
-    BOOK_NAME = 'bookName',
-    ISBN = 'isbn'
+    TITLE = 'title',
+    ISBN = 'isbn',
+    NOTHING = 'nothing',
 }

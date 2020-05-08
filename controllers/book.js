@@ -1,3 +1,6 @@
+const { Sequelize } = require('sequelize');
+const Op = Sequelize.Op;
+
 const Book = require('../models/book');
 const Author = require('../models/author');
 const Department = require('../models/department');
@@ -7,6 +10,7 @@ const uuidv4 = require('uuid/v4');
 const base64Img = require('base64-img');
 
 const statuses = require('../constants/statuses');
+const filters = require('../constants/filters');
 const successMessages = require('../constants/successMessages');
 const errorMessages = require('../constants/errorMessages');
 
@@ -14,8 +18,61 @@ const ITEMS_PER_PAGE = 8;
 
 const helper = require('../helper/responseHandle');
 
+const getCondition = (
+    filterName,
+    filterValue,
+    author,
+    department,
+    toYear,
+    fromYear
+) => {
+    let genreCondition = {};
+    let authorCondition = {};
+    let departmentCondition = {};
+    let yearCondition = {};
+    let filterCondition = {};
+
+    if (filterName && filterValue) {
+        if (filterName === filters.TITLE)
+            filterCondition = { name: { [Op.iLike]: `%${filterValue}%`} };
+        else if (filterName === filters.ISBN)
+            filterCondition = { isbn: filterValue };
+    }
+
+    if (author) authorCondition = { authorId: author };
+    if (department) authorCondition = { departmentId: department };
+
+    if (toYear && fromYear)
+        yearCondition = { year: { [Op.between]: [fromYear, toYear] } };
+    else if (fromYear) yearCondition = { year: { [Op.gte]: fromYear } };
+    else if (toYear) yearCondition = { year: { [Op.lte]: toYear } };
+
+    return {
+        ...genreCondition,
+        ...authorCondition,
+        ...yearCondition,
+        ...filterCondition
+    };
+};
+
 exports.getAllBooks = async (req, res) => {
     const page = +req.query.page || 1;
+    const fromYear = +req.query.yFrom;
+    const toYear = +req.query.yTo;
+    const author = +req.query.author;
+    const genre = +req.query.genre;
+    const department = +req.query.department;
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
+
+    const condition = getCondition(
+        filterName,
+        filterValue,
+        author,
+        department,
+        toYear,
+        fromYear
+    );
 
     try {
         const totalBooks = await Book.count({
@@ -24,12 +81,15 @@ exports.getAllBooks = async (req, res) => {
             }
         });
         const books = await Book.findAll({
-            include: [{
-                model: Department
-            },
+            include: [
+                {
+                    model: Department
+                },
                 {
                     model: Author
-                }],
+                }
+            ],
+            where: condition,
             limit: ITEMS_PER_PAGE,
             offset: (page - 1) * ITEMS_PER_PAGE
         });
@@ -40,6 +100,7 @@ exports.getAllBooks = async (req, res) => {
             booksArr.push({
                 bookId: bookValues.id,
                 name: bookValues.name,
+                year: bookValues.year,
                 author: bookValues.author_.dataValues,
                 genre: bookValues.genre,
                 image: bookValues.image,

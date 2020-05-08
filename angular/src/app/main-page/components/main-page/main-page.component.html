@@ -20,7 +20,6 @@
             <mat-form-field class="d-block" style="margin: 0 1% 0 1%;">
                 <mat-label>Select an option</mat-label>
                 <mat-select [(value)]="filterName" required>
-                    <mat-option value="all">All</mat-option>
                     <mat-option
                         *ngFor="let filter of bookFilters"
                         [value]="filter.value"
@@ -34,7 +33,7 @@
                     matInput
                     name="value"
                     [(ngModel)]="filterValue"
-                    [disabled]="filterName === 'all'"
+                    [disabled]="filterName === bookFilters[0].value"
                 />
             </mat-form-field>
             <mat-divider></mat-divider>
@@ -60,7 +59,7 @@
             <mat-form-field class="d-block">
                 <mat-label>Author</mat-label>
                 <mat-select [(value)]="authorSelect" required>
-                    <mat-option value="''"></mat-option>
+                    <mat-option value="''">-</mat-option>
                     <mat-option
                         *ngFor="let author of authors"
                         [value]="author.id"
@@ -71,7 +70,7 @@
             <mat-form-field class="d-block">
                 <mat-label>Genre</mat-label>
                 <mat-select [(value)]="genreSelect" required>
-                    <mat-option value="''"></mat-option>
+                    <mat-option value="''">-</mat-option>
                     <mat-option
                         *ngFor="let genre of genres"
                         [value]="genre.id"
@@ -82,7 +81,7 @@
             <mat-form-field class="d-block">
                 <mat-label>Department address</mat-label>
                 <mat-select [(value)]="departmentSelect" required>
-                    <mat-option value="''"></mat-option>
+                    <mat-option value="''">-</mat-option>
                     <mat-option
                         *ngFor="let department of departments"
                         [value]="department.id"
@@ -98,7 +97,11 @@
                 >
                     <i class="material-icons">search</i>
                 </button>
-                <button mat-button class="btn filter-form-button" (click)="clearInputs()">
+                <button
+                    mat-button
+                    class="btn filter-form-button"
+                    (click)="clearInputs()"
+                >
                     Clear
                 </button>
             </div>
@@ -159,6 +162,10 @@
                     <span class="card-details">
                         <span class="characteristic-name">Genre</span>:
                         {{ book.genre }}
+                    </span>
+                    <span class="card-details">
+                        <span class="characteristic-name">Year</span>:
+                        {{ book.year }}
                     </span>
                     <span class="card-details">
                         <span class="characteristic-name">Book location</span>:

@@ -5,7 +5,7 @@ const helper = require('../helper/responseHandle');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 
-exports.getDepartmentsForSelect = (req, res) => {
+exports.getDepartments = (req, res) => {
     Department.findAll()
         .then(result => {
             let departments = [];
