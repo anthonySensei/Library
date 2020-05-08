@@ -32,6 +32,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     departmentChangeSubscription: Subscription;
     authorsFetchSubscription: Subscription;
     authorsChangeSubscription: Subscription;
+    genresFetchSubscription: Subscription;
+    genresChangeSubscription: Subscription;
 
     isLoading = false;
     isLoggedIn = false;
@@ -115,6 +117,14 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.authorsChangeSubscription = this.bookService.authorsChanged.subscribe(
             authors => {
                 this.authors = authors;
+            }
+        );
+        this.genresFetchSubscription = this.bookService
+            .fetchAllGenresHttp()
+            .subscribe();
+        this.genresChangeSubscription = this.bookService.genresChanged.subscribe(
+            genres => {
+                this.genres = genres;
             }
         );
     }

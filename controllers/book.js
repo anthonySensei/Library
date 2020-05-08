@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
 const Book = require('../models/book');
+const Genre = require('../models/genre');
 const Author = require('../models/author');
 const Department = require('../models/department');
 
@@ -22,25 +23,27 @@ const getCondition = (
     filterName,
     filterValue,
     author,
+    genre,
     department,
     toYear,
     fromYear
 ) => {
-    let genreCondition = {};
     let authorCondition = {};
+    let genreCondition = {};
     let departmentCondition = {};
     let yearCondition = {};
     let filterCondition = {};
 
     if (filterName && filterValue) {
         if (filterName === filters.TITLE)
-            filterCondition = { name: { [Op.iLike]: `%${filterValue}%`} };
+            filterCondition = { name: { [Op.iLike]: `%${filterValue}%` } };
         else if (filterName === filters.ISBN)
             filterCondition = { isbn: filterValue };
     }
 
     if (author) authorCondition = { authorId: author };
-    if (department) authorCondition = { departmentId: department };
+    if (genre) authorCondition = { genreId: genre };
+    if (department) departmentCondition = { departmentId: department };
 
     if (toYear && fromYear)
         yearCondition = { year: { [Op.between]: [fromYear, toYear] } };
@@ -48,8 +51,9 @@ const getCondition = (
     else if (toYear) yearCondition = { year: { [Op.lte]: toYear } };
 
     return {
-        ...genreCondition,
         ...authorCondition,
+        ...genreCondition,
+        ...departmentCondition,
         ...yearCondition,
         ...filterCondition
     };
@@ -69,6 +73,7 @@ exports.getAllBooks = async (req, res) => {
         filterName,
         filterValue,
         author,
+        genre,
         department,
         toYear,
         fromYear
@@ -87,7 +92,8 @@ exports.getAllBooks = async (req, res) => {
                 },
                 {
                     model: Author
-                }
+                },
+                { model: Genre }
             ],
             where: condition,
             limit: ITEMS_PER_PAGE,
@@ -102,7 +108,7 @@ exports.getAllBooks = async (req, res) => {
                 name: bookValues.name,
                 year: bookValues.year,
                 author: bookValues.author_.dataValues,
-                genre: bookValues.genre,
+                genre: bookValues.genre_.dataValues,
                 image: bookValues.image,
                 description: bookValues.description,
                 status: bookValues.status,
