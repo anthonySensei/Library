@@ -35,6 +35,7 @@ const Librarian = require('./models/librarian');
 const Role = require('./models/role');
 const Department = require('./models/department');
 const Book = require('./models/book');
+const Genre = require('./models/genre');
 const Author = require('./models/author');
 const Loan = require('./models/loan');
 const Order = require('./models/order');
@@ -114,6 +115,7 @@ app.use(authorsRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });
 Book.belongsTo(Author);
+Book.belongsTo(Genre); 
 Book.hasMany(Loan);
 
 Department.hasMany(Book);
