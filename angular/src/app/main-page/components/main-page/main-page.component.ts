@@ -79,7 +79,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         );
     }
 
-    subscriptionsHandle() {
+    booksSubscriptionHandle() {
         this.booksFetchSubscription = this.bookService
             .fetchAllBooksHttp(
                 this.currentPage,
@@ -92,6 +92,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.filterValue
             )
             .subscribe();
+        this.books = this.bookService.getBooks();
+    }
+
+    subscriptionsHandle() {
         this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
             (books: Book[]) => {
                 this.books = books;
@@ -109,6 +113,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.departmentChangeSubscription = this.bookService.departmentsChanged.subscribe(
             departments => {
                 this.departments = departments;
+                this.departmentSelect = departments[0].id;
+                this.booksSubscriptionHandle();
             }
         );
         this.authorsFetchSubscription = this.bookService
@@ -142,20 +148,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.toYear = null;
     }
 
-    search() {
-        this.bookService
-            .fetchAllBooksHttp(
-                this.currentPage,
-                this.authorSelect,
-                this.genreSelect,
-                this.departmentSelect,
-                this.fromYear,
-                this.toYear,
-                this.filterName,
-                this.filterValue
-            )
-            .subscribe();
-        this.books = this.bookService.getBooks();
+    showBooksByDepartment() {
+        this.filterName = Filters.NOTHING;
+        this.authorSelect = null;
+        this.genreSelect = null;
+        this.filterValue = null;
+        this.booksSubscriptionHandle();
     }
 
     ngOnDestroy(): void {
