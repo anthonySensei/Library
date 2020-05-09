@@ -93,7 +93,7 @@
                 <button
                     mat-button
                     class="btn filter-form-button"
-                    (click)="search(); drawer.toggle(); toggleFilterButton()"
+                    (click)="booksSubscriptionHandle(); drawer.toggle(); toggleFilterButton()"
                 >
                     <i class="material-icons">search</i>
                 </button>
@@ -125,6 +125,17 @@
             </a>
         </div>
         <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
+        <mat-form-field class="department-select">
+            <mat-label>Department address</mat-label>
+            <mat-select [(value)]="departmentSelect" (valueChange)="showBooksByDepartment()" required>
+                <mat-option value="''">-</mat-option>
+                <mat-option
+                    *ngFor="let department of departments"
+                    [value]="department.id"
+                    >{{ department.address }}</mat-option
+                >
+            </mat-select>
+        </mat-form-field>
     </div>
     <div *ngIf="isLoading" style="text-align: center;">
         <app-loading-spinner></app-loading-spinner>
