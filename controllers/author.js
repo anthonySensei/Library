@@ -25,3 +25,21 @@ exports.getAuthors = async (req, res) => {
     };
     return helper.responseHandle(res, 200, data);
 };
+
+exports.addAuthor = async (req, res) => {
+    const authorName = req.body.author.name;
+    try {
+        await Author.create({ name: authorName });
+        const data = {
+            isCreated: true,
+            message: successMessages.AUTHOR_SUCCESSFULLY_CREATED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isCreated: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 500, data);
+    }
+};

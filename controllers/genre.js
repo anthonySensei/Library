@@ -24,3 +24,21 @@ exports.getGenres = async (req, res) => {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
+
+exports.addGenre = async (req, res) => {
+    const genreName = req.body.genre.name;
+    try {
+        await Genre.create({ name: genreName });
+        const data = {
+            isCreated: true,
+            message: successMessages.GENRE_SUCCESSFULLY_CREATED 
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isCreated: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 500, data);
+    }
+};

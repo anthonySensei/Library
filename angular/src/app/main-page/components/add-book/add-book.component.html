@@ -67,27 +67,41 @@
                 </mat-form-field>
                 <mat-form-field class="d-block form-input">
                     <mat-label>Author</mat-label>
-                    <input
-                        matInput
-                        type="text"
-                        name="author"
-                        formControlName="author"
-                        placeholder="Ex. Dan Brown"
-                    />
-                    <mat-error *ngIf="hasError('authorSelect', 'required') && !error">
+                    <mat-select name="author" formControlName="author">
+                        <mat-option
+                            *ngFor="let author of authors"
+                            [value]="author.id"
+                        >
+                            {{ author.name }}
+                        </mat-option>
+                        <mat-divider></mat-divider>
+                        <mat-option (click)="openAddOptionModal('author')">
+                            <b>Add author</b>
+                        </mat-option>
+                    </mat-select>
+                    <mat-error
+                        *ngIf="hasError('author', 'required') && !error"
+                    >
                         Author is required
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field class="d-block form-input">
                     <mat-label>Genre</mat-label>
-                    <input
-                        matInput
-                        type="text"
-                        name="genre"
-                        formControlName="genre"
-                        placeholder="Ex. comedy"
-                    />
-                    <mat-error *ngIf="hasError('genreSelect', 'required') && !error">
+                    <mat-select name="genre" formControlName="genre">
+                        <mat-option
+                            *ngFor="let genre of genres"
+                            [value]="genre.id"
+                        >
+                            {{ genre.name }}
+                        </mat-option>
+                        <mat-divider></mat-divider>
+                        <mat-option (click)="openAddOptionModal('genre')">
+                            <b>Add genre</b>
+                        </mat-option>
+                    </mat-select>
+                    <mat-error
+                        *ngIf="hasError('genre', 'required') && !error"
+                    >
                         Genre is required
                     </mat-error>
                 </mat-form-field>

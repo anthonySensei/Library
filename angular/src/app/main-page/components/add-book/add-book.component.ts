@@ -3,21 +3,24 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { BookService } from '../services/book.service';
-import { AuthService } from '../../auth/services/auth.service';
-import { MaterialService } from '../../shared/services/material.service';
-import { CanComponentDeactivate } from '../../shared/services/can-deactivate-guard.service';
-
-import { Student } from '../../user/models/student.model';
-import { Book } from '../models/book.model';
-import { Department } from '../models/department.model';
-
 import { Observable, Subject, Subscription } from 'rxjs';
 
-import { SnackBarClasses } from '../../constants/snackBarClasses';
+import { BookService } from '../../services/book.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { MaterialService } from '../../../shared/services/material.service';
+import { CanComponentDeactivate } from '../../../shared/services/can-deactivate-guard.service';
+
+import { Book } from '../../models/book.model';
+import { Department } from '../../models/department.model';
+import { User } from '../../../auth/models/user.model';
+import { Author } from '../../models/author.model';
+import { Genre } from '../../models/genre.model';
+
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
-import { User } from '../../auth/models/user.model';
+import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
+import { log } from 'util';
 
 export interface DialogData {
     imageBase64: string;
@@ -26,7 +29,7 @@ export interface DialogData {
 @Component({
     selector: 'app-create-post',
     templateUrl: './add-book.component.html',
-    styleUrls: ['../../auth/components/login/auth.component.sass']
+    styleUrls: ['../../../auth/components/login/auth.component.sass']
 })
 export class AddBookComponent
     implements OnInit, OnDestroy, CanComponentDeactivate {
@@ -56,17 +59,27 @@ export class AddBookComponent
     book: Book;
 
     departments: Department[];
+    authors: Author[];
+    genres: Genre[];
 
     snackbarDuration = 5000;
     snackBarMessage = 'Book was added successfully';
 
     choosePostImageWidth = '70%';
+    addOptionModalWidth = '30%';
 
     imageToUploadBase64: string = null;
 
     oldPassword: string;
     newPassword: string;
     retypeNewPassword: string;
+
+    departmentsFetchSubscription: Subscription;
+    departmentChangeSubscription: Subscription;
+    authorsFetchSubscription: Subscription;
+    authorsChangeSubscription: Subscription;
+    genresFetchSubscription: Subscription;
+    genresChangeSubscription: Subscription;
 
     constructor(
         private bookService: BookService,
@@ -79,14 +92,40 @@ export class AddBookComponent
 
     ngOnInit() {
         this.initializeForm();
-        this.handleBooks();
         this.handleParams();
-        this.departments = this.bookService.getDepartments();
         this.handleResponse();
         this.handleUser();
+        this.selectsValuesSubscriptionHandle();
         if (this.editMode) {
             this.isLoading = true;
         }
+    }
+
+    selectsValuesSubscriptionHandle() {
+        this.departmentsFetchSubscription = this.bookService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentChangeSubscription = this.bookService.departmentsChanged.subscribe(
+            departments => {
+                this.departments = departments;
+            }
+        );
+        this.authorsFetchSubscription = this.bookService
+            .fetchAllAuthorsHttp()
+            .subscribe();
+        this.authorsChangeSubscription = this.bookService.authorsChanged.subscribe(
+            authors => {
+                this.authors = authors;
+            }
+        );
+        this.genresFetchSubscription = this.bookService
+            .fetchAllGenresHttp()
+            .subscribe();
+        this.genresChangeSubscription = this.bookService.genresChanged.subscribe(
+            genres => {
+                this.genres = genres;
+            }
+        );
     }
 
     initializeForm() {
@@ -138,13 +177,6 @@ export class AddBookComponent
         );
     }
 
-    handleBooks() {
-        this.bookService.fetchAllDepartmentsHttp().subscribe();
-        this.bookService.departmentsChanged.subscribe(departments => {
-            this.departments = departments;
-        });
-    }
-
     hasError(controlName: string, errorName: string) {
         return this.addBookForm.controls[controlName].hasError(errorName);
     }
@@ -159,6 +191,34 @@ export class AddBookComponent
 
         dialogRef.afterClosed().subscribe(result => {
             this.imageToUploadBase64 = result;
+        });
+    }
+
+    openAddOptionModal(option: string): void {
+        const dialogRef = this.dialog.open(AddOptionModalComponent, {
+            width: this.addOptionModalWidth,
+            data: {
+                option
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (!result) {
+                return;
+            }
+            if (result.option === 'author') {
+                this.bookService
+                    .addAuthorHttp({ id: null, name: result.name })
+                    .subscribe();
+                this.bookService.fetchAllAuthorsHttp();
+                this.authors = this.bookService.getAuthors();
+            } else {
+                this.bookService
+                    .addGenreHttp({ id: null, name: result.name })
+                    .subscribe();
+                this.bookService.fetchAllGenresHttp();
+                this.authors = this.bookService.getGenres();
+            }
         });
     }
 
@@ -203,22 +263,24 @@ export class AddBookComponent
     }
 
     addBookToLibrary(book: Book, imageToUploadBase64: string) {
-        this.bookService.addBooHttp(book, imageToUploadBase64).subscribe(() => {
-            if (this.isCreated) {
-                this.isDone = true;
-                this.message = this.response.data.message;
-                this.router.navigate(['/books']);
-                this.openSnackBar(
-                    this.snackBarMessage,
-                    SnackBarClasses.Success,
-                    this.snackbarDuration
-                );
-            } else {
-                this.isDone = false;
-                this.error = this.response.data.message;
-                return false;
-            }
-        });
+        this.bookService
+            .addBookHttp(book, imageToUploadBase64)
+            .subscribe(() => {
+                if (this.isCreated) {
+                    this.isDone = true;
+                    this.message = this.response.data.message;
+                    this.router.navigate(['/books']);
+                    this.openSnackBar(
+                        this.snackBarMessage,
+                        SnackBarClasses.Success,
+                        this.snackbarDuration
+                    );
+                } else {
+                    this.isDone = false;
+                    this.error = this.response.data.message;
+                    return false;
+                }
+            });
     }
 
     openSnackBar(message: string, style: string, duration: number) {
@@ -238,8 +300,10 @@ export class AddBookComponent
     }
 
     ngOnDestroy(): void {
-        // this.paramsSubscription.unsubscribe();
-        // this.responseSubscription.unsubscribe();
-        // this.userSubscription.unsubscribe();
+        this.paramsSubscription.unsubscribe();
+        if (this.responseSubscription) {
+            this.responseSubscription.unsubscribe();
+        }
+        this.userSubscription.unsubscribe();
     }
 }

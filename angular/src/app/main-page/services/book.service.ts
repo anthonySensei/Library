@@ -13,15 +13,14 @@ import { Genre } from '../models/genre.model';
     providedIn: 'root'
 })
 export class BookService {
-    GET_BOOK_URL = 'http://localhost:3000/book-details';
+    BOOKS_URL = 'http://localhost:3000/book-details';
 
     GET_ALL_BOOKS_URL = 'http://localhost:3000/books';
-    ADD_BOOK_URL = 'http://localhost:3000/add-book';
     LOAN_BOOK_URL = 'http://localhost:3000/loan-book';
 
     GET_DEPARTMENT_URL = 'http://localhost:3000/departments';
-    GET_AUTHORS_URL = 'http://localhost:3000/authors';
-    GET_GENRES_URL = 'http://localhost:3000/genres';
+    AUTHORS_URL = 'http://localhost:3000/authors';
+    GENRES_URL = 'http://localhost:3000/genres';
 
     responseChanged = new Subject();
     response;
@@ -144,7 +143,7 @@ export class BookService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_AUTHORS_URL}`, {
+            .get(`${this.AUTHORS_URL}`, {
                 headers
             })
             .pipe(
@@ -158,7 +157,7 @@ export class BookService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_GENRES_URL}`, {
+            .get(`${this.GENRES_URL}`, {
                 headers
             })
             .pipe(
@@ -172,7 +171,7 @@ export class BookService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_BOOK_URL}?bookId=${bookId}`, { headers })
+            .get(`${this.BOOKS_URL}?bookId=${bookId}`, { headers })
             .pipe(
                 map((response: any) => {
                     this.setBook(response.data.book);
@@ -180,13 +179,29 @@ export class BookService {
             );
     }
 
-    addBooHttp(book: Book, imageToUploadBase64: string) {
+    addBookHttp(book: Book, imageToUploadBase64: string) {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
         formData.append('base64', imageToUploadBase64);
         formData.append('book_data', JSON.stringify(book));
-        return this.http.post(this.ADD_BOOK_URL, formData, { headers }).pipe(
+        return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(
+            map((response: any) => {
+                this.setResponse(response);
+            })
+        );
+    }
+
+    addAuthorHttp(author: Author) {
+        return this.http.post(this.AUTHORS_URL, {author}).pipe(
+            map((response: any) => {
+                this.setResponse(response);
+            })
+        );
+    }
+
+    addGenreHttp(genre: Genre) {
+        return this.http.post(this.GENRES_URL, {genre}).pipe(
             map((response: any) => {
                 this.setResponse(response);
             })

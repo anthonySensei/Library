@@ -1,6 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
 import { ImageCroppedEvent } from 'ngx-image-cropper';
+
 import { DialogData } from '../add-book.component';
 
 @Component({

@@ -14,10 +14,6 @@ const Book = sequelize.define('book_', {
         allowNull: false,
         validate: {
             notNull: { args: true, msg: 'Please fill in isbn' }
-        },
-        unique: {
-            args: true,
-            msg: 'ISBN must be unique'
         }
     },
     quantity: {
