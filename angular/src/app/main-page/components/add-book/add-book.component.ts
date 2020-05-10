@@ -9,6 +9,10 @@ import { BookService } from '../../services/book.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { MaterialService } from '../../../shared/services/material.service';
 import { CanComponentDeactivate } from '../../../shared/services/can-deactivate-guard.service';
+import { DepartmentService } from '../../services/department.service';
+import { AuthorService } from '../../services/author.service';
+import { GenreService } from '../../services/genre.service';
+import { ValidationService } from '../../../shared/services/validation.service';
 
 import { Book } from '../../models/book.model';
 import { Department } from '../../models/department.model';
@@ -68,7 +72,7 @@ export class AddBookComponent
 
     snackbarDuration = 5000;
 
-    choosePostImageWidth = '70%';
+    choosePostImageWidth = '40%';
     addOptionModalWidth = '30%';
 
     imageToUploadBase64: string = null;
@@ -77,16 +81,23 @@ export class AddBookComponent
     newPassword: string;
     retypeNewPassword: string;
 
+    isbnValidation;
+
     constructor(
         private bookService: BookService,
+        private departmentService: DepartmentService,
+        private authorService: AuthorService,
+        private genreService: GenreService,
         private authService: AuthService,
         public materialService: MaterialService,
+        public validationService: ValidationService,
         private router: Router,
         private route: ActivatedRoute,
         public dialog: MatDialog
     ) {}
 
     ngOnInit() {
+        this.isbnValidation = this.validationService.getIsbnValidation();
         this.initializeForm();
         this.handleParams();
         this.handleUser();
@@ -97,26 +108,26 @@ export class AddBookComponent
     }
 
     selectsValuesSubscriptionHandle() {
-        this.departmentsFetchSubscription = this.bookService
+        this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentChangeSubscription = this.bookService.departmentsChanged.subscribe(
+        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
             departments => {
                 this.departments = departments;
             }
         );
-        this.authorsFetchSubscription = this.bookService
+        this.authorsFetchSubscription = this.authorService
             .fetchAllAuthorsHttp()
             .subscribe();
-        this.authorsChangeSubscription = this.bookService.authorsChanged.subscribe(
+        this.authorsChangeSubscription = this.authorService.authorsChanged.subscribe(
             authors => {
                 this.authors = authors;
             }
         );
-        this.genresFetchSubscription = this.bookService
+        this.genresFetchSubscription = this.genreService
             .fetchAllGenresHttp()
             .subscribe();
-        this.genresChangeSubscription = this.bookService.genresChanged.subscribe(
+        this.genresChangeSubscription = this.genreService.genresChanged.subscribe(
             genres => {
                 this.genres = genres;
             }
@@ -125,9 +136,16 @@ export class AddBookComponent
 
     initializeForm() {
         this.mainBookInfoForm = new FormGroup({
-            isbn: new FormControl(null, [Validators.required]),
+            isbn: new FormControl(null, [
+                Validators.required,
+                Validators.pattern(this.isbnValidation)
+            ]),
+
             name: new FormControl(null, [Validators.required]),
-            quantity: new FormControl(null, [Validators.required]),
+            quantity: new FormControl(null, [
+                Validators.required,
+                Validators.max(420)
+            ]),
             address: new FormControl(null, [Validators.required])
         });
         this.bookDetailsForm = new FormGroup({
@@ -193,18 +211,20 @@ export class AddBookComponent
                 return;
             }
             if (result.option === 'author') {
-                this.bookService
+                this.authorService
                     .addAuthorHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.bookService.getResponse();
+                        this.response = this.authorService.getResponse();
                         if (this.response.isSuccessful) {
                             this.openSnackBar(
                                 this.response.message,
                                 SnackBarClasses.Success,
                                 this.snackbarDuration
                             );
-                            this.bookService.fetchAllAuthorsHttp().subscribe();
-                            this.authors = this.bookService.getAuthors();
+                            this.authorService
+                                .fetchAllAuthorsHttp()
+                                .subscribe();
+                            this.authors = this.authorService.getAuthors();
                         } else {
                             this.openSnackBar(
                                 this.response.message,
@@ -214,18 +234,18 @@ export class AddBookComponent
                         }
                     });
             } else {
-                this.bookService
+                this.genreService
                     .addGenreHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.bookService.getResponse();
+                        this.response = this.genreService.getResponse();
                         if (this.response.isSuccessful) {
                             this.openSnackBar(
                                 this.response.message,
                                 SnackBarClasses.Success,
                                 this.snackbarDuration
                             );
-                            this.bookService.fetchAllGenresHttp().subscribe();
-                            this.genres = this.bookService.getGenres();
+                            this.genreService.fetchAllGenresHttp().subscribe();
+                            this.genres = this.genreService.getGenres();
                         } else {
                             this.openSnackBar(
                                 this.response.message,
@@ -313,7 +333,7 @@ export class AddBookComponent
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.mainBookInfoForm.touched && !this.response.isSuccessful) {
+        if (this.mainBookInfoForm.touched && !this.response) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged

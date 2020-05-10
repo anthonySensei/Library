@@ -2,7 +2,7 @@
 
 $font-main: Robotom, "Helvetica Neue", sans-serif
 
-$color-main: #ffaa00
+$color-main: #ffc107
 $color-main-darker: #ff9400
 $color-main-less-saturation: #b16400
 $color-white: rgb(255, 255, 255)
@@ -24,15 +24,14 @@ body
 .mat-form-field-empty.mat-form-field-label
   color: $color-main
 
-.mat-focused .mat-form-field-label
-  color: $color-main !important
+.text-center
+  text-align: center
 
-.mat-form-field-ripple
-  background-color: $color-main !important
-
-
-.menu-active
-  color: $color-main
+.choose-image
+  width: 78%
+  margin: 10px auto
+  &.image-section
+    margin: 0 auto
 
 
 /* Form structure */
@@ -75,23 +74,21 @@ body
   margin: 10px auto 0 auto
   width: 60%
 
-
-.form-input:focus
-  background-color: $color-white
-  border-bottom: 2px solid $color-main
-  outline: none
-
 /* Form button */
+
 
 .btn-group
   .form-btn
     width: 38%
+    &.move-btn
+      border: 1px solid $color-main
+    &.add-form-btn
+      width: 29%
     &:first-of-type
       margin-right: 2%
-  .clear-button
-    color: $color-main
-  .submit-btn
-    background-color: $color-main
+  .choose-img-btn
+     margin-bottom: 10px
+
 
 .form-button
   display: block
@@ -116,17 +113,6 @@ body
     margin-right: 5%
     display: inline-block
 
-
-
-form.ng-valid .form-button
-  background-color: $color-main
-  box-shadow: $color-main-less-saturation
-
-
-form.ng-valid .form-button:hover
-  background-color: $color-main
-
-
 form.ng-valid .form-button:disabled, .form-button:disabled
   cursor: not-allowed
   background-color: rgb(145, 145, 145)
@@ -142,35 +128,6 @@ form.ng-valid .form-button:disabled:hover, .form-button:disabled:hover
   width: 100px
   display: inline-block
   margin-right: 10px
-
-//btn
-
-.btn, .filter-button, .close-sidenav
-  color: $color-main
-  background-color: $color-white
-  outline: none
-  border: 1px solid $color-main
-  cursor: pointer
-  &.btn-danger
-    color: $color-danger
-  &.btn-success
-    color: $color-success
-
-
-.btn:hover, .filter-button:hover, .close-sidenav:hover
-  background-color: $color-main
-  color: $color-white
-
-
-.btn.active
-  background-color: $color-main
-  color: $color-white
-
-.btn:disabled, .btn:disabled:hover
-  background-color: $color-white
-  border-color: #9c9c9c
-  color: #9c9c9c
-  cursor: not-allowed
 
 /*  */
 

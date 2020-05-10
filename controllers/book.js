@@ -216,6 +216,7 @@ exports.addBook = async (req, res) => {
     try {
         const count = await Book.count({
             where: {
+                isbn: bookData.isbn,
                 departmentId: bookData.department.id
             }
         });

@@ -5,7 +5,7 @@
         <div *ngIf="isLoading && editMode" style="text-align: center;">
             <app-loading-spinner></app-loading-spinner>
         </div>
-        <mat-horizontal-stepper [linear]="!editMode" #stepper>
+        <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="mainBookInfoForm">
                 <form [formGroup]="mainBookInfoForm">
                     <ng-template matStepLabel>Main info</ng-template>
@@ -17,6 +17,11 @@
                             placeholder="Ex. 12321312321312"
                         />
                         <span matPrefix>ISBN </span>
+                        <mat-error
+                                *ngIf="hasError('isbn', 'pattern') && !error"
+                        >
+                            ISBN is not valid
+                        </mat-error>
                         <mat-error
                             *ngIf="hasError('isbn', 'required') && !error"
                         >
@@ -47,12 +52,17 @@
                             type="number"
                             name="quantity"
                             formControlName="quantity"
-                            placeholder="Ex. 2000"
+                            placeholder="Ex. 10"
                         />
                         <mat-error
                             *ngIf="hasError('quantity', 'required') && !error"
                         >
                             Quantity is required
+                        </mat-error>
+                        <mat-error
+                            *ngIf="hasError('quantity', 'max') && !error"
+                        >
+                            You cannot add so much books
                         </mat-error>
                     </mat-form-field>
                     <mat-form-field class="d-block form-input">
@@ -71,8 +81,15 @@
                             Department is required
                         </mat-error>
                     </mat-form-field>
-                    <div>
-                        <button mat-button matStepperNext>Next</button>
+                    <div class="btn-group">
+                        <button
+                            mat-stroked-button
+                            matStepperNext
+                            color="primary"
+                            class="form-btn add-form-btn move-btn"
+                        >
+                            Next
+                        </button>
                     </div>
                 </form>
             </mat-step>
@@ -160,37 +177,60 @@
                             Year is required
                         </mat-error>
                     </mat-form-field>
-                    <div>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <button mat-button matStepperNext>Next</button>
+                    <div class="btn-group">
+                        <button
+                            mat-stroked-button
+                            color="primary"
+                            matStepperPrevious
+                            class="form-btn add-form-btn move-btn"
+                        >
+                            Back
+                        </button>
+                        <button
+                            mat-stroked-button
+                            matStepperNext
+                            color="primary"
+                            class="form-btn add-form-btn move-btn"
+                        >
+                            Next
+                        </button>
                     </div>
                 </form>
             </mat-step>
             <mat-step>
                 <ng-template matStepLabel>Submit</ng-template>
-                <button
-                    type="button"
-                    class="d-block"
-                    mat-raised-button
-                    (click)="openChoosePostImageDialog()"
-                >
-                    Choose image
-                </button>
-                <div>
-                    <button mat-button (click)="onAddBook(stepper)">
-                        {{ editMode ? 'Update' : 'Add' }}
+                <h4>
+                    You are almost done. Please select image and finish adding.
+                </h4>
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="d-block choose-img-btn"
+                        mat-raised-button
+                        (click)="openChoosePostImageDialog()"
+                    >
+                        Choose image
                     </button>
-                    <button mat-button matStepperPrevious>Back</button>
+                </div>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        class="form-btn add-form-btn"
+                        color="primary"
+                        (click)="onAddBook(stepper)"
+                    >
+                        {{ editMode ? 'Update book' : 'Add book' }}
+                    </button>
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        matStepperPrevious
+                        class="form-btn add-form-btn move-btn"
+                    >
+                        Back
+                    </button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>
-
-        <!--            <button-->
-        <!--                type="submit"-->
-        <!--                class="form-button"-->
-        <!--                [disabled]="mainBookInfoForm.invalid"-->
-        <!--            >-->
-        <!--                {{ editMode ? 'Update' : 'Add' }}-->
-        <!--            </button>-->
     </div>
 </div>

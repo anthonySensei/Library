@@ -27,8 +27,4 @@ export class ModalBookCreateDialogComponent {
         this.croppedImage = event.base64;
         this.data.imageBase64 = this.croppedImage;
     }
-
-    onNoClick(): void {
-        this.dialogRef.close();
-    }
 }
