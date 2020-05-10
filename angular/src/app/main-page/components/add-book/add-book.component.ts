@@ -307,7 +307,6 @@ export class AddBookComponent
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
                 this.response = this.bookService.getResponse();
-                console.log(this.response);
                 if (this.response.isSuccessful) {
                     stepper.reset();
                     this.message = this.response.message;
