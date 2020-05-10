@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
 import { ValidationService } from '../../../shared/services/validation.service';
@@ -12,8 +12,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 @Component({
     selector: 'app-registration',
-    templateUrl: './registration.component.html',
-    styleUrls: ['../login/auth.component.sass']
+    templateUrl: './registration.component.html'
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
     regForm: FormGroup;

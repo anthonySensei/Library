@@ -110,16 +110,23 @@
                     Please retype valid password. Ex. Qwerty8_
                 </mat-error>
             </mat-form-field>
-            <button
-                class="form-button"
-                type="submit"
-                [disabled]="regForm.invalid"
-            >
-                Submit
-            </button>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    color="primary"
+                    type="submit"
+                    class="fadeIn fourth form-button"
+                    [disabled]="regForm.invalid"
+                >
+                    Submit
+                </button>
+            </div>
         </form>
         <div class="form-footer">
-            <a class="underlineHover" [routerLink]="'/' + links.LOGIN">
+            <a
+                class="underline-link underline-hover"
+                [routerLink]="'/' + links.LOGIN"
+            >
                 Already have account?
             </a>
         </div>

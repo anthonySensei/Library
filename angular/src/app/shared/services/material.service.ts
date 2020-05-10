@@ -12,7 +12,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     providedIn: 'root'
 })
 export class MaterialService {
-    changeDiscardModalWidth = '50%';
+    changeDiscardModalWidth = '25%';
 
     constructor(
         private snackBar: MatSnackBar,

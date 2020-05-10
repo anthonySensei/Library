@@ -26,7 +26,7 @@ const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: AngularLinks.CREATE_USER,
+        path: AngularLinks.ADD_LIBRARIAN,
         canDeactivate: [CanDeactivateGuard],
         component: AddLibrarianComponent,
         canActivate: [AuthGuard, ManagerGuard]

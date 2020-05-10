@@ -4,7 +4,7 @@ export enum AngularLinks {
     BOOKS = 'books',
     LOANS = 'loans',
     ORDERS = 'orders',
-    CREATE_USER = 'create-user',
+    ADD_LIBRARIAN = 'librarians/add',
     LOGIN = 'login',
     ORDER_REQUESTS = 'order-requests',
     ADD_BOOK = 'add-book',

@@ -60,7 +60,6 @@ import { LineChartModule } from '@swimlane/ngx-charts';
         OwlDateTimeModule,
         LayoutModule,
         MatToolbarModule,
-        MatButtonModule,
         MatSidenavModule,
         MatIconModule,
         MatListModule,

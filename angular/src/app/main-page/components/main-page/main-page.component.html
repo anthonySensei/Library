@@ -1,5 +1,6 @@
 <button
     mat-fab
+    color="primary"
     class="filter-button"
     (click)="drawer.toggle(); toggleFilterButton()"
     [style.display]="showFilterButton ? 'block' : 'none'"
@@ -10,6 +11,7 @@
 <mat-drawer-container class="page-container" autosize>
     <mat-drawer #drawer [disableClose]="true" class="sidenav" mode="over">
         <button
+            mat-button
             class="close-sidenav"
             (click)="toggleFilterButton(); drawer.toggle()"
         >
@@ -91,14 +93,20 @@
             </mat-form-field>
             <div class="button-group">
                 <button
-                    mat-button
+                    mat-stroked-button
+                    color="primary"
                     class="btn filter-form-button"
-                    (click)="booksSubscriptionHandle(); drawer.toggle(); toggleFilterButton()"
+                    (click)="
+                        booksSubscriptionHandle();
+                        drawer.toggle();
+                        toggleFilterButton()
+                    "
                 >
                     <i class="material-icons">search</i>
                 </button>
                 <button
-                    mat-button
+                    mat-stroked-button
+                    color="primary"
                     class="btn filter-form-button"
                     (click)="clearInputs()"
                 >
@@ -115,7 +123,8 @@
         <div style="overflow: hidden;">
             <a
                 *ngIf="isLoggedIn"
-                mat-button
+                mat-stroked-button
+                color="primary"
                 class="btn"
                 style="float: right;"
                 matTooltip="Add book"
@@ -127,7 +136,11 @@
         <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
         <mat-form-field class="department-select">
             <mat-label>Department address</mat-label>
-            <mat-select [(value)]="departmentSelect" (valueChange)="showBooksByDepartment()" required>
+            <mat-select
+                [(value)]="departmentSelect"
+                (valueChange)="showBooksByDepartment()"
+                required
+            >
                 <mat-option value="''">All</mat-option>
                 <mat-option
                     *ngFor="let department of departments"

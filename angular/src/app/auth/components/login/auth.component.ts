@@ -13,8 +13,7 @@ import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-auth',
-    templateUrl: './auth.component.html',
-    styleUrls: ['./auth.component.sass']
+    templateUrl: './auth.component.html'
 })
 export class AuthComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;

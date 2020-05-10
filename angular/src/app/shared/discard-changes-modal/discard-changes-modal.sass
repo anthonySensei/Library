@@ -1,19 +1,17 @@
 @import 'src/styles'
 
-.no-button
-  width: 100px
-  display: inline-block
-  margin-right: 10px
-  padding: 5px
-
-.form-button
-  background: $color-main
-
-  @media screen and (max-width: 576px)
-  .no-button
-    padding: 3px
-    width: 20px
-
-  .form-button
-    width: 50px
-    padding: 5px 10px
+.discard-btn
+  cursor: pointer
+  padding: 8px 0
+  outline: none
+  border-radius: 5px
+  &.discard-yes-btn
+    background-color: $color-main
+    color: $color-background
+    border: none
+  &.discard-no-btn
+    background-color: $color-background
+    color: $color-main
+    border: 1px solid $color-main
+    &:hover
+      background-color: $color-main-light

@@ -11,7 +11,6 @@
     float: right
     width: 20%
 
-
 .header
   text-align: center
   padding: 32px
@@ -30,7 +29,6 @@
 .card:hover
   box-shadow: 0 4px 16px 0 rgba(0,0,0,0.2)
 
-
 .card-container
   display: block
   padding: 5px 10px
@@ -38,7 +36,6 @@
 .text-location
   font-size: 1.2em
   color: rgba(0, 0, 0, 0.4)
-
 
 .btn
   margin-left: 0.5%
@@ -51,16 +48,14 @@
   border-top-left-radius: 0
   border-bottom-left-radius: 0
 
-
 .close-sidenav
   top: 5px
-  right: 5px
+  right: 0
   position: absolute
   border-radius: 5px
 
 .image-container
   position: relative
-
 
 .card-image
   opacity: 1
@@ -78,7 +73,6 @@
   transform: translate(-50%, -50%)
   -ms-transform: translate(-50%, -50%)
 
-
 .card-details-link
   font-size: 16px
   padding: 12px 24px
@@ -87,26 +81,22 @@
   color: $color-main
   text-align: center
   text-decoration: none
-  background-color: rgba(0, 0, 0, 0.9)
+  background-color: $color-dark
 
 .card-details-link:hover, .card-details-link:active
   background-color: $color-main
-  color: $color-white
-
+  color: $color-background
 
 .card-details
   display: block
   margin-top: 5px
 
-
 .characteristic-name
-  color: rgba(0, 0, 0, 0.8)
-
+  color: $color-dark
 
 .image-container:hover .card-image
   -webkit-filter: blur(2px) grayscale(100%)
   filter: blur(2px) grayscale(100%)
-
 
 .image-container:hover .data-on-image
   opacity: 1
@@ -114,50 +104,12 @@
 .sidenav
   padding: 20px
 
-
 .page-container
   min-width: 100%
   min-height: 91%
 
-.posts-select-filter-container
-  width: 80%
-  margin: 0 auto 0 auto
-
-
-.posts-select-filter
-  left: 0
-
-
 .d-block
   display: block
-
-.status-tape:after
-  content: ""
-  position: absolute
-  display: block
-  background: inherit
-  width: 0
-  top: 0
-  right: 0
-  height: 0
-  border-style: solid
-  border-width: 0 50px 50px 0
-
-.status-tape.unconfirmed:after
-  border-color: transparent $color-warn transparent transparent
-
-.status-tape.rejected:after
-  border-color: transparent $color-danger transparent transparent
-
-.status-tape.approved:after
-  border-color: transparent $color-success transparent transparent
-
-
-::ng-deep snack-bar-container.main-page-snackbar
-  background: $color-white
-  border: 2px solid $color-main
-  color: $color-main
-
 
 @media screen and (max-width: 576px)
   .flex-container > .card
