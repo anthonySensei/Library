@@ -20,7 +20,6 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
-import { log } from 'util';
 
 export interface DialogData {
     imageBase64: string;
@@ -33,9 +32,9 @@ export interface DialogData {
 })
 export class AddBookComponent
     implements OnInit, OnDestroy, CanComponentDeactivate {
-    addBookForm: FormGroup;
+    mainBookInfoForm: FormGroup;
+    bookDetailsForm: FormGroup;
 
-    isCreated: boolean;
     message: string;
     error: string;
     response;
@@ -44,14 +43,19 @@ export class AddBookComponent
     userSubscription: Subscription;
     paramsSubscription: Subscription;
 
+    departmentsFetchSubscription: Subscription;
+    departmentChangeSubscription: Subscription;
+    authorsFetchSubscription: Subscription;
+    authorsChangeSubscription: Subscription;
+    genresFetchSubscription: Subscription;
+    genresChangeSubscription: Subscription;
+
     user: User;
 
     editMode = false;
     bookId: number;
 
-    isUpdated: boolean;
     isLoading = false;
-    isDone = false;
 
     discard = false;
     discardChanged = new Subject<boolean>();
@@ -63,7 +67,6 @@ export class AddBookComponent
     genres: Genre[];
 
     snackbarDuration = 5000;
-    snackBarMessage = 'Book was added successfully';
 
     choosePostImageWidth = '70%';
     addOptionModalWidth = '30%';
@@ -73,13 +76,6 @@ export class AddBookComponent
     oldPassword: string;
     newPassword: string;
     retypeNewPassword: string;
-
-    departmentsFetchSubscription: Subscription;
-    departmentChangeSubscription: Subscription;
-    authorsFetchSubscription: Subscription;
-    authorsChangeSubscription: Subscription;
-    genresFetchSubscription: Subscription;
-    genresChangeSubscription: Subscription;
 
     constructor(
         private bookService: BookService,
@@ -93,7 +89,6 @@ export class AddBookComponent
     ngOnInit() {
         this.initializeForm();
         this.handleParams();
-        this.handleResponse();
         this.handleUser();
         this.selectsValuesSubscriptionHandle();
         if (this.editMode) {
@@ -129,36 +124,18 @@ export class AddBookComponent
     }
 
     initializeForm() {
-        this.addBookForm = new FormGroup({
+        this.mainBookInfoForm = new FormGroup({
             isbn: new FormControl(null, [Validators.required]),
             name: new FormControl(null, [Validators.required]),
+            quantity: new FormControl(null, [Validators.required]),
+            address: new FormControl(null, [Validators.required])
+        });
+        this.bookDetailsForm = new FormGroup({
             author: new FormControl(null, [Validators.required]),
             genre: new FormControl(null, [Validators.required]),
             year: new FormControl(null, [Validators.required]),
-            description: new FormControl(null, [Validators.required]),
-            address: new FormControl(null, [Validators.required])
+            description: new FormControl(null, [Validators.required])
         });
-    }
-
-    handleResponse() {
-        this.responseSubscription = this.bookService.responseChanged.subscribe(
-            (response: {
-                responseCode: string;
-                data: {
-                    bookCreated: boolean;
-                    message: string;
-                };
-            }) => {
-                if (response.data) {
-                    this.response = response;
-                    if (this.response.data.bookCreated) {
-                        this.isCreated = this.response.data.bookCreated;
-                    } else if (this.response.data.bookUpdated) {
-                        this.isUpdated = this.response.data.bookUpdated;
-                    }
-                }
-            }
-        );
     }
 
     handleUser() {
@@ -178,7 +155,15 @@ export class AddBookComponent
     }
 
     hasError(controlName: string, errorName: string) {
-        return this.addBookForm.controls[controlName].hasError(errorName);
+        if (this.mainBookInfoForm.controls[controlName]) {
+            return this.mainBookInfoForm.controls[controlName].hasError(
+                errorName
+            );
+        } else if (this.bookDetailsForm.controls[controlName]) {
+            return this.bookDetailsForm.controls[controlName].hasError(
+                errorName
+            );
+        }
     }
 
     openChoosePostImageDialog(): void {
@@ -203,42 +188,76 @@ export class AddBookComponent
         });
 
         dialogRef.afterClosed().subscribe(result => {
+            this.response = null;
             if (!result) {
                 return;
             }
             if (result.option === 'author') {
                 this.bookService
                     .addAuthorHttp({ id: null, name: result.name })
-                    .subscribe();
-                this.bookService.fetchAllAuthorsHttp();
-                this.authors = this.bookService.getAuthors();
+                    .subscribe(() => {
+                        this.response = this.bookService.getResponse();
+                        if (this.response.isSuccessful) {
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Success,
+                                this.snackbarDuration
+                            );
+                            this.bookService.fetchAllAuthorsHttp().subscribe();
+                            this.authors = this.bookService.getAuthors();
+                        } else {
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Danger,
+                                this.snackbarDuration
+                            );
+                        }
+                    });
             } else {
                 this.bookService
                     .addGenreHttp({ id: null, name: result.name })
-                    .subscribe();
-                this.bookService.fetchAllGenresHttp();
-                this.authors = this.bookService.getGenres();
+                    .subscribe(() => {
+                        this.response = this.bookService.getResponse();
+                        if (this.response.isSuccessful) {
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Success,
+                                this.snackbarDuration
+                            );
+                            this.bookService.fetchAllGenresHttp().subscribe();
+                            this.genres = this.bookService.getGenres();
+                        } else {
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Danger,
+                                this.snackbarDuration
+                            );
+                        }
+                    });
             }
         });
     }
 
-    onAddBook() {
-        const isbn = this.addBookForm.value.isbn;
-        const name = this.addBookForm.value.name;
-        const author = this.addBookForm.value.author;
-        const genre = this.addBookForm.value.genre;
-        const year = this.addBookForm.value.year;
-        const description = this.addBookForm.value.description;
-        const departmentAddress = this.addBookForm.value.address;
-        if (this.addBookForm.invalid) {
+    onAddBook(stepper) {
+        const isbn = this.mainBookInfoForm.value.isbn;
+        const name = this.mainBookInfoForm.value.name;
+        const authorId = this.bookDetailsForm.value.author;
+        const genreId = this.bookDetailsForm.value.genre;
+        const year = this.bookDetailsForm.value.year;
+        const quantity = this.mainBookInfoForm.value.quantity;
+        const description = this.bookDetailsForm.value.description;
+        const departmentId = this.mainBookInfoForm.value.address;
+        if (this.mainBookInfoForm.invalid) {
             return;
         }
         const department = this.departments.find(
-            dpr => dpr.address === departmentAddress
+            dpr => dpr.id === departmentId
         );
+        const author = this.authors.find(aut => aut.id === authorId);
+        const genre = this.genres.find(gen => gen.id === genreId);
         if (!this.imageToUploadBase64 && !this.editMode) {
             this.openSnackBar(
-                'Image was not filterName',
+                'Image was not selected',
                 SnackBarClasses.Warn,
                 this.snackbarDuration
             );
@@ -254,30 +273,36 @@ export class AddBookComponent
             null,
             description,
             year,
+            quantity,
             department
         );
         if (this.editMode) {
         } else {
-            this.addBookToLibrary(book, this.imageToUploadBase64);
+            this.addBookToLibrary(book, this.imageToUploadBase64, stepper);
         }
     }
 
-    addBookToLibrary(book: Book, imageToUploadBase64: string) {
+    addBookToLibrary(book: Book, imageToUploadBase64: string, stepper) {
         this.bookService
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
-                if (this.isCreated) {
-                    this.isDone = true;
-                    this.message = this.response.data.message;
+                this.response = this.bookService.getResponse();
+                console.log(this.response);
+                if (this.response.isSuccessful) {
+                    stepper.reset();
+                    this.message = this.response.message;
                     this.router.navigate(['/books']);
                     this.openSnackBar(
-                        this.snackBarMessage,
+                        this.message,
                         SnackBarClasses.Success,
                         this.snackbarDuration
                     );
                 } else {
-                    this.isDone = false;
-                    this.error = this.response.data.message;
+                    stepper.selectedIndex = 0;
+                    this.error = this.response.message;
+                    this.mainBookInfoForm.controls.isbn.setErrors({
+                        incorrect: true
+                    });
                     return false;
                 }
             });
@@ -288,7 +313,7 @@ export class AddBookComponent
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.addBookForm.touched && !this.isDone) {
+        if (this.mainBookInfoForm.touched && !this.response.isSuccessful) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged

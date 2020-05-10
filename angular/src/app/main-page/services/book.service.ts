@@ -13,9 +13,9 @@ import { Genre } from '../models/genre.model';
     providedIn: 'root'
 })
 export class BookService {
-    BOOKS_URL = 'http://localhost:3000/book-details';
+    BOOK_DETAILS_URL = 'http://localhost:3000/book-details';
+    BOOKS_URL = 'http://localhost:3000/books';
 
-    GET_ALL_BOOKS_URL = 'http://localhost:3000/books';
     LOAN_BOOK_URL = 'http://localhost:3000/loan-book';
 
     GET_DEPARTMENT_URL = 'http://localhost:3000/departments';
@@ -91,6 +91,9 @@ export class BookService {
         this.response = response;
         this.responseChanged.next(this.response);
     }
+    getResponse() {
+        return this.response;
+    }
 
     fetchAllBooksHttp(
         page: number,
@@ -106,7 +109,7 @@ export class BookService {
         headers.append('Content-type', 'application/json');
         return this.http
             .get(
-                `${this.GET_ALL_BOOKS_URL}?page=${page}` +
+                `${this.BOOKS_URL}?page=${page}` +
                     `&yFrom=${yearFrom}` +
                     `&yTo=${yearTo}` +
                     `&author=${author}` +
@@ -171,7 +174,7 @@ export class BookService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.BOOKS_URL}?bookId=${bookId}`, { headers })
+            .get(`${this.BOOK_DETAILS_URL}?bookId=${bookId}`, { headers })
             .pipe(
                 map((response: any) => {
                     this.setBook(response.data.book);
@@ -187,23 +190,23 @@ export class BookService {
         formData.append('book_data', JSON.stringify(book));
         return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(
             map((response: any) => {
-                this.setResponse(response);
+                this.setResponse(response.data);
             })
         );
     }
 
     addAuthorHttp(author: Author) {
-        return this.http.post(this.AUTHORS_URL, {author}).pipe(
+        return this.http.post(this.AUTHORS_URL, { author }).pipe(
             map((response: any) => {
-                this.setResponse(response);
+                this.setResponse(response.data);
             })
         );
     }
 
     addGenreHttp(genre: Genre) {
-        return this.http.post(this.GENRES_URL, {genre}).pipe(
+        return this.http.post(this.GENRES_URL, { genre }).pipe(
             map((response: any) => {
-                this.setResponse(response);
+                this.setResponse(response.data);
             })
         );
     }

@@ -29,15 +29,24 @@ exports.getAuthors = async (req, res) => {
 exports.addAuthor = async (req, res) => {
     const authorName = req.body.author.name;
     try {
-        await Author.create({ name: authorName });
-        const data = {
-            isCreated: true,
-            message: successMessages.AUTHOR_SUCCESSFULLY_CREATED
-        };
-        return helper.responseHandle(res, 200, data);
+        const count = await Author.count({ where: { name: authorName } });
+        if (count > 0) {
+            const data = {
+                isSuccessful: false,
+                message: errorMessages.AUTHOR_EXIST
+            };
+            return helper.responseHandle(res, 500, data);
+        } else {
+            await Author.create({ name: authorName });
+            const data = {
+                isSuccessful: true,
+                message: successMessages.AUTHOR_SUCCESSFULLY_CREATED
+            };
+            return helper.responseHandle(res, 200, data);
+        }
     } catch (error) {
         const data = {
-            isCreated: false,
+            isSuccessful: false,
             message: errorMessages.SOMETHING_WENT_WRONG
         };
         return helper.responseHandle(res, 500, data);

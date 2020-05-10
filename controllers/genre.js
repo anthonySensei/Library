@@ -28,15 +28,24 @@ exports.getGenres = async (req, res) => {
 exports.addGenre = async (req, res) => {
     const genreName = req.body.genre.name;
     try {
-        await Genre.create({ name: genreName });
-        const data = {
-            isCreated: true,
-            message: successMessages.GENRE_SUCCESSFULLY_CREATED 
-        };
-        return helper.responseHandle(res, 200, data);
+        const count = await Genre.count({ where: { name: genreName } });
+        if (count > 0) {
+            const data = {
+                isSuccessful: false,
+                message: errorMessages.GENRE_EXIST
+            };
+            return helper.responseHandle(res, 500, data);
+        } else {
+            await Genre.create({ name: genreName });
+            const data = {
+                isSuccessful: true,
+                message: successMessages.GENRE_SUCCESSFULLY_CREATED
+            };
+            return helper.responseHandle(res, 200, data);
+        }
     } catch (error) {
         const data = {
-            isCreated: false,
+            isSuccessful: false,
             message: errorMessages.SOMETHING_WENT_WRONG
         };
         return helper.responseHandle(res, 500, data);

@@ -19,6 +19,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatStepperModule } from '@angular/material/stepper';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -32,7 +33,6 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
 
 import { LineChartModule } from '@swimlane/ngx-charts';
-
 
 @NgModule({
     declarations: [LoadingSpinnerComponent, DiscardChangesModalComponent],
@@ -69,7 +69,8 @@ import { LineChartModule } from '@swimlane/ngx-charts';
         MatSortModule,
         MatPaginatorModule,
         MatTabsModule,
-        LineChartModule
+        LineChartModule,
+        MatStepperModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

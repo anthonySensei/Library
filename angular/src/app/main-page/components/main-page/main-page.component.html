@@ -81,7 +81,7 @@
             <mat-form-field class="d-block">
                 <mat-label>Department address</mat-label>
                 <mat-select [(value)]="departmentSelect" required>
-                    <mat-option value="''">-</mat-option>
+                    <mat-option value="''">All</mat-option>
                     <mat-option
                         *ngFor="let department of departments"
                         [value]="department.id"
@@ -128,7 +128,7 @@
         <mat-form-field class="department-select">
             <mat-label>Department address</mat-label>
             <mat-select [(value)]="departmentSelect" (valueChange)="showBooksByDepartment()" required>
-                <mat-option value="''">-</mat-option>
+                <mat-option value="''">All</mat-option>
                 <mat-option
                     *ngFor="let department of departments"
                     [value]="department.id"

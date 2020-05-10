@@ -13,5 +13,8 @@ module.exports = {
     OLD_PASSWORD_EQUEL_NEW_PASSWORD:
         'Password has not changed. Old password equels to new password',
     DIFFERENT_PASSWORDS: 'Passwords are different!',
-    WRONG_OLD_PASSWORD: 'Wrong old password'
+    WRONG_OLD_PASSWORD: 'Wrong old password',
+    AUTHOR_EXIST: 'Author with this name has already existed.',
+    GENRE_EXIST: 'Genre has already existed.',
+    ISBN_EXIST: 'Book with this isbn exist in this department'
 };
