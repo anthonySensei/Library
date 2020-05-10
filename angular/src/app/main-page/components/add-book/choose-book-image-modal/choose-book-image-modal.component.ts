@@ -1,6 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
 import { ImageCroppedEvent } from 'ngx-image-cropper';
+
 import { DialogData } from '../add-book.component';
 
 @Component({
@@ -24,9 +26,5 @@ export class ModalBookCreateDialogComponent {
     imageCropped(event: ImageCroppedEvent) {
         this.croppedImage = event.base64;
         this.data.imageBase64 = this.croppedImage;
-    }
-
-    onNoClick(): void {
-        this.dialogRef.close();
     }
 }

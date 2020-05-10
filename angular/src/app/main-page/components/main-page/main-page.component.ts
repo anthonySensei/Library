@@ -3,6 +3,9 @@ import { ActivatedRoute, Params } from '@angular/router';
 
 import { AuthService } from '../../../auth/services/auth.service';
 import { BookService } from '../../services/book.service';
+import { DepartmentService } from '../../services/department.service';
+import { AuthorService } from '../../services/author.service';
+import { GenreService } from '../../services/genre.service';
 
 import { Book } from '../../models/book.model';
 
@@ -59,6 +62,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private bookService: BookService,
+        private authorService: AuthorService,
+        private departmentService: DepartmentService,
+        private genreService: GenreService,
         private route: ActivatedRoute
     ) {}
 
@@ -107,28 +113,28 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.isLoggedIn = isLoggedIn;
             }
         );
-        this.departmentsFetchSubscription = this.bookService
+        this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentChangeSubscription = this.bookService.departmentsChanged.subscribe(
+        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
             departments => {
                 this.departments = departments;
                 this.departmentSelect = departments[0].id;
                 this.booksSubscriptionHandle();
             }
         );
-        this.authorsFetchSubscription = this.bookService
+        this.authorsFetchSubscription = this.authorService
             .fetchAllAuthorsHttp()
             .subscribe();
-        this.authorsChangeSubscription = this.bookService.authorsChanged.subscribe(
+        this.authorsChangeSubscription = this.authorService.authorsChanged.subscribe(
             authors => {
                 this.authors = authors;
             }
         );
-        this.genresFetchSubscription = this.bookService
+        this.genresFetchSubscription = this.genreService
             .fetchAllGenresHttp()
             .subscribe();
-        this.genresChangeSubscription = this.bookService.genresChanged.subscribe(
+        this.genresChangeSubscription = this.genreService.genresChanged.subscribe(
             genres => {
                 this.genres = genres;
             }

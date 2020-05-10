@@ -197,7 +197,7 @@ exports.getBook = (req, res) => {
         });
 };
 
-exports.addBook = (req, res) => {
+exports.addBook = async (req, res) => {
     const imageBase64 = req.body.base64;
     if (!imageBase64) {
         return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
@@ -213,32 +213,47 @@ exports.addBook = (req, res) => {
 
     status = statuses.FREE;
 
-    let newBook = new Book({
-        isbn: bookData.isbn,
-        name: bookData.name,
-        author: bookData.author,
-        genre: bookData.genre,
-        year: bookData.year,
-        description: bookData.description,
-        status: status,
-        image: filepath,
-        departmentId: bookData.department.id
-    });
+    try {
+        const count = await Book.count({
+            where: {
+                isbn: bookData.isbn,
+                departmentId: bookData.department.id
+            }
+        });
 
-    newBook
-        .save()
-        .then(book => {
+        if (count > 0) {
             const data = {
-                bookCreated: true,
+                isSuccessful: false,
+                message: errorMessages.ISBN_EXIST
+            };
+            return helper.responseHandle(res, 200, data);
+        } else {
+            const newBook = new Book({
+                isbn: bookData.isbn,
+                name: bookData.name,
+                authorId: bookData.author.id,
+                genreId: bookData.genre.id,
+                year: bookData.year,
+                quantity: bookData.quantity,
+                description: bookData.description,
+                status: status,
+                image: filepath,
+                departmentId: bookData.department.id
+            });
+
+            await newBook.save();
+
+            const data = {
+                isSuccessful: true,
                 message: successMessages.BOOK_SUCCESSFULLY_CREATED
             };
             return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.SOMETHING_WENT_WRONG
-            );
-        });
+        }
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
 };

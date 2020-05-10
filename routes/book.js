@@ -10,7 +10,7 @@ router.get('/books', bookController.getAllBooks);
 router.get('/book-details', bookController.getBook);
 
 router.post(
-    '/add-book',
+    '/books',
     passport.authenticate('jwt', { session: false }),
     bookController.addBook
 );

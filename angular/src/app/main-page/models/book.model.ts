@@ -12,6 +12,7 @@ export class Book {
     status: string;
     description: string;
     year: number;
+    quantity: number;
     department: Department;
 
     constructor(
@@ -24,6 +25,7 @@ export class Book {
         status: string,
         description: string,
         year: number,
+        quantity: number,
         department: Department
     ) {
         this.bookId = id;
@@ -35,6 +37,7 @@ export class Book {
         this.status = status;
         this.description = description;
         this.year = year;
+        this.quantity = quantity;
         this.department = department;
     }
 }

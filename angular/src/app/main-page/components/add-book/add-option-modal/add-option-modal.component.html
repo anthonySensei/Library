@@ -1,0 +1,40 @@
+<form class="add-option-form">
+    <h4>Add {{ data.option === 'author' ? 'author' : 'genre' }}</h4>
+    <mat-divider></mat-divider>
+    <mat-form-field class="option-input">
+        <mat-label>{{
+            data.option === 'author' ? 'Author' : 'Genre'
+        }}</mat-label>
+        <input
+            matInput
+            placeholder="Ex. Anthony"
+            name="option"
+            [(ngModel)]="data.name"
+        />
+        <mat-error *ngIf="!data.name">
+            {{ data.option === 'author' ? 'Author' : 'Genre' }} is
+            <strong>required</strong>
+        </mat-error>
+    </mat-form-field>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn"
+            color="primary"
+            type="submit"
+            (click)="dialogRef.close(data)"
+            [disabled]="!data.name"
+        >
+            Add
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn"
+            color="primary"
+            type="button"
+            (click)="dialogRef.close()"
+        >
+            Cancel
+        </button>
+    </div>
+</form>
