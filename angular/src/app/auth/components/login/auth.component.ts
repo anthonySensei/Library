@@ -10,6 +10,7 @@ import { MaterialService } from '../../../shared/services/material.service';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { Response } from '../../../main-page/models/response.model';
 
 @Component({
     selector: 'app-auth',
@@ -19,11 +20,8 @@ export class AuthComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;
 
     error: string = null;
-    message: string = null;
 
-    loggedIn = false;
-
-    JSONSubscription: Subscription;
+    response: Response;
     authSubscription: Subscription;
 
     snackbarDuration = 5000;
@@ -43,7 +41,6 @@ export class AuthComponent implements OnInit, OnDestroy {
         document.title = 'Login';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
-        this.subscriptionsHandler();
     }
 
     initializeForm() {
@@ -55,21 +52,6 @@ export class AuthComponent implements OnInit, OnDestroy {
             ]),
             password: new FormControl('', [Validators.required])
         });
-    }
-
-    subscriptionsHandler() {
-        this.JSONSubscription = this.authService.authJSONResponseChanged.subscribe(
-            (JSONResponse: {
-                responseCode: number;
-                data: {
-                    loggedIn: boolean;
-                    message: string;
-                };
-            }) => {
-                this.message = JSONResponse.data.message;
-                this.loggedIn = JSONResponse.data.loggedIn;
-            }
-        );
     }
 
     hasError(controlName: string, errorName: string) {
@@ -87,20 +69,20 @@ export class AuthComponent implements OnInit, OnDestroy {
             password
         };
         this.authSubscription = this.authService.login(user).subscribe(() => {
-            if (!this.loggedIn) {
+            this.response = this.authService.getResponse();
+            if (!this.response.isSuccessful) {
                 this.loginForm.patchValue({
                     email,
                     password: ''
                 });
-                this.error = this.message;
+                this.error = this.response.message;
                 return false;
             } else {
-                this.authService.setIsLoggedIn(this.loggedIn);
+                this.authService.setIsLoggedIn(this.response.isSuccessful);
                 this.router.navigate([AngularLinks.HOME]);
                 this.loginForm.reset();
-                this.message = 'You was logged in successfully';
                 this.openSnackBar(
-                    this.message,
+                    'You was logged in successfully',
                     SnackBarClasses.Success,
                     this.snackbarDuration
                 );
@@ -113,7 +95,6 @@ export class AuthComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.JSONSubscription.unsubscribe();
         if (this.authSubscription) {
             this.authSubscription.unsubscribe();
         }

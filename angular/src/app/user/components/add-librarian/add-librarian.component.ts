@@ -10,6 +10,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { LibrarianService } from '../../services/librarian.service';
+import { Response } from '../../../main-page/models/response.model';
 
 @Component({
     selector: 'app-create-user',
@@ -18,17 +19,16 @@ import { LibrarianService } from '../../services/librarian.service';
 export class AddLibrarianComponent implements OnInit, OnDestroy {
     createUserForm: FormGroup;
 
-    isAdded: boolean;
-    isDone = false;
     discard = false;
 
     JSONSubscription: Subscription;
     createUserSubscription: Subscription;
 
     error: string = null;
-    message: string = null;
 
     snackbarDuration = 5000;
+
+    response: Response;
 
     emailValidation;
 
@@ -46,7 +46,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         document.title = 'Add librarian';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
-        this.JSONHandle();
     }
 
     initializeForm() {
@@ -57,21 +56,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
                 Validators.pattern(this.emailValidation)
             ])
         });
-    }
-
-    JSONHandle() {
-        this.JSONSubscription = this.authService.authJSONResponseChanged.subscribe(
-            (JSONResponse: {
-                responseCod: string;
-                data: {
-                    created: boolean;
-                    message: string;
-                };
-            }) => {
-                this.message = JSONResponse.data.message;
-                this.isAdded = JSONResponse.data.created;
-            }
-        );
     }
 
     onCreateUser() {
@@ -85,17 +69,16 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         this.createUserSubscription = this.librarianService
             .addLibrarianHttp(email)
             .subscribe(() => {
-                if (this.isAdded === false) {
-                    this.isDone = false;
-                    this.error = this.message;
+                this.response = this.authService.getResponse();
+                if (!this.response.isSuccessful) {
+                    this.error = this.response.message;
                     this.createUserForm.controls.email.setErrors({
                         incorrect: true
                     });
                 } else {
-                    this.isDone = true;
                     this.router.navigate(['/books']);
                     this.openSnackBar(
-                        this.message,
+                        this.response.message,
                         SnackBarClasses.Success,
                         this.snackbarDuration
                     );
@@ -104,7 +87,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.createUserForm.touched && !this.isDone) {
+        if (this.createUserForm.touched) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged
@@ -124,7 +107,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.JSONSubscription.unsubscribe();
         if (this.createUserSubscription) {
             this.createUserSubscription.unsubscribe();
         }

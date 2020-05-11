@@ -14,6 +14,7 @@ const passport = require('passport');
 const userStatus = require('../constants/userStatuses');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
+const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
 
@@ -26,41 +27,42 @@ const charsetOfGeneratedPassword =
     'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 exports.postLoginUser = (req, res, next) => {
-    passport.authenticate('local', function (err, user) {
+    passport.authenticate('local', async (err, user) => {
         if (err) {
             const data = {
-                created: false,
+                isSuccessful: false,
                 message: err
             };
             return helper.responseHandle(res, 401, data);
         }
         if (!user) {
             const data = {
-                created: false,
+                isSuccessful: false,
                 message: errorMessages.WRONG_PASSWORD_OR_EMAIL
             };
             return helper.responseHandle(res, 401, data);
         } else {
             let profileImage;
             if (!user.role) {
-                Role.findOne({ where: { librarian_id: user.id } })
-                    .then(role => {
-                        profileImage = handleProfileImage(user.profile_image);
-                        handleAuth(
-                            profileImage,
-                            req,
-                            user,
-                            res,
-                            role.dataValues.role
-                        );
-                    })
-                    .catch(err => {
-                        const data = {
-                            created: false,
-                            message: errorMessages.SOMETHING_WENT_WRONG
-                        };
-                        return helper.responseHandle(res, 401, data);
+                try {
+                    const role = await Role.findOne({
+                        where: { librarian_id: user.id }
                     });
+                    profileImage = handleProfileImage(user.profile_image);
+                    handleAuth(
+                        profileImage,
+                        req,
+                        user,
+                        res,
+                        role.dataValues.role
+                    );
+                } catch (error) {
+                    const data = {
+                        isSuccessful: false,
+                        message: errorMessages.SOMETHING_WENT_WRONG
+                    };
+                    return helper.responseHandle(res, 401, data);
+                }
             } else {
                 profileImage = handleProfileImage(user.profile_image);
                 handleAuth(profileImage, req, user, res, user.role);
@@ -91,7 +93,7 @@ const handleAuth = (profileImage, req, user, res, role) => {
         });
         jwt.verify(token, secret_key);
         const data = {
-            loggedIn: true,
+            isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOGGED_IN,
             user: userData,
             token: 'Bearer ' + token,
@@ -110,18 +112,19 @@ exports.getLogout = (req, res) => {
     const data = {
         responseCod: 200,
         data: {
-            loggedOut: true,
+            isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOGGED_OUT
         }
     };
     return helper.responseHandle(res, 200, data);
 };
 
-exports.postCreateUser = (req, res, next) => {
+exports.postCreateUser = async (req, res, next) => {
     let creatingStudentByLibrarian = false;
-    let email = req.body.email;
-    let readerTicket = req.body.readerTicket;
-    let userRole = req.body.userRole;
+    const email = req.body.email;
+    const readerTicket = req.body.readerTicket;
+    const name = req.body.name;
+    const userRole = roles.STUDENT;
 
     let password;
     if (req.body.password) {
@@ -130,128 +133,87 @@ exports.postCreateUser = (req, res, next) => {
         password = generatePassword();
         creatingStudentByLibrarian = true;
     }
-    if (!email || !password || readerTicket) {
+    if (!email || !password || !readerTicket || !name) {
         const data = {
-            created: false,
+            isSuccessful: false,
             message: errorMessages.EMPTY_FIELDS
         };
         return helper.responseHandle(res, 400, data);
     }
+    try {
+        const stCount = await Student.count({
+            where: { reader_ticket: readerTicket.toString() }
+        });
+        if (stCount > 0) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.READER_TICKET_ALREADY_IN_USE
+            );
+        } else {
+            const libCount = await Librarian.count({ where: { email: email } });
 
-    Student.count({ where: { reader_ticket: readerTicket.toString() } })
-        .then(rCount => {
-            if (rCount > 0) {
+            if (libCount > 0) {
                 return helper.responseErrorHandle(
                     res,
                     400,
-                    errorMessages.READER_TICKET_ALREADY_IN_USE
+                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
                 );
             } else {
-                Librarian.count({ where: { email: email } })
-                    .then(count => {
-                        if (count > 0) {
-                            return helper.responseErrorHandle(
-                                res,
-                                400,
-                                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                            );
-                        } else {
-                            Student.count({ where: { email: email } })
-                                .then(sCount => {
-                                    if (sCount > 0) {
-                                        return helper.responseErrorHandle(
-                                            res,
-                                            400,
-                                            errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                                        );
-                                    } else {
-                                        let status = userStatus.NEW;
-                                        const registrationToken = uuidv4();
+                const emStCount = Student.count({ where: { email: email } });
 
-                                        bcrypt.genSalt(10, (err, salt) => {
-                                            bcrypt.hash(
-                                                password,
-                                                salt,
-                                                (err, hash) => {
-                                                    if (
-                                                        creatingStudentByLibrarian
-                                                    ) {
-                                                        status =
-                                                            userStatus.ACTIVATED;
-                                                        createStudentByManager(
-                                                            userRole,
-                                                            email,
-                                                            readerTicket,
-                                                            password,
-                                                            status,
-                                                            hash,
-                                                            res
-                                                        );
-                                                    } else {
-                                                        createStudent(
-                                                            userRole,
-                                                            email,
-                                                            readerTicket,
-                                                            registrationToken,
-                                                            password,
-                                                            hash,
-                                                            status,
-                                                            res
-                                                        );
-                                                    }
-                                                }
-                                            );
-                                        });
-                                    }
-                                })
-                                .catch(err =>
-                                    helper.responseHandle(
-                                        res,
-                                        400,
-                                        errorMessages.SOMETHING_WENT_WRONG
-                                    )
-                                );
-                        }
-                    })
-                    .catch(err =>
-                        helper.responseHandle(
-                            res,
-                            400,
-                            errorMessages.SOMETHING_WENT_WRONG
-                        )
+                if (emStCount > 0) {
+                    return helper.responseErrorHandle(
+                        res,
+                        400,
+                        errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
                     );
+                } else {
+                    let status = userStatus.NEW;
+                    const registrationToken = uuidv4();
+
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(password, salt, (err, hash) => {
+                            if (creatingStudentByLibrarian) {
+                                status = userStatus.ACTIVATED;
+                                createStudent(
+                                    userRole,
+                                    email,
+                                    name,
+                                    readerTicket,
+                                    null,
+                                    password,
+                                    hash,
+                                    status,
+                                    res
+                                );
+                            } else {
+                                createStudent(
+                                    userRole,
+                                    email,
+                                    name,
+                                    readerTicket,
+                                    registrationToken,
+                                    password,
+                                    hash,
+                                    status,
+                                    res
+                                );
+                            }
+                        });
+                    });
+                }
             }
-        })
-        .catch(err =>
-            helper.responseHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG)
-        );
+        }
+    } catch (error) {
+        helper.responseHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+    }
 };
 
-const createStudentByManager = (
+const createStudent = async (
     userRole,
     email,
-    readerTicket,
-    registrationToken,
-    password,
-    status,
-    hash,
-    res
-) => {
-    createStudent(
-        userRole,
-        email,
-        readerTicket,
-        null,
-        password,
-        hash,
-        status,
-        res
-    );
-};
-
-const createStudent = (
-    userRole,
-    email,
+    name,
     readerTicket,
     registrationToken,
     password,
@@ -263,6 +225,7 @@ const createStudent = (
     if (registrationToken) {
         newStudent = new Student({
             email: email,
+            name: name,
             reader_ticket: readerTicket,
             registration_token: registrationToken,
             status: status,
@@ -278,25 +241,23 @@ const createStudent = (
     }
     newStudent.password = hash;
 
-    newStudent
-        .save()
-        .then(user => {
-            const data = {
-                created: true,
-                message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED
-            };
-            return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            const data = {
-                created: false,
-                message: errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            };
-            return helper.responseHandle(res, 500, data);
-        });
+    try {
+        await newStudent.save();
+        const data = {
+            isSuccessful: true,
+            message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isSuccessful: false,
+            message: errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+        };
+        return helper.responseHandle(res, 500, data);
+    }
 };
 
-exports.postCheckRegistrationToken = (req, res, next) => {
+exports.postCheckRegistrationToken = async (req, res, next) => {
     const token = req.body.registrationToken;
 
     if (!token) {
@@ -307,34 +268,26 @@ exports.postCheckRegistrationToken = (req, res, next) => {
         return helper.responseHandle(res, 400, data);
     }
 
-    Student.findOne({ where: { registration_token: token } })
-        .then(user => {
-            user.update({
-                status: userStatus.ACTIVATED,
-                registration_token: ''
-            })
-                .then(result => {
-                    const data = {
-                        isActivated: true,
-                        message: successMessages.SUCCESSFULLY_ACTIVATED
-                    };
-                    return helper.responseHandle(res, 200, data);
-                })
-                .catch(err => {
-                    const data = {
-                        isActivated: false,
-                        message: errorMessages.SOMETHING_WENT_WRONG
-                    };
-                    return helper.responseHandle(res, 400, data);
-                });
-        })
-        .catch(err => {
-            const data = {
-                isActivated: false,
-                message: errorMessages.SOMETHING_WENT_WRONG
-            };
-            return helper.responseHandle(res, 400, data);
+    try {
+        const student = await Student.findOne({
+            where: { registration_token: token }
         });
+        await student.update({
+            status: userStatus.ACTIVATED,
+            registration_token: ''
+        });
+        const data = {
+            isActivated: true,
+            message: successMessages.SUCCESSFULLY_ACTIVATED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isActivated: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 400, data);
+    }
 };
 
 function generatePassword() {

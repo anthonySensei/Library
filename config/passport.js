@@ -23,72 +23,54 @@ module.exports = (passport, student, librarian) => {
                 passwordField: fields.PASSWORD,
                 passReqToCallback: true
             },
-            (req, email, password, done) => {
+            async (req, email, password, done) => {
                 const isValidPassword = (userPass, password) => {
                     return bCrypt.compareSync(password, userPass);
                 };
 
-                Librarian.findOne({
-                    where: {
-                        email: email
-                    }
-                })
-                    .then(librarian => {
-                        if (!librarian) {
-                            Student.findOne({
-                                where: {
-                                    email: email,
-                                    status: status.ACTIVATED
-                                }
-                            })
-                                .then(student => {
-                                    if (!student) {
-                                        return done(null, false, {
-                                            message:
-                                                errorMessages.INCORRECT_LOGIN_DATA
-                                        });
-                                    }
-
-                                    if (
-                                        !isValidPassword(
-                                            student.password,
-                                            password
-                                        )
-                                    ) {
-                                        return done(null, false, {
-                                            message:
-                                                errorMessages.INCORRECT_LOGIN_DATA
-                                        });
-                                    }
-                                    const studentInfo = student.get();
-                                    return done(null, {
-                                        ...studentInfo,
-                                        role: roles.STUDENT
-                                    });
-                                })
-                                .catch(err => {
-                                    return done(null, false, {
-                                        message:
-                                            errorMessages.INCORRECT_LOGIN_DATA
-                                    });
-                                });
-                        } else {
-                            if (
-                                !isValidPassword(librarian.password, password)
-                            ) {
-                                return done(null, false, {
-                                    message: errorMessages.INCORRECT_LOGIN_DATA
-                                });
-                            }
-                            const librarianInfo = librarian.get();
-                            return done(null, librarianInfo);
+                try {
+                    const librarian = await Librarian.findOne({
+                        where: {
+                            email: email
                         }
-                    })
-                    .catch(err => {
-                        return done(null, false, {
-                            message: errorMessages.SOMETHING_WENT_WRONG
-                        });
                     });
+                    if (!librarian) {
+                        const student = await Student.findOne({
+                            where: {
+                                email: email,
+                                status: status.ACTIVATED
+                            }
+                        });
+                        if (!student) {
+                            return done(null, false, {
+                                message: errorMessages.INCORRECT_LOGIN_DATA
+                            });
+                        }
+
+                        if (!isValidPassword(student.password, password)) {
+                            return done(null, false, {
+                                message: errorMessages.INCORRECT_LOGIN_DATA
+                            });
+                        }
+                        const studentInfo = student.get();
+                        return done(null, {
+                            ...studentInfo,
+                            role: roles.STUDENT
+                        });
+                    } else {
+                        if (!isValidPassword(librarian.password, password)) {
+                            return done(null, false, {
+                                message: errorMessages.INCORRECT_LOGIN_DATA
+                            });
+                        }
+                        const librarianInfo = librarian.get();
+                        return done(null, librarianInfo);
+                    }
+                } catch (error) {
+                    return done(null, false, {
+                        message: errorMessages.SOMETHING_WENT_WRONG
+                    });
+                }
             }
         )
     );
@@ -99,7 +81,7 @@ module.exports = (passport, student, librarian) => {
                 jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
                 secretOrKey: secret_key
             },
-            function (jwtPayload, cb) {
+            (jwtPayload, cb) => {
                 return Librarian.findOne({ where: { id: jwtPayload.id } })
                     .then(user => {
                         return cb(null, user);
@@ -111,17 +93,20 @@ module.exports = (passport, student, librarian) => {
         )
     );
 
-    passport.serializeUser(function (auth, done) {
+    passport.serializeUser((auth, done) => {
         done(null, auth.id);
     });
 
-    passport.deserializeUser(function (id, done) {
-        Librarian.findOne({ where: { id: id } }).then(function (user) {
-            if (user) {
-                done(null, user.get());
+    passport.deserializeUser((id, done) => {
+        try {
+            const librarian = Librarian.findOne({ where: { id: id } });
+            if (librarian) {
+                done(null, librarian.get());
             } else {
-                done(user.errors, null);
+                done(librarian.errors, null);
             }
-        });
+        } catch (e) {
+            done(librarian.errors, null);
+        }
     });
 };
