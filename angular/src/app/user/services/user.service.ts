@@ -96,7 +96,7 @@ export class UserService {
             .get(this.USER_DATA_URL + '?email=' + userEmail, { headers })
             .pipe(
                 map((response: any) => {
-                    // this.authService.setStudent(response.data.user);
+                    // this.authService.setStudent(response.data.librarian);
                 })
             );
     }

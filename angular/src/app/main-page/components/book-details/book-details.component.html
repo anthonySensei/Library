@@ -5,11 +5,11 @@
             <h2>{{ book.name }}</h2>
             <img class="book-detail-image" src="{{ book.image }}" alt="img" />
             <section class="book-info">
-                <p>Author: {{ book.author }}</p>
+                <p>Author: {{ book.author.name }}</p>
                 <p class="book-description">
                     Description: {{ book.description }}
                 </p>
-                <p>Genre: {{ book.genre }}</p>
+                <p>Genre: {{ book.genre.name }}</p>
                 <p>Year: {{ book.year }}</p>
             </section>
             <section class="additional-info">
@@ -19,14 +19,26 @@
                 </span>
                 <span class="book-status">#{{ book.status }}</span>
             </section>
-            <div class="btn-group" *ngIf="userRole === roles.LIBRARIAN">
+            <div class="btn-group">
                 <button
-                    mat-button
+                    *ngIf="userRole === roles.LIBRARIAN"
+                    mat-stroked-button
+                    color="primary"
                     class="btn btn-green"
                     matTooltip="Loan book"
                     (click)="openLoanBookModal()"
                 >
                     Loan
+                </button>
+                <button
+                    *ngIf="userRole === roles.STUDENT"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn btn-green"
+                    matTooltip="Loan book"
+                    (click)="orderBook()"
+                >
+                    Order
                 </button>
             </div>
         </div>

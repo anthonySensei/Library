@@ -7,7 +7,7 @@ const bookController = require('../controllers/book');
 
 router.get('/books', bookController.getAllBooks);
 
-router.get('/book-details', bookController.getBook);
+router.get('/books/details', bookController.getBook);
 
 router.post(
     '/books',

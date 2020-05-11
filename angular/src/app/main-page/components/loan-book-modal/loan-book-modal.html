@@ -1,5 +1,7 @@
-<div>
-    <mat-form-field style="width: 500px;">
+<form class="modal-form">
+    <h4>Loan book</h4>
+    <mat-divider></mat-divider>
+    <mat-form-field class="modal-input">
         <mat-label>Reader ticket</mat-label>
         <input
             [(ngModel)]="data.readerTicket"
@@ -9,26 +11,25 @@
             placeholder="123213"
         />
     </mat-form-field>
-    <mat-form-field style="width: 500px;">
-        <mat-label>Student name</mat-label>
-        <input
-            [(ngModel)]="data.name"
-            matInput
-            type="text"
-            name="student-name"
-            placeholder="123213"
-        />
-    </mat-form-field>
-</div>
-<div mat-dialog-actions style="float: left;">
-    <button mat-button (click)="onNoClick()">
-        No Thanks
-    </button>
-    <button
-        class="form-button modal-form-submit"
-        type="submit"
-        [mat-dialog-close]="data"
-    >
-        Loan
-    </button>
-</div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn"
+            color="primary"
+            type="submit"
+            (click)="dialogRef.close(data)"
+            [disabled]="!data.readerTicket"
+        >
+            Loan
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn"
+            color="primary"
+            type="button"
+            (click)="dialogRef.close()"
+        >
+            No Thanks
+        </button>
+    </div>
+</form>
