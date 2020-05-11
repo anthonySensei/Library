@@ -38,13 +38,20 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
-                <button type="submit" class="fadeIn fourth form-button">
-                    Log In
-                </button>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        type="submit"
+                        class="fadeIn fourth form-button"
+                    >
+                        Log In
+                    </button>
+                </div>
             </form>
             <div class="form-footer">
                 <a
-                    class="underlineHover"
+                    class="underline-link underline-hover"
                     [routerLink]="'/' + links.REGISTRATION"
                 >
                     Don't have account?

@@ -42,7 +42,7 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
         this.authSubscription = this.authService
             .checkRegistrationToken(this.registrationToken)
             .subscribe(() => {
-                this.response = this.authService.getAuthJSONResponse();
+                this.response = this.authService.getResponse();
                 this.isActivated = this.response.data.isActivated;
                 if (this.isActivated) {
                     this.message = this.response.data.message;

@@ -2,29 +2,31 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../services/auth.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { MaterialService } from '../../../shared/services/material.service';
+
 import { AngularLinks } from '../../../constants/angularLinks';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
+import { Student } from '../../../user/models/student.model';
+import { Response } from '../../../main-page/models/response.model';
+
 @Component({
     selector: 'app-registration',
-    templateUrl: './registration.component.html',
-    styleUrls: ['../login/auth.component.sass']
+    templateUrl: './registration.component.html'
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
-    regForm: FormGroup;
+    mainInfoForm: FormGroup;
+    passwordForm: FormGroup;
 
     error: string = null;
-    message: string = null;
     snackbarDuration = 3000;
 
-    created = false;
+    response: Response;
 
-    JSONSubscription: Subscription;
     authSubscription: Subscription;
 
     emailValidation;
@@ -35,8 +37,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     hideRetypePassword = true;
 
     isPasswordError = false;
-
-    isDone = false;
 
     links = AngularLinks;
     emailError: string;
@@ -54,26 +54,10 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         this.passwordValidation = this.validationService.getPasswordValidation();
         this.readerTicketValidation = this.validationService.getReaderTicketValidation();
         this.formControlInitialization();
-        this.handleJSON();
-    }
-
-    handleJSON() {
-        this.JSONSubscription = this.authService.authJSONResponseChanged.subscribe(
-            (JSONResponse: {
-                responseCod: string;
-                data: {
-                    created: boolean;
-                    message: string;
-                };
-            }) => {
-                this.message = JSONResponse.data.message;
-                this.created = JSONResponse.data.created;
-            }
-        );
     }
 
     formControlInitialization() {
-        this.regForm = new FormGroup({
+        this.mainInfoForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,
                 Validators.email,
@@ -83,6 +67,9 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 Validators.required,
                 Validators.pattern(this.readerTicketValidation)
             ]),
+            name: new FormControl(null, [Validators.required])
+        });
+        this.passwordForm = new FormGroup({
             password: new FormControl(null, [
                 Validators.required,
                 Validators.pattern(this.passwordValidation)
@@ -95,7 +82,11 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     }
 
     hasError(controlName: string, errorName: string) {
-        return this.regForm.controls[controlName].hasError(errorName);
+        if (this.mainInfoForm.controls[controlName]) {
+            return this.mainInfoForm.controls[controlName].hasError(errorName);
+        } else if (this.passwordForm.controls[controlName]) {
+            return this.passwordForm.controls[controlName].hasError(errorName);
+        }
     }
 
     checkIcon(hide: boolean, password: string) {
@@ -108,77 +99,80 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    onRegisterUser() {
-        const email = this.regForm.value.email;
-        const readerTicket = this.regForm.value.reader_ticket;
-        const password = this.regForm.value.password;
-        const password2 = this.regForm.value.password2;
+    onRegisterUser(stepper) {
+        const email = this.mainInfoForm.value.email;
+        const readerTicket = this.mainInfoForm.value.reader_ticket;
+        const name = this.mainInfoForm.value.name;
+        const password = this.passwordForm.value.password;
+        const password2 = this.passwordForm.value.password2;
 
-        if (this.regForm.invalid) {
+        if (this.passwordForm.invalid || this.mainInfoForm.invalid) {
+            stepper.selectedIndex = 0;
             return;
         }
 
-        const user = {
+        const student = new Student(
+            null,
+            name,
             email,
+            null,
             readerTicket,
             password
-        };
+        );
 
         if (!this.validationService.comparePasswords(password, password2)) {
             this.isPasswordError = true;
             this.error = 'Passwords are different';
-            this.regForm.patchValue({
-                email,
+            stepper.selectedIndex = 1;
+            this.passwordForm.patchValue({
                 password: '',
                 password2: ''
             });
-            return false;
-        }
-
-        this.authSubscription = this.authService
-            .registerUserHttp(user)
-            .subscribe(() => {
-                if (!this.created) {
-                    this.isDone = true;
-                    this.isPasswordError = false;
-                    this.regForm.patchValue({
-                        password: '',
-                        password2: ''
-                    });
-
-                    if (
-                        this.message.toLowerCase().split(' ').includes('email')
-                    ) {
-                        this.emailError = this.message;
-                        this.regForm.controls.email.setErrors({
-                            incorrect: true
+        } else {
+            this.authSubscription = this.authService
+                .registerStudentHttp(student)
+                .subscribe(() => {
+                    this.response = this.authService.getResponse();
+                    if (this.response && this.response.isSuccessful) {
+                        this.router.navigate(['/' + this.links.LOGIN]);
+                        this.materialService.openSnackBar(
+                            this.response.message,
+                            SnackBarClasses.Success,
+                            this.snackbarDuration
+                        );
+                        this.isPasswordError = false;
+                        this.passwordForm.patchValue({
+                            password: '',
+                            password2: ''
                         });
                     } else {
-                        this.regForm.controls.reader_ticket.setErrors({
-                            incorrect: true
-                        });
-                        this.error = this.message;
+                        if (this.response.message.toLowerCase().includes('email')) {
+                            stepper.selectedIndex = 0;
+                            this.emailError = this.response.message;
+                            this.mainInfoForm.controls.email.setErrors({
+                                incorrect: true
+                            });
+                        } else if (
+                            this.response.message.toLowerCase().includes('reader')
+                        ) {
+                            stepper.selectedIndex = 0;
+                            this.mainInfoForm.controls.reader_ticket.setErrors({
+                                incorrect: true
+                            });
+                            this.error = this.response.message;
+                        } else {
+                            this.materialService.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Danger,
+                                this.snackbarDuration
+                            );
+                        }
                     }
-                } else {
-                    this.isDone = false;
-                    this.router.navigate(['/' + this.links.LOGIN]);
-                    this.message =
-                        'You have been successfully registered. Please check your email to activate account';
-                    this.openSnackBar(
-                        this.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                }
-            });
-    }
-
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
+                });
+        }
     }
 
     ngOnDestroy(): void {
-        this.JSONSubscription.unsubscribe();
         if (this.authSubscription) {
             this.authSubscription.unsubscribe();
         }

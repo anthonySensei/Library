@@ -103,17 +103,18 @@ exports.getAllBooks = async (req, res) => {
         books.forEach(book => {
             const bookValues = book.dataValues;
             bookValues.image = base64Img.base64Sync(bookValues.image);
-            booksArr.push({
-                bookId: bookValues.id,
-                name: bookValues.name,
-                year: bookValues.year,
-                author: bookValues.author_.dataValues,
-                genre: bookValues.genre_.dataValues,
-                image: bookValues.image,
-                description: bookValues.description,
-                status: bookValues.status,
-                department: bookValues.department_.dataValues
-            });
+            if (bookValues.quantity > 0)
+                booksArr.push({
+                    bookId: bookValues.id,
+                    name: bookValues.name,
+                    year: bookValues.year,
+                    author: bookValues.author_.dataValues,
+                    genre: bookValues.genre_.dataValues,
+                    image: bookValues.image,
+                    description: bookValues.description,
+                    status: bookValues.status,
+                    department: bookValues.department_.dataValues
+                });
         });
         const data = {
             books: booksArr,
@@ -138,7 +139,7 @@ exports.getAllBooks = async (req, res) => {
     }
 };
 
-exports.getBook = (req, res) => {
+exports.getBook = async (req, res) => {
     const bookId = req.query.bookId;
     let condition = { id: bookId };
 
@@ -150,51 +151,40 @@ exports.getBook = (req, res) => {
         );
     }
 
-    Book.findOne({ where: condition })
-        .then(book => {
-            Department.findOne({
-                where: { id: book.dataValues.departmentId }
-            })
-                .then(department => {
-                    book.dataValues.image = base64Img.base64Sync(
-                        book.dataValues.image
-                    );
-                    const departmentData = {
-                        address: department.dataValues.address
-                    };
-
-                    const bookData = {
-                        bookId: book.dataValues.id,
-                        name: book.dataValues.name,
-                        author: book.dataValues.author,
-                        genre: book.dataValues.genre,
-                        image: book.dataValues.image,
-                        status: book.dataValues.status,
-                        description: book.dataValues.description,
-                        year: book.dataValues.year,
-                        department: departmentData
-                    };
-                    const data = {
-                        book: bookData,
-                        message: successMessages.SUCCESSFULLY_FETCHED
-                    };
-                    helper.responseHandle(res, 200, data);
-                })
-                .catch(err => {
-                    return helper.responseErrorHandle(
-                        res,
-                        500,
-                        errorMessages.SOMETHING_WENT_WRONG
-                    );
-                });
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.SOMETHING_WENT_WRONG
-            );
+    try {
+        const book = await Book.findOne({
+            where: condition,
+            include: [{ model: Author }, { model: Genre }]
         });
+        const bookValues = book.dataValues;
+        const department = await Department.findOne({
+            where: { id: book.dataValues.departmentId }
+        });
+        book.dataValues.image = base64Img.base64Sync(book.dataValues.image);
+
+        const bookData = {
+            bookId: bookValues.id,
+            name: bookValues.name,
+            author: bookValues.author_.dataValues,
+            genre: bookValues.genre_.dataValues,
+            image: bookValues.image,
+            status: bookValues.status,
+            description: bookValues.description,
+            year: bookValues.year,
+            department: department.dataValues
+        };
+        const data = {
+            book: bookData,
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
 };
 
 exports.addBook = async (req, res) => {

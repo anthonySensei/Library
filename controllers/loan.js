@@ -55,7 +55,7 @@ exports.getLoans = async (modelId, modelName) => {
                     model: model
                 },
                 { model: Book },
-                {model: Department}
+                { model: Department }
             ],
             order: [['loan_time', 'ASC']]
         });
@@ -66,7 +66,8 @@ exports.getLoans = async (modelId, modelName) => {
 
                 if (modelName === models.LIBRARIAN)
                     info = {
-                        studentTicketReader: loanData.student_.dataValues.reader_ticket
+                        studentTicketReader:
+                            loanData.student_.dataValues.reader_ticket
                     };
                 else if (modelName === models.STUDENT)
                     info = {
@@ -302,10 +303,9 @@ exports.getTopFive = (req, res) => {
         });
 };
 
-exports.loanBook = (req, res) => {
+exports.loanBook = async (req, res) => {
     const studentTReader = req.body.studentTicketReader;
-    const studentName = req.body.studentName;
-    const librarianId = req.body.librarianId;
+    const librarianEmail = req.body.librarianEmail;
     const bookId = req.body.bookId;
     const loanTime = req.body.time;
     if (!req.body) {
@@ -315,63 +315,50 @@ exports.loanBook = (req, res) => {
             errorMessages.SOMETHING_WENT_WRONG
         );
     }
-    Student.findOne({
-        where: {
-            reader_ticket: studentTReader
-        }
-    })
-        .then(user => {
-            if (!user.dataValues.name) {
-                user.update({ name: studentName });
+    try {
+        const student = await Student.findOne({
+            where: {
+                reader_ticket: studentTReader
             }
-            const userId = user.dataValues.id;
-            Librarian.findOne({
-                where: {
-                    id: librarianId
-                },
-                include: {
-                    model: Department
-                }
-            })
-                .then(librarian => {
-                    const bookLoan = new Loan({
-                        loan_time: loanTime,
-                        studentId: userId,
-                        bookId: bookId,
-                        librarianId: librarianId,
-                        departmentId:
-                            librarian.dataValues.department_.dataValues.id
-                    });
-                    bookLoan
-                        .save()
-                        .then(loan =>
-                            helper.responseHandle(
-                                res,
-                                200,
-                                successMessages.SUCCESSFULLY_FETCHED
-                            )
-                        )
-                        .catch(err =>
-                            helper.responseErrorHandle(
-                                res,
-                                500,
-                                errorMessages.CANNOT_FETCH
-                            )
-                        );
-                })
-                .catch(err =>
-                    helper.responseErrorHandle(
-                        res,
-                        500,
-                        errorMessages.CANNOT_FETCH
-                    )
-                );
-        })
-        .catch(err => {
+        });
+        if (!student) {
             return helper.responseErrorHandle(
                 res,
                 400,
                 errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
             );
+        }
+
+        const librarian = await Librarian.findOne({
+            where: {
+                email: librarianEmail
+            },
+            include: {
+                model: Department
+            }
         });
+        const bookLoan = new Loan({
+            loan_time: loanTime,
+            studentId: student.dataValues.id,
+            bookId: bookId,
+            librarianId: librarian.dataValues.id,
+            departmentId: librarian.dataValues.department_.dataValues.id
+        });
+        await bookLoan.save();
+        const book = await Book.findOne({ where: { id: bookId } });
+        await book.update({ quantity: book.dataValues.quantity - 1 });
+
+        const data = {
+            isSuccessful: true,
+            message: successMessages.SUCCESSFULLY_LOANED
+        };
+
+        helper.responseHandle(res, 200, data);
+    } catch (error) {
+        helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
 };

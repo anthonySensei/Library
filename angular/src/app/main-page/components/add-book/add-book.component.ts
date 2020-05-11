@@ -31,8 +31,7 @@ export interface DialogData {
 
 @Component({
     selector: 'app-create-post',
-    templateUrl: './add-book.component.html',
-    styleUrls: ['../../../auth/components/login/auth.component.sass']
+    templateUrl: './add-book.component.html'
 })
 export class AddBookComponent
     implements OnInit, OnDestroy, CanComponentDeactivate {

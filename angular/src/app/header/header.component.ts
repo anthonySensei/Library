@@ -8,7 +8,7 @@ import { AuthService } from '../auth/services/auth.service';
 
 import { AngularLinks } from '../constants/angularLinks';
 import { UserRoles } from '../constants/userRoles';
-import { Librarian } from '../user/models/librarian.model';
+
 import { User } from '../auth/models/user.model';
 
 @Component({

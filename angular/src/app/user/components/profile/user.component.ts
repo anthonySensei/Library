@@ -124,19 +124,19 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     userHandle() {
-        // this.userSubscription = this.authService.studentChanged.subscribe(user => {
-        //     if (user) {
-        //         this.user = user;
-        //         this.oldEmail = user.email;
-        //         this.oldName = user.name;
+        // this.userSubscription = this.authService.studentChanged.subscribe(librarian => {
+        //     if (librarian) {
+        //         this.librarian = librarian;
+        //         this.oldEmail = librarian.email;
+        //         this.oldName = librarian.name;
         //         this.profileForm.patchValue({
-        //             name: user.name,
-        //             email: user.email
+        //             name: librarian.name,
+        //             email: librarian.email
         //         });
         //     }
         //     this.isLoading = false;
         // });
-        // this.user = this.authService.getStudent();
+        // this.librarian = this.authService.getStudent();
         this.getUserSubscription = this.userService
             .getProfileHttp(this.user.email)
             .subscribe();

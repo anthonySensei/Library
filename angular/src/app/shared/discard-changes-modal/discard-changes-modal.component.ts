@@ -14,12 +14,4 @@ export class DiscardChangesModalComponent {
     ) {
         dialogRef.disableClose = true;
     }
-
-    onNoClick(): void {
-        this.dialogRef.close(false);
-    }
-
-    onConfirm(): void {
-        this.dialogRef.close(true);
-    }
 }

@@ -3,13 +3,14 @@
 $font-main: Robotom, "Helvetica Neue", sans-serif
 
 $color-main: #ffc107
+$color-main-light: #fff8e1
 $color-main-darker: #ff9400
 $color-main-less-saturation: #b16400
-$color-white: rgb(255, 255, 255)
-$color-black: rgb(0, 0, 0)
-$color-success: rgb(10, 172, 0)
-$color-warn: rgb(241, 128, 0)
-$color-danger: rgb(195, 4, 21)
+$color-background: #FFFFFF
+$color-dark: #000000
+$color-success: #0AAC00
+$color-warn: #F18000
+$color-danger: #C30415
 
 html, body
   margin: 0
@@ -27,7 +28,7 @@ body
 .text-center
   text-align: center
 
-.choose-image
+.w-78-center
   width: 78%
   margin: 10px auto
   &.image-section
@@ -53,7 +54,7 @@ body
   margin-top: 7%
   margin-bottom: 5%
   border-radius: 10px 10px 10px 10px
-  background: $color-white
+  background: $color-background
   width: 40%
   position: relative
   padding: 0
@@ -67,6 +68,12 @@ body
   text-align: center
   border-radius: 0 0 10px 10px
 
+.modal-form
+  text-align: center
+  .modal-input
+    width: 80%
+
+
 
 /* form input */
 
@@ -78,6 +85,10 @@ body
 
 
 .btn-group
+  .form-button
+    margin: 0 auto 15px
+    width: 25%
+    transition: all 0.7s ease-in-out
   .form-btn
     width: 38%
     &.move-btn
@@ -89,38 +100,11 @@ body
   .choose-img-btn
      margin-bottom: 10px
 
-
-.form-button
-  display: block
-  background-color: rgb(128, 128, 128)
-  margin: 0 auto 15px auto
-  border: none
-  cursor: pointer
-  color: $color-white
-  padding: 15px 80px
-  text-align: center
-  text-decoration: none
-  text-transform: uppercase
-  font-size: 13px
-  box-shadow: 0 10px 30px 0 lightgray
-  border-radius: 5px
-  transition: all 0.7s ease-in-out
-
-
 .button-group
   .filter-form-button
     width: 43%
     margin-right: 5%
     display: inline-block
-
-form.ng-valid .form-button:disabled, .form-button:disabled
-  cursor: not-allowed
-  background-color: rgb(145, 145, 145)
-  box-shadow: 0 10px 30px 0 rgb(211, 211, 211)
-
-
-form.ng-valid .form-button:disabled:hover, .form-button:disabled:hover
-  background-color: rgb(128, 128, 128)
 
 // cancel button in button
 
@@ -144,14 +128,14 @@ form.ng-valid .form-button:disabled:hover, .form-button:disabled:hover
 
 /* Link animation */
 
-a
+.underline-link
   color: $color-main
   text-decoration: none
   display: inline-block
   font-weight: 400
 
 
-.underlineHover:after
+.underline-hover:after
   display: block
   left: 0
   bottom: -10px
@@ -161,12 +145,10 @@ a
   content: ""
   transition: width 0.2s
 
+.underline-hover:hover
+  color: $color-dark
 
-.underlineHover:hover
-  color: rgb(13, 13, 13)
-
-
-.underlineHover:hover:after
+.underline-hover:hover:after
   width: 100%
 
 //Table
@@ -190,7 +172,7 @@ tr.element-row:not(.expanded-row):active
 .element-row td
   border-bottom-width: 0
 
-// user-table-expand
+// librarian-table-expand
 
 .user-table-expand-detail
   overflow: hidden
@@ -214,8 +196,6 @@ tr.element-row:not(.expanded-row):active
     .user-link-button
       display: block
       color: $color-main
-
-
 
   .profile-image
     max-height: 112.5px
@@ -329,57 +309,24 @@ tr.element-row:not(.expanded-row):active
   margin: 2rem 0 2rem 0
   text-align: center
 
-
-.pagination a
-  text-decoration: none
-  color: $color-main
-  padding: 0.5rem
-  border: 1px solid $color-main
-  margin: 0 1rem 0 1rem
-
-
-.pagination a:hover,
-.pagination a:active,
-.pagination a.pagination-active
-  background-color: $color-main
-  color: $color-white
-
-
 /* Snackbar */
 
 .success-snackbar
-  background: $color-white
+  background: $color-background
   border: 2px solid $color-success
   color: $color-success
 
 
 .warn-snackbar
-  background: $color-white
+  background: $color-background
   border: 2px solid $color-warn
   color: $color-warn
 
 
 .danger-snackbar
-  background: $color-white
+  background: $color-background
   border: 2px solid $color-danger
   color: $color-danger
-
-/* Radio buttons */
-.mat-radio-button ~ .mat-radio-button
-  margin-left: 16px
-
-
-.mat-radio-inner-circle
-  background-color: $color-main !important
-
-
-.mat-radio-outer-circle
-  border-color: $color-main !important
-
-
-.mat-radio-outer-circle:active
-  border-color: $color-main !important
-
 
 /* Scrollbar */
 

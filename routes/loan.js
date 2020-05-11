@@ -24,7 +24,7 @@ router.get(
 );
 
 router.post(
-    '/loan-book',
+    '/loans',
     passport.authenticate('jwt', { session: false }),
     loanController.loanBook
 );

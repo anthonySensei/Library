@@ -15,8 +15,4 @@ export class LoanBookModalComponent {
     ) {
         dialogRef.disableClose = true;
     }
-
-    onNoClick(): void {
-        this.dialogRef.close();
-    }
 }

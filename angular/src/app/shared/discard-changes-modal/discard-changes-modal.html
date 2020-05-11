@@ -1,15 +1,19 @@
 <div mat-dialog-content>
-    <p>Would you like to leave?</p>
-    <button type="button" class="no-button" (click)="onNoClick()">
-        Cancel
-    </button>
-
-    <button
-        class="form-button"
-        style="display: inline-block;"
-        type="submit"
-        (click)="onConfirm()"
-    >
-        Yes
-    </button>
+    <h4 class="w-78-center">Would you like to leave?</h4>
+    <div class="btn-group text-center">
+        <button
+            class="form-btn discard-btn discard-yes-btn"
+            type="button"
+            (click)="dialogRef.close(true)"
+        >
+            Yes
+        </button>
+        <button
+            class="form-btn discard-btn discard-no-btn"
+            type="button"
+            (click)="dialogRef.close(false)"
+        >
+            No
+        </button>
+    </div>
 </div>
