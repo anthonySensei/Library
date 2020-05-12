@@ -5,14 +5,17 @@ import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Loan } from '../models/loan.model';
-
 import { Statistic } from '../models/statistic.model';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LoansService {
-    LOANS_URL = 'http://localhost:3000/loans';
+    LOANS_URL = `${serverLink}/loans`;
+    LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
+    LOANS_STATISTIC_TOP_URL = `${this.LOANS_STATISTIC_URL}/top`;
 
     loansChanged = new Subject<Loan[]>();
     loans: Loan[];
@@ -58,12 +61,9 @@ export class LoansService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(
-                `${this.LOANS_URL}/loans-statistic?model=${model}&value=${value}`,
-                {
-                    headers
-                }
-            )
+            .get(`${this.LOANS_STATISTIC_URL}?model=${model}&value=${value}`, {
+                headers
+            })
             .pipe(
                 map((response: any) => {
                     this.setStatistic(response.data.statistic);
@@ -75,7 +75,7 @@ export class LoansService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.LOANS_URL}/loans-statistic/top?model=${model}`, {
+            .get(`${this.LOANS_STATISTIC_TOP_URL}?model=${model}`, {
                 headers
             })
             .pipe(

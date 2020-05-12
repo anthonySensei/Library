@@ -6,14 +6,16 @@ const librarianController = require('../controllers/librarian');
 
 const passport = require('passport');
 
+const librarianUrl = require('../constants/links').LIBRARIANS_LIBRARIAN_URL;
+
 router.get(
-    '/librarians',
+    '',
     passport.authenticate('jwt', { session: false }),
     librarianController.getLibrarians
 );
 
 router.get(
-    '/librarians/librarian',
+    librarianUrl,
     passport.authenticate('jwt', { session: false }),
     librarianController.getLibrarian
 );

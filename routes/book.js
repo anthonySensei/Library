@@ -5,12 +5,14 @@ const passport = require('passport');
 
 const bookController = require('../controllers/book');
 
-router.get('/books', bookController.getAllBooks);
+const booksDetailsUrl = require('../constants/links').BOOKS_DETAILS_URL;
 
-router.get('/books/details', bookController.getBook);
+router.get('', bookController.getAllBooks);
+
+router.get(booksDetailsUrl, bookController.getBook);
 
 router.post(
-    '/books',
+    '',
     passport.authenticate('jwt', { session: false }),
     bookController.addBook
 );

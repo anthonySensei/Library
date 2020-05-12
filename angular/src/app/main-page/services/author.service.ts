@@ -5,13 +5,16 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Author } from '../models/author.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthorService {
-    AUTHORS_URL = 'http://localhost:3000/authors';
+    AUTHORS_URL = `${serverLink}/authors`;
 
     authorsChanged = new Subject<Author[]>();
     authors: Author[] = [];

@@ -5,29 +5,32 @@ const passport = require('passport');
 
 const loanController = require('../controllers/loan');
 
+const loansStatisticUrl = require('../constants/links').LOANS_STATISTIC_URL;
+const loansStatisticTopUrl = require('../constants/links')
+    .LOANS_STATISTIC_TOP_URL;
+
 router.get(
-    '/loans',
+    '',
     passport.authenticate('jwt', { session: false }),
     loanController.getAllLoans
 );
 
 router.get(
-    '/loans/loans-statistic',
+    loansStatisticUrl,
     passport.authenticate('jwt', { session: false }),
     loanController.getLoansStatistic
 );
 
 router.get(
-    '/loans/loans-statistic/top',
+    loansStatisticUrl + loansStatisticTopUrl,
     passport.authenticate('jwt', { session: false }),
     loanController.getTopFive
 );
 
 router.post(
-    '/loans',
+    '',
     passport.authenticate('jwt', { session: false }),
     loanController.loanBook
 );
-
 
 module.exports = router;

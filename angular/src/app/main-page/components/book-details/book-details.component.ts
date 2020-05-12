@@ -11,6 +11,7 @@ import { BookService } from '../../services/book.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { MaterialService } from '../../../shared/services/material.service';
 import { OrderService } from '../../../user/services/orders.service';
+import { ResponseService } from '../../../shared/services/response.service';
 
 import { LoanBookModalComponent } from '../loan-book-modal/loan-book-modal.component';
 
@@ -20,7 +21,6 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { User } from '../../../auth/models/user.model';
 import { Response } from '../../models/response.model';
-import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-book-details',

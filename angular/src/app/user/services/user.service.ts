@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Student } from '../models/student.model';
 import { map } from 'rxjs/operators';
-import { AuthService } from '../../auth/services/auth.service';
-import { OrderService } from './orders.service';
+
+import { Student } from '../models/student.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
-    PROFILE_URL = 'http://localhost:3000/my-account';
+    PROFILE_URL = `${serverLink}/my-account`;
+    PROFILE_UPDATE_IMAGE_URL = `${this.PROFILE_URL}/update-profile-image`;
 
     request = {
         user: null,
@@ -67,7 +70,7 @@ export class UserService {
         formData.append('base64', base64Image);
         formData.append('user', JSON.stringify(user));
         return this.http
-            .post(`${this.PROFILE_URL}/update-profile-image`, formData, {
+            .post(`${this.PROFILE_UPDATE_IMAGE_URL}`, formData, {
                 headers
             })
             .pipe(

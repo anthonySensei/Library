@@ -5,10 +5,10 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { UserRoles } from '../../constants/userRoles';
+import { serverLink } from '../../constants/serverLink';
 
 import { User } from '../models/user.model';
 import { Student } from '../../user/models/student.model';
-import { Response } from '../../main-page/models/response.model';
 import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
@@ -32,11 +32,11 @@ export class AuthService {
 
     tokenExpirationTimer;
 
-    REGISTRATION_URL = 'http://localhost:3000/registration';
-    LOGIN_URL = 'http://localhost:3000/login';
-    LOGOUT_URL = 'http://localhost:3000/logout';
+    REGISTRATION_URL = `${serverLink}/registration`;
+    LOGIN_URL = `${serverLink}/login`;
+    LOGOUT_URL = `${serverLink}/logout`;
     CHECK_REGISTRATION_TOKEN_URL =
-        'http://localhost:3000/check-registration-token';
+        `${serverLink}/check-registration-token`;
 
     constructor(
         private http: HttpClient,

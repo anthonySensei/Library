@@ -5,13 +5,16 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Genre } from '../models/genre.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GenreService {
-    GENRES_URL = 'http://localhost:3000/genres';
+    GENRES_URL = `${serverLink}/genres`;
 
     genresChanged = new Subject<Genre[]>();
     genres: Genre[] = [];

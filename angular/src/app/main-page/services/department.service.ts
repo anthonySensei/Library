@@ -3,14 +3,18 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+
 import { Department } from '../models/department.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DepartmentService {
-    DEPARTMENTS_URL = 'http://localhost:3000/departments';
+    DEPARTMENTS_URL = `${serverLink}/departments`;
 
     departmentsChanged = new Subject<Department[]>();
     departments: Department[] = [];

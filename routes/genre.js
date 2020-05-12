@@ -5,9 +5,9 @@ const passport = require('passport');
 
 const genreController = require('../controllers/genre');
 
-router.get('/genres', genreController.getGenres);
+router.get('', genreController.getGenres);
 router.post(
-    '/genres',
+    '',
     passport.authenticate('jwt', { session: false }),
     genreController.addGenre
 );

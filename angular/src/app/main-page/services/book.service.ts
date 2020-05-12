@@ -5,16 +5,19 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class BookService {
-    BOOKS_URL = 'http://localhost:3000/books';
-    BOOK_DETAILS_URL = `${this.BOOKS_URL}/details`;
+    BOOKS_URL = `${serverLink}/books`;
+    BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
 
-    LOAN_BOOK_URL = `http://localhost:3000/loans`;
+    LOAN_BOOK_URL = `${serverLink}/loans`;
 
     booksChanged = new Subject<Book[]>();
     books: Book[] = [];
@@ -82,7 +85,7 @@ export class BookService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.BOOK_DETAILS_URL}?bookId=${bookId}`, { headers })
+            .get(`${this.BOOKS_DETAILS_URL}?bookId=${bookId}`, { headers })
             .pipe(
                 map((response: any) => {
                     this.setBook(response.data.book);
