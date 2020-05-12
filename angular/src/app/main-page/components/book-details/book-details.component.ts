@@ -112,7 +112,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 time: new Date()
             };
             this.bookService.loanBookHttp(loanData).subscribe(() => {
-                this.response = this.bookService.getResponse();
+                this.response = this.responseService.getResponse();
                 if (this.response.isSuccessful) {
                     this.openSnackBar(
                         this.response.message,

@@ -2,19 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Student } from '../models/student.model';
-
-import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../../auth/services/auth.service';
-import { log } from 'util';
+import { OrderService } from './orders.service';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
-    USER_DATA_URL = 'http://localhost:3000/my-account';
-    UPDATE_PROFILE_IMAGE_URL =
-        'http://localhost:3000/my-account/update-profile-image';
+    PROFILE_URL = 'http://localhost:3000/my-account';
 
     request = {
         user: null,
@@ -30,19 +27,10 @@ export class UserService {
         }
     };
 
-    response;
-    responseChanged = new Subject();
-
-    constructor(private http: HttpClient, private authService: AuthService) {}
-
-    setResponse(response) {
-        this.response = response;
-        this.responseChanged.next(this.response);
-    }
-
-    getResponse() {
-        return this.response;
-    }
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     updateUserData(user: Student, changed: string, passwordObject?) {
         const headers = new HttpHeaders();
@@ -65,13 +53,11 @@ export class UserService {
             this.request.changeData.changePassword = true;
         }
         headers.append('Content-type', 'application/json');
-        return this.http
-            .post(this.USER_DATA_URL, this.request, { headers })
-            .pipe(
-                map(response => {
-                    this.setResponse(response);
-                })
-            );
+        return this.http.post(this.PROFILE_URL, this.request, { headers }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 
     updateProfileImage(base64Image: string, user: Student) {
@@ -81,10 +67,12 @@ export class UserService {
         formData.append('base64', base64Image);
         formData.append('user', JSON.stringify(user));
         return this.http
-            .post(this.UPDATE_PROFILE_IMAGE_URL, formData, { headers })
+            .post(`${this.PROFILE_URL}/update-profile-image`, formData, {
+                headers
+            })
             .pipe(
                 map((response: any) => {
-                    this.setResponse(response);
+                    this.responseService.setResponse(response.data);
                 })
             );
     }
@@ -93,11 +81,7 @@ export class UserService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(this.USER_DATA_URL + '?email=' + userEmail, { headers })
-            .pipe(
-                map((response: any) => {
-                    // this.authService.setStudent(response.data.user);
-                })
-            );
+            .get(this.PROFILE_URL + '?email=' + userEmail, { headers })
+            .pipe(map((response: any) => {}));
     }
 }

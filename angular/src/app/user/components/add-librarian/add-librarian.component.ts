@@ -11,6 +11,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { LibrarianService } from '../../services/librarian.service';
 import { Response } from '../../../main-page/models/response.model';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-create-user',
@@ -37,6 +38,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private librarianService: LibrarianService,
+        private responseService: ResponseService,
         private router: Router,
         private materialService: MaterialService,
         private validationService: ValidationService
@@ -69,7 +71,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         this.createUserSubscription = this.librarianService
             .addLibrarianHttp(email)
             .subscribe(() => {
-                this.response = this.authService.getResponse();
+                this.response = this.responseService.getResponse();
                 if (!this.response.isSuccessful) {
                     this.error = this.response.message;
                     this.createUserForm.controls.email.setErrors({

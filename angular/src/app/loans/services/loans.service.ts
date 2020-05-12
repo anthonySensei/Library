@@ -12,9 +12,7 @@ import { Statistic } from '../models/statistic.model';
     providedIn: 'root'
 })
 export class LoansService {
-    GET_BOOK_LOANS_URL = 'http://localhost:3000/loans';
-    GET_LOANS_STATISTIC_URL = 'http://localhost:3000/loans-statistic';
-    GET_TOP5_LOANS_URL = 'http://localhost:3000/loans-top';
+    LOANS_URL = 'http://localhost:3000/loans';
 
     loansChanged = new Subject<Loan[]>();
     loans: Loan[];
@@ -46,7 +44,7 @@ export class LoansService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_BOOK_LOANS_URL}`, {
+            .get(`${this.LOANS_URL}`, {
                 headers
             })
             .pipe(
@@ -61,7 +59,7 @@ export class LoansService {
         headers.append('Content-type', 'application/json');
         return this.http
             .get(
-                `${this.GET_LOANS_STATISTIC_URL}?model=${model}&value=${value}`,
+                `${this.LOANS_URL}/loans-statistic?model=${model}&value=${value}`,
                 {
                     headers
                 }
@@ -77,7 +75,7 @@ export class LoansService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_TOP5_LOANS_URL}?model=${model}`, {
+            .get(`${this.LOANS_URL}/loans-statistic/top?model=${model}`, {
                 headers
             })
             .pipe(

@@ -8,8 +8,7 @@ import { Subject } from 'rxjs';
     providedIn: 'root'
 })
 export class StudentService {
-    GET_STUDENTS_URL = 'http://localhost:3000/students';
-    GET_STUDENT_URL = 'http://localhost:3000/student';
+    STUDENTS_URL = 'http://localhost:3000/students';
 
     students: Student[] = [];
     studentsChanged = new Subject<Student[]>();
@@ -40,7 +39,7 @@ export class StudentService {
     getStudentsHttp() {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
-        return this.http.get(this.GET_STUDENTS_URL, { headers }).pipe(
+        return this.http.get(this.STUDENTS_URL, { headers }).pipe(
             map((response: any) => {
                 this.setStudents(response.data.students);
             })
@@ -51,7 +50,7 @@ export class StudentService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_STUDENT_URL}?studentId=${studentId}`, { headers })
+            .get(`${this.STUDENTS_URL}/student?studentId=${studentId}`, { headers })
             .pipe(
                 map((response: any) => {
                     this.setStudent(response.data.student);

@@ -13,7 +13,7 @@ router.get(
 );
 
 router.get(
-    '/librarian',
+    '/librarians/librarian',
     passport.authenticate('jwt', { session: false }),
     librarianController.getLibrarian
 );

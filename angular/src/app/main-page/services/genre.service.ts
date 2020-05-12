@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Genre } from '../models/genre.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,13 +13,13 @@ import { Genre } from '../models/genre.model';
 export class GenreService {
     GENRES_URL = 'http://localhost:3000/genres';
 
-    responseChanged = new Subject();
-    response;
-
     genresChanged = new Subject<Genre[]>();
     genres: Genre[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setGenres(genres: Genre[]) {
         this.genres = genres;
@@ -28,15 +29,6 @@ export class GenreService {
     getGenres() {
         return this.genres;
     }
-
-    setResponse(response) {
-        this.response = response;
-        this.responseChanged.next(this.response);
-    }
-    getResponse() {
-        return this.response;
-    }
-
 
     fetchAllGenresHttp() {
         const headers = new HttpHeaders();
@@ -55,7 +47,7 @@ export class GenreService {
     addGenreHttp(genre: Genre) {
         return this.http.post(this.GENRES_URL, { genre }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
             })
         );
     }

@@ -11,6 +11,7 @@ import { MaterialService } from '../../../shared/services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { Response } from '../../../main-page/models/response.model';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-auth',
@@ -33,6 +34,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
+        private responseService: ResponseService,
         private materialService: MaterialService,
         private router: Router
     ) {}
@@ -69,7 +71,7 @@ export class AuthComponent implements OnInit, OnDestroy {
             password
         };
         this.authSubscription = this.authService.login(user).subscribe(() => {
-            this.response = this.authService.getResponse();
+            this.response = this.responseService.getResponse();
             if (!this.response.isSuccessful) {
                 this.loginForm.patchValue({
                     email,

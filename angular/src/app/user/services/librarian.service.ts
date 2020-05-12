@@ -5,17 +5,13 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Librarian } from '../models/librarian.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LibrarianService {
-    ADD_LIBRARIAN_URL = 'http://localhost:3000/add-librarian';
-    GET_LIBRARIANS_URL = 'http://localhost:3000/librarians';
-    GET_LIBRARIAN_URL = 'http://localhost:3000/librarian';
-
-    authJSONResponseChanged = new Subject<{}>();
-    authJSONResponse = {};
+    LIBRARIANS_URL = 'http://localhost:3000/librarians';
 
     librarians: Librarian[] = [];
     librariansChanged = new Subject<Librarian[]>();
@@ -23,16 +19,10 @@ export class LibrarianService {
     librarian: Librarian;
     librarianChanged = new Subject<Librarian>();
 
-    constructor(private http: HttpClient) {}
-
-    setAuthJSONResponse(response) {
-        this.authJSONResponse = response;
-        this.authJSONResponseChanged.next(this.authJSONResponse);
-    }
-
-    getAuthJSONResponse() {
-        return this.authJSONResponse;
-    }
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setLibrarians(librarians: Librarian[]) {
         this.librarians = librarians;
@@ -55,9 +45,9 @@ export class LibrarianService {
     addLibrarianHttp(email: string) {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
-        return this.http.post(this.ADD_LIBRARIAN_URL, email, { headers }).pipe(
+        return this.http.post(this.LIBRARIANS_URL, email, { headers }).pipe(
             map((response: any) => {
-                this.setAuthJSONResponse(response);
+                this.responseService.setResponse(response.data);
             })
         );
     }
@@ -65,7 +55,7 @@ export class LibrarianService {
     getLibrariansHttp() {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
-        return this.http.get(this.GET_LIBRARIANS_URL, { headers }).pipe(
+        return this.http.get(this.LIBRARIANS_URL, { headers }).pipe(
             map((response: any) => {
                 this.setLibrarians(response.data.librarians);
             })
@@ -76,7 +66,7 @@ export class LibrarianService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_LIBRARIAN_URL}?librarianId=${librarianId}`, {
+            .get(`${this.LIBRARIANS_URL}/librarian?librarianId=${librarianId}`, {
                 headers
             })
             .pipe(

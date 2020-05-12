@@ -12,13 +12,13 @@ router.get(
 );
 
 router.get(
-    '/loans-statistic',
+    '/loans/loans-statistic',
     passport.authenticate('jwt', { session: false }),
     loanController.getLoansStatistic
 );
 
 router.get(
-    '/loans-top',
+    '/loans/loans-statistic/top',
     passport.authenticate('jwt', { session: false }),
     loanController.getTopFive
 );
