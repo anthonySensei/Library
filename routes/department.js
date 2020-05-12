@@ -5,9 +5,6 @@ const passport = require('passport');
 
 const departmentController = require('../controllers/department');
 
-router.get(
-    '/departments',
-    departmentController.getDepartments
-);
+router.get('', departmentController.getDepartments);
 
 module.exports = router;

@@ -5,13 +5,16 @@ import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class OrderService {
-    ORDERS_URL = 'http://localhost:3000/orders';
+    ORDERS_URL = `${serverLink}/orders`;
 
     ordersChanged = new Subject<Order[]>();
     orders: Order[];

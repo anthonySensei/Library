@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 import { map } from 'rxjs/operators';
-import { Student } from '../models/student.model';
 import { Subject } from 'rxjs';
+import { Student } from '../models/student.model';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class StudentService {
-    STUDENTS_URL = 'http://localhost:3000/students';
+    STUDENTS_URL = `${serverLink}/students`;
+    STUDENTS_DETAILS_URL = `${this.STUDENTS_URL}/details`;
 
     students: Student[] = [];
     studentsChanged = new Subject<Student[]>();
@@ -50,7 +54,7 @@ export class StudentService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.STUDENTS_URL}/student?studentId=${studentId}`, { headers })
+            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`, { headers })
             .pipe(
                 map((response: any) => {
                     this.setStudent(response.data.student);

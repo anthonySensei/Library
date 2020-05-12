@@ -6,21 +6,23 @@ const userController = require('../controllers/user');
 
 const passport = require('passport');
 
+const myAccountUpdateProfileImageUrl = require('../constants/links')
+    .MY_ACCOUNT_UPDATE_PROGILE_IMAGE_URL;
+
 router.get(
-    '/my-account',
+    '',
     passport.authenticate('jwt', { session: false }),
     userController.getUser
 );
 
-
 router.post(
-    '/my-account',
+    '',
     passport.authenticate('jwt', { session: false }),
     userController.postUpdateUserData
 );
 
 router.post(
-    '/my-account/update-profile-image',
+    myAccountUpdateProfileImageUrl,
     passport.authenticate('jwt', { session: false }),
     userController.postUpdateProfileImage
 );

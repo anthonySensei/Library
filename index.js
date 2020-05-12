@@ -42,6 +42,16 @@ const Loan = require('./models/loan');
 const Order = require('./models/order');
 const Schedule = require('./models/schedule');
 
+const authorsUrl = require('./constants/links').AUTHORS_URL;
+const departmentsUrl = require('./constants/links').DEPARTMENTS_URL;
+const booksUrl = require('./constants/links').BOOKS_URL;
+const librariansUrl = require('./constants/links').LIBRARIANS_URL;
+const genresUrl = require('./constants/links').GENRES_URL;
+const ordersUrl = require('./constants/links').ORDERS_URL;
+const loansUrl = require('./constants/links').LOANS_URL;
+const studentsUrl = require('./constants/links').STUDENTS_URL;
+const myAccountUrl = require('./constants/links').MY_ACCOUNT_URL;
+
 const helper = require('./helper/createManager');
 
 const app = express();
@@ -104,16 +114,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(bookRoutes);
-app.use(loanRoutes);
-app.use(orderRoutes);
-app.use(userRoutes);
-app.use(studentRoutes);
-app.use(librarianRoutes);
 app.use(authRoutes);
-app.use(departmentRoutes);
-app.use(authorRoutes);
-app.use(genreRoutes);
+app.use(authorsUrl, authorRoutes);
+app.use(booksUrl, bookRoutes);
+app.use(departmentsUrl, departmentRoutes);
+app.use(genresUrl, genreRoutes);
+app.use(librariansUrl, librarianRoutes);
+app.use(loansUrl, loanRoutes);
+app.use(ordersUrl, orderRoutes);
+app.use(studentsUrl, studentRoutes);
+app.use(myAccountUrl, userRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });
 Book.belongsTo(Author);

@@ -5,13 +5,17 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Librarian } from '../models/librarian.model';
+
 import { ResponseService } from '../../shared/services/response.service';
+
+import { serverLink } from '../../constants/serverLink';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LibrarianService {
-    LIBRARIANS_URL = 'http://localhost:3000/librarians';
+    LIBRARIANS_URL = `${serverLink}/librarians`;
+    LIBRARIANS_DETAILS_URL = `${this.LIBRARIANS_URL}/details`;
 
     librarians: Librarian[] = [];
     librariansChanged = new Subject<Librarian[]>();
@@ -66,9 +70,12 @@ export class LibrarianService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.LIBRARIANS_URL}/librarian?librarianId=${librarianId}`, {
-                headers
-            })
+            .get(
+                `${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`,
+                {
+                    headers
+                }
+            )
             .pipe(
                 map((response: any) => {
                     this.setLibrarian(response.data.librarian);

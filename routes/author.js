@@ -5,10 +5,10 @@ const passport = require('passport');
 
 const authorController = require('../controllers/author');
 
-router.get('/authors', authorController.getAuthors);
+router.get('', authorController.getAuthors);
 
 router.post(
-    '/authors',
+    '',
     passport.authenticate('jwt', { session: false }),
     authorController.addAuthor
 );
