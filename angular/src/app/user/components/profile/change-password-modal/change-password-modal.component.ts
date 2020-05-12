@@ -1,34 +1,45 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ChangePasswordDialogData } from './change-password-dialog-data.model';
 import { ValidationService } from '../../../../shared/services/validation.service';
+import { SnackBarClasses } from '../../../../constants/snackBarClasses';
+import { UserService } from '../../../services/user.service';
+import { Subscription } from 'rxjs';
+import { ChangedDataProfile } from '../../../../constants/changedDataProfile';
+import { ResponseService } from '../../../../shared/services/response.service';
+import { Response } from '../../../../main-page/models/response.model';
+import { MaterialService } from '../../../../shared/services/material.service';
 
 @Component({
     selector: 'app-dialog',
-    templateUrl: './change-password-modal.html',
-    styleUrls: ['../user.component.sass']
+    templateUrl: './change-password-modal.html'
 })
-export class ChangePasswordModalComponent implements OnInit {
+export class ChangePasswordModalComponent implements OnInit, OnDestroy {
     passwordsForm: FormGroup;
 
     hideOldPassword = true;
     hideNewPassword = true;
     hideRetypePassword = true;
 
-    oldPassword: string;
-    newPassword: string;
-    retypeNewPassword: string;
-
     passwordValidation;
 
+    updateUserDataSubscription: Subscription;
+
     error: string;
-    message: string;
+    retypePasswordError: string;
+
+    response: Response;
+
+    snackbarDuration = 5000;
 
     constructor(
         private validationService: ValidationService,
+        private userService: UserService,
+        private responseService: ResponseService,
+        private materialService: MaterialService,
         public dialogRef: MatDialogRef<ChangePasswordModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: ChangePasswordDialogData
     ) {
@@ -61,10 +72,52 @@ export class ChangePasswordModalComponent implements OnInit {
         if (this.passwordsForm.invalid) {
             return;
         }
-        this.data.newPassword = newPassword;
-        this.data.oldPassword = oldPassword;
-        this.data.retypeNewPassword = retypeNewPassword;
-        this.dialogRef.close(this.data);
+        if (newPassword !== retypeNewPassword) {
+            this.retypePasswordError = 'Passwords are different';
+            this.passwordsForm.controls.newPassword.setErrors({
+                incorrect: true
+            });
+            this.passwordsForm.controls.retypeNewPassword.setErrors({
+                incorrect: true
+            });
+        }
+        const passwordsObject = {
+            oldPassword,
+            newPassword,
+            retypeNewPassword
+        };
+        this.updateUserDataSubscription = this.userService
+            .updateUserDataHttp(
+                this.data.user,
+                ChangedDataProfile.PASSWORD,
+                passwordsObject
+            )
+            .subscribe(() => {
+                this.response = this.responseService.getResponse();
+                if (this.response.isSuccessful) {
+                    this.dialogRef.close();
+                    this.materialService.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Success,
+                        this.snackbarDuration
+                    );
+                } else {
+                    if (
+                        this.response.message.toLowerCase().includes('password')
+                    ) {
+                        this.error = this.response.message;
+                        this.passwordsForm.controls.oldPassword.setErrors({
+                            incorrect: true
+                        });
+                    } else {
+                        this.materialService.openSnackBar(
+                            this.response.message,
+                            SnackBarClasses.Danger,
+                            this.snackbarDuration
+                        );
+                    }
+                }
+            });
     }
 
     checkIcon(hide: boolean, password: string) {
@@ -81,7 +134,9 @@ export class ChangePasswordModalComponent implements OnInit {
         return this.passwordsForm.controls[controlName].hasError(errorName);
     }
 
-    onNoClick(): void {
-        this.dialogRef.close('nothing');
+    ngOnDestroy(): void {
+        if (this.updateUserDataSubscription) {
+            this.updateUserDataSubscription.unsubscribe();
+        }
     }
 }

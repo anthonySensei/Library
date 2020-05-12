@@ -323,7 +323,7 @@ export class AddBookComponent
                     this.mainBookInfoForm.controls.isbn.setErrors({
                         incorrect: true
                     });
-                    return false;
+                    return;
                 }
             });
     }

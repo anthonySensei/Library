@@ -8,7 +8,7 @@ import { ChangeProfileImageDialogData } from './change-profile-image-dialog-data
 @Component({
     selector: 'app-change-profile-image-dialog',
     templateUrl: './change-profile-image-modal.html',
-    styleUrls: ['../user.component.sass']
+    styleUrls: ['../profile.component.sass']
 })
 export class ChangeProfileImageModalComponent {
     imageChangedEvent: any = '';

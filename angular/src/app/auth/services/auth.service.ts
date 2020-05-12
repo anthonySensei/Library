@@ -35,8 +35,7 @@ export class AuthService {
     REGISTRATION_URL = `${serverLink}/registration`;
     LOGIN_URL = `${serverLink}/login`;
     LOGOUT_URL = `${serverLink}/logout`;
-    CHECK_REGISTRATION_TOKEN_URL =
-        `${serverLink}/check-registration-token`;
+    CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
 
     constructor(
         private http: HttpClient,
@@ -105,20 +104,17 @@ export class AuthService {
             map((response: any) => {
                 this.responseService.setResponse(response.data);
                 let userRole;
-                if (response.data.user && response.data.user.readerTicket) {
-                    this.setUser(response.data.user);
-                    userRole = UserRoles.STUDENT;
-                } else if (response.data.user) {
+                if (response.data.user) {
                     this.setUser(response.data.user);
                     userRole = this.user.role.role;
-                }
-                this.setRole(userRole);
-                if (response.data.user) {
-                    this.setJwtToken(response.data.token);
-                    this.handleAuthentication(
-                        response.data.token,
-                        response.data.tokenExpiresIn
-                    );
+                    this.setRole(userRole);
+                    if (response.data.user) {
+                        this.setJwtToken(response.data.token);
+                        this.handleAuthentication(
+                            response.data.token,
+                            response.data.tokenExpiresIn
+                        );
+                    }
                 }
             })
         );
@@ -138,12 +134,12 @@ export class AuthService {
     }
 
     autoLogin() {
-        const userData = JSON.parse(localStorage.getItem('userData'));
+        const user = JSON.parse(localStorage.getItem('userData'));
         const tokenData: {
             token: string;
             expirationDate: string;
         } = JSON.parse(localStorage.getItem('tokenData'));
-        if (!userData) {
+        if (!user) {
             return;
         }
 
@@ -152,24 +148,7 @@ export class AuthService {
         }
 
         if (tokenData.token) {
-            let user;
-            if (userData.readerTicket) {
-                user = {
-                    name: userData.name,
-                    email: userData.email,
-                    profileImage: userData.profileImage,
-                    readerTicket: userData.readerTicket
-                };
-                this.setRole(UserRoles.STUDENT);
-            } else {
-                user = {
-                    name: userData.name,
-                    email: userData.email,
-                    profileImage: userData.profileImage,
-                    role: userData.role
-                };
-                this.setRole(user.role.role);
-            }
+            this.setRole(user.role.role);
             this.setUser(user);
             this.setJwtToken(tokenData.token);
             const expirationDuration =

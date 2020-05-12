@@ -57,11 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 this.user = user;
                 this.isLoggedIn = !!user;
                 if (user) {
-                    if (user.readerTicket) {
-                        this.role = UserRoles.STUDENT;
-                    } else {
-                        this.role = user.role.role;
-                    }
+                    this.role = this.user.role.role;
                 } else {
                     this.role = null;
                 }

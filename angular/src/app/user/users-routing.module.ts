@@ -5,7 +5,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { ManagerGuard } from './guards/manager.guard';
 import { LibrarianGuard } from './guards/librarian.guard';
 
-import { UserComponent } from './components/profile/user.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { AddLibrarianComponent } from './components/add-librarian/add-librarian.component';
 import { StudentsComponent } from './components/students/students.component';
 import { StudentDetailsComponent } from './components/student-details/student-details.component';
@@ -22,7 +22,7 @@ const routes: Routes = [
     {
         path: AngularLinks.MY_ACCOUNT,
         canDeactivate: [CanDeactivateGuard],
-        component: UserComponent,
+        component: ProfileComponent,
         canActivate: [AuthGuard]
     },
     {
