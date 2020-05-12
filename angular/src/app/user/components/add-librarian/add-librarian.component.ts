@@ -43,7 +43,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        document.title = 'Add librarian';
+        document.title = 'Add user';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
     }

@@ -5,17 +5,21 @@ import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class OrderService {
-    GET_BOOK_ORDERS_URL = 'http://localhost:3000/orders';
+    ORDERS_URL = 'http://localhost:3000/orders';
 
     ordersChanged = new Subject<Order[]>();
     orders: Order[];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setOrders(orders: Order[]) {
         this.orders = orders;
@@ -30,7 +34,7 @@ export class OrderService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GET_BOOK_ORDERS_URL}`, {
+            .get(`${this.ORDERS_URL}`, {
                 headers
             })
             .pipe(
@@ -38,5 +42,13 @@ export class OrderService {
                     this.setOrders(response.data.orders);
                 })
             );
+    }
+
+    orderBookHttp(orderInfo) {
+        return this.http.post(this.ORDERS_URL, orderInfo).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 }

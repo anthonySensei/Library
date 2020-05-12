@@ -10,15 +10,17 @@ import { Book } from '../../models/book.model';
 import { BookService } from '../../services/book.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { MaterialService } from '../../../shared/services/material.service';
+import { OrderService } from '../../../user/services/orders.service';
 
 import { LoanBookModalComponent } from '../loan-book-modal/loan-book-modal.component';
 
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
-
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
+
 import { User } from '../../../auth/models/user.model';
 import { Response } from '../../models/response.model';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-book-details',
@@ -28,7 +30,7 @@ import { Response } from '../../models/response.model';
 export class BookDetailsComponent implements OnInit, OnDestroy {
     roles = UserRoles;
     book: Book;
-    librarian: User;
+    user: User;
 
     bookId: number;
     snackbarDuration = 5000;
@@ -51,7 +53,9 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         private router: Router,
         private bookService: BookService,
         private authService: AuthService,
+        private responseService: ResponseService,
         private materialService: MaterialService,
+        private orderService: OrderService,
         public dialog: MatDialog
     ) {}
 
@@ -83,7 +87,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
     handleUserSubscription() {
         this.userSubscription = this.authService.userChanged.subscribe(user => {
-            this.librarian = user;
+            this.user = user;
             this.userRole = user.role.role;
         });
         this.userRole = this.authService.getUser().role.role;
@@ -103,7 +107,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
             }
             const loanData = {
                 studentTicketReader: result.readerTicket,
-                librarianEmail: this.librarian.email,
+                librarianEmail: this.user.email,
                 bookId: this.bookId,
                 time: new Date()
             };
@@ -130,11 +134,34 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.materialService.openSnackBar(message, style, duration);
     }
 
+    orderBook() {
+        this.orderService
+            .orderBookHttp({
+                studentEmail: this.user.email,
+                bookId: this.bookId,
+                time: new Date()
+            })
+            .subscribe(() => {
+                this.response = this.responseService.getResponse();
+                if (this.response.isSuccessful) {
+                    this.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Success,
+                        this.snackbarDuration
+                    );
+                } else {
+                    this.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Danger,
+                        this.snackbarDuration
+                    );
+                }
+            });
+    }
+
     ngOnDestroy(): void {
         this.paramsSubscription.unsubscribe();
         this.getBookSubscription.unsubscribe();
         this.bookSubscription.unsubscribe();
     }
-
-    orderBook() {}
 }

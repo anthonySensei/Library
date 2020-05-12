@@ -50,10 +50,59 @@ exports.getAllOrders = async (req, res) => {
         };
         return helper.responseHandle(res, 200, data);
     } catch (error) {
+        return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
+    }
+};
+
+exports.orderBook = async (req, res) => {
+    const studentEmail = req.body.studentEmail;
+    const bookId = req.body.bookId;
+    const orderTime = req.body.time;
+    if (!req.body) {
         return helper.responseErrorHandle(
             res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+    try {
+        const student = await Student.findOne({
+            where: {
+                email: studentEmail
+            }
+        });
+        if (!student) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
+            );
+        }
+
+        const book = await Book.findOne({
+            where: { id: bookId },
+            include: { model: Department }
+        });
+        const bookOrder = new Order({
+            order_time: orderTime,
+            studentId: student.dataValues.id,
+            bookId: bookId,
+            departmentId: book.dataValues.department_.dataValues.id
+        });
+        await bookOrder.save();
+        await book.update({ quantity: book.dataValues.quantity - 1 });
+
+        const data = {
+            isSuccessful: true,
+            message: successMessages.SUCCESSFULLY_ORDERED
+        };
+
+        helper.responseHandle(res, 200, data);
+    } catch (error) {
+        helper.responseErrorHandle(
+            res,
             500,
-            errorMessages.CANNOT_FETCH
+            errorMessages.SOMETHING_WENT_WRONG
         );
     }
 };

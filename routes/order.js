@@ -11,4 +11,10 @@ router.get(
     orderController.getAllOrders
 );
 
+router.post(
+    '/orders',
+    passport.authenticate('jwt', { session: false }),
+    orderController.orderBook
+);
+
 module.exports = router;

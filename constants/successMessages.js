@@ -2,6 +2,7 @@ module.exports = {
     SUCCESSFULLY_LOGGED_IN: 'You have successfully logged in!',
     SUCCESSFULLY_LOGGED_OUT: 'You have successfully logged out!',
     SUCCESSFULLY_LOANED: 'Book has been successfully loaned!',
+    SUCCESSFULLY_ORDERED: 'Book has been successfully ordered!',
     ACCOUNT_SUCCESSFULLY_CREATED: 'Account has successfully created',
     BOOK_SUCCESSFULLY_CREATED: 'Book has successfully created',
     AUTHOR_SUCCESSFULLY_CREATED: 'Author has successfully created',
