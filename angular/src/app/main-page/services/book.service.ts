@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
-import { Response } from '../models/response.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -16,16 +16,16 @@ export class BookService {
 
     LOAN_BOOK_URL = `http://localhost:3000/loans`;
 
-    responseChanged = new Subject<Response>();
-    response: Response;
-
     booksChanged = new Subject<Book[]>();
     books: Book[] = [];
 
     bookChanged = new Subject<Book>();
     book: Book;
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setBooks(books: Book[]) {
         this.books = books;
@@ -43,15 +43,6 @@ export class BookService {
 
     getBook(): Book {
         return this.book;
-    }
-
-    setResponse(response: Response) {
-        this.response = response;
-        this.responseChanged.next(this.response);
-    }
-
-    getResponse(): Response {
-        return this.response;
     }
 
     fetchAllBooksHttp(
@@ -107,7 +98,7 @@ export class BookService {
         formData.append('book_data', JSON.stringify(book));
         return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
             })
         );
     }
@@ -115,7 +106,7 @@ export class BookService {
     loanBookHttp(info) {
         return this.http.post(this.LOAN_BOOK_URL, info).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
             })
         );
     }

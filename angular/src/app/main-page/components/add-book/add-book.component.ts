@@ -24,13 +24,14 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
+import { ResponseService } from '../../../shared/services/response.service';
 
 export interface DialogData {
     imageBase64: string;
 }
 
 @Component({
-    selector: 'app-create-post',
+    selector: 'app-add-book',
     templateUrl: './add-book.component.html'
 })
 export class AddBookComponent
@@ -87,6 +88,7 @@ export class AddBookComponent
         private departmentService: DepartmentService,
         private authorService: AuthorService,
         private genreService: GenreService,
+        private responseService: ResponseService,
         private authService: AuthService,
         public materialService: MaterialService,
         public validationService: ValidationService,
@@ -213,7 +215,7 @@ export class AddBookComponent
                 this.authorService
                     .addAuthorHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.authorService.getResponse();
+                        this.response = this.responseService.getResponse();
                         if (this.response.isSuccessful) {
                             this.openSnackBar(
                                 this.response.message,
@@ -236,7 +238,7 @@ export class AddBookComponent
                 this.genreService
                     .addGenreHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.genreService.getResponse();
+                        this.response = this.responseService.getResponse();
                         if (this.response.isSuccessful) {
                             this.openSnackBar(
                                 this.response.message,
@@ -305,7 +307,7 @@ export class AddBookComponent
         this.bookService
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
-                this.response = this.bookService.getResponse();
+                this.response = this.responseService.getResponse();
                 if (this.response.isSuccessful) {
                     stepper.reset();
                     this.message = this.response.message;

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { MaterialService } from '../../../shared/services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-activation-page',
@@ -25,6 +26,7 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private authService: AuthService,
+        private responseService: ResponseService,
         private router: Router,
         private materialService: MaterialService
     ) {
@@ -42,7 +44,7 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
         this.authSubscription = this.authService
             .checkRegistrationToken(this.registrationToken)
             .subscribe(() => {
-                this.response = this.authService.getResponse();
+                this.response = this.responseService.getResponse();
                 this.isActivated = this.response.data.isActivated;
                 if (this.isActivated) {
                     this.message = this.response.data.message;

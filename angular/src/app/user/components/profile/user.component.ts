@@ -17,6 +17,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { ChangePasswordModalComponent } from './change-password-modal/change-password-modal.component';
 import { ChangeProfileImageModalComponent } from './change-profile-image/change-profile-image-modal.component';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-user',
@@ -33,7 +34,6 @@ export class UserComponent implements OnInit, OnDestroy {
 
     user: Student;
 
-    userSubscription: Subscription;
     updateProfileImage: Subscription;
     updateUserDataSubscription: Subscription;
     getUserSubscription: Subscription;
@@ -63,6 +63,7 @@ export class UserComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private userService: UserService,
+        private responseService: ResponseService,
         public dialog: MatDialog,
         private materialService: MaterialService,
         private validationService: ValidationService,
@@ -100,7 +101,6 @@ export class UserComponent implements OnInit, OnDestroy {
         this.initializeForm();
         this.isLoading = true;
         this.userHandle();
-        this.responseHandle();
     }
 
     initializeForm() {
@@ -114,29 +114,7 @@ export class UserComponent implements OnInit, OnDestroy {
         });
     }
 
-    responseHandle() {
-        this.responseSubscription = this.userService.responseChanged.subscribe(
-            response => {
-                this.response = response;
-            }
-        );
-        this.response = this.userService.getResponse();
-    }
-
     userHandle() {
-        // this.userSubscription = this.authService.studentChanged.subscribe(user => {
-        //     if (user) {
-        //         this.user = user;
-        //         this.oldEmail = user.email;
-        //         this.oldName = user.name;
-        //         this.profileForm.patchValue({
-        //             name: user.name,
-        //             email: user.email
-        //         });
-        //     }
-        //     this.isLoading = false;
-        // });
-        // this.user = this.authService.getStudent();
         this.getUserSubscription = this.userService
             .getProfileHttp(this.user.email)
             .subscribe();
@@ -295,7 +273,7 @@ export class UserComponent implements OnInit, OnDestroy {
         this.updateProfileImage = this.userService
             .updateProfileImage(base64Image, this.user)
             .subscribe(() => {
-                this.message = this.userService.getResponse().data.message;
+                this.message = this.responseService.getResponse().message;
                 this.user.profileImage = base64Image;
                 localStorage.setItem('userData', JSON.stringify(this.user));
                 this.openSnackBar(
@@ -312,9 +290,6 @@ export class UserComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // this.userSubscription.unsubscribe();
-        // this.getUserSubscription.unsubscribe();
-        // this.responseSubscription.unsubscribe();
         if (this.updateProfileImage) {
             this.updateProfileImage.unsubscribe();
         }

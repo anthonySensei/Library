@@ -13,7 +13,7 @@ router.get(
 );
 
 router.get(
-    '/student',
+    '/students/student',
     passport.authenticate('jwt', { session: false }),
     studentController.getStudent
 );

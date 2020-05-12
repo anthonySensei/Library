@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { Department } from '../models/department.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -11,13 +12,13 @@ import { Department } from '../models/department.model';
 export class DepartmentService {
     DEPARTMENTS_URL = 'http://localhost:3000/departments';
 
-    responseChanged = new Subject();
-    response;
-
     departmentsChanged = new Subject<Department[]>();
     departments: Department[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setDepartments(departments: Department[]) {
         this.departments = departments;
@@ -26,14 +27,6 @@ export class DepartmentService {
 
     getDepartments() {
         return this.departments;
-    }
-
-    setResponse(response) {
-        this.response = response;
-        this.responseChanged.next(this.response);
-    }
-    getResponse() {
-        return this.response;
     }
 
     fetchAllDepartmentsHttp() {

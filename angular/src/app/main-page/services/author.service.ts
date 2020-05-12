@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { Author } from '../models/author.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,13 +13,13 @@ import { Author } from '../models/author.model';
 export class AuthorService {
     AUTHORS_URL = 'http://localhost:3000/authors';
 
-    responseChanged = new Subject();
-    response;
-
     authorsChanged = new Subject<Author[]>();
     authors: Author[] = [];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setAuthors(authors: Author[]) {
         this.authors = authors;
@@ -27,14 +28,6 @@ export class AuthorService {
 
     getAuthors() {
         return this.authors;
-    }
-
-    setResponse(response) {
-        this.response = response;
-        this.responseChanged.next(this.response);
-    }
-    getResponse() {
-        return this.response;
     }
 
     fetchAllAuthorsHttp() {
@@ -54,7 +47,7 @@ export class AuthorService {
     addAuthorHttp(author: Author) {
         return this.http.post(this.AUTHORS_URL, { author }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
             })
         );
     }

@@ -9,6 +9,7 @@ import { UserRoles } from '../../constants/userRoles';
 import { User } from '../models/user.model';
 import { Student } from '../../user/models/student.model';
 import { Response } from '../../main-page/models/response.model';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -26,9 +27,6 @@ export class AuthService {
     user: User;
     userChanged = new BehaviorSubject<User>(null);
 
-    authResponseChanged = new Subject<Response>();
-    authResponse: Response;
-
     jwtTokenChanged = new Subject<string>();
     jwtToken: string;
 
@@ -40,7 +38,10 @@ export class AuthService {
     CHECK_REGISTRATION_TOKEN_URL =
         'http://localhost:3000/check-registration-token';
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setUser(user) {
         this.user = user;
@@ -88,15 +89,6 @@ export class AuthService {
         this.librarianChange.next(this.isLibrarianRole);
     }
 
-    setResponse(response: Response) {
-        this.authResponse = response;
-        this.authResponseChanged.next(this.authResponse);
-    }
-
-    getResponse() {
-        return this.authResponse;
-    }
-
     setJwtToken(token) {
         this.jwtToken = token;
         this.jwtTokenChanged.next(this.jwtToken);
@@ -111,7 +103,7 @@ export class AuthService {
         headers.append('Content-type', 'application/json');
         return this.http.post(this.LOGIN_URL, user, { headers }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
                 let userRole;
                 if (response.data.user && response.data.user.readerTicket) {
                     this.setUser(response.data.user);
@@ -209,7 +201,7 @@ export class AuthService {
         headers.append('Content-type', 'application/json');
         return this.http.get(this.LOGOUT_URL, { headers }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
                 this.setUser(null);
                 localStorage.clear();
                 this.setJwtToken(null);
@@ -233,7 +225,7 @@ export class AuthService {
         headers.append('Content-type', 'application/json');
         return this.http.post(this.REGISTRATION_URL, student, { headers }).pipe(
             map((response: any) => {
-                this.setResponse(response.data);
+                this.responseService.setResponse(response.data);
             })
         );
     }
@@ -248,7 +240,7 @@ export class AuthService {
             .post(this.CHECK_REGISTRATION_TOKEN_URL, token, { headers })
             .pipe(
                 map((response: any) => {
-                    this.setResponse(response.data);
+                    this.responseService.setResponse(response.data);
                 })
             );
     }

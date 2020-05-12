@@ -13,6 +13,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { Student } from '../../../user/models/student.model';
 import { Response } from '../../../main-page/models/response.model';
+import { ResponseService } from '../../../shared/services/response.service';
 
 @Component({
     selector: 'app-registration',
@@ -44,6 +45,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
+        private responseService: ResponseService,
         private materialService: MaterialService,
         private router: Router
     ) {}
@@ -132,7 +134,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             this.authSubscription = this.authService
                 .registerStudentHttp(student)
                 .subscribe(() => {
-                    this.response = this.authService.getResponse();
+                    this.response = this.responseService.getResponse();
                     if (this.response && this.response.isSuccessful) {
                         this.router.navigate(['/' + this.links.LOGIN]);
                         this.materialService.openSnackBar(
@@ -146,14 +148,20 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                             password2: ''
                         });
                     } else {
-                        if (this.response.message.toLowerCase().includes('email')) {
+                        if (
+                            this.response.message
+                                .toLowerCase()
+                                .includes('email')
+                        ) {
                             stepper.selectedIndex = 0;
                             this.emailError = this.response.message;
                             this.mainInfoForm.controls.email.setErrors({
                                 incorrect: true
                             });
                         } else if (
-                            this.response.message.toLowerCase().includes('reader')
+                            this.response.message
+                                .toLowerCase()
+                                .includes('reader')
                         ) {
                             stepper.selectedIndex = 0;
                             this.mainInfoForm.controls.reader_ticket.setErrors({
