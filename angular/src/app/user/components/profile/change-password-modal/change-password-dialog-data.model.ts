@@ -1,6 +1,5 @@
+import { User } from '../../../../auth/models/user.model';
+
 export interface ChangePasswordDialogData {
-    name: string;
-    oldPassword: string;
-    newPassword: string;
-    retypeNewPassword: string;
+    user: User;
 }

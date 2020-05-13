@@ -25,4 +25,3 @@ exports.STUDENTS_URL = '/students';
 exports.STUDENTS_STUDENT_URL = '/details';
 
 exports.MY_ACCOUNT_URL = '/my-account';
-exports.MY_ACCOUNT_UPDATE_PROGILE_IMAGE_URL = '/update-profile-image';

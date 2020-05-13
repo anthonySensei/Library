@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { UsersRoutingModule } from './users-routing.module';
 
-import { UserComponent } from './components/profile/user.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { AddLibrarianComponent } from './components/add-librarian/add-librarian.component';
 import { ChangePasswordModalComponent } from './components/profile/change-password-modal/change-password-modal.component';
 import { ChangeProfileImageModalComponent } from './components/profile/change-profile-image/change-profile-image-modal.component';
@@ -18,7 +18,7 @@ import { OrdersComponent } from './components/orders/orders.component';
 
 @NgModule({
     declarations: [
-        UserComponent,
+        ProfileComponent,
         ChangePasswordModalComponent,
         ChangeProfileImageModalComponent,
         AddLibrarianComponent,

@@ -74,6 +74,7 @@ exports.postLoginUser = (req, res, next) => {
 const handleAuth = (profileImage, req, user, res, role) => {
     const userData = {
         id: user.id,
+        name: user.name,
         email: user.email,
         profileImage: profileImage,
         role: { role: role }

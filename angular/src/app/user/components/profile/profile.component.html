@@ -38,6 +38,9 @@
                         formControlName="name"
                         placeholder="Ex. Anthony"
                     />
+                    <mat-error *ngIf="hasError('name', 'required') && !error">
+                        Name is required
+                    </mat-error>
                 </mat-form-field>
                 <mat-form-field class="form-input">
                     <mat-label>Email</mat-label>
@@ -63,13 +66,17 @@
                         Email is not valid
                     </mat-error>
                 </mat-form-field>
-                <button
-                    class="form-button"
-                    type="submit"
-                    [disabled]="profileForm.invalid"
-                >
-                    Save
-                </button>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        class="form-button"
+                        type="submit"
+                        [disabled]="profileForm.invalid || !profileForm.touched"
+                    >
+                        Save
+                    </button>
+                </div>
             </form>
         </div>
     </div>
