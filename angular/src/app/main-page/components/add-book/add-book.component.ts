@@ -39,7 +39,6 @@ export class AddBookComponent
     mainBookInfoForm: FormGroup;
     bookDetailsForm: FormGroup;
 
-    message: string;
     error: string;
     response;
 
@@ -310,10 +309,9 @@ export class AddBookComponent
                 this.response = this.responseService.getResponse();
                 if (this.response.isSuccessful) {
                     stepper.reset();
-                    this.message = this.response.message;
                     this.router.navigate(['/books']);
                     this.openSnackBar(
-                        this.message,
+                        this.response.message,
                         SnackBarClasses.Success,
                         this.snackbarDuration
                     );
@@ -323,7 +321,6 @@ export class AddBookComponent
                     this.mainBookInfoForm.controls.isbn.setErrors({
                         incorrect: true
                     });
-                    return;
                 }
             });
     }

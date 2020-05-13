@@ -122,13 +122,16 @@
     <div class="post-features-container">
         <div style="overflow: hidden;">
             <a
-                *ngIf="isLoggedIn"
+                *ngIf="
+                    user.role.role === roles.LIBRARIAN ||
+                    user.role.role === roles.MANAGER
+                "
                 mat-stroked-button
                 color="primary"
                 class="btn"
                 style="float: right;"
                 matTooltip="Add book"
-                [routerLink]="'/add-book'"
+                [routerLink]="'/' + links.ADD_BOOK"
             >
                 <i class="material-icons">add</i> Add book
             </a>

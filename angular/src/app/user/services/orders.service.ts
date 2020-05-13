@@ -33,7 +33,7 @@ export class OrderService {
         return this.orders;
     }
 
-    fetchBookOrdersHttp() {
+    fetchOrdersHttp() {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
@@ -53,5 +53,27 @@ export class OrderService {
                 this.responseService.setResponse(response.data);
             })
         );
+    }
+
+    loanBookFromOrderHttp(
+        orderId: number,
+        bookId: number,
+        studentId: number,
+        librarianEmail: string,
+        loanTime: Date
+    ) {
+        return this.http
+            .put(this.ORDERS_URL, {
+                orderId,
+                bookId,
+                studentId,
+                librarianEmail,
+                loanTime
+            })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
     }
 }

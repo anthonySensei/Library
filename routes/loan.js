@@ -15,6 +15,18 @@ router.get(
     loanController.getAllLoans
 );
 
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    loanController.returnBook
+);
+
+router.post(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    loanController.loanBook
+);
+
 router.get(
     loansStatisticUrl,
     passport.authenticate('jwt', { session: false }),
@@ -25,12 +37,6 @@ router.get(
     loansStatisticUrl + loansStatisticTopUrl,
     passport.authenticate('jwt', { session: false }),
     loanController.getTopFive
-);
-
-router.post(
-    '',
-    passport.authenticate('jwt', { session: false }),
-    loanController.loanBook
 );
 
 module.exports = router;

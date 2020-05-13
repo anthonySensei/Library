@@ -11,8 +11,12 @@ import {
 import { Subscription } from 'rxjs';
 
 import { LoansService } from '../../services/loans.service';
+import { ResponseService } from '../../../shared/services/response.service';
 
 import { Loan } from '../../models/loan.model';
+import { Response } from '../../../main-page/models/response.model';
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { MaterialService } from '../../../shared/services/material.service';
 
 @Component({
     selector: 'app-loan-page',
@@ -35,6 +39,10 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     loansSubscription: Subscription;
     loansChangedSubscription: Subscription;
 
+    response: Response;
+
+    snackbarDuration = 3000;
+
     columnsToDisplay: string[] = [
         'loanTime',
         'returnedTime',
@@ -48,7 +56,11 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private loansService: LoansService) {}
+    constructor(
+        private loansService: LoansService,
+        private responseService: ResponseService,
+        private materialService: MaterialService
+    ) {}
 
     ngOnInit() {
         document.title = 'Loans';
@@ -56,9 +68,7 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     }
 
     subscriptionsHandle() {
-        this.loansSubscription = this.loansService
-            .fetchBooksLoansHttp()
-            .subscribe();
+        this.loansSubscription = this.loansService.fetchLoansHttp().subscribe();
         this.loansChangedSubscription = this.loansService.loansChanged.subscribe(
             loans => {
                 this.loans = loans;
@@ -77,6 +87,29 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
         }
+    }
+
+    returnBook(loanId: any, bookId: any) {
+        this.loansService
+            .returnBookHttp(loanId, bookId, new Date())
+            .subscribe(() => {
+                this.response = this.responseService.getResponse();
+                if (this.response.isSuccessful) {
+                    this.materialService.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Success,
+                        this.snackbarDuration
+                    );
+                    this.loansService.fetchLoansHttp().subscribe();
+                    this.loans = this.loansService.getLoans();
+                } else {
+                    this.materialService.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Danger,
+                        this.snackbarDuration
+                    );
+                }
+            });
     }
 
     ngOnDestroy(): void {

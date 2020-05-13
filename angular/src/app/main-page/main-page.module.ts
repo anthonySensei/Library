@@ -7,7 +7,6 @@ import { MainPageRoutingModule } from './main-page-routing.module';
 
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { BookDetailsComponent } from './components/book-details/book-details.component';
-import { OrderRequestComponent } from './components/order-request/order-request.component';
 
 import { LoanBookModalComponent } from './components/loan-book-modal/loan-book-modal.component';
 import { AddBookComponent } from './components/add-book/add-book.component';
@@ -19,12 +18,15 @@ import { AddOptionModalComponent } from './components/add-book/add-option-modal/
         MainPageComponent,
         BookDetailsComponent,
         AddBookComponent,
-        OrderRequestComponent,
         ModalBookCreateDialogComponent,
         AddOptionModalComponent,
         LoanBookModalComponent
     ],
     imports: [RouterModule, MainPageRoutingModule, SharedModule, FormsModule],
-    entryComponents: [ModalBookCreateDialogComponent, LoanBookModalComponent, AddOptionModalComponent]
+    entryComponents: [
+        ModalBookCreateDialogComponent,
+        LoanBookModalComponent,
+        AddOptionModalComponent
+    ]
 })
 export class MainPageModule {}

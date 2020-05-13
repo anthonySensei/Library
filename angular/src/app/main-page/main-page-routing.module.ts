@@ -3,21 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { BookDetailsComponent } from './components/book-details/book-details.component';
-import { OrderRequestComponent } from './components/order-request/order-request.component';
 import { AddBookComponent } from './components/add-book/add-book.component';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { LibrarianGuard } from '../user/guards/librarian.guard';
+
 import { CanDeactivateGuard } from '../shared/services/can-deactivate-guard.service';
+
 import { AngularLinks } from '../constants/angularLinks';
 
 const routes: Routes = [
     { path: AngularLinks.BOOKS, component: MainPageComponent },
-    {
-        path: AngularLinks.ORDER_REQUESTS,
-        canActivate: [AuthGuard, LibrarianGuard],
-        component: OrderRequestComponent
-    },
     { path: `${AngularLinks.BOOKS}/:id`, component: BookDetailsComponent },
     {
         path: AngularLinks.ADD_BOOK,

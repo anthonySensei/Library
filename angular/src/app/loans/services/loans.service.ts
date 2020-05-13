@@ -8,6 +8,7 @@ import { Loan } from '../models/loan.model';
 import { Statistic } from '../models/statistic.model';
 
 import { serverLink } from '../../constants/serverLink';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,10 @@ export class LoansService {
     statisticChanged = new Subject<Statistic[]>();
     statistic: Statistic[];
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setLoans(loans: Loan[]) {
         this.loans = loans;
@@ -43,7 +47,7 @@ export class LoansService {
         return this.statistic;
     }
 
-    fetchBooksLoansHttp() {
+    fetchLoansHttp() {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
@@ -83,5 +87,18 @@ export class LoansService {
                     this.setStatistic(response.data.statistic);
                 })
             );
+    }
+
+    returnBookHttp(loanId: number, bookId: number, returnedTime: Date) {
+        const updatedData = {
+            loanId,
+            bookId,
+            returnedTime
+        };
+        return this.http.put(`${this.LOANS_URL}`, updatedData).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 }

@@ -5,6 +5,7 @@ import { Department } from '../../main-page/models/department.model';
 export class Order {
     id: number;
     orderTime: Date;
+    loanTime: Date;
     student: Student;
     book: Book;
     department: Department;

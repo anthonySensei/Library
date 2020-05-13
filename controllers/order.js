@@ -1,5 +1,8 @@
 const Order = require('../models/order');
+const Loan = require('../models/loan');
+const Author = require('../models/author');
 const Student = require('../models/student');
+const Librarian = require('../models/librarian');
 const Book = require('../models/book');
 const Department = require('../models/department');
 
@@ -15,7 +18,12 @@ exports.getAllOrders = async (req, res) => {
                 {
                     model: Student
                 },
-                { model: Book },
+                {
+                    model: Book,
+                    include: {
+                        model: Author
+                    }
+                },
                 { model: Department }
             ]
         });
@@ -26,8 +34,11 @@ exports.getAllOrders = async (req, res) => {
             const departmentData = ordersValues.department_.dataValues;
             const bookData = ordersValues.book_.dataValues;
             const ordersObj = {
+                id: ordersValues.id,
                 orderTime: ordersValues.order_time,
+                loanTime: ordersValues.loan_time,
                 student: {
+                    id: studentData.id,
                     name: studentData.name,
                     email: studentData.email,
                     readerTicket: studentData.reader_ticket
@@ -36,11 +47,17 @@ exports.getAllOrders = async (req, res) => {
                     address: departmentData.address
                 },
                 book: {
+                    bookId: bookData.id,
                     isbn: bookData.isbn,
                     name: bookData.name,
                     year: bookData.year,
-                    author: bookData.author
-                }
+                    author: {
+                        name: bookData.author_.dataValues.name
+                    }
+                },
+                bookISBN: bookData.isbn,
+                studentReaderTicket: studentData.reader_ticket,
+                departmentAddress: departmentData.address
             };
             ordersArr.push(ordersObj);
         }
@@ -98,6 +115,49 @@ exports.orderBook = async (req, res) => {
         };
 
         helper.responseHandle(res, 200, data);
+    } catch (error) {
+        helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.loanBookFromOrder = async (req, res) => {
+    const orderId = req.body.orderId;
+    const bookId = req.body.bookId;
+    const studentId = req.body.studentId;
+    const librarianEmail = req.body.librarianEmail;
+    const loanTime = req.body.loanTime;
+
+    if (!orderId || !bookId || !studentId || !librarianEmail || !loanTime) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+
+    try {
+        const order = await Order.findOne({ where: { id: orderId } });
+        await order.update({ loan_time: loanTime });
+        const librarian = await Librarian.findOne({
+            where: { email: librarianEmail }
+        });
+        const book = await Book.findOne({ where: { id: bookId } });
+        await Loan.create({
+            loan_time: loanTime,
+            bookId: bookId,
+            studentId: studentId,
+            librarianId: librarian.dataValues.id,
+            departmentId: book.dataValues.departmentId
+        });
+        const data = {
+            isSuccessful: true,
+            message: successMessages.SUCCESSFULLY_LOANED
+        };
+        return helper.responseHandle(res, 200, data);
     } catch (error) {
         helper.responseErrorHandle(
             res,
