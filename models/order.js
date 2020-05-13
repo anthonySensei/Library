@@ -12,6 +12,10 @@ const Order = sequelize.define('order_', {
     order_time: {
         type: Sequelize.DATE,
         allowNull: false
+    },
+    loan_time: {
+        type: Sequelize.DATE,
+        allowNull: true
     }
 });
 

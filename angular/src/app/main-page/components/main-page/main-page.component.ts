@@ -7,14 +7,17 @@ import { DepartmentService } from '../../services/department.service';
 import { AuthorService } from '../../services/author.service';
 import { GenreService } from '../../services/genre.service';
 
-import { Book } from '../../models/book.model';
-
 import { Subscription } from 'rxjs';
 
 import { Filters } from '../../../constants/filters';
+
+import { Book } from '../../models/book.model';
 import { Author } from '../../models/author.model';
 import { Genre } from '../../models/genre.model';
 import { Department } from '../../models/department.model';
+import { User } from '../../../auth/models/user.model';
+import { UserRoles } from '../../../constants/userRoles';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-main-page',
@@ -26,11 +29,11 @@ export class MainPageComponent implements OnInit, OnDestroy {
     authors: Author[] = [];
     genres: Genre[] = [];
     departments: Department[] = [];
+    user: User;
 
     paramsSubscription: Subscription;
     booksChangeSubscription: Subscription;
     booksFetchSubscription: Subscription;
-    loggedInSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
     departmentChangeSubscription: Subscription;
     authorsFetchSubscription: Subscription;
@@ -39,7 +42,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     genresChangeSubscription: Subscription;
 
     isLoading = false;
-    isLoggedIn = false;
     showFilterButton = true;
 
     filterName = Filters.NOTHING;
@@ -50,6 +52,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     fromYear: number;
     toYear: number;
+
+    roles = UserRoles;
+    links = AngularLinks;
 
     bookFilters = [
         { name: 'Nothing', value: Filters.NOTHING },
@@ -73,7 +78,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.paramsHandle();
         this.subscriptionsHandle();
-        this.isLoggedIn = this.authService.getIsLoggedIn();
+        this.user = this.authService.getUser();
         this.books = this.bookService.getBooks();
     }
 
@@ -106,11 +111,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
             (books: Book[]) => {
                 this.books = books;
                 this.isLoading = false;
-            }
-        );
-        this.loggedInSubscription = this.authService.loggedChange.subscribe(
-            isLoggedIn => {
-                this.isLoggedIn = isLoggedIn;
             }
         );
         this.departmentsFetchSubscription = this.departmentService
@@ -163,7 +163,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.loggedInSubscription.unsubscribe();
         this.paramsSubscription.unsubscribe();
         this.booksChangeSubscription.unsubscribe();
         this.booksFetchSubscription.unsubscribe();

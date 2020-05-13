@@ -4,22 +4,37 @@
         <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" />
     </mat-form-field>
     <table
-            mat-table
-            [dataSource]="dataSource"
-            multiTemplateDataRows
-            class="mat-elevation-z8"
-            matSort
+        mat-table
+        [dataSource]="dataSource"
+        multiTemplateDataRows
+        class="mat-elevation-z8"
+        matSort
     >
         <ng-container matColumnDef="orderTime">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Order time</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Order time
+            </th>
             <td mat-cell *matCellDef="let element">
                 {{ element.orderTime | date }}
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="loanTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Order time
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{
+                    element.loanTime
+                        ? (element.loanTime | date)
+                        : 'Not loaned yet'
+                }}
+            </td>
+        </ng-container>
+
         <ng-container matColumnDef="bookISBN">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Book ISBN</th>
-            <td mat-cell *matCellDef="let element">{{ element.book.isbn }}</td>
+            <td mat-cell *matCellDef="let element">{{ element.bookISBN }}</td>
         </ng-container>
 
         <ng-container matColumnDef="studentReaderTicket">
@@ -27,7 +42,7 @@
                 Reader ticket
             </th>
             <td mat-cell *matCellDef="let element">
-                {{ element.student.readerTicket }}
+                {{ element.studentReaderTicket }}
             </td>
         </ng-container>
 
@@ -36,19 +51,19 @@
                 Address
             </th>
             <td mat-cell *matCellDef="let element">
-                {{ element.department.address }}
+                {{ element.departmentAddress }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="expandedDetail">
             <td
-                    mat-cell
-                    *matCellDef="let element"
-                    [attr.colspan]="columnsToDisplay.length"
+                mat-cell
+                *matCellDef="let element"
+                [attr.colspan]="columnsToDisplay.length"
             >
                 <div
-                        class="loan-detail"
-                        [@detailExpand]="
+                    class="loan-detail"
+                    [@detailExpand]="
                         element == expandedElement ? 'expanded' : 'collapsed'
                     "
                 >
@@ -75,7 +90,7 @@
                             </p>
                             <p>
                                 author:
-                                <b>{{ element.book.author }}</b>
+                                <b>{{ element.book.author.name }}</b>
                             </p>
                         </div>
                         <div class="loan-info">
@@ -84,6 +99,25 @@
                                 Department address:
                                 <b>{{ element.department.address }}</b>
                             </p>
+                            <p>&nbsp;</p>
+                            <div class="btn-group" *ngIf="!element.loanTime">
+                                <a
+                                        mat-stroked-button
+                                        color="primary"
+                                        class="btn"
+                                        style="float: right;"
+                                        matTooltip="Loan book"
+                                        (click)="
+                                        orderBook(
+                                            element.id,
+                                            element.book.bookId,
+                                            element.student.id
+                                        )
+                                    "
+                                >
+                                    Loan book
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -92,18 +126,18 @@
 
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
         <tr
-                mat-row
-                *matRowDef="let element; columns: columnsToDisplay"
-                class="element-row"
-                [class.example-expanded-row]="expandedElement === element"
-                (click)="
+            mat-row
+            *matRowDef="let element; columns: columnsToDisplay"
+            class="element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="
                 expandedElement = expandedElement === element ? null : element
             "
         ></tr>
         <tr
-                mat-row
-                *matRowDef="let row; columns: ['expandedDetail']"
-                class="detail-row"
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="detail-row"
         ></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[5, 10, 15]"></mat-paginator>

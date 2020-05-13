@@ -11,6 +11,12 @@ router.get(
     orderController.getAllOrders
 );
 
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    orderController.loanBookFromOrder
+);
+
 router.post(
     '',
     passport.authenticate('jwt', { session: false }),
