@@ -7,8 +7,7 @@ import { ChangeProfileImageDialogData } from './change-profile-image-dialog-data
 
 @Component({
     selector: 'app-change-profile-image-dialog',
-    templateUrl: './change-profile-image-modal.html',
-    styleUrls: ['../profile.component.sass']
+    templateUrl: './change-profile-image-modal.html'
 })
 export class ChangeProfileImageModalComponent {
     imageChangedEvent: any = '';
@@ -28,9 +27,5 @@ export class ChangeProfileImageModalComponent {
     imageCropped(event: ImageCroppedEvent) {
         this.croppedImage = event.base64;
         this.data.imageBase64 = this.croppedImage;
-    }
-
-    onNoClick(): void {
-        this.dialogRef.close();
     }
 }

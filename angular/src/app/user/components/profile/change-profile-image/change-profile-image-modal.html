@@ -1,32 +1,41 @@
 <div mat-dialog-content>
-    <p>Would you like to change profile image?</p>
-    <form class="modal-form" #imageForm="ngForm">
-        <input type="file" (change)="fileChangeEvent($event)" />
+    <h4 class="w-78-center">Would you like to change profile image?</h4>
+    <form #imageForm="ngForm">
+        <section class="w-78-center image-section">
+            <input type="file" (change)="fileChangeEvent($event)" />
 
-        <image-cropper
-            style="margin: 0 auto;"
-            [imageChangedEvent]="imageChangedEvent"
-            [maintainAspectRatio]="true"
-            [aspectRatio]="1"
-            [cropperMinWidth]="250"
-            [cropperMinHeight]="250"
-            [onlyScaleDown]="true"
-            [roundCropper]="true"
-            (imageCropped)="imageCropped($event)"
-        ></image-cropper>
+            <image-cropper
+                [imageChangedEvent]="imageChangedEvent"
+                [maintainAspectRatio]="true"
+                [aspectRatio]="1"
+                [cropperMinWidth]="250"
+                [cropperMinHeight]="250"
+                [onlyScaleDown]="true"
+                [roundCropper]="true"
+                (imageCropped)="imageCropped($event)"
+            ></image-cropper>
+        </section>
 
-        <button mat-raised-button class="no-button" (click)="onNoClick()">
-            Cancel
-        </button>
-
-        <button
-            class="form-button modal-form-submit"
-            style="display: inline-block;"
-            type="submit"
-            [disabled]="imageForm.invalid"
-            [mat-dialog-close]="data.imageBase64"
-        >
-            Confirm
-        </button>
+        <div class="btn-group text-center">
+            <button
+                mat-raised-button
+                class="form-btn"
+                color="primary"
+                type="submit"
+                [disabled]="imageForm.invalid"
+                [mat-dialog-close]="data.imageBase64"
+            >
+                Confirm
+            </button>
+            <button
+                mat-stroked-button
+                class="form-btn"
+                color="primary"
+                type="button"
+                (click)="dialogRef.close()"
+            >
+                Cancel
+            </button>
+        </div>
     </form>
 </div>

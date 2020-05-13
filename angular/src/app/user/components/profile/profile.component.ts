@@ -54,7 +54,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     emailValidation;
 
     changePasswordModalWidth = '35%';
-    changePictureModal = '70%';
+    changePictureModal = '40%';
 
     constructor(
         private authService: AuthService,
@@ -86,7 +86,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             .subscribe(result => {
                 if (result.matches) {
                     this.changePasswordModalWidth = '35%';
-                    this.changePictureModal = '70%';
+                    this.changePictureModal = '40%';
                 }
             });
     }
