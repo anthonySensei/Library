@@ -30,7 +30,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     profileForm: FormGroup;
 
     isLoading: boolean;
-    isDone = false;
     discard = false;
     discardChanged = new Subject<boolean>();
 
@@ -46,8 +45,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     retypeNewPassword: string;
 
     response: Response;
-
-    profileImageBase64;
 
     snackbarDuration = 5000;
 
@@ -127,10 +124,34 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            this.profileImageBase64 = result;
-            if (this.profileImageBase64) {
-                this.onChangeProfileImage(this.profileImageBase64);
+        dialogRef.afterClosed().subscribe((profileImage: string) => {
+            if (profileImage) {
+                this.updateUserDataSubscription = this.userService
+                    .updateUserDataHttp(
+                        { ...this.user, profileImage },
+                        ChangedDataProfile.IMAGE
+                    )
+                    .subscribe(() => {
+                        this.response = this.responseService.getResponse();
+                        if (this.response.isSuccessful) {
+                            this.user.profileImage = profileImage;
+                            localStorage.setItem(
+                                'userData',
+                                JSON.stringify(this.user)
+                            );
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Success,
+                                this.snackbarDuration
+                            );
+                        } else {
+                            this.openSnackBar(
+                                this.response.message,
+                                SnackBarClasses.Danger,
+                                this.snackbarDuration
+                            );
+                        }
+                    });
             } else {
                 this.openSnackBar(
                     'Image was not selected',
@@ -204,7 +225,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.profileForm.touched && !this.isDone) {
+        if (this.profileForm.touched) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged
@@ -213,29 +234,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         } else {
             return true;
         }
-    }
-
-    onChangeProfileImage(base64Image: string) {
-        this.isLoading = true;
-        this.user.profileImage = base64Image;
-        this.updateUserDataSubscription = this.userService
-            .updateUserDataHttp(this.user, ChangedDataProfile.IMAGE)
-            .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                } else {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
-                }
-            });
     }
 
     openSnackBar(message: string, style: string, duration: number) {

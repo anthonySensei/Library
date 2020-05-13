@@ -29,7 +29,7 @@ exports.postUpdateUserData = (req, res) => {
     else if (changedField === changedProfileData.PASSWORD)
         updatePassword(res, dbTable, user.id, JSON.parse(req.body.passwordObj));
     else if (changedField === changedProfileData.IMAGE)
-        updateImage(res, dbTable, user.profileImage);
+        updateImage(res, dbTable, user);
 };
 
 const updateInfo = async (res, dbTable, user) => {
@@ -61,6 +61,7 @@ const updateInfo = async (res, dbTable, user) => {
         return helper.responseHandle(res, 400, data);
     }
 };
+
 const updatePassword = async (res, dbTable, userId, passwordObj) => {
     if (
         !passwordObj.oldPassword ||
@@ -124,68 +125,33 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
         return helper.responseHandle(res, 400, data);
     }
 };
-const updateImage = (res, user, image) => {};
 
-const changePasswordHandler = (
-    res,
-    user,
-    oldPassword,
-    newPassword,
-    retypeNewPassword
-) => {
-    if (!oldPassword) {
+const updateImage = async (res, dbTable, user) => {
+    if (!user.profileImage) {
         const data = {
-            changedUserInfo: false,
-            message: errorMessages.EMPTY_FIELDS
-        };
-        return helper.responseHandle(res, 400, data);
-    }
-};
-
-exports.postUpdateProfileImage = (req, res) => {
-    const profileImageBase64 = req.body.base64;
-    const user = JSON.parse(req.body.user);
-
-    if (!profileImageBase64 || !user) {
-        const data = {
-            changedUserInfo: false,
+            isSuccessful: false,
             message: errorMessages.SOMETHING_WENT_WRONG
         };
         return helper.responseHandle(res, 400, data);
     }
-
     const profileImagePath = base64Img.imgSync(
-        profileImageBase64,
+        user.profileImage,
         '../images/profile',
         uuidv4()
     );
-
-    Student.findOne({ where: { user_id: user.id } })
-        .then(user => {
-            user.update({
-                profile_image: profileImagePath
-            })
-                .then(result => {
-                    const data = {
-                        created: true,
-                        message:
-                            successMessages.PROFILE_IMAGE_SUCCESSFULLY_CHANGED
-                    };
-                    return helper.responseHandle(res, 200, data);
-                })
-                .catch(err => {
-                    const data = {
-                        created: false,
-                        message: errorMessages.SOMETHING_WENT_WRONG
-                    };
-                    return helper.responseHandle(res, 400, data);
-                });
-        })
-        .catch(err => {
-            const data = {
-                created: false,
-                message: errorMessages.SOMETHING_WENT_WRONG
-            };
-            return helper.responseHandle(res, 500, data);
-        });
+    try {
+        const userInDb = await dbTable.findOne({ where: { id: user.id } });
+        await userInDb.update({ profile_image: profileImagePath });
+        const data = {
+            isSuccessful: true,
+            message: successMessages.PROFILE_IMAGE_SUCCESSFULLY_CHANGED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isSuccessful: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 400, data);
+    }
 };
