@@ -1,0 +1,269 @@
+<div class="container">
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Author
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="edit-section">
+                <div class="input-groups">
+                    <mat-form-field class="edit-field">
+                        <mat-label>Name</mat-label>
+                        <mat-select
+                            name="authorName"
+                            [(ngModel)]="authorSelect"
+                            (ngModelChange)="setAuthorName()"
+                        >
+                            <mat-option
+                                *ngFor="let author of authors"
+                                [value]="author.id"
+                            >
+                                {{ author.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="edit-field">
+                        <mat-label>Name</mat-label>
+                        <input matInput type="text" [(ngModel)]="authorName" />
+                        <button
+                            mat-button
+                            *ngIf="authorName"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="authorName = ''"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="primary"
+                        type="submit"
+                        [disabled]="!authorName"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="warn"
+                        type="button"
+                        [disabled]="!authorName"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Book
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Department
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="edit-section">
+                <div class="input-groups">
+                    <mat-form-field class="edit-field">
+                        <mat-label>Address</mat-label>
+                        <mat-select
+                            name="address"
+                            [(ngModel)]="departmentSelect"
+                            (ngModelChange)="setDepartmentAddress()"
+                        >
+                            <mat-option
+                                *ngFor="let department of departments"
+                                [value]="department.id"
+                            >
+                                {{ department.address }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="edit-field">
+                        <mat-label>Address</mat-label>
+                        <input
+                            matInput
+                            type="text"
+                            [(ngModel)]="departmentAddress"
+                        />
+                        <button
+                            mat-button
+                            *ngIf="departmentAddress"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="departmentAddress = ''"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="primary"
+                        type="submit"
+                        [disabled]="!departmentAddress"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="warn"
+                        type="button"
+                        [disabled]="!departmentAddress"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Genre
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="edit-section">
+                <div class="input-groups">
+                    <mat-form-field class="edit-field">
+                        <mat-label>Genre</mat-label>
+                        <mat-select
+                            name="genreName"
+                            [(ngModel)]="genreSelect"
+                            (ngModelChange)="setGenreName()"
+                        >
+                            <mat-option
+                                *ngFor="let genre of genres"
+                                [value]="genre.id"
+                            >
+                                {{ genre.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="edit-field">
+                        <mat-label>Genre</mat-label>
+                        <input matInput type="text" [(ngModel)]="genreName" />
+                        <button
+                            mat-button
+                            *ngIf="genreName"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="genreName = ''"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="primary"
+                        type="submit"
+                        [disabled]="!genreName"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="warn"
+                        type="button"
+                        [disabled]="!genreName"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Student
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <section class="edit-section">
+                <div class="input-groups">
+                    <mat-form-field class="edit-field">
+                        <mat-label>Reader Ticket</mat-label>
+                        <mat-select
+                            name="genreName"
+                            [(ngModel)]="studentSelect"
+                            (ngModelChange)="setStudentData()"
+                        >
+                            <mat-option
+                                *ngFor="let student of students"
+                                [value]="student.id"
+                            >
+                                {{ student.readerTicket }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="edit-field">
+                        <mat-label>Reader ticket</mat-label>
+                        <input matInput type="text" [(ngModel)]="studentReaderTicket" />
+                        <button
+                            mat-button
+                            *ngIf="studentReaderTicket"
+                            matSuffix
+                            mat-icon-button
+                            aria-label="Clear"
+                            (click)="studentReaderTicket = ''"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                    <mat-form-field class="edit-field">
+                        <mat-label>Email</mat-label>
+                        <input matInput type="text" [(ngModel)]="studentEmail" />
+                        <button
+                                mat-button
+                                *ngIf="studentEmail"
+                                matSuffix
+                                mat-icon-button
+                                aria-label="Clear"
+                                (click)="studentEmail = ''"
+                        >
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="btn-group">
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="primary"
+                        type="submit"
+                        [disabled]="!studentSelect"
+                    >
+                        Edit
+                    </button>
+                    <button
+                        mat-raised-button
+                        class="form-btn edit-btn"
+                        color="warn"
+                        type="button"
+                        [disabled]="!genreName"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </section>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>

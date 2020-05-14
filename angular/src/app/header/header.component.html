@@ -72,6 +72,17 @@
                     >Students</a
                 >
             </li>
+            <li
+                *ngIf="
+                    role === userRoles.LIBRARIAN || role === userRoles.MANAGER
+                "
+                class="main-header-item"
+                routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.EDIT_PAGE" class="navbar-link"
+                    >Editing</a
+                >
+            </li>
         </ul>
     </div>
 
@@ -150,6 +161,18 @@
                         class="mat-menu-item"
                     >
                         Students
+                    </a>
+                    <a
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.EDIT_PAGE"
+                        *ngIf="
+                            role === userRoles.LIBRARIAN ||
+                            role === userRoles.MANAGER
+                        "
+                        mat-menu-item
+                        class="mat-menu-item"
+                    >
+                        Editing
                     </a>
                 </div>
                 <button

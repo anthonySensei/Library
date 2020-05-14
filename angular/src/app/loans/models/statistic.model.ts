@@ -1,17 +1,12 @@
-import { Student } from '../../user/models/student.model';
 import { Book } from '../../main-page/models/book.model';
-import { Department } from '../../main-page/models/department.model';
-import { Librarian } from '../../user/models/librarian.model';
 
-export class Statistic {
+import { Loan } from './loan.model';
+
+export class Statistic extends Loan {
     id: number;
-    loanTime: Date;
-    returnedTime: Date;
-    student: Student;
-    librarian: Librarian;
     books: Book[];
-    book: Book;
-    department: Department;
 
-    constructor() {}
+    constructor() {
+        super();
+    }
 }

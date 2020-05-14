@@ -3,7 +3,7 @@ import { Author } from './author.model';
 import { Genre } from './genre.model';
 
 export class Book {
-    bookId: number;
+    id: number;
     isbn: number;
     name: string;
     author: Author;
@@ -28,7 +28,7 @@ export class Book {
         quantity: number,
         department: Department
     ) {
-        this.bookId = id;
+        this.id = id;
         this.isbn = isbn;
         this.name = name;
         this.author = author;

@@ -15,9 +15,10 @@ import { AuthInterceptor } from './auth/services/auth.interceptor.service';
 import { UsersModule } from './user/users.module';
 import { MainPageModule } from './main-page/main-page.module';
 import { LoansModule } from './loans/loans.module';
+import { EditPageComponent } from './edit-page/edit-page.component';
 
 @NgModule({
-    declarations: [AppComponent, ErrorPageComponent, HeaderComponent],
+    declarations: [AppComponent, ErrorPageComponent, HeaderComponent, EditPageComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

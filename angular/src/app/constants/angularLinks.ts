@@ -13,5 +13,6 @@ export enum AngularLinks {
     STUDENTS = 'students',
     LIBRARIANS = 'librarians',
     LIBRARIAN_SCHEDULE = 'librarian-schedule',
-    UNAVAILABLE_BOOKS = 'unavailable-books'
+    UNAVAILABLE_BOOKS = 'unavailable-books',
+    EDIT_PAGE = 'edit-page'
 }
