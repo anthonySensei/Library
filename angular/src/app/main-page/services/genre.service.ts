@@ -54,4 +54,24 @@ export class GenreService {
             })
         );
     }
+
+    ediGenreHttp(genreId: number, name: string) {
+        return this.http
+            .put(this.GENRES_URL, { genreId, name })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
+
+    deleteGenreHttp(genreId: number) {
+        return this.http
+            .delete(`${this.GENRES_URL}?genreId=${genreId}`)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
 }

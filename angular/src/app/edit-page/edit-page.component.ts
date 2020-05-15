@@ -11,6 +11,8 @@ import { MaterialService } from '../shared/services/material.service';
 import { Subscription } from 'rxjs';
 import { Student } from '../user/models/student.model';
 import { StudentService } from '../user/services/student.service';
+import { Response } from '../main-page/models/response.model';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 @Component({
     selector: 'app-edit-page',
@@ -22,8 +24,6 @@ export class EditPageComponent implements OnInit {
     authors: Author[];
     genres: Genre[];
     students: Student[];
-
-    responseSubscription: Subscription;
 
     departmentsFetchSubscription: Subscription;
     departmentChangeSubscription: Subscription;
@@ -43,6 +43,11 @@ export class EditPageComponent implements OnInit {
     studentSelect = null;
     studentReaderTicket = null;
     studentEmail = null;
+
+    response: Response;
+
+    snackbarDuration = 3000;
+    nothingToChange = 'Nothing to change';
 
     constructor(
         private bookService: BookService,
@@ -93,24 +98,241 @@ export class EditPageComponent implements OnInit {
         );
     }
 
+    getGenre(): Genre {
+        return this.genres.find(gen => gen.id === this.genreSelect);
+    }
+
+    getAuthor(): Author {
+        return this.authors.find(aut => aut.id === this.authorSelect);
+    }
+
+    getStudent(): Student {
+        return this.students.find(st => st.id === this.studentSelect);
+    }
+
+    getDepartment(): Department {
+        return this.departments.find(dep => dep.id === this.departmentSelect);
+    }
+
     setDepartmentAddress() {
-        const department = this.departments.find(
-            dep => dep.id === this.departmentSelect
-        );
-        this.departmentAddress = department.address;
+        this.departmentAddress = this.getDepartment().address;
     }
 
     setGenreName() {
-        const genre = this.genres.find(gen => gen.id === this.genreSelect);
-        this.genreName = genre.name;
+        this.genreName = this.getGenre().name;
     }
+
     setAuthorName() {
-        const author = this.authors.find(aut => aut.id === this.authorSelect);
-        this.authorName = author.name;
+        this.authorName = this.getAuthor().name;
     }
+
     setStudentData() {
-        const student = this.students.find(st => st.id === this.studentSelect);
-        this.studentReaderTicket = student.readerTicket;
-        this.studentEmail = student.email;
+        this.studentReaderTicket = this.getStudent().readerTicket;
+        this.studentEmail = this.getStudent().email;
+    }
+
+    editAuthor() {
+        if (!this.authorName) {
+            return;
+        }
+        if (this.authorName === this.getAuthor().name) {
+            this.nothingChangeHandle();
+            return;
+        }
+        this.authorService
+            .editAuthorHttp(this.authorSelect, this.authorName)
+            .subscribe(() => {
+                this.authorResponseHandler();
+            });
+    }
+
+    deleteAuthor() {
+        if (!this.authorSelect) {
+            return;
+        }
+        this.authorName = null;
+        this.authorService.deleteAuthorHttp(this.authorSelect).subscribe(() => {
+            this.authorResponseHandler();
+            this.authorName = null;
+            this.authorSelect = null;
+        });
+    }
+
+    authorResponseHandler() {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+            this.authorService.fetchAllAuthorsHttp().subscribe();
+            this.authors = this.authorService.getAuthors();
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
+    }
+
+    editDepartment() {
+        if (!this.departmentAddress) {
+            return;
+        }
+        if (this.departmentAddress === this.getDepartment().address) {
+            this.nothingChangeHandle();
+            return;
+        }
+        this.departmentService
+            .editDepartmentHttp(this.departmentSelect, this.departmentAddress)
+            .subscribe(() => {
+                this.departmentResponseHandler();
+            });
+    }
+
+    deleteDepartment() {
+        if (!this.departmentSelect) {
+            return;
+        }
+        this.departmentService
+            .deleteDepartmentHttp(this.departmentSelect)
+            .subscribe(() => {
+                this.departmentResponseHandler();
+                this.departmentAddress = null;
+                this.departmentSelect = null;
+            });
+    }
+
+    departmentResponseHandler() {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+            this.departmentService.fetchAllDepartmentsHttp().subscribe();
+            this.departments = this.departmentService.getDepartments();
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
+    }
+
+    editGenre() {
+        if (!this.genreName) {
+            return;
+        }
+        if (this.genreName === this.getGenre().name) {
+            this.nothingChangeHandle();
+            return;
+        }
+        this.genreService
+            .ediGenreHttp(this.genreSelect, this.genreName)
+            .subscribe(() => {
+                this.genreResponseHandler();
+            });
+    }
+
+    deleteGenre() {
+        if (!this.genreSelect) {
+            return;
+        }
+        this.genreService.deleteGenreHttp(this.genreSelect).subscribe(() => {
+            this.genreResponseHandler();
+            this.genreName = null;
+            this.genreSelect = null;
+        });
+    }
+
+    genreResponseHandler() {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+            this.genreService.fetchAllGenresHttp().subscribe();
+            this.genres = this.genreService.getGenres();
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
+    }
+
+    editStudent() {
+        if (!this.studentEmail || !this.studentReaderTicket) {
+            return;
+        }
+        if (
+            this.studentEmail === this.getStudent().email &&
+            this.studentReaderTicket === this.getStudent().readerTicket
+        ) {
+            this.nothingChangeHandle();
+            return;
+        }
+        this.studentService
+            .ediStudentHttp(
+                this.studentSelect,
+                this.studentEmail,
+                this.studentReaderTicket
+            )
+            .subscribe(() => {
+                this.studentResponseHandler();
+            });
+    }
+
+    deleteStudent() {
+        if (!this.studentSelect) {
+            return;
+        }
+        this.studentService
+            .deleteStudentHttp(this.studentSelect)
+            .subscribe(() => {
+                this.studentResponseHandler();
+                this.studentSelect = null;
+                this.studentEmail = null;
+                this.studentReaderTicket = null;
+            });
+    }
+
+    studentResponseHandler() {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+            this.studentService.getStudentsHttp().subscribe();
+            this.students = this.studentService.getStudents();
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
+    }
+
+    nothingChangeHandle() {
+        this.openSnackBar(
+            this.nothingToChange,
+            SnackBarClasses.Warn,
+            this.snackbarDuration
+        );
+    }
+
+    openSnackBar(message: string, style: string, duration: number) {
+        this.materialService.openSnackBar(message, style, duration);
     }
 }

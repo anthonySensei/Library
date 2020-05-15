@@ -54,4 +54,20 @@ export class AuthorService {
             })
         );
     }
+    editAuthorHttp(authorId: number, name: string) {
+        return this.http.put(this.AUTHORS_URL, { name, authorId }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+    deleteAuthorHttp(authorId: number) {
+        return this.http
+            .delete(`${this.AUTHORS_URL}?authorId=${authorId}`)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
 }
