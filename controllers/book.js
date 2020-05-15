@@ -59,7 +59,7 @@ const getCondition = (
     };
 };
 
-exports.getAllBooks = async (req, res) => {
+exports.getBooks = async (req, res) => {
     const page = +req.query.page || 1;
     const fromYear = +req.query.yFrom;
     const toYear = +req.query.yTo;
@@ -105,7 +105,7 @@ exports.getAllBooks = async (req, res) => {
             bookValues.image = base64Img.base64Sync(bookValues.image);
             if (bookValues.quantity > 0)
                 booksArr.push({
-                    bookId: bookValues.id,
+                    id: bookValues.id,
                     name: bookValues.name,
                     year: bookValues.year,
                     author: bookValues.author_.dataValues,
@@ -163,7 +163,7 @@ exports.getBook = async (req, res) => {
         book.dataValues.image = base64Img.base64Sync(book.dataValues.image);
 
         const bookData = {
-            bookId: bookValues.id,
+            id: bookValues.id,
             name: bookValues.name,
             author: bookValues.author_.dataValues,
             genre: bookValues.genre_.dataValues,
@@ -175,6 +175,34 @@ exports.getBook = async (req, res) => {
         };
         const data = {
             book: bookData,
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.getAllBooksISBN = async (req, res) => {
+    try {
+        const books = await Book.findAll();
+        const booksArr = [];
+        books.forEach(book => {
+            const bookData = book.get();
+            booksArr.push({
+                id: bookData.id,
+                isbn: bookData.isbn,
+                department: {
+                    id: bookData.departmentId
+                }
+            });
+        });
+        const data = {
+            books: booksArr,
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         helper.responseHandle(res, 200, data);

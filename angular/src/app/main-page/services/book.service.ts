@@ -15,6 +15,7 @@ import { serverLink } from '../../constants/serverLink';
 })
 export class BookService {
     BOOKS_URL = `${serverLink}/books`;
+    BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
     BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
 
     LOAN_BOOK_URL = `${serverLink}/loans`;
@@ -79,6 +80,14 @@ export class BookService {
                     this.setBooks(response.data.books);
                 })
             );
+    }
+
+    fetchBooksISBNsHttp() {
+        return this.http.get(this.BOOKS_ISBN_URL).pipe(
+            map((response: any) => {
+                this.setBooks(response.data.books);
+            })
+        );
     }
 
     getBookHttp(bookId: number) {

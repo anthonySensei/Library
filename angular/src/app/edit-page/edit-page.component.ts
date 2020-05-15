@@ -1,18 +1,26 @@
 import { Component, OnInit } from '@angular/core';
+
+import { Subscription } from 'rxjs';
+
 import { Department } from '../main-page/models/department.model';
 import { Author } from '../main-page/models/author.model';
 import { Genre } from '../main-page/models/genre.model';
+import { Student } from '../user/models/student.model';
+import { Response } from '../main-page/models/response.model';
+import { Book } from '../main-page/models/book.model';
+
 import { DepartmentService } from '../main-page/services/department.service';
 import { AuthorService } from '../main-page/services/author.service';
 import { GenreService } from '../main-page/services/genre.service';
 import { BookService } from '../main-page/services/book.service';
 import { ResponseService } from '../shared/services/response.service';
 import { MaterialService } from '../shared/services/material.service';
-import { Subscription } from 'rxjs';
-import { Student } from '../user/models/student.model';
 import { StudentService } from '../user/services/student.service';
-import { Response } from '../main-page/models/response.model';
+
 import { SnackBarClasses } from '../constants/snackBarClasses';
+import { AngularLinks } from '../constants/angularLinks';
+import { ActivatedRoute, Router } from '@angular/router';
+import { query } from '@angular/animations';
 
 @Component({
     selector: 'app-edit-page',
@@ -21,12 +29,16 @@ import { SnackBarClasses } from '../constants/snackBarClasses';
 })
 export class EditPageComponent implements OnInit {
     departments: Department[];
+    allBooks: Book[];
+    booksForSelect: Book[];
     authors: Author[];
     genres: Genre[];
     students: Student[];
 
     departmentsFetchSubscription: Subscription;
-    departmentChangeSubscription: Subscription;
+    departmentsChangeSubscription: Subscription;
+    booksFetchSubscription: Subscription;
+    booksChangeSubscription: Subscription;
     authorsFetchSubscription: Subscription;
     authorsChangeSubscription: Subscription;
     genresFetchSubscription: Subscription;
@@ -43,11 +55,14 @@ export class EditPageComponent implements OnInit {
     studentSelect = null;
     studentReaderTicket = null;
     studentEmail = null;
+    bookSelect = null;
 
     response: Response;
 
     snackbarDuration = 3000;
     nothingToChange = 'Nothing to change';
+
+    links = AngularLinks;
 
     constructor(
         private bookService: BookService,
@@ -56,7 +71,8 @@ export class EditPageComponent implements OnInit {
         private genreService: GenreService,
         private responseService: ResponseService,
         public materialService: MaterialService,
-        private studentService: StudentService
+        private studentService: StudentService,
+        private router: Router
     ) {}
 
     ngOnInit() {
@@ -67,9 +83,17 @@ export class EditPageComponent implements OnInit {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
+        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
             departments => {
                 this.departments = departments;
+            }
+        );
+        this.booksFetchSubscription = this.bookService
+            .fetchBooksISBNsHttp()
+            .subscribe();
+        this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
+            books => {
+                this.allBooks = books;
             }
         );
         this.authorsFetchSubscription = this.authorService
@@ -224,6 +248,39 @@ export class EditPageComponent implements OnInit {
         }
     }
 
+    editBook() {
+        if (!this.bookSelect || !this.departmentSelect) {
+            return;
+        }
+        this.router.navigate(['/', this.links.ADD_BOOK], {
+            queryParams: { id: this.bookSelect }
+        });
+    }
+    deleteBook() {
+        if (!this.departmentSelect || !this.bookSelect) {
+            return;
+        }
+    }
+
+    bookResponseHandler() {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+            this.bookService.fetchBooksISBNsHttp().subscribe();
+            this.allBooks = this.bookService.getBooks();
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
+    }
+
     editGenre() {
         if (!this.genreName) {
             return;
@@ -334,5 +391,11 @@ export class EditPageComponent implements OnInit {
 
     openSnackBar(message: string, style: string, duration: number) {
         this.materialService.openSnackBar(message, style, duration);
+    }
+
+    setBooksForSelect() {
+        this.booksForSelect = this.allBooks.filter(
+            book => book.department.id === this.departmentSelect
+        );
     }
 }
