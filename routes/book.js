@@ -26,4 +26,10 @@ router.put(
     bookController.editBook
 );
 
+router.delete(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    bookController.deleteBook
+);
+
 module.exports = router;

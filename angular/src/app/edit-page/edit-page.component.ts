@@ -256,10 +256,16 @@ export class EditPageComponent implements OnInit {
             queryParams: { id: this.bookSelect }
         });
     }
+
     deleteBook() {
         if (!this.departmentSelect || !this.bookSelect) {
             return;
         }
+        this.bookSelect = null;
+        this.departmentSelect = null;
+        this.bookService.deleteBookHttp(this.bookSelect).subscribe(() => {
+            this.bookResponseHandler();
+        });
     }
 
     bookResponseHandler() {

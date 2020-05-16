@@ -338,3 +338,22 @@ exports.editBook = async (req, res) => {
         );
     }
 };
+
+exports.deleteBook = async (req, res) => {
+    const bookId = req.query.bookId;
+    try {
+        const book = await Book.findOne({ where: { id: bookId } });
+        await book.destroy();
+        const data = {
+            isSuccessful: true,
+            message: successMessages.BOOK_SUCCESSFULLY_DELETED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isSuccessful: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 500, data);
+    }
+};

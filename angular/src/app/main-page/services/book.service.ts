@@ -130,6 +130,13 @@ export class BookService {
             })
         );
     }
+    deleteBookHttp(bookId: number) {
+        return this.http.delete(`${this.BOOKS_URL}?bookId=${bookId}`).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
 
     loanBookHttp(info) {
         return this.http.post(this.LOAN_BOOK_URL, info).pipe(
