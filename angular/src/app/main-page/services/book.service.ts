@@ -115,6 +115,22 @@ export class BookService {
         );
     }
 
+    editBookHttp(book: Book, imageToUploadBase64: string) {
+        const headers = new HttpHeaders();
+        const formData: FormData = new FormData();
+        headers.append('Content-Type', 'multipart/form-data');
+        formData.append(
+            'base64',
+            JSON.stringify({ image: imageToUploadBase64 })
+        );
+        formData.append('book_data', JSON.stringify(book));
+        return this.http.put(this.BOOKS_URL, formData, { headers }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+
     loanBookHttp(info) {
         return this.http.post(this.LOAN_BOOK_URL, info).pipe(
             map((response: any) => {

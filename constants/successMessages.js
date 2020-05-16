@@ -7,6 +7,7 @@ module.exports = {
     SUCCESSFULLY_INFO_UPDATED: 'User info has been successfully changed!',
     ACCOUNT_SUCCESSFULLY_CREATED: 'Account has successfully created',
     BOOK_SUCCESSFULLY_CREATED: 'Book has successfully created',
+    BOOK_SUCCESSFULLY_UPDATED: 'Book has successfully updated',
     AUTHOR_SUCCESSFULLY_CREATED: 'Author has successfully created',
     AUTHOR_SUCCESSFULLY_UPDATED: 'Author has successfully updated',
     AUTHOR_SUCCESSFULLY_DELETED: 'Author has successfully deleted',

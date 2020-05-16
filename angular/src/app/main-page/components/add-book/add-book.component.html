@@ -2,9 +2,9 @@
     <div class="form-content">
         <span class="page-title">New book</span>
         <hr style="background-color: #0d0d0d;" />
-        <div *ngIf="isLoading && editMode" style="text-align: center;">
-            <app-loading-spinner></app-loading-spinner>
-        </div>
+        <!--        <div *ngIf="isLoading && editMode" style="text-align: center;">-->
+        <!--            <app-loading-spinner></app-loading-spinner>-->
+        <!--        </div>-->
         <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="mainBookInfoForm">
                 <form [formGroup]="mainBookInfoForm">
@@ -18,7 +18,7 @@
                         />
                         <span matPrefix>ISBN </span>
                         <mat-error
-                                *ngIf="hasError('isbn', 'pattern') && !error"
+                            *ngIf="hasError('isbn', 'pattern') && !error"
                         >
                             ISBN is not valid
                         </mat-error>
@@ -199,7 +199,7 @@
             </mat-step>
             <mat-step>
                 <ng-template matStepLabel>Submit</ng-template>
-                <h4>
+                <h4 *ngIf="!editMode">
                     You are almost done. Please select image and finish adding.
                 </h4>
                 <div class="btn-group">
@@ -217,7 +217,9 @@
                         mat-raised-button
                         class="form-btn add-form-btn"
                         color="primary"
-                        (click)="onAddBook(stepper)"
+                        (click)="
+                            onAddBook(stepper)
+                        "
                     >
                         {{ editMode ? 'Update book' : 'Add book' }}
                     </button>

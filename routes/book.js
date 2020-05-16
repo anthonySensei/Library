@@ -20,4 +20,10 @@ router.post(
     bookController.addBook
 );
 
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    bookController.editBook
+);
+
 module.exports = router;

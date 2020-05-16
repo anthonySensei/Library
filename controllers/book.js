@@ -164,6 +164,8 @@ exports.getBook = async (req, res) => {
 
         const bookData = {
             id: bookValues.id,
+            isbn: bookValues.isbn,
+            quantity: bookValues.quantity,
             name: bookValues.name,
             author: bookValues.author_.dataValues,
             genre: bookValues.genre_.dataValues,
@@ -264,6 +266,67 @@ exports.addBook = async (req, res) => {
             const data = {
                 isSuccessful: true,
                 message: successMessages.BOOK_SUCCESSFULLY_CREATED
+            };
+            return helper.responseHandle(res, 200, data);
+        }
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.editBook = async (req, res) => {
+    const imageBase64 = JSON.parse(req.body.base64);
+    const bookData = JSON.parse(req.body.book_data);
+
+    if (!bookData && !imageBase64) {
+        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    if (imageBase64.image) {
+        bookData.image = base64Img.imgSync(
+            imageBase64.image,
+            '../images/',
+            uuidv4()
+        );
+    } else {
+        bookData.image = base64Img.imgSync(
+            bookData.image,
+            '../images/',
+            uuidv4()
+        );
+    }
+
+    try {
+        const count = await Book.count({
+            where: {
+                isbn: bookData.isbn,
+                departmentId: bookData.department.id,
+                id: { [Op.ne]: bookData.id }
+            }
+        });
+
+        if (count > 0) {
+            const data = {
+                isSuccessful: false,
+                message: errorMessages.ISBN_EXIST
+            };
+            return helper.responseHandle(res, 200, data);
+        } else {
+            const book = await Book.findOne({
+                where: {
+                    id: bookData.id
+                }
+            });
+
+            await book.update(bookData);
+
+            const data = {
+                isSuccessful: true,
+                message: successMessages.BOOK_SUCCESSFULLY_UPDATED
             };
             return helper.responseHandle(res, 200, data);
         }

@@ -25,6 +25,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
 import { ResponseService } from '../../../shared/services/response.service';
+import { MatHorizontalStepper } from '@angular/material';
 
 export interface DialogData {
     imageBase64: string;
@@ -168,6 +169,24 @@ export class AddBookComponent
             (queryParams: Params) => {
                 this.bookId = +queryParams.id;
                 this.editMode = queryParams.id != null;
+                if (this.editMode) {
+                    this.bookService.getBookHttp(this.bookId).subscribe();
+                    this.bookService.bookChanged.subscribe(book => {
+                        this.book = book;
+                        this.mainBookInfoForm.patchValue({
+                            isbn: this.book.isbn,
+                            name: this.book.name,
+                            quantity: this.book.quantity,
+                            address: this.book.department.id
+                        });
+                        this.bookDetailsForm.patchValue({
+                            author: this.book.author.id,
+                            genre: this.book.genre.id,
+                            year: this.book.year,
+                            description: this.book.description
+                        });
+                    });
+                }
             }
         );
     }
@@ -258,7 +277,7 @@ export class AddBookComponent
         });
     }
 
-    onAddBook(stepper) {
+    onAddBook(stepper: MatHorizontalStepper) {
         const isbn = this.mainBookInfoForm.value.isbn;
         const name = this.mainBookInfoForm.value.name;
         const authorId = this.bookDetailsForm.value.author;
@@ -297,9 +316,39 @@ export class AddBookComponent
             department
         );
         if (this.editMode) {
+            if (!this.imageToUploadBase64) {
+                book.image = this.book.image;
+            }
+            book.id = this.bookId;
+            book.status = this.book.status;
+            this.editBook(book, this.imageToUploadBase64, stepper);
         } else {
             this.addBookToLibrary(book, this.imageToUploadBase64, stepper);
         }
+    }
+
+    editBook(book: Book, image: string, stepper: MatHorizontalStepper) {
+        console.log(book);
+        this.bookService
+            .editBookHttp({ ...book, id: this.bookId }, image)
+            .subscribe(() => {
+                this.response = this.responseService.getResponse();
+                if (this.response.isSuccessful) {
+                    stepper.reset();
+                    this.router.navigate(['/books', this.bookId]);
+                    this.openSnackBar(
+                        this.response.message,
+                        SnackBarClasses.Success,
+                        this.snackbarDuration
+                    );
+                } else {
+                    stepper.selectedIndex = 0;
+                    this.error = this.response.message;
+                    this.mainBookInfoForm.controls.isbn.setErrors({
+                        incorrect: true
+                    });
+                }
+            });
     }
 
     addBookToLibrary(book: Book, imageToUploadBase64: string, stepper) {
