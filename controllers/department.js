@@ -55,6 +55,7 @@ exports.addDepartment = async (req, res) => {
             return helper.responseHandle(res, 200, data);
         }
     } catch (error) {
+        console.log(error);
         const data = {
             isSuccessful: false,
             message: errorMessages.SOMETHING_WENT_WRONG

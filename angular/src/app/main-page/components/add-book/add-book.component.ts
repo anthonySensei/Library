@@ -328,7 +328,6 @@ export class AddBookComponent
     }
 
     editBook(book: Book, image: string, stepper: MatHorizontalStepper) {
-        console.log(book);
         this.bookService
             .editBookHttp({ ...book, id: this.bookId }, image)
             .subscribe(() => {

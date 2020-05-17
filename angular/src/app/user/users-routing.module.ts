@@ -17,6 +17,7 @@ import { AngularLinks } from '../constants/angularLinks';
 import { LibrariansComponent } from './components/librarians/librarians.component';
 import { LibrarianDetailsComponent } from './components/librarian-details/librarian-details.component';
 import { OrdersComponent } from './components/orders/orders.component';
+import { AddStudentComponent } from './components/add-student/add-student.component';
 
 const routes: Routes = [
     {
@@ -30,6 +31,11 @@ const routes: Routes = [
         canDeactivate: [CanDeactivateGuard],
         component: AddLibrarianComponent,
         canActivate: [AuthGuard, ManagerGuard]
+    },
+    {
+        path: AngularLinks.ADD_STUDENT,
+        component: AddStudentComponent,
+        canActivate: [AuthGuard, LibrarianGuard]
     },
     {
         path: AngularLinks.STUDENTS,

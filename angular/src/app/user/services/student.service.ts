@@ -87,4 +87,14 @@ export class StudentService {
                 })
             );
     }
+
+    addStudentHttp(student: Student) {
+        return this.http
+            .post(this.STUDENTS_URL, student)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
 }

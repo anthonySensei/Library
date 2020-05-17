@@ -1,0 +1,74 @@
+<section class="edit-section">
+    <h3>Please select student and change fields to edit student:</h3>
+    <div class="input-groups">
+        <mat-form-field class="edit-field student-select">
+            <mat-label>Reader Ticket</mat-label>
+            <mat-select
+                name="genreName"
+                [(ngModel)]="studentSelect"
+                (ngModelChange)="setStudentData()"
+            >
+                <mat-option
+                    *ngFor="let student of students"
+                    [value]="student.id"
+                >
+                    {{ student.readerTicket }}
+                </mat-option>
+                <mat-divider></mat-divider>
+                <mat-option (click)="addStudent()">
+                    <b>Add Student</b>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field">
+            <mat-label>Reader ticket</mat-label>
+            <input matInput type="text" [(ngModel)]="studentReaderTicket" />
+            <button
+                mat-button
+                *ngIf="studentReaderTicket"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="studentReaderTicket = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="edit-field">
+            <mat-label>Email</mat-label>
+            <input matInput type="text" [(ngModel)]="studentEmail" />
+            <button
+                mat-button
+                *ngIf="studentEmail"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="studentEmail = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            [disabled]="!studentSelect"
+            (click)="editStudent()"
+        >
+            Edit
+        </button>
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="warn"
+            type="button"
+            [disabled]="!studentSelect"
+            (click)="deleteStudent()"
+        >
+            Delete
+        </button>
+    </div>
+</section>
