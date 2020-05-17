@@ -12,5 +12,15 @@ router.post(
     passport.authenticate('jwt', { session: false }),
     authorController.addAuthor
 );
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    authorController.editAuthor
+);
+router.delete(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    authorController.deleteAuthor
+);
 
 module.exports = router;

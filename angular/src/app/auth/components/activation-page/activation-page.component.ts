@@ -29,14 +29,13 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
         private responseService: ResponseService,
         private router: Router,
         private materialService: MaterialService
-    ) {
-        this.paramsSubscription = this.route.queryParams.subscribe(params => {
-            this.registrationToken = params.rtoken;
-        });
-    }
+    ) {}
 
     ngOnInit() {
         document.title = 'Activation page';
+        this.paramsSubscription = this.route.queryParams.subscribe(params => {
+            this.registrationToken = params.rtoken;
+        });
         this.subscriptionHandle();
     }
 

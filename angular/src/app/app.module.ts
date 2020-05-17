@@ -15,9 +15,15 @@ import { AuthInterceptor } from './auth/services/auth.interceptor.service';
 import { UsersModule } from './user/users.module';
 import { MainPageModule } from './main-page/main-page.module';
 import { LoansModule } from './loans/loans.module';
+import { EditPageComponent } from './edit-page/edit-page.component';
+import { AuthorSectionComponent } from './edit-page/author-section/author-section.component';
+import { BookSectionComponent } from './edit-page/book-section/book-section.component';
+import { DepartmentSectionComponent } from './edit-page/department-section/department-section.component';
+import { GenreSectionComponent } from './edit-page/genre-section/genre-section.component';
+import { StudentSectionComponent } from './edit-page/student-section/student-section.component';
 
 @NgModule({
-    declarations: [AppComponent, ErrorPageComponent, HeaderComponent],
+    declarations: [AppComponent, ErrorPageComponent, HeaderComponent, EditPageComponent, AuthorSectionComponent, BookSectionComponent, DepartmentSectionComponent, GenreSectionComponent, StudentSectionComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

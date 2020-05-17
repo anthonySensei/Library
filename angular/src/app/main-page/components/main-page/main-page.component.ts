@@ -79,7 +79,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.paramsHandle();
         this.subscriptionsHandle();
         this.user = this.authService.getUser();
-        this.books = this.bookService.getBooks();
     }
 
     paramsHandle() {
@@ -103,16 +102,16 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.filterValue
             )
             .subscribe();
-        this.books = this.bookService.getBooks();
-    }
-
-    subscriptionsHandle() {
         this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
             (books: Book[]) => {
-                this.books = books;
+                this.books = books || [];
                 this.isLoading = false;
             }
         );
+        this.books = this.bookService.getBooks() || [];
+    }
+
+    subscriptionsHandle() {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();

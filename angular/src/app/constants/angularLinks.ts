@@ -5,6 +5,7 @@ export enum AngularLinks {
     LOANS = 'loans',
     ORDERS = 'orders',
     ADD_LIBRARIAN = 'librarians/add',
+    ADD_STUDENT = 'students/add',
     LOGIN = 'login',
     ADD_BOOK = 'add-book',
     LOANS_CHART = 'loans-chart',
@@ -13,5 +14,6 @@ export enum AngularLinks {
     STUDENTS = 'students',
     LIBRARIANS = 'librarians',
     LIBRARIAN_SCHEDULE = 'librarian-schedule',
-    UNAVAILABLE_BOOKS = 'unavailable-books'
+    UNAVAILABLE_BOOKS = 'unavailable-books',
+    EDIT_PAGE = 'edit-page'
 }

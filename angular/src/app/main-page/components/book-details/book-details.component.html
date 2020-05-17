@@ -30,6 +30,20 @@
                 >
                     Loan
                 </button>
+                <a
+                    *ngIf="
+                        userRole === roles.MANAGER ||
+                        userRole === roles.LIBRARIAN
+                    "
+                    mat-stroked-button
+                    color="primary"
+                    class="btn btn-green"
+                    matTooltip="Loan book"
+                    [routerLink]="['/', links.ADD_BOOK]"
+                    [queryParams]="{ id: book.id }"
+                >
+                    Edit book
+                </a>
                 <button
                     *ngIf="userRole === roles.STUDENT"
                     mat-stroked-button

@@ -20,6 +20,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatPaginatorModule, MatSortModule } from '@angular/material';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -29,8 +31,6 @@ import { DiscardChangesModalComponent } from './discard-changes-modal/discard-ch
 import { CanDeactivateGuard } from './services/can-deactivate-guard.service';
 
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
-
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
 
 import { LineChartModule } from '@swimlane/ngx-charts';
 
@@ -69,7 +69,8 @@ import { LineChartModule } from '@swimlane/ngx-charts';
         MatPaginatorModule,
         MatTabsModule,
         LineChartModule,
-        MatStepperModule
+        MatStepperModule,
+        MatExpansionModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

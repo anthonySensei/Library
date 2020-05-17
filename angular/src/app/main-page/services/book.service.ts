@@ -15,6 +15,7 @@ import { serverLink } from '../../constants/serverLink';
 })
 export class BookService {
     BOOKS_URL = `${serverLink}/books`;
+    BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
     BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
 
     LOAN_BOOK_URL = `${serverLink}/loans`;
@@ -81,6 +82,14 @@ export class BookService {
             );
     }
 
+    fetchBooksISBNsHttp() {
+        return this.http.get(this.BOOKS_ISBN_URL).pipe(
+            map((response: any) => {
+                this.setBooks(response.data.books);
+            })
+        );
+    }
+
     getBookHttp(bookId: number) {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
@@ -100,6 +109,29 @@ export class BookService {
         formData.append('base64', imageToUploadBase64);
         formData.append('book_data', JSON.stringify(book));
         return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+
+    editBookHttp(book: Book, imageToUploadBase64: string) {
+        const headers = new HttpHeaders();
+        const formData: FormData = new FormData();
+        headers.append('Content-Type', 'multipart/form-data');
+        formData.append(
+            'base64',
+            JSON.stringify({ image: imageToUploadBase64 })
+        );
+        formData.append('book_data', JSON.stringify(book));
+        return this.http.put(this.BOOKS_URL, formData, { headers }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+    deleteBookHttp(bookId: number) {
+        return this.http.delete(`${this.BOOKS_URL}?bookId=${bookId}`).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
             })

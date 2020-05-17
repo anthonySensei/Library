@@ -1,10 +1,10 @@
-export class Student {
+import { User } from '../../auth/models/user.model';
+import { UserRoles } from '../../constants/userRoles';
+import { Role } from './role.model';
+
+export class Student extends User {
     id: number;
-    name: string;
-    email: string;
-    profileImage: string;
     readerTicket: string;
-    password: string;
     status?: string;
     loans?;
     statistic?;
@@ -19,12 +19,9 @@ export class Student {
         password: string,
         status?: string
     ) {
+        super(name, email, image, password, new Role(null, UserRoles.STUDENT));
         this.id = id;
-        this.name = name;
-        this.email = email;
-        this.profileImage = image;
         this.readerTicket = ticket;
-        this.password = password;
         this.status = status;
     }
 }

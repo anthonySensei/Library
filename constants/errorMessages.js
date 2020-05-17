@@ -15,6 +15,7 @@ module.exports = {
     DIFFERENT_PASSWORDS: 'Passwords are different!',
     WRONG_OLD_PASSWORD: 'Wrong old password',
     AUTHOR_EXIST: 'Author with this name has already existed.',
+    DEPARTMENTS_EXIST: 'Department with this address has already existed.',
     GENRE_EXIST: 'Genre has already existed.',
     ISBN_EXIST: 'Book with this isbn exist in this department'
 };

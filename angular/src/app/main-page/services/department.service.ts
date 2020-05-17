@@ -9,6 +9,7 @@ import { Department } from '../models/department.model';
 import { ResponseService } from '../../shared/services/response.service';
 
 import { serverLink } from '../../constants/serverLink';
+import { Author } from '../models/author.model';
 
 @Injectable({
     providedIn: 'root'
@@ -43,6 +44,32 @@ export class DepartmentService {
             .pipe(
                 map((response: any) => {
                     this.setDepartments(response.data.departments);
+                })
+            );
+    }
+
+    addDepartmentHttp(department: Department) {
+        return this.http.post(this.DEPARTMENTS_URL, { department }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+    editDepartmentHttp(departmentId: number, address: string) {
+        return this.http
+            .put(this.DEPARTMENTS_URL, { departmentId, address })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
+    deleteDepartmentHttp(departmentId: number) {
+        return this.http
+            .delete(`${this.DEPARTMENTS_URL}?departmentId=${departmentId}`)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
                 })
             );
     }

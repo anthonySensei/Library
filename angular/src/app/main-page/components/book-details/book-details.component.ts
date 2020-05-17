@@ -47,6 +47,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     readerTicket: string;
 
     response: Response;
+    links = AngularLinks;
 
     constructor(
         private route: ActivatedRoute,

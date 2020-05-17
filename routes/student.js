@@ -14,6 +14,18 @@ router.get(
     studentController.getStudents
 );
 
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    studentController.editStudent
+);
+
+router.delete(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    studentController.deleteStudent
+);
+
 router.get(
     studentStudentUrl,
     passport.authenticate('jwt', { session: false }),

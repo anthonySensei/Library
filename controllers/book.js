@@ -59,7 +59,7 @@ const getCondition = (
     };
 };
 
-exports.getAllBooks = async (req, res) => {
+exports.getBooks = async (req, res) => {
     const page = +req.query.page || 1;
     const fromYear = +req.query.yFrom;
     const toYear = +req.query.yTo;
@@ -105,7 +105,7 @@ exports.getAllBooks = async (req, res) => {
             bookValues.image = base64Img.base64Sync(bookValues.image);
             if (bookValues.quantity > 0)
                 booksArr.push({
-                    bookId: bookValues.id,
+                    id: bookValues.id,
                     name: bookValues.name,
                     year: bookValues.year,
                     author: bookValues.author_.dataValues,
@@ -163,7 +163,9 @@ exports.getBook = async (req, res) => {
         book.dataValues.image = base64Img.base64Sync(book.dataValues.image);
 
         const bookData = {
-            bookId: bookValues.id,
+            id: bookValues.id,
+            isbn: bookValues.isbn,
+            quantity: bookValues.quantity,
             name: bookValues.name,
             author: bookValues.author_.dataValues,
             genre: bookValues.genre_.dataValues,
@@ -175,6 +177,34 @@ exports.getBook = async (req, res) => {
         };
         const data = {
             book: bookData,
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.getAllBooksISBN = async (req, res) => {
+    try {
+        const books = await Book.findAll();
+        const booksArr = [];
+        books.forEach(book => {
+            const bookData = book.get();
+            booksArr.push({
+                id: bookData.id,
+                isbn: bookData.isbn,
+                department: {
+                    id: bookData.departmentId
+                }
+            });
+        });
+        const data = {
+            books: booksArr,
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         helper.responseHandle(res, 200, data);
@@ -245,5 +275,85 @@ exports.addBook = async (req, res) => {
             500,
             errorMessages.SOMETHING_WENT_WRONG
         );
+    }
+};
+
+exports.editBook = async (req, res) => {
+    const imageBase64 = JSON.parse(req.body.base64);
+    const bookData = JSON.parse(req.body.book_data);
+
+    if (!bookData && !imageBase64) {
+        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    if (imageBase64.image) {
+        bookData.image = base64Img.imgSync(
+            imageBase64.image,
+            '../images/',
+            uuidv4()
+        );
+    } else {
+        bookData.image = base64Img.imgSync(
+            bookData.image,
+            '../images/',
+            uuidv4()
+        );
+    }
+
+    try {
+        const count = await Book.count({
+            where: {
+                isbn: bookData.isbn,
+                departmentId: bookData.department.id,
+                id: { [Op.ne]: bookData.id }
+            }
+        });
+
+        if (count > 0) {
+            const data = {
+                isSuccessful: false,
+                message: errorMessages.ISBN_EXIST
+            };
+            return helper.responseHandle(res, 200, data);
+        } else {
+            const book = await Book.findOne({
+                where: {
+                    id: bookData.id
+                }
+            });
+
+            await book.update(bookData);
+
+            const data = {
+                isSuccessful: true,
+                message: successMessages.BOOK_SUCCESSFULLY_UPDATED
+            };
+            return helper.responseHandle(res, 200, data);
+        }
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.deleteBook = async (req, res) => {
+    const bookId = req.query.bookId;
+    try {
+        const book = await Book.findOne({ where: { id: bookId } });
+        await book.destroy();
+        const data = {
+            isSuccessful: true,
+            message: successMessages.BOOK_SUCCESSFULLY_DELETED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        const data = {
+            isSuccessful: false,
+            message: errorMessages.SOMETHING_WENT_WRONG
+        };
+        return helper.responseHandle(res, 500, data);
     }
 };

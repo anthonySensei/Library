@@ -11,5 +11,15 @@ router.post(
     passport.authenticate('jwt', { session: false }),
     genreController.addGenre
 );
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    genreController.editGenre
+);
+router.delete(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    genreController.deleteGenre
+);
 
 module.exports = router;

@@ -1,13 +1,9 @@
 import { Role } from './role.model';
 import { Department } from '../../main-page/models/department.model';
+import { User } from '../../auth/models/user.model';
 
-export class Librarian {
+export class Librarian extends User {
     id: number;
-    name: string;
-    email: string;
-    profileImage: string;
-    password: string;
-    role: Role;
     department: Department;
     loans?;
     schedule?;
@@ -21,13 +17,9 @@ export class Librarian {
         password: string,
         role: Role,
         department: Department
-) {
+    ) {
+        super(name, email, image, password, role);
         this.id = id;
-        this.name = name;
-        this.email = email;
-        this.profileImage = image;
-        this.password = password;
-        this.role = role;
         this.department = department;
     }
 }

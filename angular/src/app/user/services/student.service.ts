@@ -6,6 +6,7 @@ import { Subject } from 'rxjs';
 import { Student } from '../models/student.model';
 
 import { serverLink } from '../../constants/serverLink';
+import { ResponseService } from '../../shared/services/response.service';
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +21,10 @@ export class StudentService {
     student: Student;
     studentChanged = new Subject<Student>();
 
-    constructor(private http: HttpClient) {}
+    constructor(
+        private http: HttpClient,
+        private responseService: ResponseService
+    ) {}
 
     setStudents(students: Student[]) {
         this.students = students;
@@ -54,10 +58,42 @@ export class StudentService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`, { headers })
+            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`, {
+                headers
+            })
             .pipe(
                 map((response: any) => {
                     this.setStudent(response.data.student);
+                })
+            );
+    }
+
+    ediStudentHttp(studentId: number, email: string, readerTicket: string) {
+        return this.http
+            .put(this.STUDENTS_URL, { studentId, email, readerTicket })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
+
+    deleteStudentHttp(studentId: number) {
+        return this.http
+            .delete(`${this.STUDENTS_URL}?studentId=${studentId}`)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
+
+    addStudentHttp(student: Student) {
+        return this.http
+            .post(this.STUDENTS_URL, student)
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
                 })
             );
     }
