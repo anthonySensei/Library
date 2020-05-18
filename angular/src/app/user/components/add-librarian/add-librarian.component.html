@@ -2,7 +2,10 @@
     <div class="form-content">
         <span class="page-title">Add librarian</span>
         <hr style="background-color: #0d0d0d;" />
-        <form (ngSubmit)="onCreateUser()" [formGroup]="createUserForm">
+        <form
+            (ngSubmit)="onCreateLibrarian()"
+            [formGroup]="createLibrarianForm"
+        >
             <mat-form-field class="form-input d-block">
                 <mat-label>Email</mat-label>
                 <input
@@ -11,6 +14,7 @@
                     name="email"
                     formControlName="email"
                     placeholder="Ex. example@mail.com"
+                    required
                 />
                 <mat-error *ngIf="error">
                     {{ error }}
@@ -28,13 +32,41 @@
                     Email is not valid
                 </mat-error>
             </mat-form-field>
+            <mat-form-field class="form-input d-block">
+                <mat-label>Name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="name"
+                    formControlName="name"
+                    placeholder="Ex. Sergei Bunin"
+                    required
+                />
+                <mat-error *ngIf="hasError('email', 'required') && !error">
+                    Name is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="form-input d-block">
+                <mat-label>Department address</mat-label>
+                <mat-select name="department" formControlName="department" required>
+                    <mat-option>-</mat-option>
+                    <mat-option
+                        *ngFor="let department of departments"
+                        [value]="department.id"
+                        >{{ department.address }}</mat-option
+                    >
+                </mat-select>
+                <mat-error *ngIf="hasError('department', 'required') && !error">
+                    Department is required
+                </mat-error>
+            </mat-form-field>
             <div class="btn-group">
                 <button
                     mat-raised-button
                     color="primary"
                     class="form-button"
                     type="submit"
-                    [disabled]="createUserForm.invalid"
+                    [disabled]="createLibrarianForm.invalid"
                 >
                     Add
                 </button>

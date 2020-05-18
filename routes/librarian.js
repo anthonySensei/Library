@@ -20,4 +20,10 @@ router.get(
     librarianController.getLibrarian
 );
 
+router.post(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    librarianController.addLibrarian
+);
+
 module.exports = router;

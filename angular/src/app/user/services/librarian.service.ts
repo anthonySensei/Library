@@ -46,10 +46,8 @@ export class LibrarianService {
         return this.librarian;
     }
 
-    addLibrarianHttp(email: string) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.post(this.LIBRARIANS_URL, email, { headers }).pipe(
+    addLibrarianHttp(librarianData) {
+        return this.http.post(this.LIBRARIANS_URL, librarianData).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
             })
@@ -70,12 +68,9 @@ export class LibrarianService {
         const headers = new HttpHeaders();
         headers.append('Content-type', 'application/json');
         return this.http
-            .get(
-                `${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`,
-                {
-                    headers
-                }
-            )
+            .get(`${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`, {
+                headers
+            })
             .pipe(
                 map((response: any) => {
                     this.setLibrarian(response.data.librarian);
