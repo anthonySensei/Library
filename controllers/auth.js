@@ -17,14 +17,11 @@ const successMessages = require('../constants/successMessages');
 const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
+const passwordGenerator = require('../helper/generatePassword');
 
 const base64Img = require('base64-img');
 
 const sessionDuration = 3600 * 12;
-
-const lengthOfGeneratedPassword = 8;
-const charsetOfGeneratedPassword =
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 exports.postLoginUser = (req, res, next) => {
     passport.authenticate('local', async (err, user) => {
@@ -131,7 +128,7 @@ exports.postCreateUser = async (req, res, next) => {
     if (req.body.password) {
         password = req.body.password;
     } else {
-        password = generatePassword();
+        password = passwordGenerator.generatePassword();
         creatingStudentByLibrarian = true;
     }
     if (!email || !password || !readerTicket || !name) {
@@ -290,12 +287,3 @@ exports.postCheckRegistrationToken = async (req, res, next) => {
         return helper.responseHandle(res, 400, data);
     }
 };
-
-function generatePassword() {
-    let charset = charsetOfGeneratedPassword,
-        retVal = '';
-    for (let i = 0, n = charset.length; i < lengthOfGeneratedPassword; ++i) {
-        retVal += charset.charAt(Math.floor(Math.random() * n));
-    }
-    return retVal;
-}

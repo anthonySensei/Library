@@ -12,18 +12,23 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { LibrarianService } from '../../services/librarian.service';
 import { Response } from '../../../main-page/models/response.model';
 import { ResponseService } from '../../../shared/services/response.service';
+import { DepartmentService } from '../../../main-page/services/department.service';
+import { Department } from '../../../main-page/models/department.model';
 
 @Component({
     selector: 'app-create-user',
     templateUrl: './add-librarian.component.html'
 })
 export class AddLibrarianComponent implements OnInit, OnDestroy {
-    createUserForm: FormGroup;
+    createLibrarianForm: FormGroup;
+
+    departments: Department[];
 
     discard = false;
 
-    JSONSubscription: Subscription;
-    createUserSubscription: Subscription;
+    createLibrarianSubscription: Subscription;
+    departmentChangeSubscription: Subscription;
+    departmentFetchSubscription: Subscription;
 
     error: string = null;
 
@@ -41,44 +46,67 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         private responseService: ResponseService,
         private router: Router,
         private materialService: MaterialService,
-        private validationService: ValidationService
+        private validationService: ValidationService,
+        private departmentService: DepartmentService
     ) {}
 
     ngOnInit() {
-        document.title = 'Add user';
+        document.title = 'Add librarian';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
+        this.departmentsSubscriptionHandle();
     }
 
     initializeForm() {
-        this.createUserForm = new FormGroup({
+        this.createLibrarianForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,
                 Validators.email,
                 Validators.pattern(this.emailValidation)
-            ])
+            ]),
+            name: new FormControl(null, [Validators.required]),
+            department: new FormControl(null, [Validators.required])
         });
     }
 
-    onCreateUser() {
-        const email = this.createUserForm.value.email;
-        if (this.createUserForm.invalid) {
+    departmentsSubscriptionHandle() {
+        this.departmentFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
+            departments => {
+                this.departments = departments;
+            }
+        );
+    }
+
+    onCreateLibrarian() {
+        const email = this.createLibrarianForm.value.email;
+        const departmentId = this.createLibrarianForm.value.department;
+        const name = this.createLibrarianForm.value.name;
+        if (this.createLibrarianForm.invalid) {
             return;
         }
+
         if (!this.emailValidation.test(email)) {
             return;
         }
-        this.createUserSubscription = this.librarianService
-            .addLibrarianHttp(email)
+
+        this.createLibrarianSubscription = this.librarianService
+            .addLibrarianHttp({
+                email,
+                departmentId,
+                name
+            })
             .subscribe(() => {
                 this.response = this.responseService.getResponse();
                 if (!this.response.isSuccessful) {
                     this.error = this.response.message;
-                    this.createUserForm.controls.email.setErrors({
+                    this.createLibrarianForm.controls.email.setErrors({
                         incorrect: true
                     });
                 } else {
-                    this.router.navigate(['/books']);
+                    this.router.navigate(['/librarians']);
                     this.openSnackBar(
                         this.response.message,
                         SnackBarClasses.Success,
@@ -89,7 +117,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.createUserForm.touched) {
+        if (this.createLibrarianForm.touched && !this.response.isSuccessful) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged
@@ -101,7 +129,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     hasError(controlName: string, errorName: string) {
-        return this.createUserForm.controls[controlName].hasError(errorName);
+        return this.createLibrarianForm.controls[controlName].hasError(errorName);
     }
 
     openSnackBar(message: string, style: string, duration: number) {
@@ -109,8 +137,8 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.createUserSubscription) {
-            this.createUserSubscription.unsubscribe();
+        if (this.createLibrarianSubscription) {
+            this.createLibrarianSubscription.unsubscribe();
         }
     }
 }

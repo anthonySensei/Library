@@ -1,16 +1,14 @@
-const Book = require('../models/book');
 const Librarian = require('../models/librarian');
-const Loan = require('../models/loan');
 const Department = require('../models/department');
 const Role = require('../models/role');
 const Schedule = require('../models/schedule');
-const Student = require('../models/student');
 
 const loanController = require('./loan');
 
 const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
+const passwordGenerator = require('../helper/generatePassword');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
@@ -80,16 +78,20 @@ exports.getLibrarians = async (req, res) => {
                     schedule: librarianSchedule
                 };
                 librariansArr.push(librarianData);
-                const data = {
-                    message: successMessages.SUCCESSFULLY_FETCHED,
-                    librarians: librariansArr
-                };
-                return helper.responseHandle(res, 200, data);
             }
         } catch (error) {
-            return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.SOMETHING_WENT_WRONG
+            );
         }
     }
+    const data = {
+        message: successMessages.SUCCESSFULLY_FETCHED,
+        librarians: librariansArr
+    };
+    return helper.responseHandle(res, 200, data);
 };
 
 exports.getLibrarian = async (req, res) => {
@@ -112,7 +114,10 @@ exports.getLibrarian = async (req, res) => {
         const librarianSchedule = await getLibrarianSchedule(
             librarianValues.id
         );
-        const librarianLoans = await loanController.getLoans(librarianValues.id, models.LIBRARIAN);
+        const librarianLoans = await loanController.getLoans(
+            librarianValues.id,
+            models.LIBRARIAN
+        );
         const librarianStatistic = await loanController.getLoanStatistic(
             librarianLoans
         );
@@ -131,6 +136,48 @@ exports.getLibrarian = async (req, res) => {
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
             librarian: librarianData
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(res, 400, err);
+    }
+};
+
+exports.addLibrarian = async (req, res) => {
+    const email = req.body.email;
+    const departmentId = req.body.departmentId;
+    const name = req.body.name;
+
+    if (!email || !departmentId || !name)
+        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+
+    try {
+        const librarian = await Librarian.findOne({
+            where: {
+                email: email
+            }
+        });
+        if (librarian) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+            );
+        }
+
+        const newLibrarian = await Librarian.create({
+            name: name,
+            email: email,
+            departmentId: departmentId,
+            password: passwordGenerator.generatePassword()
+        });
+        await Role.create({
+            librarian_id: newLibrarian.get().id,
+            role: roles.LIBRARIAN
+        });
+        const data = {
+            isSuccessful: true,
+            message: successMessages.LIBRARIAN_SUCCESSFULLY_CREATED
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

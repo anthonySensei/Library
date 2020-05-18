@@ -39,7 +39,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     studentEmail = null;
     newStudentReaderTicket = null;
     newStudentEmail = null;
-    newStudentName = null;
 
     error = null;
 

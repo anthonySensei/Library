@@ -4,9 +4,11 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 import { LibrarianService } from '../../services/librarian.service';
+
 import { AngularLinks } from '../../../constants/angularLinks';
 
 import { Librarian } from '../../models/librarian.model';
+
 import {
     animate,
     state,
@@ -18,6 +20,7 @@ import {
 @Component({
     selector: 'app-librarians',
     templateUrl: './librarians.component.html',
+    styleUrls: ['../../../app.component.sass'],
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),
