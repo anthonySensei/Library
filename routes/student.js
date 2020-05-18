@@ -26,6 +26,12 @@ router.delete(
     studentController.deleteStudent
 );
 
+router.post(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    studentController.addStudent
+);
+
 router.get(
     studentStudentUrl,
     passport.authenticate('jwt', { session: false }),

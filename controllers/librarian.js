@@ -9,6 +9,7 @@ const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
 const passwordGenerator = require('../helper/generatePassword');
+const checkUniqueness = require('../helper/checkUniqueness');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
@@ -133,14 +134,12 @@ exports.getLibrarian = async (req, res) => {
             loans: librarianLoans,
             statistic: librarianStatistic
         };
-        console.log(librarianData);
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
             librarian: librarianData
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        console.log(err);
         return helper.responseErrorHandle(res, 400, err);
     }
 };
@@ -154,12 +153,8 @@ exports.addLibrarian = async (req, res) => {
         return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
 
     try {
-        const librarian = await Librarian.findOne({
-            where: {
-                email: email
-            }
-        });
-        if (librarian) {
+        const isNotUnique = await checkUniqueness.checkEmail(email);
+        if (isNotUnique) {
             return helper.responseErrorHandle(
                 res,
                 400,

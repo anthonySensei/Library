@@ -1,1 +1,110 @@
-<p>add-student works!</p>
+<div class="wrapper fadeInDown">
+    <div class="form-content">
+        <span class="page-title">Add student</span>
+        <hr style="background-color: #0d0d0d;" />
+        <form (ngSubmit)="onCreateStudent()" [formGroup]="createStudentForm">
+            <mat-form-field class="form-input d-block">
+                <mat-label>Reader ticket</mat-label>
+                <input
+                    matInput
+                    type="email"
+                    name="readerTicket"
+                    formControlName="readerTicket"
+                    placeholder="Ex. 1274812042"
+                    required
+                />
+                <mat-error *ngIf="readerTicketError && !emailError && !error">
+                    {{ readerTicketError }}
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        hasError('readerTicket', 'required') &&
+                        !error &&
+                        !emailError &&
+                        !readerTicketError
+                    "
+                >
+                    Reader ticket is required
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        (hasError('email', 'email') ||
+                            hasError('email', 'pattern')) &&
+                        !error &&
+                        !emailError &&
+                        !readerTicketError
+                    "
+                >
+                    Reader ticket is not valid
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="form-input d-block">
+                <mat-label>Email</mat-label>
+                <input
+                    matInput
+                    type="email"
+                    name="email"
+                    formControlName="email"
+                    placeholder="Ex. example@mail.com"
+                    required
+                />
+                <mat-error *ngIf="emailError && !readerTicketError && !error">
+                    {{ emailError }}
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        hasError('email', 'required') &&
+                        !error &&
+                        !readerTicketError &&
+                        !emailError
+                    "
+                >
+                    Email is required
+                </mat-error>
+                <mat-error
+                    *ngIf="
+                        (hasError('email', 'email') ||
+                            hasError('email', 'pattern')) &&
+                        !error &&
+                        !readerTicketError &&
+                        !emailError
+                    "
+                >
+                    Email is not valid
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="form-input d-block">
+                <mat-label>Name</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    name="name"
+                    formControlName="name"
+                    placeholder="Ex. Sergei Bunin"
+                    required
+                />
+                <mat-error
+                    *ngIf="
+                        hasError('email', 'required') &&
+                        !error &&
+                        !readerTicketError &&
+                        !emailError
+                    "
+                >
+                    Name is required
+                </mat-error>
+            </mat-form-field>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    color="primary"
+                    class="form-button"
+                    type="submit"
+                    [disabled]="createStudentForm.invalid"
+                >
+                    Add
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -34,6 +34,7 @@ const routes: Routes = [
     },
     {
         path: AngularLinks.ADD_STUDENT,
+        canDeactivate: [CanDeactivateGuard],
         component: AddStudentComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },

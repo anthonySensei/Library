@@ -4,17 +4,21 @@ const Op = Sequelize.Op;
 const Student = require('../models/student');
 const Department = require('../models/department');
 const Order = require('../models/order');
-const Loan = require('../models/loan');
 const Book = require('../models/book');
 const Librarian = require('../models/librarian');
 
 const helper = require('../helper/responseHandle');
+const checkUniqueness = require('../helper/checkUniqueness');
+const passwordGenerator = require('../helper/generatePassword');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 
 const loanController = require('./loan');
+
 const models = require('../constants/models');
+const roles = require('../constants/roles');
+const statuses = require('../constants/userStatuses');
 
 const getStudentOrders = async studentId => {
     try {
@@ -205,3 +209,95 @@ exports.deleteStudent = async (req, res) => {
         return helper.responseHandle(res, 500, data);
     }
 };
+
+exports.addStudent = async (req, res) => {
+    const email = req.body.email;
+    const readerTicket = req.body.readerTicket;
+    const name = req.body.name;
+    if (!email || !readerTicket || !name)
+        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    try {
+        const isNotUniqueReaderTicket = await checkUniqueness.checkReaderTicket(
+            readerTicket
+        );
+        if (isNotUniqueReaderTicket) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.READER_TICKET_ALREADY_IN_USE
+            );
+        }
+        const isNotUniqueEmail = await checkUniqueness.checkEmail(email);
+        if (isNotUniqueEmail) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+            );
+        }
+        await createStudent(
+            roles.STUDENT,
+            email,
+            name,
+            readerTicket,
+            null,
+            passwordGenerator.generatePassword(),
+            statuses.ACTIVATED,
+            res
+        );
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            5000,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+const createStudent = async (
+    userRole,
+    email,
+    name,
+    readerTicket,
+    registrationToken,
+    password,
+    status,
+    res
+) => {
+    let newStudent;
+    if (registrationToken) {
+        newStudent = new Student({
+            email: email,
+            name: name,
+            reader_ticket: readerTicket,
+            registration_token: registrationToken,
+            status: status,
+            password: password
+        });
+    } else {
+        newStudent = new Student({
+            email: email,
+            name: name,
+            reader_ticket: readerTicket,
+            status: status,
+            password: password
+        });
+    }
+
+    try {
+        await newStudent.save();
+        const data = {
+            isSuccessful: true,
+            message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.createStudent = createStudent;
