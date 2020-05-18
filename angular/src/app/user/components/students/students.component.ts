@@ -17,6 +17,8 @@ import { StudentService } from '../../services/student.service';
 @Component({
     selector: 'app-users',
     templateUrl: './students.component.html',
+    styleUrls: ['../../../app.component.sass'],
+
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),

@@ -88,7 +88,7 @@ export class StudentService {
             );
     }
 
-    addStudentHttp(student: Student) {
+    addStudentHttp(student) {
         return this.http
             .post(this.STUDENTS_URL, student)
             .pipe(

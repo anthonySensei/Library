@@ -1,8 +1,17 @@
-<div style="width: 1000px; margin: 20px auto;">
+<div class="table-section">
     <mat-form-field>
         <mat-label>Filter</mat-label>
         <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" />
     </mat-form-field>
+    <a
+        mat-stroked-button
+        color="primary"
+        class="btn add-btn"
+        matTooltip="Add student"
+        [routerLink]="'/' + links.ADD_STUDENT"
+    >
+        <i class="material-icons">add</i> Add student
+    </a>
     <table
         mat-table
         [dataSource]="dataSource"
@@ -87,7 +96,9 @@
                             color="primary"
                             class="user-link-button"
                             matTooltip="More"
-                            [routerLink]="'/' + links.STUDENTS + '/' + element.id"
+                            [routerLink]="
+                                '/' + links.STUDENTS + '/' + element.id
+                            "
                         >
                             <mat-icon>arrow_forward_ios</mat-icon>
                         </a>

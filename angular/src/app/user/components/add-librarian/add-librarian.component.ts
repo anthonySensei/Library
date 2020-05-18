@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../../../auth/services/auth.service';
 import { ValidationService } from '../../../shared/services/validation.service';
 import { MaterialService } from '../../../shared/services/material.service';
 
@@ -14,6 +13,7 @@ import { Response } from '../../../main-page/models/response.model';
 import { ResponseService } from '../../../shared/services/response.service';
 import { DepartmentService } from '../../../main-page/services/department.service';
 import { Department } from '../../../main-page/models/department.model';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-create-user',
@@ -42,7 +42,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     discardChanged = new Subject<boolean>();
 
     constructor(
-        private authService: AuthService,
         private librarianService: LibrarianService,
         private responseService: ResponseService,
         private router: Router,
@@ -108,7 +107,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
                     });
                 } else {
                     this.done = true;
-                    this.router.navigate(['/librarians']);
+                    this.router.navigate(['/', AngularLinks.LIBRARIANS]);
                     this.openSnackBar(
                         this.response.message,
                         SnackBarClasses.Success,
