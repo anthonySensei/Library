@@ -1,12 +1,15 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Student } from '../../models/student.model';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute, Params } from '@angular/router';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { ActivatedRoute, Params } from '@angular/router';
+
+import { Subscription } from 'rxjs';
+
+import { Student } from '../../models/student.model';
 import { Loan } from '../../../loans/models/loan.model';
+import { Order } from '../../models/order.model';
+
 import { LoansService } from '../../../loans/services/loans.service';
 import { StudentService } from '../../services/student.service';
-import { Order } from '../../models/order.model';
 
 @Component({
     selector: 'app-user-details',
@@ -94,8 +97,8 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         this.userChangedSubscription = this.studentService.studentChanged.subscribe(
             student => {
                 this.student = student;
-                this.loans = this.student.loans;
-                this.orders = this.student.orders;
+                this.loans = this.student.loans || [];
+                this.orders = this.student.orders || [];
 
                 this.loansDataSource = new MatTableDataSource(this.loans);
                 this.loansDataSource.paginator = this.loansPaginator;
@@ -129,12 +132,27 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
             };
             seriesArr.push(item);
         }
-        this.multi = [
-            {
-                name: this.student.name,
-                series: seriesArr
-            }
-        ];
+        if (seriesArr.length > 0) {
+            this.multi = [
+                {
+                    name: this.student.name,
+                    series: seriesArr
+                }
+            ];
+        } else {
+            this.xAxisLabel = '';
+            this.multi = [
+                {
+                    name: this.student.name,
+                    series: [
+                        {
+                            name: 'Empty',
+                            value: 0
+                        }
+                    ]
+                }
+            ];
+        }
     }
 
     onSelect(data): void {}
