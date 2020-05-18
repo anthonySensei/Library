@@ -60,6 +60,11 @@ export class LibrariansComponent implements OnInit, OnDestroy {
         this.librariansChangedSubscription = this.librarianService.librariansChanged.subscribe(
             librarians => {
                 this.librarians = librarians;
+                librarians.forEach(librarian => {
+                    if (!librarian.schedule) {
+                        librarian.schedule = [];
+                    }
+                });
                 this.dataSource = new MatTableDataSource(this.librarians);
                 this.dataSource.paginator = this.paginator;
                 this.dataSource.sort = this.sort;

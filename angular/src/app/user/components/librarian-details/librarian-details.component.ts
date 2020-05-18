@@ -88,35 +88,49 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         this.librarianChangedSubscription = this.librarianService.librarianChanged.subscribe(
             librarian => {
                 this.librarian = librarian;
-                this.loans = this.librarian.loans;
+                this.loans = this.librarian.loans || [];
                 this.loansDataSource = new MatTableDataSource(this.loans);
                 this.loansDataSource.paginator = this.loansPaginator;
                 this.loansDataSource.sort = this.loansSort;
-                this.schedule = this.librarian.schedule;
+                this.schedule = this.librarian.schedule || [];
                 this.scheduleDataSource = new MatTableDataSource(this.schedule);
                 this.scheduleDataSource.sort = this.scheduleSort;
                 this.setStatisticToChart(this.librarian.statistic);
                 this.isLoading = false;
             }
         );
-        this.librarian = this.librarianService.getLibrarian();
     }
 
     setStatisticToChart(statistic) {
         const seriesArr = [];
-        for (const stat of statistic) {
+        statistic.forEach(stat => {
             const item = {
                 name: stat.loanTime,
                 value: stat.books
             };
             seriesArr.push(item);
+        });
+        if (seriesArr.length > 0) {
+            this.multi = [
+                {
+                    name: this.librarian.name,
+                    series: seriesArr
+                }
+            ];
+        } else {
+            this.xAxisLabel = '';
+            this.multi = [
+                {
+                    name: this.librarian.name,
+                    series: [
+                        {
+                            name: 'Empty',
+                            value: 0
+                        }
+                    ]
+                }
+            ];
         }
-        this.multi = [
-            {
-                name: this.librarian.name,
-                series: seriesArr
-            }
-        ];
     }
 
     applyLoansFilter(event: Event) {

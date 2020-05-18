@@ -12,7 +12,9 @@ const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
 
 exports.getLoanStatistic = loans => {
-    const last30 = [...loans].splice(0, 30);
+    let last30;
+    if (loans) last30 = [...loans].splice(0, 30);
+    else last30 = [];
     const loansStatisticArr = [];
     for (const loan of last30) {
         loan.loanTime.setHours(0, 0, 0, 0);
