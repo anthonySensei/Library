@@ -25,6 +25,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     departments: Department[];
 
     discard = false;
+    done = false;
 
     createLibrarianSubscription: Subscription;
     departmentChangeSubscription: Subscription;
@@ -106,6 +107,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
                         incorrect: true
                     });
                 } else {
+                    this.done = true;
                     this.router.navigate(['/librarians']);
                     this.openSnackBar(
                         this.response.message,
@@ -117,7 +119,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.createLibrarianForm.touched && !this.response.isSuccessful) {
+        if (this.createLibrarianForm.touched && !this.done) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged
@@ -129,7 +131,9 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     }
 
     hasError(controlName: string, errorName: string) {
-        return this.createLibrarianForm.controls[controlName].hasError(errorName);
+        return this.createLibrarianForm.controls[controlName].hasError(
+            errorName
+        );
     }
 
     openSnackBar(message: string, style: string, duration: number) {

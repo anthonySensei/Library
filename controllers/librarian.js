@@ -42,9 +42,9 @@ const getLibrarianSchedule = async librarianId => {
             });
             return scheduleArr;
         }
-        return null;
+        return [];
     } catch (error) {
-        return null;
+        return [];
     }
 };
 
@@ -133,12 +133,14 @@ exports.getLibrarian = async (req, res) => {
             loans: librarianLoans,
             statistic: librarianStatistic
         };
+        console.log(librarianData);
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
             librarian: librarianData
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
+        console.log(err);
         return helper.responseErrorHandle(res, 400, err);
     }
 };
