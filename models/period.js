@@ -9,12 +9,12 @@ const Period = sequelize.define('period_', {
         allowNull: false,
         primaryKey: true
     },
-    start_time: {
-        type: Sequelize.DATE,
+    start: {
+        type: Sequelize.STRING,
         allowNull: false
     },
-    end_time: {
-        type: Sequelize.DATE,
+    end: {
+        type: Sequelize.STRING,
         allowNull: false
     }
 });

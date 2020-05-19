@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { serverLink } from '../constants/serverLink';
 import { Subject } from 'rxjs';
-import { Schedule } from '../models/schedule.model';
 import { HttpClient } from '@angular/common/http';
 import { ResponseService } from './response.service';
 import { map } from 'rxjs/operators';
@@ -21,7 +20,7 @@ export class PeriodService {
       private responseService: ResponseService
   ) {}
 
-  setSchedule(periods: Period[]) {
+  setPeriods(periods: Period[]) {
     this.periods = periods;
     this.periodsChanged.next(this.periods);
   }
@@ -35,22 +34,22 @@ export class PeriodService {
         .get(`${this.PERIODS_URL}`)
         .pipe(
             map((response: any) => {
-              this.setSchedule(response.data.genres);
+              this.setPeriods(response.data.periods);
             })
         );
   }
 
-  addPeriodsHttp(schedule: Schedule) {
-    return this.http.post(this.PERIODS_URL, { schedule }).pipe(
+  addPeriodsHttp(period: Period) {
+    return this.http.post(this.PERIODS_URL, { period }).pipe(
         map((response: any) => {
           this.responseService.setResponse(response.data);
         })
     );
   }
 
-  ediPeriodsHttp(schedule: Schedule) {
+  ediPeriodsHttp(period: Period) {
     return this.http
-        .put(this.PERIODS_URL, { schedule })
+        .put(this.PERIODS_URL, { period })
         .pipe(
             map((response: any) => {
               this.responseService.setResponse(response.data);
@@ -58,9 +57,9 @@ export class PeriodService {
         );
   }
 
-  deletePeriodsHttp(scheduleId: number) {
+  deletePeriodsHttp(periodId: number) {
     return this.http
-        .delete(`${this.deletePeriodsHttp}?scheduleId=${scheduleId}`)
+        .delete(`${this.PERIODS_URL}?periodId=${periodId}`)
         .pipe(
             map((response: any) => {
               this.responseService.setResponse(response.data);

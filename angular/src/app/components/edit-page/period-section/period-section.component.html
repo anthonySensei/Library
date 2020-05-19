@@ -1,1 +1,152 @@
-<p>period-section works!</p>
+<section class="edit-section">
+    <h3>Please select period and change fields to edit period:</h3>
+    <div class="input-groups">
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Period</mat-label>
+            <mat-select
+                name="periodSelect"
+                [(ngModel)]="periodSelect"
+                (ngModelChange)="setPeriod()"
+            >
+                <mat-option *ngFor="let period of periods" [value]="period.id">
+                    {{ period.start }} -
+                    {{ period.end }}
+                </mat-option>
+                <mat-divider></mat-divider>
+                <mat-option (click)="showPeriodAdding = true">
+                    <b>Add period</b>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Start</mat-label>
+            <input
+                matInput
+                [ngxTimepicker]="pStart"
+                [(ngModel)]="periodStart"
+                [disabled]="!periodSelect"
+                class="edit-field d-block"
+            />
+            <button
+                mat-button
+                *ngIf="periodStart"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="periodStart = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <ngx-material-timepicker #pStart></ngx-material-timepicker>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>End</mat-label>
+            <input
+                matInput
+                [disabled]="!periodSelect"
+                [ngxTimepicker]="pEnd"
+                [(ngModel)]="periodEnd"
+                class="edit-field d-block"
+            />
+            <button
+                mat-button
+                *ngIf="periodEnd"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="periodEnd = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <ngx-material-timepicker #pEnd></ngx-material-timepicker>
+    </div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            [disabled]="!periodEnd || !periodStart"
+            (click)="editPeriod()"
+        >
+            Edit
+        </button>
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="warn"
+            type="button"
+            [disabled]="!periodSelect"
+            (click)="deletePeriod()"
+        >
+            Delete
+        </button>
+    </div>
+</section>
+<section class="add-section" *ngIf="showPeriodAdding">
+    <mat-divider style="margin: 10px 0;"></mat-divider>
+    <button
+        mat-button
+        class="close-adding-btn"
+        (click)="showPeriodAdding = false"
+    >
+        <i class="material-icons">close</i>
+    </button>
+    <h3>Please fill in fields to add period:</h3>
+    <div class="input-groups">
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Start</mat-label>
+            <input
+                matInput
+                [ngxTimepicker]="pNewStart"
+                [(ngModel)]="newPeriodStart"
+                class="edit-field d-block"
+            />
+            <button
+                mat-button
+                *ngIf="newPeriodStart"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="newPeriodStart = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <ngx-material-timepicker #pNewStart></ngx-material-timepicker>
+
+        <mat-form-field class="edit-field d-block">
+            <mat-label>End</mat-label>
+            <input
+                matInput
+                [ngxTimepicker]="pNewEnd"
+                [(ngModel)]="newPeriodEnd"
+                class="edit-field d-block"
+            />
+            <button
+                mat-button
+                *ngIf="newPeriodEnd"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="newPeriodEnd = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <ngx-material-timepicker #pNewEnd></ngx-material-timepicker>
+    </div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            [disabled]="!newPeriodStart || !newPeriodEnd"
+            (click)="addPeriod()"
+        >
+            Add
+        </button>
+    </div>
+</section>

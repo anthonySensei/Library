@@ -6,14 +6,21 @@ import {
     OnInit,
     Output
 } from '@angular/core';
-import { ResponseService } from '../../../services/response.service';
+
 import { Subscription } from 'rxjs';
-import { Response } from '../../../models/response.model';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { Schedule } from '../../../models/schedule.model';
+
+import { ResponseService } from '../../../services/response.service';
 import { ScheduleService } from '../../../services/schedule.service';
+import { LibrarianService } from '../../../services/librarian.service';
+
+import { Response } from '../../../models/response.model';
+import { Schedule } from '../../../models/schedule.model';
 import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
+
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
+
+import { Days } from '../../../constants/days';
 
 @Component({
     selector: 'app-schedule-section',
@@ -21,8 +28,8 @@ import { Librarian } from '../../../models/librarian.model';
     styleUrls: ['../edit-page.component.sass']
 })
 export class ScheduleSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
-    @Output() onNothingToChange = new EventEmitter();
+    @Output() openSnackbar = new EventEmitter();
+    @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
     @Input() periods: Period[];
@@ -32,6 +39,8 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     schedulesFetchSubscription: Subscription;
     schedulesChangeSubscription: Subscription;
+    librariansFetchSubscription: Subscription;
+    librariansChangeSubscription: Subscription;
 
     scheduleSelect = null;
     scheduleDay = null;
@@ -46,15 +55,28 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     response: Response;
 
-    constructor(private schedule: ScheduleService) {}
+    days = Object.values(Days);
+
+    constructor(
+        private scheduleService: ScheduleService,
+        private librarianService: LibrarianService
+    ) {}
 
     ngOnInit() {
-        this.schedulesFetchSubscription = this.schedule
+        this.schedulesFetchSubscription = this.scheduleService
             .fetchAllSchedulesHttp()
             .subscribe();
-        this.schedulesChangeSubscription = this.schedule.schedulesChanged.subscribe(
+        this.schedulesChangeSubscription = this.scheduleService.schedulesChanged.subscribe(
             schedules => {
                 this.schedules = schedules;
+            }
+        );
+        this.librariansFetchSubscription = this.librarianService
+            .getLibrariansHttp()
+            .subscribe();
+        this.librariansChangeSubscription = this.librarianService.librariansChanged.subscribe(
+            librarians => {
+                this.librarians = librarians;
             }
         );
     }
@@ -80,7 +102,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     addSchedule() {
-        this.schedule
+        this.scheduleService
             .addScheduleHttp({
                 id: null,
                 day: this.newScheduleDay,
@@ -94,18 +116,22 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     editSchedule() {
-        if (!this.scheduleDay) {
+        if (
+            !this.scheduleDay ||
+            !this.scheduleLibrarianId ||
+            !this.schedulePeriodId
+        ) {
             return;
         }
         if (
-            this.newScheduleDay === this.getSchedule().day &&
-            this.newSchedulePeriodId === this.getSchedule().period.id &&
-            this.newScheduleLibrarianId === this.getSchedule().librarian.id
+            this.scheduleDay === this.getSchedule().day &&
+            this.schedulePeriodId === this.getSchedule().period.id &&
+            this.scheduleLibrarianId === this.getSchedule().librarian.id
         ) {
-            this.onNothingToChange.emit();
+            this.nothingToChange.emit();
             return;
         }
-        this.schedule
+        this.scheduleService
             .ediScheduleHttp({
                 id: this.scheduleSelect,
                 day: this.scheduleDay,
@@ -121,7 +147,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         if (!this.scheduleSelect) {
             return;
         }
-        this.schedule.deleteScheduleHttp(this.scheduleSelect).subscribe(() => {
+        this.scheduleService.deleteScheduleHttp(this.scheduleSelect).subscribe(() => {
             this.scheduleResponseHandler();
             this.scheduleDay = null;
             this.schedulePeriodId = null;
@@ -133,15 +159,17 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     scheduleResponseHandler() {
         this.response = this.responseService.getResponse();
         if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Success
             ]);
-            this.schedule.fetchAllSchedulesHttp().subscribe();
-            this.schedules = this.schedule.getSchedules();
-            this.schedulePeriodId = null;
+            this.scheduleService.fetchAllSchedulesHttp().subscribe();
+            this.schedules = this.scheduleService.getSchedules();
+            this.newScheduleDay = null;
+            this.newSchedulePeriodId = null;
+            this.newScheduleLibrarianId = null;
         } else {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Danger
             ]);

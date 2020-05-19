@@ -34,6 +34,8 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 import { LineChartModule } from '@swimlane/ngx-charts';
 
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+
 @NgModule({
     declarations: [LoadingSpinnerComponent, DiscardChangesModalComponent],
     imports: [CommonModule],
@@ -70,7 +72,8 @@ import { LineChartModule } from '@swimlane/ngx-charts';
         MatTabsModule,
         LineChartModule,
         MatStepperModule,
-        MatExpansionModule
+        MatExpansionModule,
+        NgxMaterialTimepickerModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

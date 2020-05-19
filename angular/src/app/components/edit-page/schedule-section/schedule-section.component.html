@@ -23,28 +23,21 @@
         </mat-form-field>
         <mat-form-field class="edit-field d-block">
             <mat-label>Day</mat-label>
-            <input
-                matInput
-                type="text"
+            <mat-select
+                name="scheduleDay"
                 [(ngModel)]="scheduleDay"
                 [disabled]="!scheduleSelect"
-            />
-            <button
-                mat-button
-                *ngIf="scheduleDay"
-                matSuffix
-                mat-icon-button
-                aria-label="Clear"
-                (click)="scheduleDay = ''"
             >
-                <mat-icon>close</mat-icon>
-            </button>
+                <mat-option *ngFor="let day of days" [value]="day">
+                    {{ day }}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field class="edit-field d-block">
-            <mat-label>Period</mat-label>
+            <mat-label>Period bleat</mat-label>
             <mat-select
-                [disabled]="!scheduleSelect"
                 name="schedulePeriod"
+                [disabled]="!scheduleSelect"
                 [(ngModel)]="schedulePeriodId"
             >
                 <mat-option *ngFor="let period of periods" [value]="period.id">
@@ -58,7 +51,7 @@
             <mat-select
                 name="scheduleLibrarian"
                 [disabled]="!scheduleSelect"
-                [(ngModel)]="schedulePeriodId"
+                [(ngModel)]="scheduleLibrarianId"
             >
                 <mat-option
                     *ngFor="let librarian of librarians"
@@ -107,17 +100,11 @@
     <div class="input-groups">
         <mat-form-field class="edit-field d-block">
             <mat-label>Day</mat-label>
-            <input matInput type="text" [(ngModel)]="newScheduleDay" />
-            <button
-                mat-button
-                *ngIf="newScheduleDay"
-                matSuffix
-                mat-icon-button
-                aria-label="Clear"
-                (click)="newScheduleDay = ''"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
+            <mat-select name="schedulePeriod" [(ngModel)]="newScheduleDay">
+                <mat-option *ngFor="let day of days" [value]="day">
+                    {{ day }}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
         <mat-form-field class="edit-field d-block">
             <mat-label>Period</mat-label>

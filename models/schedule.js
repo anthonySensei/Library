@@ -9,7 +9,7 @@ const Schedule = sequelize.define('schedule_', {
         allowNull: false,
         primaryKey: true
     },
-    dayOfWeek: {
+    day: {
         type: Sequelize.STRING,
         allowNull: false
     }

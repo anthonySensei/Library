@@ -30,6 +30,8 @@ const authRoutes = require('./routes/auth');
 const departmentRoutes = require('./routes/department');
 const authorRoutes = require('./routes/author');
 const genreRoutes = require('./routes/genre');
+const periodRoutes = require('./routes/period');
+const scheduleRoutes = require('./routes/schedule');
 
 const Student = require('./models/student');
 const Librarian = require('./models/librarian');
@@ -52,6 +54,8 @@ const ordersUrl = require('./constants/links').ORDERS_URL;
 const loansUrl = require('./constants/links').LOANS_URL;
 const studentsUrl = require('./constants/links').STUDENTS_URL;
 const myAccountUrl = require('./constants/links').MY_ACCOUNT_URL;
+const periodsUrl = require('./constants/links').PERIODS_URL;
+const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
 const helper = require('./helper/createManager');
 
@@ -125,6 +129,8 @@ app.use(loansUrl, loanRoutes);
 app.use(ordersUrl, orderRoutes);
 app.use(studentsUrl, studentRoutes);
 app.use(myAccountUrl, userRoutes);
+app.use(periodsUrl, periodRoutes);
+app.use(schedulesUrl, scheduleRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });
 Book.belongsTo(Author);
