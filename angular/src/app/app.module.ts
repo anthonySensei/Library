@@ -6,24 +6,38 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './containers/auth/auth.module';
 
 import { AppComponent } from './app.component';
-import { ErrorPageComponent } from './error-page/error-page.component';
-import { HeaderComponent } from './header/header.component';
-import { AuthInterceptor } from './auth/services/auth.interceptor.service';
-import { UsersModule } from './user/users.module';
-import { MainPageModule } from './main-page/main-page.module';
-import { LoansModule } from './loans/loans.module';
-import { EditPageComponent } from './edit-page/edit-page.component';
-import { AuthorSectionComponent } from './edit-page/author-section/author-section.component';
-import { BookSectionComponent } from './edit-page/book-section/book-section.component';
-import { DepartmentSectionComponent } from './edit-page/department-section/department-section.component';
-import { GenreSectionComponent } from './edit-page/genre-section/genre-section.component';
-import { StudentSectionComponent } from './edit-page/student-section/student-section.component';
+import { ErrorPageComponent } from './components/error-page/error-page.component';
+import { HeaderComponent } from './components/header/header.component';
+import { EditPageComponent } from './components/edit-page/edit-page.component';
+import { AuthorSectionComponent } from './components/edit-page/author-section/author-section.component';
+import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
+import { DepartmentSectionComponent } from './components/edit-page/department-section/department-section.component';
+import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
+import { StudentSectionComponent } from './components/edit-page/student-section/student-section.component';
+
+import { AuthInterceptor } from './services/auth.interceptor.service';
+
+import { MainPageModule } from './containers/main-page/main-page.module';
+import { UsersModule } from './containers/user/users.module';
+import { LoansModule } from './containers/loans/loans.module';
+import { LibrariansModule } from './containers/librarians/librarians.module';
+import { StudentsModule } from './containers/students/students.module';
 
 @NgModule({
-    declarations: [AppComponent, ErrorPageComponent, HeaderComponent, EditPageComponent, AuthorSectionComponent, BookSectionComponent, DepartmentSectionComponent, GenreSectionComponent, StudentSectionComponent],
+    declarations: [
+        AppComponent,
+        ErrorPageComponent,
+        HeaderComponent,
+        EditPageComponent,
+        AuthorSectionComponent,
+        BookSectionComponent,
+        DepartmentSectionComponent,
+        GenreSectionComponent,
+        StudentSectionComponent
+    ],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -34,6 +48,8 @@ import { StudentSectionComponent } from './edit-page/student-section/student-sec
         UsersModule,
         MainPageModule,
         LoansModule,
+        LibrariansModule,
+        StudentsModule,
         AppRoutingModule
     ],
     providers: [
