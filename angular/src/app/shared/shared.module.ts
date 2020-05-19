@@ -28,7 +28,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { DiscardChangesModalComponent } from './discard-changes-modal/discard-changes-modal.component';
 
-import { CanDeactivateGuard } from './services/can-deactivate-guard.service';
+import { CanDeactivateGuard } from './can-deactivate-guard.service';
 
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 

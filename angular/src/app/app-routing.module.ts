@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ErrorPageComponent } from './error-page/error-page.component';
-import { EditPageComponent } from './edit-page/edit-page.component';
+import { ErrorPageComponent } from './components/error-page/error-page.component';
+import { EditPageComponent } from './components/edit-page/edit-page.component';
 
 import { AngularLinks } from './constants/angularLinks';
 
-import { CanDeactivateGuard } from './shared/services/can-deactivate-guard.service';
+import { CanDeactivateGuard } from './shared/can-deactivate-guard.service';
 
-import { AuthGuard } from './auth/guards/auth.guard';
-import { LibrarianGuard } from './user/guards/librarian.guard';
+import { AuthGuard } from './guards/auth.guard';
+import { LibrarianGuard } from './guards/librarian.guard';
 
 const routes: Routes = [
     {
