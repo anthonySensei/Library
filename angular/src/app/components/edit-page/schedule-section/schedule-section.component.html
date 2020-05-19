@@ -1,0 +1,162 @@
+<section class="edit-section">
+    <h3>Please select schedule and change fields to edit schedule:</h3>
+    <div class="input-groups">
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Schedule</mat-label>
+            <mat-select
+                name="scheduleSelect"
+                [(ngModel)]="scheduleSelect"
+                (ngModelChange)="setSchedule()"
+            >
+                <mat-option
+                    *ngFor="let schedule of schedules"
+                    [value]="schedule.id"
+                >
+                    {{ schedule.day }}({{ schedule.period.start }} -
+                    {{ schedule.period.end }}) {{ schedule.librarian.name }}
+                </mat-option>
+                <mat-divider></mat-divider>
+                <mat-option (click)="showScheduleAdding = true">
+                    <b>Add schedule</b>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Day</mat-label>
+            <input
+                matInput
+                type="text"
+                [(ngModel)]="scheduleDay"
+                [disabled]="!scheduleSelect"
+            />
+            <button
+                mat-button
+                *ngIf="scheduleDay"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="scheduleDay = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Period</mat-label>
+            <mat-select
+                [disabled]="!scheduleSelect"
+                name="schedulePeriod"
+                [(ngModel)]="schedulePeriodId"
+            >
+                <mat-option *ngFor="let period of periods" [value]="period.id">
+                    {{ period.start }} -
+                    {{ period.end }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Librarian</mat-label>
+            <mat-select
+                name="scheduleLibrarian"
+                [disabled]="!scheduleSelect"
+                [(ngModel)]="schedulePeriodId"
+            >
+                <mat-option
+                    *ngFor="let librarian of librarians"
+                    [value]="librarian.id"
+                >
+                    {{ librarian.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            [disabled]="
+                !scheduleDay || !scheduleLibrarianId || !schedulePeriodId
+            "
+            (click)="editSchedule()"
+        >
+            Edit
+        </button>
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="warn"
+            type="button"
+            [disabled]="!scheduleSelect"
+            (click)="deleteSchedule()"
+        >
+            Delete
+        </button>
+    </div>
+</section>
+<section class="add-section" *ngIf="showScheduleAdding">
+    <mat-divider style="margin: 10px 0;"></mat-divider>
+    <button
+        mat-button
+        class="close-adding-btn"
+        (click)="showScheduleAdding = false"
+    >
+        <i class="material-icons">close</i>
+    </button>
+    <h3>Please fill in fields to add schedule:</h3>
+    <div class="input-groups">
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Day</mat-label>
+            <input matInput type="text" [(ngModel)]="newScheduleDay" />
+            <button
+                mat-button
+                *ngIf="newScheduleDay"
+                matSuffix
+                mat-icon-button
+                aria-label="Clear"
+                (click)="newScheduleDay = ''"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Period</mat-label>
+            <mat-select name="schedulePeriod" [(ngModel)]="newSchedulePeriodId">
+                <mat-option *ngFor="let period of periods" [value]="period.id">
+                    {{ period.start }} -
+                    {{ period.end }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field d-block">
+            <mat-label>Librarian</mat-label>
+            <mat-select
+                name="scheduleLibrarian"
+                [(ngModel)]="newScheduleLibrarianId"
+            >
+                <mat-option
+                    *ngFor="let librarian of librarians"
+                    [value]="librarian.id"
+                >
+                    {{ librarian.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="btn-group">
+        <button
+            mat-raised-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            [disabled]="
+                !newScheduleDay ||
+                !newSchedulePeriodId ||
+                !newScheduleLibrarianId
+            "
+            (click)="addSchedule()"
+        >
+            Add
+        </button>
+    </div>
+</section>

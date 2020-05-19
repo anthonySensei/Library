@@ -41,6 +41,7 @@ const Author = require('./models/author');
 const Loan = require('./models/loan');
 const Order = require('./models/order');
 const Schedule = require('./models/schedule');
+const Period = require('./models/period');
 
 const authorsUrl = require('./constants/links').AUTHORS_URL;
 const departmentsUrl = require('./constants/links').DEPARTMENTS_URL;
@@ -140,6 +141,8 @@ Schedule.belongsTo(Librarian);
 Librarian.belongsTo(Department, { foreignKey: { allowNull: true } });
 Librarian.hasMany(Loan);
 Librarian.hasMany(Schedule);
+
+Schedule.belongsTo(Period);
 
 Role.belongsTo(Librarian, { foreignKey: 'librarian_id' });
 
