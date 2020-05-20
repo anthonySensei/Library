@@ -35,6 +35,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     @Input() periods: Period[];
 
     schedules: Schedule[];
+    showedSchedules: Schedule[] = [];
     librarians: Librarian[];
 
     schedulesFetchSubscription: Subscription;
@@ -43,6 +44,8 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     librariansChangeSubscription: Subscription;
 
     scheduleSelect = null;
+    periodSelect = null;
+    librarianSelect = null;
     scheduleDay = null;
     schedulePeriodId = null;
     scheduleLibrarianId = null;
@@ -91,6 +94,12 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     getLibrarian(librarianId): Librarian {
         return this.librarians.find(lib => lib.id === librarianId);
+    }
+
+    setShowedSchedule() {
+        this.showedSchedules = this.schedules.filter(
+            sch => sch.librarian.id === this.librarianSelect
+        );
     }
 
     setSchedule() {
@@ -147,13 +156,15 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         if (!this.scheduleSelect) {
             return;
         }
-        this.scheduleService.deleteScheduleHttp(this.scheduleSelect).subscribe(() => {
-            this.scheduleResponseHandler();
-            this.scheduleDay = null;
-            this.schedulePeriodId = null;
-            this.scheduleLibrarianId = null;
-            this.scheduleSelect = null;
-        });
+        this.scheduleService
+            .deleteScheduleHttp(this.scheduleSelect)
+            .subscribe(() => {
+                this.scheduleResponseHandler();
+                this.scheduleDay = null;
+                this.schedulePeriodId = null;
+                this.scheduleLibrarianId = null;
+                this.scheduleSelect = null;
+            });
     }
 
     scheduleResponseHandler() {

@@ -1,90 +1,125 @@
 <section class="edit-section">
-    <h3>Please select schedule and change fields to edit schedule:</h3>
-    <div class="input-groups">
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Schedule</mat-label>
-            <mat-select
-                name="scheduleSelect"
-                [(ngModel)]="scheduleSelect"
-                (ngModelChange)="setSchedule()"
-            >
-                <mat-option
-                    *ngFor="let schedule of schedules"
-                    [value]="schedule.id"
+    <h3>
+        Please select schedule(left side) and change fields(right side) to edit
+        schedule:
+    </h3>
+    <div class="input-groups flex">
+        <div class="left-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Librarian</mat-label>
+                <mat-select
+                    name="scheduleSelect"
+                    [(ngModel)]="librarianSelect"
+                    (ngModelChange)="setShowedSchedule()"
+                    required
                 >
-                    {{ schedule.day }}({{ schedule.period.start }} -
-                    {{ schedule.period.end }}) {{ schedule.librarian.name }}
-                </mat-option>
-                <mat-divider></mat-divider>
-                <mat-option (click)="showScheduleAdding = true">
-                    <b>Add schedule</b>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Day</mat-label>
-            <mat-select
-                name="scheduleDay"
-                [(ngModel)]="scheduleDay"
-                [disabled]="!scheduleSelect"
-            >
-                <mat-option *ngFor="let day of days" [value]="day">
-                    {{ day }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Period bleat</mat-label>
-            <mat-select
-                name="schedulePeriod"
-                [disabled]="!scheduleSelect"
-                [(ngModel)]="schedulePeriodId"
-            >
-                <mat-option *ngFor="let period of periods" [value]="period.id">
-                    {{ period.start }} -
-                    {{ period.end }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Librarian</mat-label>
-            <mat-select
-                name="scheduleLibrarian"
-                [disabled]="!scheduleSelect"
-                [(ngModel)]="scheduleLibrarianId"
-            >
-                <mat-option
-                    *ngFor="let librarian of librarians"
-                    [value]="librarian.id"
+                    <mat-option
+                        *ngFor="let librarian of librarians"
+                        [value]="librarian.id"
+                    >
+                        {{ librarian.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="edit-field">
+                <mat-label>Schedule</mat-label>
+                <mat-select
+                    name="scheduleSelect"
+                    [(ngModel)]="scheduleSelect"
+                    (ngModelChange)="setSchedule()"
+                    [disabled]="!librarianSelect"
+                    required
                 >
-                    {{ librarian.name }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="btn-group">
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="primary"
-            type="submit"
-            [disabled]="
-                !scheduleDay || !scheduleLibrarianId || !schedulePeriodId
-            "
-            (click)="editSchedule()"
-        >
-            Edit
-        </button>
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="warn"
-            type="button"
-            [disabled]="!scheduleSelect"
-            (click)="deleteSchedule()"
-        >
-            Delete
-        </button>
+                    <mat-option
+                        *ngFor="let schedule of showedSchedules"
+                        [value]="schedule.id"
+                    >
+                        {{ schedule.day }}({{ schedule.period.start }} -
+                        {{ schedule.period.end }})
+                    </mat-option>
+                    <mat-divider></mat-divider>
+                    <mat-option (click)="showScheduleAdding = true">
+                        <b>Add schedule</b>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-divider
+            vertical="vertical"
+            style="margin-right: 10px;"
+        ></mat-divider>
+        <div class="right-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Librarian</mat-label>
+                <mat-select
+                        name="scheduleLibrarian"
+                        [disabled]="!scheduleSelect"
+                        [(ngModel)]="scheduleLibrarianId"
+                >
+                    <mat-option
+                            *ngFor="let librarian of librarians"
+                            [value]="librarian.id"
+                    >
+                        {{ librarian.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="edit-field">
+                <mat-label>Day</mat-label>
+                <mat-select
+                    name="scheduleDay"
+                    [(ngModel)]="scheduleDay"
+                    [disabled]="!scheduleSelect"
+                >
+                    <mat-option *ngFor="let day of days" [value]="day">
+                        {{ day }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="edit-field">
+                <mat-label>Period</mat-label>
+                <mat-select
+                    name="schedulePeriod"
+                    [disabled]="!scheduleSelect"
+                    [(ngModel)]="schedulePeriodId"
+                >
+                    <mat-option
+                        *ngFor="let period of periods"
+                        [value]="period.id"
+                    >
+                        {{ period.start }} -
+                        {{ period.end }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="primary"
+                    type="submit"
+                    [disabled]="
+                        !scheduleSelect ||
+                        !scheduleDay ||
+                        !scheduleLibrarianId ||
+                        !schedulePeriodId
+                    "
+                    (click)="editSchedule()"
+                >
+                    Edit
+                </button>
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="warn"
+                    type="button"
+                    [disabled]="!scheduleSelect"
+                    (click)="deleteSchedule()"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
     </div>
 </section>
 <section class="add-section" *ngIf="showScheduleAdding">
@@ -98,24 +133,7 @@
     </button>
     <h3>Please fill in fields to add schedule:</h3>
     <div class="input-groups">
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Day</mat-label>
-            <mat-select name="schedulePeriod" [(ngModel)]="newScheduleDay">
-                <mat-option *ngFor="let day of days" [value]="day">
-                    {{ day }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field d-block">
-            <mat-label>Period</mat-label>
-            <mat-select name="schedulePeriod" [(ngModel)]="newSchedulePeriodId">
-                <mat-option *ngFor="let period of periods" [value]="period.id">
-                    {{ period.start }} -
-                    {{ period.end }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field d-block">
+        <mat-form-field class="edit-field">
             <mat-label>Librarian</mat-label>
             <mat-select
                 name="scheduleLibrarian"
@@ -126,6 +144,23 @@
                     [value]="librarian.id"
                 >
                     {{ librarian.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field">
+            <mat-label>Day</mat-label>
+            <mat-select name="schedulePeriod" [(ngModel)]="newScheduleDay">
+                <mat-option *ngFor="let day of days" [value]="day">
+                    {{ day }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="edit-field">
+            <mat-label>Period</mat-label>
+            <mat-select name="schedulePeriod" [(ngModel)]="newSchedulePeriodId">
+                <mat-option *ngFor="let period of periods" [value]="period.id">
+                    {{ period.start }} -
+                    {{ period.end }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
@@ -144,6 +179,15 @@
             (click)="addSchedule()"
         >
             Add
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            (click)="showScheduleAdding = false"
+        >
+            Cancel
         </button>
     </div>
 </section>

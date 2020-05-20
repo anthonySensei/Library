@@ -6,6 +6,7 @@
                 name="address"
                 [(ngModel)]="departmentSelect"
                 (ngModelChange)="setBooksForSelect()"
+                required
             >
                 <mat-option
                     *ngFor="let department of departments"
@@ -21,6 +22,7 @@
                 name="isbn"
                 [(ngModel)]="bookSelect"
                 [disabled]="!departmentSelect"
+                required
             >
                 <mat-option
                     *ngFor="let book of booksForSelect"
@@ -37,7 +39,7 @@
             class="form-btn edit-btn"
             color="primary"
             type="submit"
-            [disabled]="!departmentSelect && !bookSelect"
+            [disabled]="!bookSelect"
             (click)="editBook()"
         >
             Edit
@@ -47,7 +49,7 @@
             class="form-btn edit-btn"
             color="warn"
             type="button"
-            [disabled]="!departmentSelect"
+            [disabled]="!bookSelect"
             (click)="deleteBook()"
         >
             Delete

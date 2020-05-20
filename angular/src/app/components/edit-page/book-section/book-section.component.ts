@@ -38,7 +38,7 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     booksFetchSubscription: Subscription;
     booksChangeSubscription: Subscription;
 
-    bookSelect = null;
+    bookSelect: number = null;
 
     response: Response;
 

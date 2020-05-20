@@ -1,58 +1,73 @@
 <section class="edit-section">
-    <h3>Please select author and change value in fields to edit author:</h3>
-    <div class="input-groups">
-        <mat-form-field class="edit-field">
-            <mat-label>Name</mat-label>
-            <mat-select
-                name="authorName"
-                [(ngModel)]="authorSelect"
-                (ngModelChange)="setAuthorName()"
-            >
-                <mat-option *ngFor="let author of authors" [value]="author.id">
-                    {{ author.name }}
-                </mat-option>
-                <mat-divider></mat-divider>
-                <mat-option (click)="showAuthorAdding = true">
-                    <b>Add author</b>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field">
-            <mat-label>Name</mat-label>
-            <input matInput type="text" [(ngModel)]="authorName" />
-            <button
-                mat-button
-                *ngIf="authorName"
-                matSuffix
-                mat-icon-button
-                aria-label="Clear"
-                (click)="authorName = ''"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-    <div class="btn-group">
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="primary"
-            type="submit"
-            [disabled]="!authorName"
-            (click)="editAuthor()"
-        >
-            Edit
-        </button>
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="warn"
-            type="button"
-            [disabled]="!authorSelect"
-            (click)="deleteAuthor()"
-        >
-            Delete
-        </button>
+    <h3>
+        Please select author(left side) and change value(right side) in fields
+        to edit author:
+    </h3>
+    <div class="input-groups flex">
+        <div class="left-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Name</mat-label>
+                <mat-select
+                    name="authorName"
+                    [(ngModel)]="authorSelect"
+                    (ngModelChange)="setAuthorName()"
+                    required
+                >
+                    <mat-option
+                        *ngFor="let author of authors"
+                        [value]="author.id"
+                    >
+                        {{ author.name }}
+                    </mat-option>
+                    <mat-divider></mat-divider>
+                    <mat-option (click)="showAuthorAdding = true">
+                        <b>Add author</b>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-divider
+            vertical="vertical"
+            style="margin-right: 10px;"
+        ></mat-divider>
+        <div class="right-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Name</mat-label>
+                <input matInput type="text" [(ngModel)]="authorName" />
+                <button
+                    mat-button
+                    *ngIf="authorName"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="authorName = ''"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="primary"
+                    type="submit"
+                    [disabled]="!authorName"
+                    (click)="editAuthor()"
+                >
+                    Edit
+                </button>
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="warn"
+                    type="button"
+                    [disabled]="!authorSelect"
+                    (click)="deleteAuthor()"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
     </div>
 </section>
 <section class="add-section" *ngIf="showAuthorAdding">
@@ -91,6 +106,15 @@
             (click)="addAuthor()"
         >
             Add
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            (click)="showAuthorAdding = false"
+        >
+            Cancel
         </button>
     </div>
 </section>
