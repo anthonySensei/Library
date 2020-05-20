@@ -8,8 +8,7 @@ import { Statistic } from '../../../models/statistic.model';
 
 @Component({
     selector: 'app-loans-chart',
-    templateUrl: './loans-chart.component.html',
-    styleUrls: ['./loans-chart.component.sass']
+    templateUrl: './loans-chart.component.html'
 })
 export class LoansChartComponent implements OnInit, OnDestroy {
     statistic: Statistic[];
