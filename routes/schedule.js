@@ -5,6 +5,8 @@ const passport = require('passport');
 
 const scheduleController = require('../controllers/schedule');
 
+const schedulesSortedUrl = require('../constants/links').SCHEDULES_SORTED_URL;
+
 router.get('', scheduleController.getSchedules);
 router.post(
     '',

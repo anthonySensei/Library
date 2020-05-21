@@ -30,3 +30,4 @@ exports.MY_ACCOUNT_URL = '/my-account';
 exports.PERIODS_URL = '/periods';
 
 exports.SCHEDULES_URL = '/schedules';
+exports.SCHEDULES_SORTED_URL = '/sorted';

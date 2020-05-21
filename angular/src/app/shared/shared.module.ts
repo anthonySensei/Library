@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -73,7 +74,8 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
         LineChartModule,
         MatStepperModule,
         MatExpansionModule,
-        NgxMaterialTimepickerModule
+        NgxMaterialTimepickerModule,
+        MatCardModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

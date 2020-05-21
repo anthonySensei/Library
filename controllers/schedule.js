@@ -9,6 +9,11 @@ const helper = require('../helper/responseHandle');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
+const days = require('../constants/days');
+
+const getScheduleByDay = (schedules, day) => {
+    return schedules.filter(sch => sch.day === day);
+};
 
 exports.getSchedules = async (req, res) => {
     try {
@@ -90,7 +95,9 @@ exports.editSchedule = async (req, res) => {
                 errorMessages.SCHEDULE_EXIST
             );
         } else {
-            const schedule = await Schedule.findOne({ where: { id: scheduleId } });
+            const schedule = await Schedule.findOne({
+                where: { id: scheduleId }
+            });
             await schedule.update({
                 day: day,
                 periodId: periodId,
