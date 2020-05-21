@@ -4,21 +4,20 @@ const Op = Sequelize.Op;
 const Schedule = require('../models/schedule');
 const Period = require('../models/period');
 const Librarian = require('../models/librarian');
+const Department = require('../models/department');
 
 const helper = require('../helper/responseHandle');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
-const days = require('../constants/days');
-
-const getScheduleByDay = (schedules, day) => {
-    return schedules.filter(sch => sch.day === day);
-};
 
 exports.getSchedules = async (req, res) => {
     try {
         const schedules = await Schedule.findAll({
-            include: [{ model: Period }, { model: Librarian }]
+            include: [
+                { model: Period },
+                { model: Librarian, include: { model: Department } }
+            ]
         });
         let schedulesArr = [];
         schedules.forEach(schedule => {
