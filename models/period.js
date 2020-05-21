@@ -2,17 +2,21 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../config/database');
 
-const Schedule = sequelize.define('schedule_', {
+const Period = sequelize.define('period_', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    day: {
+    start: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    end: {
         type: Sequelize.STRING,
         allowNull: false
     }
 });
 
-module.exports = Schedule;
+module.exports = Period;

@@ -1,35 +1,93 @@
 <section class="edit-section">
-    <h3>Please select department and change fields to edit department:</h3>
+    <h3>Please select department(left side) and change fields(right side) to edit department:</h3>
+    <div class="input-groups flex">
+        <div class="left-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Address</mat-label>
+                <mat-select
+                    name="address"
+                    [(ngModel)]="departmentSelect"
+                    (ngModelChange)="setDepartmentAddress()"
+                    required
+                >
+                    <mat-option
+                        *ngFor="let department of departments"
+                        [value]="department.id"
+                    >
+                        {{ department.address }}
+                    </mat-option>
+                    <mat-divider></mat-divider>
+                    <mat-option (click)="showDepartmentAdding = true">
+                        <b>Add department</b>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-divider
+            vertical="vertical"
+            style="margin-right: 10px;"
+        ></mat-divider>
+        <div class="right-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Address</mat-label>
+                <input matInput type="text" [(ngModel)]="departmentAddress" />
+                <button
+                    mat-button
+                    *ngIf="departmentAddress"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="departmentAddress = ''"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="primary"
+                    type="submit"
+                    [disabled]="!departmentAddress"
+                    (click)="editDepartment()"
+                >
+                    Edit
+                </button>
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="warn"
+                    type="button"
+                    [disabled]="!departmentSelect"
+                    (click)="deleteDepartment()"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="add-section" *ngIf="showDepartmentAdding">
+    <mat-divider style="margin: 10px 0;"></mat-divider>
+    <button
+        mat-button
+        class="close-adding-btn"
+        (click)="showDepartmentAdding = false"
+    >
+        <i class="material-icons">close</i>
+    </button>
+    <h3>Please fill in fields to add department:</h3>
     <div class="input-groups">
         <mat-form-field class="edit-field">
             <mat-label>Address</mat-label>
-            <mat-select
-                name="address"
-                [(ngModel)]="departmentSelect"
-                (ngModelChange)="setDepartmentAddress()"
-            >
-                <mat-option
-                    *ngFor="let department of departments"
-                    [value]="department.id"
-                >
-                    {{ department.address }}
-                </mat-option>
-                <mat-divider></mat-divider>
-                <mat-option (click)="showDepartmentAdding = true">
-                    <b>Add department</b>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field">
-            <mat-label>Address</mat-label>
-            <input matInput type="text" [(ngModel)]="departmentAddress" />
+            <input matInput type="text" [(ngModel)]="newDepartmentAddress" />
             <button
                 mat-button
-                *ngIf="departmentAddress"
+                *ngIf="newDepartmentAddress"
                 matSuffix
                 mat-icon-button
                 aria-label="Clear"
-                (click)="departmentAddress = ''"
+                (click)="newDepartmentAddress = ''"
             >
                 <mat-icon>close</mat-icon>
             </button>
@@ -41,59 +99,19 @@
             class="form-btn edit-btn"
             color="primary"
             type="submit"
-            [disabled]="!departmentAddress"
-            (click)="editDepartment()"
-        >
-            Edit
-        </button>
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="warn"
-            type="button"
-            [disabled]="!departmentSelect"
-            (click)="deleteDepartment()"
-        >
-            Delete
-        </button>
-    </div>
-</section>
-<section class="add-section" *ngIf="showDepartmentAdding">
-    <mat-divider style="margin: 10px 0;"></mat-divider>
-    <button
-            mat-button
-            class="close-adding-btn"
-            (click)="showDepartmentAdding = false"
-    >
-        <i class="material-icons">close</i>
-    </button>
-    <h3>Please fill in fields to add department:</h3>
-    <div class="input-groups">
-        <mat-form-field class="edit-field">
-            <mat-label>Address</mat-label>
-            <input matInput type="text" [(ngModel)]="newDepartmentAddress" />
-            <button
-                    mat-button
-                    *ngIf="newDepartmentAddress"
-                    matSuffix
-                    mat-icon-button
-                    aria-label="Clear"
-                    (click)="newDepartmentAddress = ''"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-    <div class="btn-group">
-        <button
-                mat-raised-button
-                class="form-btn edit-btn"
-                color="primary"
-                type="submit"
-                [disabled]="!newDepartmentAddress"
-                (click)="addDepartment()"
+            [disabled]="!newDepartmentAddress"
+            (click)="addDepartment()"
         >
             Add
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            (click)="showDepartmentAdding = false"
+        >
+            Cancel
         </button>
     </div>
 </section>

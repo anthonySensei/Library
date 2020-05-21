@@ -1,1 +1,108 @@
-<p>librarian-schedule works!</p>
+<div class="wrapper">
+    <div class="form-content">
+        <span class="page-title">Schedule</span>
+        <mat-form-field class="d-block">
+            <mat-label>Department address</mat-label>
+            <mat-select
+                [(ngModel)]="departmentSelect"
+                (ngModelChange)="setSchedules()"
+            >
+                <mat-option>All</mat-option>
+                <mat-option
+                    *ngFor="let department of departments"
+                    [value]="department.id"
+                    >{{ department.address }}</mat-option
+                >
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="d-block">
+            <mat-label>Librarian</mat-label>
+            <mat-select
+                [(ngModel)]="librarianSelect"
+                (ngModelChange)="setSchedules()"
+            >
+                <mat-option>All</mat-option>
+                <mat-option
+                    *ngFor="let librarian of librarians"
+                    [value]="librarian.id"
+                    >{{ librarian.name }}</mat-option
+                >
+            </mat-select>
+        </mat-form-field>
+        <hr style="background-color: #0d0d0d;" />
+        <mat-tab-group style="max-height: 500px; min-height: 500px;">
+            <mat-tab label="{{ day }}" *ngFor="let day of days">
+                <ng-container *ngIf="day === days[0]">
+                    <mat-card *ngFor="let schedule of mnSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[1]">
+                    <mat-card *ngFor="let schedule of tsSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[2]">
+                    <mat-card *ngFor="let schedule of wnSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[3]">
+                    <mat-card *ngFor="let schedule of trSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[4]">
+                    <mat-card *ngFor="let schedule of frSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[5]">
+                    <mat-card *ngFor="let schedule of stSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+                <ng-container *ngIf="day === days[6]">
+                    <mat-card *ngFor="let schedule of snSchedules">
+                        <p>{{ schedule.librarian.name }}</p>
+                        <p>
+                            {{ schedule.period.start }}-{{
+                                schedule.period.end
+                            }}
+                        </p>
+                    </mat-card>
+                </ng-container>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

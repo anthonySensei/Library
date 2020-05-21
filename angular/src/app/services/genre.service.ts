@@ -34,12 +34,8 @@ export class GenreService {
     }
 
     fetchAllGenresHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.GENRES_URL}`, {
-                headers
-            })
+            .get(`${this.GENRES_URL}`)
             .pipe(
                 map((response: any) => {
                     this.setGenres(response.data.genres);

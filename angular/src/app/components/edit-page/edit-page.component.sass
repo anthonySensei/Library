@@ -1,24 +1,27 @@
-$el-width: 18%
+$el-width: 250px
 $el-margin: 10px
 
 .edit-section, .add-section
   text-align: center
   position: relative
+  .edit-btn
+    width: $el-width / 2 - $el-margin / 2
+    &:first-of-type
+      margin-right: $el-margin
   .close-adding-btn
     position: absolute
     right: 1%
     top: 1%
-  .edit-field
-    width: $el-width
-    margin-right: $el-margin
-    &.student-select
+  .input-groups
+    &.flex
+      display: flex
+      justify-content: center
+      .edit-field
+        margin-right: $el-margin
+      .edit-btn
+        margin-right: $el-margin
+    .edit-field
       display: block
-      margin-left: 31%
-    &.d-block
-      width: 35%
-      display: block
-      margin: 5px auto
-  .edit-btn
-    width: $el-width
-    margin-right: $el-margin
+      width: $el-width
+      margin: 0 auto
 

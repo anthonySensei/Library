@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -33,6 +34,8 @@ import { CanDeactivateGuard } from './can-deactivate-guard.service';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
 import { LineChartModule } from '@swimlane/ngx-charts';
+
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
     declarations: [LoadingSpinnerComponent, DiscardChangesModalComponent],
@@ -70,7 +73,9 @@ import { LineChartModule } from '@swimlane/ngx-charts';
         MatTabsModule,
         LineChartModule,
         MatStepperModule,
-        MatExpansionModule
+        MatExpansionModule,
+        NgxMaterialTimepickerModule,
+        MatCardModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

@@ -74,5 +74,35 @@
                 [responseService]="responseService"
             ></app-student-section>
         </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Schedule
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-schedule-section
+                    (openSnackbar)="
+                    openSnackBar($event[0], $event[1], snackbarDuration)
+                "
+                    (nothingToChange)="nothingChangeHandle()"
+                [responseService]="responseService"
+                [periods]="periods"
+            ></app-schedule-section>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Period
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-period-section
+                (openSnackbar)="
+                    openSnackBar($event[0], $event[1], snackbarDuration)
+                "
+                (nothingToChange)="nothingChangeHandle()"
+                [responseService]="responseService"
+                [periods]="periods"
+            ></app-period-section>
+        </mat-expansion-panel>
     </mat-accordion>
 </div>

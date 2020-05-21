@@ -1,23 +1,16 @@
 import { Librarian } from './librarian.model';
+import { Period } from './period.model';
 
 export class Schedule {
     id: number;
     day: string;
-    start: string;
-    end: string;
     librarian: Librarian;
+    period: Period;
 
-    constructor(
-        id: number,
-        day: string,
-        start: string,
-        end: string,
-        librarian: Librarian
-    ) {
+    constructor(id: number, day: string, librarian: Librarian, period: Period) {
         this.id = id;
         this.day = day;
-        this.start = start;
-        this.end = end;
         this.librarian = librarian;
+        this.period = period;
     }
 }

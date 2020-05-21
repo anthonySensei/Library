@@ -11,6 +11,9 @@ import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
 import { SnackBarClasses } from '../../constants/snackBarClasses';
+import { LibrarianService } from '../../services/librarian.service';
+import { Period } from '../../models/period.model';
+import { PeriodService } from '../../services/period.service';
 
 @Component({
     selector: 'app-edit-page',
@@ -20,9 +23,12 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 export class EditPageComponent implements OnInit {
     departments: Department[];
     students: Student[];
+    periods: Period[];
 
     departmentsFetchSubscription: Subscription;
     departmentsChangeSubscription: Subscription;
+    periodsFetchSubscription: Subscription;
+    periodsChangeSubscription: Subscription;
 
     departmentSelect = null;
 
@@ -34,7 +40,8 @@ export class EditPageComponent implements OnInit {
     constructor(
         private departmentService: DepartmentService,
         private responseService: ResponseService,
-        public materialService: MaterialService
+        private materialService: MaterialService,
+        private periodService: PeriodService
     ) {}
 
     ngOnInit() {
@@ -48,6 +55,14 @@ export class EditPageComponent implements OnInit {
         this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
             departments => {
                 this.departments = departments;
+            }
+        );
+        this.periodsFetchSubscription = this.periodService
+            .fetchAllPeriodsHttp()
+            .subscribe();
+        this.periodsChangeSubscription = this.periodService.periodsChanged.subscribe(
+            periods => {
+                this.periods = periods;
             }
         );
     }

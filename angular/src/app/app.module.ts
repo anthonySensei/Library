@@ -25,6 +25,8 @@ import { UsersModule } from './containers/user/users.module';
 import { LoansModule } from './containers/loans/loans.module';
 import { LibrariansModule } from './containers/librarians/librarians.module';
 import { StudentsModule } from './containers/students/students.module';
+import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
+import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 
 @NgModule({
     declarations: [
@@ -36,7 +38,9 @@ import { StudentsModule } from './containers/students/students.module';
         BookSectionComponent,
         DepartmentSectionComponent,
         GenreSectionComponent,
-        StudentSectionComponent
+        StudentSectionComponent,
+        ScheduleSectionComponent,
+        PeriodSectionComponent
     ],
     imports: [
         BrowserModule,

@@ -2,6 +2,7 @@ const Librarian = require('../models/librarian');
 const Department = require('../models/department');
 const Role = require('../models/role');
 const Schedule = require('../models/schedule');
+const Period = require('../models/period');
 
 const loanController = require('./loan');
 
@@ -29,16 +30,16 @@ const getLibrarianRole = async librarianId => {
 const getLibrarianSchedule = async librarianId => {
     try {
         const schedules = await Schedule.findAll({
-            where: { librarianId: librarianId }
+            where: { librarianId: librarianId },
+            include: { model: Period }
         });
         const scheduleArr = [];
         if (schedules.length > 0) {
             schedules.forEach(schedule => {
                 const scheduleValues = schedule.dataValues;
                 scheduleArr.push({
-                    day: scheduleValues.dayOfWeek,
-                    start: scheduleValues.start_time,
-                    end: scheduleValues.end_time
+                    day: scheduleValues.day,
+                    period: scheduleValues.period_.get()
                 });
             });
             return scheduleArr;

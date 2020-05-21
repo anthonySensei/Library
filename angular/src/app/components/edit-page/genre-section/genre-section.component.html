@@ -1,58 +1,70 @@
 <section class="edit-section">
-    <h3>Please select genre and change fields to edit genre:</h3>
-    <div class="input-groups">
-        <mat-form-field class="edit-field">
-            <mat-label>Genre</mat-label>
-            <mat-select
-                name="genreName"
-                [(ngModel)]="genreSelect"
-                (ngModelChange)="setGenreName()"
-            >
-                <mat-option *ngFor="let genre of genres" [value]="genre.id">
-                    {{ genre.name }}
-                </mat-option>
-                <mat-divider></mat-divider>
-                <mat-option (click)="showGenreAdding = true">
-                    <b>Add Genre</b>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field">
-            <mat-label>Genre</mat-label>
-            <input matInput type="text" [(ngModel)]="genreName" />
-            <button
-                mat-button
-                *ngIf="genreName"
-                matSuffix
-                mat-icon-button
-                aria-label="Clear"
-                (click)="genreName = ''"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-    <div class="btn-group">
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="primary"
-            type="submit"
-            [disabled]="!genreName"
-            (click)="editGenre()"
-        >
-            Edit
-        </button>
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="warn"
-            type="button"
-            [disabled]="!genreSelect"
-            (click)="deleteGenre()"
-        >
-            Delete
-        </button>
+    <h3>
+        Please select genre(left side) and change fields(right side) to edit
+        genre:
+    </h3>
+    <div class="input-groups flex">
+        <div class="left-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Genre</mat-label>
+                <mat-select
+                    name="genreName"
+                    [(ngModel)]="genreSelect"
+                    (ngModelChange)="setGenreName()"
+                    required
+                >
+                    <mat-option *ngFor="let genre of genres" [value]="genre.id">
+                        {{ genre.name }}
+                    </mat-option>
+                    <mat-divider></mat-divider>
+                    <mat-option (click)="showGenreAdding = true">
+                        <b>Add Genre</b>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <mat-divider
+            vertical="vertical"
+            style="margin-right: 10px;"
+        ></mat-divider>
+        <div class="right-side">
+            <mat-form-field class="edit-field">
+                <mat-label>Genre</mat-label>
+                <input matInput type="text" [(ngModel)]="genreName" />
+                <button
+                    mat-button
+                    *ngIf="genreName"
+                    matSuffix
+                    mat-icon-button
+                    aria-label="Clear"
+                    (click)="genreName = ''"
+                >
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <div class="btn-group">
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="primary"
+                    type="submit"
+                    [disabled]="!genreName"
+                    (click)="editGenre()"
+                >
+                    Edit
+                </button>
+                <button
+                    mat-raised-button
+                    class="form-btn edit-btn"
+                    color="warn"
+                    type="button"
+                    [disabled]="!genreSelect"
+                    (click)="deleteGenre()"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
     </div>
 </section>
 <section class="add-section" *ngIf="showGenreAdding">
@@ -91,6 +103,15 @@
             (click)="addGenre()"
         >
             Add
+        </button>
+        <button
+            mat-stroked-button
+            class="form-btn edit-btn"
+            color="primary"
+            type="submit"
+            (click)="showGenreAdding = false"
+        >
+            Cancel
         </button>
     </div>
 </section>
