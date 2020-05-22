@@ -16,6 +16,7 @@ import { serverLink } from '../constants/serverLink';
 export class BookService {
     BOOKS_URL = `${serverLink}/books`;
     BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
+    BOOKS_MOVE_URL = `${this.BOOKS_URL}/move`;
     BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
 
     LOAN_BOOK_URL = `${serverLink}/loans`;
@@ -144,5 +145,15 @@ export class BookService {
                 this.responseService.setResponse(response.data);
             })
         );
+    }
+
+    moveBookHttp(book: Book, departmentId: number, quantity: number) {
+        return this.http
+            .post(this.BOOKS_MOVE_URL, { book, departmentId, quantity })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
     }
 }

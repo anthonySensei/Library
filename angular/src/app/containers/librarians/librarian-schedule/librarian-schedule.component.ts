@@ -84,24 +84,25 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         return this.schedulesForDisplay.filter(sch => sch.day === day);
     }
 
-    setSchedules(): void {
+    getCondition(sch): boolean {
         if (this.departmentSelect && this.librarianSelect) {
-            this.schedulesForDisplay = this.schedules.filter(
-                sch =>
-                    sch.librarian.departmentId === this.departmentSelect &&
-                    sch.librarian.id === this.librarianSelect
+            return (
+                sch.librarian.departmentId === this.departmentSelect &&
+                sch.librarian.id === this.librarianSelect
             );
         } else if (this.departmentSelect) {
-            this.schedulesForDisplay = this.schedules.filter(
-                sch => sch.librarian.departmentId === this.departmentSelect
-            );
+            return sch.librarian.departmentId === this.departmentSelect;
         } else if (this.librarianSelect) {
-            this.schedulesForDisplay = this.schedules.filter(
-                sch => sch.librarian.id === this.librarianSelect
-            );
+            return sch.librarian.id === this.librarianSelect;
         } else {
-            this.schedulesForDisplay = this.schedules;
+            return true;
         }
+    }
+
+    setSchedules(): void {
+        this.schedulesForDisplay = this.schedules.filter(sch =>
+            this.getCondition(sch)
+        );
         this.setSchedulesByDay(this.schedulesForDisplay);
     }
 

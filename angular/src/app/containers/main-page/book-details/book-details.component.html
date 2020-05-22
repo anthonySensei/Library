@@ -11,6 +11,15 @@
                 </p>
                 <p>Genre: {{ book.genre.name }}</p>
                 <p>Year: {{ book.year }}</p>
+                <p>Department: {{ book.department.address }}</p>
+                <p
+                    *ngIf="
+                        userRole === roles.LIBRARIAN ||
+                        userRole === roles.MANAGER
+                    "
+                >
+                    Quantity: {{ book.quantity }}
+                </p>
             </section>
             <section class="additional-info">
                 <span class="book-location">
@@ -24,7 +33,7 @@
                     *ngIf="userRole === roles.LIBRARIAN"
                     mat-stroked-button
                     color="primary"
-                    class="btn btn-green"
+                    class="btn"
                     matTooltip="Loan book"
                     (click)="openLoanBookModal()"
                 >
@@ -37,18 +46,28 @@
                     "
                     mat-stroked-button
                     color="primary"
-                    class="btn btn-green"
-                    matTooltip="Loan book"
+                    class="btn"
+                    matTooltip="Edit book"
                     [routerLink]="['/', links.ADD_BOOK]"
                     [queryParams]="{ id: book.id }"
                 >
-                    Edit book
+                    Edit
                 </a>
+                <button
+                    *ngIf="userRole === roles.MANAGER"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn"
+                    matTooltip="Move book to another department"
+                    (click)="openMoveBookModal()"
+                >
+                    Move
+                </button>
                 <button
                     *ngIf="userRole === roles.STUDENT"
                     mat-stroked-button
                     color="primary"
-                    class="btn btn-green"
+                    class="btn"
                     matTooltip="Order book"
                     (click)="orderBook()"
                 >
