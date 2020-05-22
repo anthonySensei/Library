@@ -1,8 +1,74 @@
-<div style="width: 1000px; margin: 20px auto;">
+<div class="table-section">
     <mat-form-field>
         <mat-label>Filter</mat-label>
         <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" />
     </mat-form-field>
+    <button
+        mat-stroked-button
+        color="primary"
+        class="btn add-btn"
+        matTooltip="Show debtors"
+        (click)="showDebtors()"
+    >
+        Show debtors
+    </button>
+    <mat-accordion
+        [style.display]="isShowingDebtors ? 'block' : 'none'"
+        class="mb-1"
+    >
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    More filter options
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-form-field class="d-block">
+                <mat-label>Department address</mat-label>
+                <mat-select
+                    [(ngModel)]="departmentSelect"
+                    (ngModelChange)="getLoans()"
+                >
+                    <mat-option value="''">All</mat-option>
+                    <mat-option
+                        *ngFor="let department of departments"
+                        [value]="department.id"
+                        >{{ department.address }}</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Student</mat-label>
+                <mat-select
+                    [(ngModel)]="studentSelect"
+                    (ngModelChange)="getLoans()"
+                >
+                    <mat-option value="''">All</mat-option>
+                    <mat-option
+                        *ngFor="let student of students"
+                        [value]="student.id"
+                        >{{ student.name }}({{
+                            student.readerTicket
+                        }})</mat-option
+                    >
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="d-block">
+                <mat-label>Date</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="picker"
+                    [(ngModel)]="date"
+                    (ngModelChange)="getLoans()"
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </mat-expansion-panel>
+    </mat-accordion>
     <table
         mat-table
         [dataSource]="dataSource"
@@ -101,7 +167,10 @@
                                 Department address:
                                 <b>{{ element.department.address }}</b>
                             </p>
-                            <div class="btn-group" *ngIf="!element.returnedTime">
+                            <div
+                                class="btn-group"
+                                *ngIf="!element.returnedTime"
+                            >
                                 <a
                                     mat-stroked-button
                                     color="primary"

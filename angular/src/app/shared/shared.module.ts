@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { MatRadioModule, MatSnackBarModule } from '@angular/material';
+import { MatNativeDateModule, MatRadioModule, MatSnackBarModule } from '@angular/material';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
@@ -75,7 +76,9 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
         MatStepperModule,
         MatExpansionModule,
         NgxMaterialTimepickerModule,
-        MatCardModule
+        MatCardModule,
+        MatDatepickerModule,
+        MatNativeDateModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]
