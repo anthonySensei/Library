@@ -350,10 +350,54 @@ exports.deleteBook = async (req, res) => {
         };
         return helper.responseHandle(res, 200, data);
     } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.moveBook = async (req, res) => {
+    const departmentId = req.body.departmentId;
+    const quantity = req.body.quantity;
+    const book = req.body.book;
+    const newBook = {
+        ...book,
+        departmentId: departmentId,
+        id: null,
+        genreId: book.genre.id,
+        authorId: book.author.id,
+        quantity: quantity
+    };
+    try {
+        newBook.image = base64Img.imgSync(
+            newBook.image,
+            '../images/',
+            uuidv4()
+        );
+        const isNotUnique = await Book.findOne({
+            where: {
+                isbn: newBook.isbn,
+                departmentId: newBook.departmentId
+            }
+        });
+        if (isNotUnique) {
+            return helper.responseErrorHandle(res, 200, errorMessages.ISBN_EXIST);
+        }
+        await Book.create(newBook);
+        const bookInDb = await Book.findOne({ where: { id: book.id } });
+        await bookInDb.update({ quantity: bookInDb.get().quantity - quantity });
         const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
+            isSuccessful: true,
+            message: successMessages.BOOK_SUCCESSFULLY_MOVED
         };
-        return helper.responseHandle(res, 500, data);
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };

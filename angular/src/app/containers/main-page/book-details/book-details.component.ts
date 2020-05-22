@@ -13,7 +13,7 @@ import { MaterialService } from '../../../services/material.service';
 import { OrderService } from '../../../services/orders.service';
 import { ResponseService } from '../../../services/response.service';
 
-import { LoanBookModalComponent } from '../loan-book-modal/loan-book-modal.component';
+import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
 
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
@@ -21,6 +21,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { User } from '../../../models/user.model';
 import { Response } from '../../../models/response.model';
+import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
 
 @Component({
     selector: 'app-book-details',
@@ -104,7 +105,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe(result => {
             if (!result) {
-                return false;
+                return;
             }
             const loanData = {
                 studentTicketReader: result.readerTicket,
@@ -114,21 +115,52 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
             };
             this.bookService.loanBookHttp(loanData).subscribe(() => {
                 this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                } else {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
-                }
+                this.responseHandle();
             });
         });
+    }
+
+    openMoveBookModal(): void {
+        const dialogRef = this.dialog.open(MoveBookModalComponent, {
+            width: '30%',
+            data: {
+                availableBooks: this.book.quantity,
+                bookDepartmentId: this.book.id
+            }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (!result) {
+                return;
+            }
+            this.bookService
+                .moveBookHttp(
+                    this.book,
+                    result.departmentId,
+                    result.booksToMove
+                )
+                .subscribe(() => {
+                    this.responseHandle();
+                    this.handleBookSubscriptions();
+                });
+        });
+    }
+
+    responseHandle(): void {
+        this.response = this.responseService.getResponse();
+        if (this.response.isSuccessful) {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Success,
+                this.snackbarDuration
+            );
+        } else {
+            this.openSnackBar(
+                this.response.message,
+                SnackBarClasses.Danger,
+                this.snackbarDuration
+            );
+        }
     }
 
     openSnackBar(message: string, style: string, duration: number) {
@@ -159,6 +191,8 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 }
             });
     }
+
+    moveBook() {}
 
     ngOnDestroy(): void {
         this.paramsSubscription.unsubscribe();

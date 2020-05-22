@@ -1,6 +1,7 @@
 exports.BOOKS_URL = '/books';
 exports.BOOKS_DETAILS_URL = `/details`;
 exports.BOOKS_ISBN_URL = `/isbn`;
+exports.BOOKS_MOVE_URL = `/move`;
 
 exports.AUTH_REGISTRATION_URL = '/registration';
 exports.AUTH_CHECK_REGISTRATION_TOKEN_URL = '/check-registration-token';
