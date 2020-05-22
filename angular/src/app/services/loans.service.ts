@@ -47,13 +47,20 @@ export class LoansService {
         return this.statistic;
     }
 
-    fetchLoansHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
+    fetchLoansHttp(departmentId: number, studentId: number, loanDate: Date) {
+        let nextDay;
+        if (loanDate) {
+            nextDay = new Date();
+            nextDay.setDate(loanDate.getDate() + 1);
+        }
         return this.http
-            .get(`${this.LOANS_URL}`, {
-                headers
-            })
+            .get(
+                `${this.LOANS_URL}?` +
+                    `departmentId=${departmentId}&` +
+                    `studentId=${studentId}&` +
+                    `loanDate=${loanDate}&` +
+                    `nextDay=${nextDay}`
+            )
             .pipe(
                 map((response: any) => {
                     this.setLoans(response.data.loans);

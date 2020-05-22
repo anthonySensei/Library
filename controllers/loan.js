@@ -1,3 +1,6 @@
+const { Sequelize } = require('sequelize');
+const Op = Sequelize.Op;
+
 const Loan = require('../models/loan');
 const Student = require('../models/student');
 const Librarian = require('../models/librarian');
@@ -10,6 +13,98 @@ const helper = require('../helper/responseHandle');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
+
+const getCondition = (departmentId, studentId, loanDate, nextDay) => {
+    let departmentCondition = {};
+    let studentCondition = {};
+    let dateCondition = {};
+
+    if (departmentId) departmentCondition = { departmentId: departmentId };
+    if (studentId) studentCondition = { studentId: studentId };
+    if (loanDate && loanDate !== 'null')
+        dateCondition = {
+            loan_time: {
+                [Op.between]: [loanDate, nextDay]
+            }
+        };
+
+    return {
+        ...departmentCondition,
+        ...studentCondition,
+        ...dateCondition
+    };
+};
+
+exports.getAllLoans = async (req, res) => {
+    const departmentId = +req.query.departmentId;
+    const studentId = +req.query.studentId;
+    const loanDate = req.query.loanDate;
+    const nextDay = req.query.nextDay;
+    try {
+        const loans = await Loan.findAll({
+            where: getCondition(departmentId, studentId, loanDate, nextDay),
+            include: [
+                {
+                    model: Student
+                },
+                {
+                    model: Librarian
+                },
+                {
+                    model: Book,
+                    include: {
+                        model: Author
+                    }
+                },
+                { model: Department }
+            ],
+            order: [['loan_time', 'DESC']]
+        });
+        const loansArr = [];
+        for (const loan of loans) {
+            const loanData = loan.dataValues;
+            const studentData = loan.dataValues.student_.dataValues;
+            const librarianData = loan.dataValues.librarian_.dataValues;
+            const departmentData = loan.dataValues.department_.dataValues;
+            const bookData = loan.dataValues.book_.dataValues;
+            const loanObj = {
+                id: loanData.id,
+                loanTime: loanData.loan_time,
+                returnedTime: loanData.returned_time,
+                student: {
+                    name: studentData.name,
+                    email: studentData.email,
+                    readerTicket: studentData.reader_ticket
+                },
+                librarian: {
+                    name: librarianData.name,
+                    email: librarianData.email
+                },
+                department: {
+                    address: departmentData.address
+                },
+                book: {
+                    bookId: bookData.id,
+                    isbn: bookData.isbn,
+                    name: bookData.name,
+                    year: bookData.year,
+                    author: bookData.author_.dataValues.name
+                },
+                bookISBN: bookData.isbn,
+                studentReaderTicket: studentData.reader_ticket,
+                librarianEmail: librarianData.email
+            };
+            loansArr.push(loanObj);
+        }
+        const data = {
+            loans: loansArr,
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (error) {
+        return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
+    }
+};
 
 exports.getLoanStatistic = loans => {
     let last30;
@@ -90,72 +185,6 @@ exports.getLoans = async (modelId, modelName) => {
         return null;
     } catch (error) {
         return null;
-    }
-};
-
-exports.getAllLoans = async (req, res) => {
-    try {
-        const loans = await Loan.findAll({
-            include: [
-                {
-                    model: Student
-                },
-                {
-                    model: Librarian
-                },
-                {
-                    model: Book,
-                    include: {
-                        model: Author
-                    }
-                },
-                { model: Department }
-            ],
-            order: [['loan_time', 'DESC']]
-        });
-        const loansArr = [];
-        for (const loan of loans) {
-            const loanData = loan.dataValues;
-            const studentData = loan.dataValues.student_.dataValues;
-            const librarianData = loan.dataValues.librarian_.dataValues;
-            const departmentData = loan.dataValues.department_.dataValues;
-            const bookData = loan.dataValues.book_.dataValues;
-            const loanObj = {
-                id: loanData.id,
-                loanTime: loanData.loan_time,
-                returnedTime: loanData.returned_time,
-                student: {
-                    name: studentData.name,
-                    email: studentData.email,
-                    readerTicket: studentData.reader_ticket
-                },
-                librarian: {
-                    name: librarianData.name,
-                    email: librarianData.email
-                },
-                department: {
-                    address: departmentData.address
-                },
-                book: {
-                    bookId: bookData.id,
-                    isbn: bookData.isbn,
-                    name: bookData.name,
-                    year: bookData.year,
-                    author: bookData.author_.dataValues.name
-                },
-                bookISBN: bookData.isbn,
-                studentReaderTicket: studentData.reader_ticket,
-                librarianEmail: librarianData.email
-            };
-            loansArr.push(loanObj);
-        }
-        const data = {
-            loans: loansArr,
-            message: successMessages.SUCCESSFULLY_FETCHED
-        };
-        return helper.responseHandle(res, 200, data);
-    } catch (error) {
-        return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
 
