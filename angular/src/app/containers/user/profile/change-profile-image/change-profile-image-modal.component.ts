@@ -24,7 +24,7 @@ export class ChangeProfileImageModalComponent {
         this.imageChangedEvent = event;
     }
 
-    imageCropped(event: ImageCroppedEvent) {
+    imageCropped(event: ImageCroppedEvent): void {
         this.croppedImage = event.base64;
         this.data.imageBase64 = this.croppedImage;
     }

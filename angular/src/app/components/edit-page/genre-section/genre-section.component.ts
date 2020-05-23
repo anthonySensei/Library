@@ -23,31 +23,38 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
     styleUrls: ['../edit-page.component.sass']
 })
 export class GenreSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
-    @Output() onNothingToChange = new EventEmitter();
+    @Output() openSnackbar = new EventEmitter();
+    @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
 
     genres: Genre[];
 
+    genresSubscription: Subscription;
     genresFetchSubscription: Subscription;
-    genresChangeSubscription: Subscription;
+    genresAddSubscription: Subscription;
+    genresEditSubscription: Subscription;
+    genresDeleteSubscription: Subscription;
 
-    genreSelect = null;
-    genreName = null;
-    newGenreName = null;
+    genreSelect: number = null;
+    genreName: string = null;
+    newGenreName: string = null;
 
-    showGenreAdding = false;
+    showGenreAdding: boolean;
 
     response: Response;
 
     constructor(private genreService: GenreService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.setGenres();
+    }
+
+    setGenres() {
         this.genresFetchSubscription = this.genreService
             .fetchAllGenresHttp()
             .subscribe();
-        this.genresChangeSubscription = this.genreService.genresChanged.subscribe(
+        this.genresSubscription = this.genreService.getGenres().subscribe(
             genres => {
                 this.genres = genres;
             }
@@ -58,59 +65,59 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
         return this.genres.find(gen => gen.id === this.genreSelect);
     }
 
-    setGenreName() {
+    setGenreName(): void {
         if (this.genreSelect) {
             this.genreName = this.getGenre().name;
         }
     }
 
-    addGenre() {
-        this.genreService
+    addGenre(): void {
+        this.genresAddSubscription = this.genreService
             .addGenreHttp({ id: null, name: this.newGenreName })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
                 this.genreResponseHandler();
             });
     }
 
-    editGenre() {
+    editGenre(): void {
         if (!this.genreName) {
             return;
         }
         if (this.genreName === this.getGenre().name) {
-            this.onNothingToChange.emit();
+            this.nothingToChange.emit();
             return;
         }
-        this.genreService
+        this.genresEditSubscription = this.genreService
             .ediGenreHttp(this.genreSelect, this.genreName)
             .subscribe(() => {
                 this.genreResponseHandler();
             });
     }
 
-    deleteGenre() {
+    deleteGenre(): void {
         if (!this.genreSelect) {
             return;
         }
-        this.genreService.deleteGenreHttp(this.genreSelect).subscribe(() => {
-            this.genreResponseHandler();
-            this.genreName = null;
-            this.genreSelect = null;
-        });
+        this.genresDeleteSubscription = this.genreService
+            .deleteGenreHttp(this.genreSelect)
+            .subscribe(() => {
+                this.genreResponseHandler();
+            });
     }
 
-    genreResponseHandler() {
+    genreResponseHandler(): void {
         this.response = this.responseService.getResponse();
         if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Success
             ]);
-            this.genreService.fetchAllGenresHttp().subscribe();
-            this.genres = this.genreService.getGenres();
+            this.setGenres();
             this.newGenreName = null;
+            this.genreName = null;
+            this.genreSelect = null;
         } else {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Danger
             ]);
@@ -118,7 +125,10 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.genresSubscription.add(this.genresFetchSubscription);
+        this.genresSubscription.add(this.genresAddSubscription);
+        this.genresSubscription.add(this.genresEditSubscription);
+        this.genresSubscription.add(this.genresDeleteSubscription);
         this.genresFetchSubscription.unsubscribe();
-        this.genresChangeSubscription.unsubscribe();
     }
 }

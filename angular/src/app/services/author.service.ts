@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Author } from '../models/author.model';
 
@@ -14,32 +14,26 @@ import { serverLink } from '../constants/serverLink';
     providedIn: 'root'
 })
 export class AuthorService {
-    AUTHORS_URL = `${serverLink}/authors`;
+    private AUTHORS_URL = `${serverLink}/authors`;
 
-    authorsChanged = new Subject<Author[]>();
-    authors: Author[] = [];
+    private authors = new Subject<Author[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setAuthors(authors: Author[]) {
-        this.authors = authors;
-        this.authorsChanged.next(this.authors);
+    setAuthors(authors: Author[]): void {
+        this.authors.next(authors);
     }
 
-    getAuthors() {
+    getAuthors(): Observable<Author[]> {
         return this.authors;
     }
 
     fetchAllAuthorsHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.AUTHORS_URL}`, {
-                headers
-            })
+            .get(`${this.AUTHORS_URL}`)
             .pipe(
                 map((response: any) => {
                     this.setAuthors(response.data.authors);

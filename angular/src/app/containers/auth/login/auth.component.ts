@@ -7,11 +7,12 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
 import { MaterialService } from '../../../services/material.service';
+import { ResponseService } from '../../../services/response.service';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
+
 import { Response } from '../../../models/response.model';
-import { ResponseService } from '../../../services/response.service';
 
 @Component({
     selector: 'app-auth',
@@ -20,7 +21,7 @@ import { ResponseService } from '../../../services/response.service';
 export class AuthComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;
 
-    error: string = null;
+    error: string;
 
     response: Response;
     authSubscription: Subscription;
@@ -39,13 +40,13 @@ export class AuthComponent implements OnInit, OnDestroy {
         private router: Router
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Login';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.loginForm = new FormGroup({
             email: new FormControl('', [
                 Validators.required,
@@ -56,11 +57,11 @@ export class AuthComponent implements OnInit, OnDestroy {
         });
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.loginForm.controls[controlName].hasError(errorName);
     }
 
-    onLoginUser() {
+    onLoginUser(): void {
         const email = this.loginForm.value.email;
         const password = this.loginForm.value.password;
         if (this.loginForm.invalid) {
@@ -78,7 +79,7 @@ export class AuthComponent implements OnInit, OnDestroy {
                     password: ''
                 });
                 this.error = this.response.message;
-                return false;
+                return;
             } else {
                 this.authService.setIsLoggedIn(this.response.isSuccessful);
                 this.router.navigate([AngularLinks.HOME]);
@@ -92,7 +93,7 @@ export class AuthComponent implements OnInit, OnDestroy {
         });
     }
 
-    openSnackBar(message: string, style: string, duration: number) {
+    openSnackBar(message: string, style: string, duration: number): void {
         this.materialService.openSnackBar(message, style, duration);
     }
 

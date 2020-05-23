@@ -56,7 +56,7 @@ exports.getLibrarians = async (req, res) => {
     });
     const librariansArr = [];
     for (const librarian of librarians) {
-        const librarianValues = librarian.dataValues;
+        const librarianValues = librarian.get();
         try {
             const librarianRole = await getLibrarianRole(librarianValues.id);
             if (librarianRole === roles.LIBRARIAN) {

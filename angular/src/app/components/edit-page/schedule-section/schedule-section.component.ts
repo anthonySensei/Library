@@ -38,21 +38,23 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     showedSchedules: Schedule[] = [];
     librarians: Librarian[];
 
+    schedulesSubscription: Subscription;
     schedulesFetchSubscription: Subscription;
-    schedulesChangeSubscription: Subscription;
+    schedulesAddSubscription: Subscription;
+    schedulesEditSubscription: Subscription;
+    schedulesDeleteSubscription: Subscription;
+    librariansSubscription: Subscription;
     librariansFetchSubscription: Subscription;
-    librariansChangeSubscription: Subscription;
 
-    scheduleSelect = null;
-    periodSelect = null;
-    librarianSelect = null;
-    scheduleDay = null;
-    schedulePeriodId = null;
-    scheduleLibrarianId = null;
+    scheduleSelect: number;
+    librarianSelect: number;
+    scheduleDay: string;
+    schedulePeriodId: number;
+    scheduleLibrarianId: number;
 
-    newScheduleDay = null;
-    newSchedulePeriodId = null;
-    newScheduleLibrarianId = null;
+    newScheduleDay: string;
+    newSchedulePeriodId: number;
+    newScheduleLibrarianId: number;
 
     showScheduleAdding = false;
 
@@ -66,22 +68,26 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.schedulesFetchSubscription = this.scheduleService
-            .fetchAllSchedulesHttp()
-            .subscribe();
-        this.schedulesChangeSubscription = this.scheduleService.schedulesChanged.subscribe(
-            schedules => {
-                this.schedules = schedules;
-            }
-        );
         this.librariansFetchSubscription = this.librarianService
             .getLibrariansHttp()
             .subscribe();
-        this.librariansChangeSubscription = this.librarianService.librariansChanged.subscribe(
+        this.librariansSubscription = this.librarianService.getLibrarians().subscribe(
             librarians => {
                 this.librarians = librarians;
             }
         );
+        this.setSchedules();
+    }
+
+    setSchedules(): void {
+        this.schedulesFetchSubscription = this.scheduleService
+            .fetchAllSchedulesHttp()
+            .subscribe();
+        this.schedulesSubscription = this.scheduleService
+            .getSchedules()
+            .subscribe(schedules => {
+                this.schedules = schedules;
+            });
     }
 
     getSchedule(): Schedule {
@@ -96,13 +102,13 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         return this.librarians.find(lib => lib.id === librarianId);
     }
 
-    setShowedSchedule() {
+    setShowedSchedule(): void {
         this.showedSchedules = this.schedules.filter(
             sch => sch.librarian.id === this.librarianSelect
         );
     }
 
-    setSchedule() {
+    setSchedule(): void {
         if (this.scheduleSelect) {
             this.scheduleDay = this.getSchedule().day;
             this.schedulePeriodId = this.getSchedule().period.id;
@@ -110,7 +116,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    addSchedule() {
+    addSchedule(): void {
         this.scheduleService
             .addScheduleHttp({
                 id: null,
@@ -119,12 +125,11 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
                 librarian: this.getLibrarian(this.newScheduleLibrarianId)
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
                 this.scheduleResponseHandler();
             });
     }
 
-    editSchedule() {
+    editSchedule(): void {
         if (
             !this.scheduleDay ||
             !this.scheduleLibrarianId ||
@@ -152,7 +157,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    deleteSchedule() {
+    deleteSchedule(): void {
         if (!this.scheduleSelect) {
             return;
         }
@@ -167,15 +172,15 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    scheduleResponseHandler() {
+    scheduleResponseHandler(): void {
         this.response = this.responseService.getResponse();
         if (this.response.isSuccessful) {
             this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Success
             ]);
-            this.scheduleService.fetchAllSchedulesHttp().subscribe();
-            this.schedules = this.scheduleService.getSchedules();
+            this.setSchedules();
+            this.setShowedSchedule();
             this.newScheduleDay = null;
             this.newSchedulePeriodId = null;
             this.newScheduleLibrarianId = null;
@@ -188,7 +193,12 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.schedulesFetchSubscription.unsubscribe();
-        this.schedulesChangeSubscription.unsubscribe();
+        this.schedulesSubscription.add(this.schedulesFetchSubscription);
+        this.schedulesSubscription.add(this.schedulesAddSubscription);
+        this.schedulesSubscription.add(this.schedulesEditSubscription);
+        this.schedulesSubscription.add(this.schedulesDeleteSubscription);
+        this.schedulesSubscription.add(this.librariansSubscription);
+        this.schedulesSubscription.add(this.librariansFetchSubscription);
+        this.schedulesSubscription.unsubscribe();
     }
 }

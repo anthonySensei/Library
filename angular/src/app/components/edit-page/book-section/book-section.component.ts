@@ -26,7 +26,7 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class BookSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
+    @Output() openSnackbar = new EventEmitter();
 
     @Input() responseService: ResponseService;
     @Input() departmentSelect: number;
@@ -35,8 +35,9 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     allBooks: Book[];
     booksForSelect: Book[];
 
+    booksSubscription: Subscription;
     booksFetchSubscription: Subscription;
-    booksChangeSubscription: Subscription;
+    booksDeleteSubscription: Subscription;
 
     bookSelect: number = null;
 
@@ -46,18 +47,22 @@ export class BookSectionComponent implements OnInit, OnDestroy {
 
     constructor(private bookService: BookService, private router: Router) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.setBooks();
+    }
+
+    setBooks(): void {
         this.booksFetchSubscription = this.bookService
             .fetchBooksISBNsHttp()
             .subscribe();
-        this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
-            books => {
+        this.booksSubscription = this.bookService
+            .getBooks()
+            .subscribe((books: Book[]) => {
                 this.allBooks = books;
-            }
-        );
+            });
     }
 
-    editBook() {
+    editBook(): void {
         if (!this.bookSelect || !this.departmentSelect) {
             return;
         }
@@ -66,42 +71,44 @@ export class BookSectionComponent implements OnInit, OnDestroy {
         });
     }
 
-    deleteBook() {
+    deleteBook(): void {
         if (!this.departmentSelect || !this.bookSelect) {
             return;
         }
-        this.bookSelect = null;
-        this.departmentSelect = null;
-        this.bookService.deleteBookHttp(this.bookSelect).subscribe(() => {
-            this.bookResponseHandler();
-        });
+        this.booksDeleteSubscription = this.bookService
+            .deleteBookHttp(this.bookSelect)
+            .subscribe(() => {
+                this.bookResponseHandler();
+            });
     }
 
-    bookResponseHandler() {
+    bookResponseHandler(): void {
         this.response = this.responseService.getResponse();
         if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Success
             ]);
-            this.bookService.fetchBooksISBNsHttp().subscribe();
-            this.allBooks = this.bookService.getBooks();
+            this.bookSelect = null;
+            this.departmentSelect = null;
+            this.setBooks();
         } else {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Danger
             ]);
         }
     }
 
-    setBooksForSelect() {
+    setBooksForSelect(): void {
         this.booksForSelect = this.allBooks.filter(
             book => book.department.id === this.departmentSelect
         );
     }
 
     ngOnDestroy(): void {
-        this.booksFetchSubscription.unsubscribe();
-        this.booksChangeSubscription.unsubscribe();
+        this.booksSubscription.add(this.booksFetchSubscription);
+        this.booksSubscription.add(this.booksDeleteSubscription);
+        this.booksSubscription.unsubscribe();
     }
 }

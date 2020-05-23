@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { serverLink } from '../constants/serverLink';
@@ -14,22 +14,20 @@ import { Schedule } from '../models/schedule.model';
     providedIn: 'root'
 })
 export class ScheduleService {
-    SCHEDULES_URL = `${serverLink}/schedules`;
+    private SCHEDULES_URL = `${serverLink}/schedules`;
 
-    schedulesChanged = new Subject<Schedule[]>();
-    schedules: Schedule[] = [];
+    private schedules = new Subject<Schedule[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setSchedule(schedules: Schedule[]) {
-        this.schedules = schedules;
-        this.schedulesChanged.next(this.schedules);
+    setSchedule(schedules: Schedule[]): void {
+        this.schedules.next(schedules);
     }
 
-    getSchedules() {
+    getSchedules(): Observable<Schedule[]> {
         return this.schedules;
     }
 

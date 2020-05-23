@@ -3,7 +3,6 @@ import {
     EventEmitter,
     Input,
     OnDestroy,
-    OnInit,
     Output
 } from '@angular/core';
 
@@ -14,71 +13,75 @@ import { Department } from '../../../models/department.model';
 import { Response } from '../../../models/response.model';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-department-section',
     templateUrl: './department-section.component.html',
     styleUrls: ['../edit-page.component.sass']
 })
-export class DepartmentSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
-    @Output() onNothingToChange = new EventEmitter();
+export class DepartmentSectionComponent implements OnDestroy {
+    @Output() openSnackbar = new EventEmitter();
+    @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
     @Input() departmentService: DepartmentService;
     @Input() departmentSelect: number;
     @Input() departments: Department[];
 
-    departmentAddress = null;
-    newDepartmentAddress = null;
+    departmentAddress: string = null;
+    newDepartmentAddress: string = null;
 
-    showDepartmentAdding = false;
+    showDepartmentAdding: boolean;
+
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
+    departmentsAddSubscription: Subscription;
+    departmentsEditSubscription: Subscription;
+    departmentsDeleteSubscription: Subscription;
 
     response: Response;
 
     constructor() {}
 
-    ngOnInit() {}
-
     getDepartment(): Department {
         return this.departments.find(dep => dep.id === this.departmentSelect);
     }
 
-    setDepartmentAddress() {
+    setDepartmentAddress(): void {
         if (this.departmentSelect) {
             this.departmentAddress = this.getDepartment().address;
         }
     }
 
-    addDepartment() {
-        this.departmentService
+    addDepartment(): void {
+        this.departmentsAddSubscription = this.departmentService
             .addDepartmentHttp({ id: null, address: this.newDepartmentAddress })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
                 this.departmentResponseHandler();
             });
     }
 
-    editDepartment() {
+    editDepartment(): void {
         if (!this.departmentAddress) {
             return;
         }
         if (this.departmentAddress === this.getDepartment().address) {
-            this.onNothingToChange.emit();
+            this.nothingToChange.emit();
             return;
         }
-        this.departmentService
+        this.departmentsEditSubscription = this.departmentService
             .editDepartmentHttp(this.departmentSelect, this.departmentAddress)
             .subscribe(() => {
                 this.departmentResponseHandler();
             });
     }
 
-    deleteDepartment() {
+    deleteDepartment(): void {
         if (!this.departmentSelect) {
             return;
         }
-        this.departmentService
+        this.departmentsDeleteSubscription = this.departmentService
             .deleteDepartmentHttp(this.departmentSelect)
             .subscribe(() => {
                 this.departmentResponseHandler();
@@ -87,23 +90,39 @@ export class DepartmentSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    departmentResponseHandler() {
+    departmentResponseHandler(): void {
         this.response = this.responseService.getResponse();
         if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Success
             ]);
-            this.departmentService.fetchAllDepartmentsHttp().subscribe();
-            this.departments = this.departmentService.getDepartments();
+            this.departmentsFetchSubscription = this.departmentService
+                .fetchAllDepartmentsHttp()
+                .subscribe();
+            this.departmentsSubscription = this.departmentService
+                .getDepartments()
+                .subscribe((departments: Department[]) => {
+                    this.departments = departments;
+                });
             this.newDepartmentAddress = null;
         } else {
-            this.onOpenSnackbar.emit([
+            this.openSnackbar.emit([
                 this.response.message,
                 SnackBarClasses.Danger
             ]);
         }
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+        if (this.departmentsSubscription) {
+            this.departmentsSubscription.add(this.departmentsFetchSubscription);
+            this.departmentsSubscription.add(this.departmentsAddSubscription);
+            this.departmentsSubscription.add(this.departmentsEditSubscription);
+            this.departmentsSubscription.add(
+                this.departmentsDeleteSubscription
+            );
+            this.departmentsSubscription.unsubscribe();
+        }
+    }
 }

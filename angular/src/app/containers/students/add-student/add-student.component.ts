@@ -22,14 +22,14 @@ import { AngularLinks } from '../../../constants/angularLinks';
 export class AddStudentComponent implements OnInit, OnDestroy {
     createStudentForm: FormGroup;
 
-    discard = false;
-    done = false;
+    discard: boolean;
+    done: boolean;
 
     createStudentSubscription: Subscription;
 
-    error: string = null;
-    emailError: string = null;
-    readerTicketError: string = null;
+    error: string;
+    emailError: string;
+    readerTicketError: string;
 
     snackbarDuration = 5000;
 
@@ -49,14 +49,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         private validationService: ValidationService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Add librarian';
         this.emailValidation = this.validationService.getEmailValidation();
         this.readerTicketValidation = this.validationService.getReaderTicketValidation();
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.createStudentForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,
@@ -71,7 +71,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         });
     }
 
-    onCreateStudent() {
+    onCreateStudent(): void {
         const email = this.createStudentForm.value.email;
         const readerTicket = this.createStudentForm.value.readerTicket;
         const name = this.createStudentForm.value.name;
@@ -138,11 +138,11 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.createStudentForm.controls[controlName].hasError(errorName);
     }
 
-    openSnackBar(message: string, style: string, duration: number) {
+    openSnackBar(message: string, style: string, duration: number): void {
         this.materialService.openSnackBar(message, style, duration);
     }
 

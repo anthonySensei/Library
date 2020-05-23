@@ -11,7 +11,9 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 import { Student } from '../../../models/student.model';
+
 import { AngularLinks } from '../../../constants/angularLinks';
+
 import { StudentService } from '../../../services/student.service';
 
 @Component({
@@ -36,7 +38,7 @@ export class StudentsComponent implements OnInit, OnDestroy {
     links = AngularLinks;
 
     studentsSubscription: Subscription;
-    studentsChangedSubscription: Subscription;
+    studentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = ['name', 'email', 'readerTicket', 'status'];
     expandedElement: Student | null;
@@ -47,27 +49,26 @@ export class StudentsComponent implements OnInit, OnDestroy {
 
     constructor(private studentService: StudentService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Students';
         this.subscriptionsHandle();
     }
 
-    subscriptionsHandle() {
-        this.studentsSubscription = this.studentService
+    subscriptionsHandle(): void {
+        this.studentsFetchSubscription = this.studentService
             .getStudentsHttp()
             .subscribe();
-        this.studentsChangedSubscription = this.studentService.studentsChanged.subscribe(
-            students => {
+        this.studentsSubscription = this.studentService.getStudents().subscribe(
+            (students: Student[]) => {
                 this.students = students;
                 this.dataSource = new MatTableDataSource(this.students);
                 this.dataSource.paginator = this.paginator;
                 this.dataSource.sort = this.sort;
             }
         );
-        this.students = this.studentService.getStudents();
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -77,7 +78,7 @@ export class StudentsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.studentsSubscription.add(this.studentsFetchSubscription);
         this.studentsSubscription.unsubscribe();
-        this.studentsChangedSubscription.unsubscribe();
     }
 }

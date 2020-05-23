@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Student } from '../models/student.model';
 
 import { serverLink } from '../constants/serverLink';
@@ -12,42 +12,35 @@ import { ResponseService } from './response.service';
     providedIn: 'root'
 })
 export class StudentService {
-    STUDENTS_URL = `${serverLink}/students`;
-    STUDENTS_DETAILS_URL = `${this.STUDENTS_URL}/details`;
+    private STUDENTS_URL = `${serverLink}/students`;
+    private STUDENTS_DETAILS_URL = `${this.STUDENTS_URL}/details`;
 
-    students: Student[] = [];
-    studentsChanged = new Subject<Student[]>();
-
-    student: Student;
-    studentChanged = new Subject<Student>();
+    private students = new Subject<Student[]>();
+    private student = new Subject<Student>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setStudents(students: Student[]) {
-        this.students = students;
-        this.studentsChanged.next(this.students);
+    setStudents(students: Student[]): void {
+        this.students.next(students);
     }
 
-    getStudents() {
+    getStudents(): Observable<Student[]> {
         return this.students;
     }
 
-    setStudent(student: Student) {
-        this.student = student;
-        this.studentChanged.next(this.student);
+    setStudent(student: Student): void {
+        this.student.next(student);
     }
 
-    getStudent() {
+    getStudent(): Observable<Student> {
         return this.student;
     }
 
     getStudentsHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.get(this.STUDENTS_URL, { headers }).pipe(
+        return this.http.get(this.STUDENTS_URL).pipe(
             map((response: any) => {
                 this.setStudents(response.data.students);
             })
@@ -55,17 +48,21 @@ export class StudentService {
     }
 
     getStudentHttp(studentId: number) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`, {
-                headers
-            })
+            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`)
             .pipe(
                 map((response: any) => {
                     this.setStudent(response.data.student);
                 })
             );
+    }
+
+    addStudentHttp(student) {
+        return this.http.post(this.STUDENTS_URL, student).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 
     ediStudentHttp(studentId: number, email: string, readerTicket: string) {
@@ -81,16 +78,6 @@ export class StudentService {
     deleteStudentHttp(studentId: number) {
         return this.http
             .delete(`${this.STUDENTS_URL}?studentId=${studentId}`)
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
-    }
-
-    addStudentHttp(student) {
-        return this.http
-            .post(this.STUDENTS_URL, student)
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

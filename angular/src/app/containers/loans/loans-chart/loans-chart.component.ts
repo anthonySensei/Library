@@ -51,14 +51,13 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     };
     constructor(private loansService: LoansService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Statistic';
-        this.statisticHandler();
     }
 
-    statisticHandler() {
-        this.statisticChangedSubscription = this.loansService.statisticChanged.subscribe(
-            statistic => {
+    statisticHandler(): void {
+        this.statisticChangedSubscription = this.loansService.getStatistic().subscribe(
+            (statistic: Statistic[]) => {
                 this.statistic = statistic;
                 const seriesArr = [];
                 for (const stat of this.statistic) {
@@ -79,7 +78,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
                 ];
             }
         );
-        this.statistic = this.loansService.getStatistic();
     }
 
     onSelect(data): void {}
@@ -88,13 +86,14 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     onDeactivate(data): void {}
 
-    showStatistic() {
+    showStatistic(): void {
         this.statisticSubscription = this.loansService
             .fetchLoansStatisticHttp(this.model, this.modelValue)
             .subscribe();
+        this.statisticHandler();
     }
 
-    showTopFive() {
+    showTopFive(): void {
         this.statisticTopFiveSubscription = this.loansService
             .fetchTopFiveLoansHttp(this.model)
             .subscribe();
@@ -102,11 +101,14 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         if (this.statisticSubscription) {
+            this.statisticSubscription.add(this.statisticChangedSubscription);
             this.statisticSubscription.unsubscribe();
         }
         if (this.statisticTopFiveSubscription) {
+            this.statisticTopFiveSubscription.add(
+                this.statisticChangedSubscription
+            );
             this.statisticTopFiveSubscription.unsubscribe();
         }
-        this.statisticChangedSubscription.unsubscribe();
     }
 }

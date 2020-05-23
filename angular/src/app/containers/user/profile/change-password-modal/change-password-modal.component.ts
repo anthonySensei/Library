@@ -1,17 +1,19 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { ChangePasswordDialogData } from './change-password-dialog-data.model';
-import { ValidationService } from '../../../../services/validation.service';
-import { SnackBarClasses } from '../../../../constants/snackBarClasses';
-import { UserService } from '../../../../services/user.service';
 import { Subscription } from 'rxjs';
-import { ChangedDataProfile } from '../../../../constants/changedDataProfile';
-import { ResponseService } from '../../../../services/response.service';
+
+import { ChangePasswordDialogData } from './change-password-dialog-data.model';
 import { Response } from '../../../../models/response.model';
+
+import { ValidationService } from '../../../../services/validation.service';
+import { UserService } from '../../../../services/user.service';
+import { ResponseService } from '../../../../services/response.service';
 import { MaterialService } from '../../../../services/material.service';
+
+import { SnackBarClasses } from '../../../../constants/snackBarClasses';
+import { ChangedDataProfile } from '../../../../constants/changedDataProfile';
 
 @Component({
     selector: 'app-dialog',
@@ -51,7 +53,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.passwordsForm = new FormGroup({
             oldPassword: new FormControl(null, [Validators.required]),
             newPassword: new FormControl(null, [
@@ -65,7 +67,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
         });
     }
 
-    onChangeUserPassword() {
+    onChangeUserPassword(): void {
         const oldPassword = this.passwordsForm.value.oldPassword;
         const newPassword = this.passwordsForm.value.newPassword;
         const retypeNewPassword = this.passwordsForm.value.retypeNewPassword;
@@ -120,7 +122,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
             });
     }
 
-    checkIcon(hide: boolean, password: string) {
+    checkIcon(hide: boolean, password: string): string {
         if (password == null || password === '') {
             return '';
         } else if (hide) {
@@ -130,7 +132,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.passwordsForm.controls[controlName].hasError(errorName);
     }
 

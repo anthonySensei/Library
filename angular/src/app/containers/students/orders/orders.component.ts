@@ -20,6 +20,7 @@ import { ResponseService } from '../../../services/response.service';
 import { AuthService } from '../../../services/auth.service';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { User } from '../../../models/user.model';
 
 @Component({
     selector: 'app-orders',
@@ -37,6 +38,7 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
     ]
 })
 export class OrdersComponent implements OnInit, OnDestroy {
+    user: User;
     orders: Order[];
 
     response: Response;
@@ -44,7 +46,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
     snackbarDuration = 3000;
 
     ordersSubscription: Subscription;
-    ordersChangedSubscription: Subscription;
+    ordersFetchSubscription: Subscription;
+    userSubscription: Subscription;
+    loanBookSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         'orderTime',
@@ -66,27 +70,35 @@ export class OrdersComponent implements OnInit, OnDestroy {
         private responseService: ResponseService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Loans';
+        this.setOrders();
         this.subscriptionsHandle();
     }
 
-    subscriptionsHandle(): void {
-        this.ordersSubscription = this.orderService
+    setOrders(): void {
+        this.ordersFetchSubscription = this.orderService
             .fetchOrdersHttp()
             .subscribe();
-        this.ordersChangedSubscription = this.orderService.ordersChanged.subscribe(
-            orders => {
+        this.ordersSubscription = this.orderService
+            .getOrders()
+            .subscribe(orders => {
                 this.orders = orders;
                 this.dataSource = new MatTableDataSource(this.orders);
                 this.dataSource.paginator = this.paginator;
                 this.dataSource.sort = this.sort;
-            }
-        );
-        this.orders = this.orderService.getOrders();
+            });
     }
 
-    applyFilter(event: Event) {
+    subscriptionsHandle(): void {
+        this.userSubscription = this.authService
+            .getUser()
+            .subscribe((user: User) => {
+                this.user = user;
+            });
+    }
+
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -95,18 +107,13 @@ export class OrdersComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.ordersSubscription.unsubscribe();
-        this.ordersChangedSubscription.unsubscribe();
-    }
-
-    orderBook(orderId: number, bookId: number, studentId: number) {
-        this.orderService
+    loanBook(orderId: number, bookId: number, studentId: number) {
+        this.loanBookSubscription = this.orderService
             .loanBookFromOrderHttp(
                 orderId,
                 bookId,
                 studentId,
-                this.authService.getUser().email,
+                this.user.email,
                 new Date()
             )
             .subscribe(() => {
@@ -117,8 +124,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
                         SnackBarClasses.Success,
                         this.snackbarDuration
                     );
-                    this.orderService.fetchOrdersHttp().subscribe();
-                    this.orders = this.orderService.getOrders();
+                    this.setOrders();
                 } else {
                     this.materialService.openSnackBar(
                         this.response.message,
@@ -127,5 +133,12 @@ export class OrdersComponent implements OnInit, OnDestroy {
                     );
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        this.ordersSubscription.add(this.ordersFetchSubscription);
+        this.ordersSubscription.add(this.userSubscription);
+        this.ordersSubscription.add(this.loanBookSubscription);
+        this.ordersSubscription.unsubscribe();
     }
 }

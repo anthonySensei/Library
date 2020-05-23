@@ -27,7 +27,7 @@
                 <mat-label>Department address</mat-label>
                 <mat-select
                     [(ngModel)]="departmentSelect"
-                    (ngModelChange)="getLoans()"
+                    (ngModelChange)="setLoans()"
                 >
                     <mat-option value="''">All</mat-option>
                     <mat-option
@@ -41,7 +41,7 @@
                 <mat-label>Student</mat-label>
                 <mat-select
                     [(ngModel)]="studentSelect"
-                    (ngModelChange)="getLoans()"
+                    (ngModelChange)="setLoans()"
                 >
                     <mat-option value="''">All</mat-option>
                     <mat-option
@@ -59,7 +59,7 @@
                     matInput
                     [matDatepicker]="picker"
                     [(ngModel)]="date"
-                    (ngModelChange)="getLoans()"
+                    (ngModelChange)="setLoans()"
                 />
                 <mat-datepicker-toggle
                     matSuffix

@@ -37,7 +37,7 @@ export class MoveBookModalComponent implements OnInit, OnDestroy {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
+        this.departmentsChangeSubscription = this.departmentService.getDepartments().subscribe(
             departments => {
                 this.departments = departments.filter(
                     dep => dep.id !== this.data.bookDepartmentId

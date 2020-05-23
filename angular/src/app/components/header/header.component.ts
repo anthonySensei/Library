@@ -17,19 +17,19 @@ import { User } from '../../models/user.model';
     styleUrls: ['./header.component.sass']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-    isLoggedIn = false;
-    isSmallScreen = false;
+    isLoggedIn: boolean;
+    isSmallScreen: boolean;
 
     links = AngularLinks;
     userRoles = UserRoles;
 
-    userChangedSubscription: Subscription;
+    userSubscription: Subscription;
     breakpointSubscription: Subscription;
     authServiceSubscription: Subscription;
 
     user: User;
 
-    role: string = null;
+    role: string;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
@@ -47,12 +47,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
             });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.userSubscriptionHandle();
     }
 
-    userSubscriptionHandle() {
-        this.userChangedSubscription = this.authService.userChanged.subscribe(
+    userSubscriptionHandle(): void {
+        this.userSubscription = this.authService.getUser().subscribe(
             user => {
                 this.user = user;
                 this.isLoggedIn = !!user;
@@ -63,10 +63,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 }
             }
         );
-        this.user = this.authService.getUser();
     }
 
-    onLogoutUser() {
+    onLogoutUser(): void {
         this.authServiceSubscription = this.authService
             .logout()
             .subscribe(() => {
@@ -76,8 +75,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.authServiceSubscription.unsubscribe();
-        this.breakpointSubscription.unsubscribe();
-        this.userChangedSubscription.unsubscribe();
+        this.userSubscription.add(this.authServiceSubscription);
+        this.userSubscription.add(this.breakpointSubscription);
+        this.userSubscription.unsubscribe();
     }
 }

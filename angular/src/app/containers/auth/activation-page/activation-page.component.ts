@@ -1,27 +1,27 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+
 import { Subscription } from 'rxjs';
+
+import { AuthService } from '../../../services/auth.service';
 import { MaterialService } from '../../../services/material.service';
+import { ResponseService } from '../../../services/response.service';
+
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { ResponseService } from '../../../services/response.service';
+import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-activation-page',
     templateUrl: './activation-page.component.html'
 })
 export class ActivationPageComponent implements OnInit, OnDestroy {
-    registrationToken: string = null;
+    registrationToken: string;
 
     paramsSubscription: Subscription;
     authSubscription: Subscription;
 
-    response;
-    isActivated: boolean;
-
-    message;
-    error;
+    response: Response;
 
     constructor(
         private route: ActivatedRoute,
@@ -44,19 +44,16 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
             .checkRegistrationToken(this.registrationToken)
             .subscribe(() => {
                 this.response = this.responseService.getResponse();
-                this.isActivated = this.response.data.isActivated;
-                if (this.isActivated) {
-                    this.message = this.response.data.message;
+                if (this.response.isSuccessful) {
                     this.openSnackBar(
-                        this.response.data.message,
+                        this.response.message,
                         SnackBarClasses.Success,
                         5000
                     );
                     this.router.navigate(['/' + AngularLinks.LOGIN]);
                 } else {
-                    this.error = this.response.data.message;
                     this.openSnackBar(
-                        this.response.data.message,
+                        this.response.message,
                         SnackBarClasses.Danger,
                         5000
                     );

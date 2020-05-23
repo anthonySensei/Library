@@ -42,16 +42,17 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     departments: Department[];
     students: Student[];
 
-    studentSelect: number = null;
-    departmentSelect: number = null;
+    studentSelect;
+    departmentSelect;
     date: Date = null;
 
     loansSubscription: Subscription;
-    loansChangedSubscription: Subscription;
+    loansFetchSubscription: Subscription;
+    departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    departmentsChangeSubscription: Subscription;
+    studentsSubscription: Subscription;
     studentsFetchSubscription: Subscription;
-    studentsChangeSubscription: Subscription;
+    returnBookSubscription: Subscription;
 
     response: Response;
 
@@ -80,20 +81,20 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         private materialService: MaterialService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Loans';
         this.subscriptionsHandle();
     }
 
-    getLoans() {
-        this.loansSubscription = this.loansService
+    setLoans(): void {
+        this.loansFetchSubscription = this.loansService
             .fetchLoansHttp(
                 this.departmentSelect,
                 this.studentSelect,
                 this.date
             )
             .subscribe();
-        this.loansChangedSubscription = this.loansService.loansChanged.subscribe(
+        this.loansSubscription = this.loansService.getLoans().subscribe(
             (loans: Loan[]) => {
                 this.loans = loans;
                 this.dataSource = new MatTableDataSource(this.loans);
@@ -103,27 +104,27 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         );
     }
 
-    subscriptionsHandle() {
-        this.getLoans();
+    subscriptionsHandle(): void {
+        this.setLoans();
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            (departments: Department[]) => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
-            }
-        );
+            });
         this.studentsFetchSubscription = this.studentService
             .getStudentsHttp()
             .subscribe();
-        this.studentsChangeSubscription = this.studentService.studentsChanged.subscribe(
-            (students: Student[]) => {
+        this.studentsSubscription = this.studentService
+            .getStudents()
+            .subscribe((students: Student[]) => {
                 this.students = students;
-            }
-        );
+            });
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -132,8 +133,8 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    returnBook(loanId: any, bookId: any) {
-        this.loansService
+    returnBook(loanId: any, bookId: any): void {
+        this.returnBookSubscription = this.loansService
             .returnBookHttp(loanId, bookId, new Date())
             .subscribe(() => {
                 this.response = this.responseService.getResponse();
@@ -143,14 +144,7 @@ export class LoansPageComponent implements OnInit, OnDestroy {
                         SnackBarClasses.Success,
                         this.snackbarDuration
                     );
-                    this.loansService
-                        .fetchLoansHttp(
-                            this.departmentSelect,
-                            this.studentSelect,
-                            this.date
-                        )
-                        .subscribe();
-                    this.loans = this.loansService.getLoans();
+                    this.setLoans();
                 } else {
                     this.materialService.openSnackBar(
                         this.response.message,
@@ -161,12 +155,12 @@ export class LoansPageComponent implements OnInit, OnDestroy {
             });
     }
 
-    showDebtors() {
+    showDebtors(): void {
         this.isShowingDebtors = !this.isShowingDebtors;
     }
 
     ngOnDestroy(): void {
+        this.loansFetchSubscription.unsubscribe();
         this.loansSubscription.unsubscribe();
-        this.loansChangedSubscription.unsubscribe();
     }
 }

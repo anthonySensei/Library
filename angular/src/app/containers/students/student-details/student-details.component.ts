@@ -23,12 +23,12 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     student: Student;
     studentId: number;
 
-    userSubscription: Subscription;
-    userChangedSubscription: Subscription;
+    studentFetchSubscription: Subscription;
+    studentSubscription: Subscription;
 
     paramsSubscription: Subscription;
 
-    isLoading = false;
+    isLoading: boolean;
 
     displayedLoanColumns: string[] = [
         'loanTime',
@@ -79,7 +79,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Student';
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
@@ -90,12 +90,12 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         );
     }
 
-    studentSubscriptionHandle() {
-        this.userSubscription = this.studentService
+    studentSubscriptionHandle(): void {
+        this.studentFetchSubscription = this.studentService
             .getStudentHttp(this.studentId)
             .subscribe();
-        this.userChangedSubscription = this.studentService.studentChanged.subscribe(
-            student => {
+        this.studentSubscription = this.studentService.getStudent().subscribe(
+            (student: Student) => {
                 this.student = student;
                 this.loans = this.student.loans || [];
                 this.orders = this.student.orders || [];
@@ -111,10 +111,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             }
         );
-        this.student = this.studentService.getStudent();
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.loansDataSource.filter = filterValue.trim().toLowerCase();
 
@@ -123,7 +122,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    setStatisticToChart(statistic) {
+    setStatisticToChart(statistic): void {
         const seriesArr = [];
         for (const stat of statistic) {
             const item = {
@@ -162,8 +161,8 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     ngOnDestroy(): void {
-        this.userSubscription.unsubscribe();
-        this.userChangedSubscription.unsubscribe();
-        this.paramsSubscription.unsubscribe();
+        this.studentSubscription.add(this.studentFetchSubscription);
+        this.studentSubscription.add(this.paramsSubscription);
+        this.studentSubscription.unsubscribe();
     }
 }

@@ -15,82 +15,85 @@ import { ResponseService } from './response.service';
     providedIn: 'root'
 })
 export class AuthService {
-    isLoggedIn = false;
-    loggedChange = new Subject<boolean>();
+    private REGISTRATION_URL = `${serverLink}/registration`;
+    private LOGIN_URL = `${serverLink}/login`;
+    private LOGOUT_URL = `${serverLink}/logout`;
+    private CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
 
-    isManagerRole = false;
-    managerChange = new Subject<boolean>();
+    private isLoggedIn = false;
+    private loggedChange = new Subject<boolean>();
 
-    isLibrarianRole = false;
-    librarianChange = new Subject<boolean>();
+    private isManagerRole: boolean;
 
-    user: User;
-    userChanged = new BehaviorSubject<User>(null);
+    private isLibrarianRole: boolean;
 
-    jwtTokenChanged = new Subject<string>();
-    jwtToken: string;
+    private user: User;
+    private userChanged = new BehaviorSubject<User>(null);
 
-    tokenExpirationTimer;
+    private jwtToken: string;
 
-    REGISTRATION_URL = `${serverLink}/registration`;
-    LOGIN_URL = `${serverLink}/login`;
-    LOGOUT_URL = `${serverLink}/logout`;
-    CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
+    private tokenExpirationTimer;
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setUser(user) {
+    setUser(user): void {
         this.user = user;
         this.userChanged.next(this.user);
     }
 
-    getUser() {
-        return this.user;
+    getUser(): Observable<User> {
+        return this.userChanged;
     }
 
-    isAuthenticated() {
+    isAuthenticated(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(this.isLoggedIn);
         });
     }
 
-    isManager() {
+    isManager(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(this.isManagerRole);
         });
     }
 
-    isLibrarian() {
+    isLibrarian(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(this.isLibrarianRole);
         });
     }
 
-    setIsLoggedIn(isLoggedIn: boolean) {
+    setIsLoggedIn(isLoggedIn: boolean): void {
         this.isLoggedIn = isLoggedIn;
         this.loggedChange.next(this.isLoggedIn);
     }
 
-    getIsLoggedIn() {
-        return this.isLoggedIn;
-    }
-
-    setIsManager(isManager: boolean) {
+    setIsManager(isManager: boolean): void {
         this.isManagerRole = isManager;
-        this.managerChange.next(this.isManagerRole);
     }
 
-    setIsLibrarian(isLibrarian: boolean) {
+    setIsLibrarian(isLibrarian: boolean): void {
         this.isLibrarianRole = isLibrarian;
-        this.librarianChange.next(this.isLibrarianRole);
     }
 
-    setJwtToken(token) {
+    setRole(role: string): void {
+        if (role === UserRoles.MANAGER) {
+            this.setIsManager(true);
+            this.setIsLibrarian(true);
+        } else if (role === UserRoles.LIBRARIAN) {
+            this.setIsManager(false);
+            this.setIsLibrarian(true);
+        } else {
+            this.setIsManager(false);
+            this.setIsLibrarian(false);
+        }
+    }
+
+    setJwtToken(token: string): void {
         this.jwtToken = token;
-        this.jwtTokenChanged.next(this.jwtToken);
     }
 
     getJwtToken(): string {
@@ -98,9 +101,7 @@ export class AuthService {
     }
 
     login(user: { password: string; email: string }): Observable<any> {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.post(this.LOGIN_URL, user, { headers }).pipe(
+        return this.http.post(this.LOGIN_URL, user).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
                 let userRole;
@@ -120,7 +121,7 @@ export class AuthService {
         );
     }
 
-    private handleAuthentication(token: string, expiresIn: number) {
+    private handleAuthentication(token: string, expiresIn: number): void {
         const expirationDate = new Date(
             new Date().getTime() + expiresIn * 1000
         );
@@ -133,7 +134,7 @@ export class AuthService {
         localStorage.setItem('userData', JSON.stringify(this.user));
     }
 
-    autoLogin() {
+    autoLogin(): void {
         const user = JSON.parse(localStorage.getItem('userData'));
         const tokenData: {
             token: string;
@@ -144,10 +145,8 @@ export class AuthService {
         }
 
         if (!tokenData) {
-            return this.logout();
-        }
-
-        if (tokenData.token) {
+            this.logout();
+        } else if (tokenData.token) {
             this.setRole(user.role.role);
             this.setUser(user);
             this.setJwtToken(tokenData.token);
@@ -162,23 +161,8 @@ export class AuthService {
         }
     }
 
-    setRole(role: string) {
-        if (role === UserRoles.MANAGER) {
-            this.setIsManager(true);
-            this.setIsLibrarian(true);
-        } else if (role === UserRoles.LIBRARIAN) {
-            this.setIsManager(false);
-            this.setIsLibrarian(true);
-        } else {
-            this.setIsManager(false);
-            this.setIsLibrarian(false);
-        }
-    }
-
     logout() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.get(this.LOGOUT_URL, { headers }).pipe(
+        return this.http.get(this.LOGOUT_URL).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
                 this.setUser(null);
@@ -189,7 +173,7 @@ export class AuthService {
         );
     }
 
-    autoLogout(expirationDuration: number) {
+    autoLogout(expirationDuration: number): void {
         if (expirationDuration < 0) {
             this.logout();
             localStorage.clear();
@@ -200,9 +184,7 @@ export class AuthService {
     }
 
     registerStudentHttp(student: Student) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.post(this.REGISTRATION_URL, student, { headers }).pipe(
+        return this.http.post(this.REGISTRATION_URL, student).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
             })
@@ -210,13 +192,11 @@ export class AuthService {
     }
 
     checkRegistrationToken(registrationToken: string) {
-        const headers = new HttpHeaders();
         const token = {
             registrationToken
         };
-        headers.append('Content-type', 'application/json');
         return this.http
-            .post(this.CHECK_REGISTRATION_TOKEN_URL, token, { headers })
+            .post(this.CHECK_REGISTRATION_TOKEN_URL, token)
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

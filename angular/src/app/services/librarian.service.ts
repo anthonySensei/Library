@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Librarian } from '../models/librarian.model';
 
@@ -14,35 +14,31 @@ import { serverLink } from '../constants/serverLink';
     providedIn: 'root'
 })
 export class LibrarianService {
-    LIBRARIANS_URL = `${serverLink}/librarians`;
-    LIBRARIANS_DETAILS_URL = `${this.LIBRARIANS_URL}/details`;
+    private LIBRARIANS_URL = `${serverLink}/librarians`;
+    private LIBRARIANS_DETAILS_URL = `${this.LIBRARIANS_URL}/details`;
 
-    librarians: Librarian[] = [];
-    librariansChanged = new Subject<Librarian[]>();
+    private librarians = new Subject<Librarian[]>();
 
-    librarian: Librarian;
-    librarianChanged = new Subject<Librarian>();
+    private librarian = new Subject<Librarian>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setLibrarians(librarians: Librarian[]) {
-        this.librarians = librarians;
-        this.librariansChanged.next(this.librarians);
+    setLibrarians(librarians: Librarian[]): void {
+        this.librarians.next(librarians);
     }
 
-    getLibrarians() {
+    getLibrarians(): Observable<Librarian[]> {
         return this.librarians;
     }
 
-    setLibrarian(librarian: Librarian) {
-        this.librarian = librarian;
-        this.librarianChanged.next(this.librarian);
+    setLibrarian(librarian: Librarian): void {
+        this.librarian.next(librarian);
     }
 
-    getLibrarian() {
+    getLibrarian(): Observable<Librarian> {
         return this.librarian;
     }
 
@@ -55,9 +51,7 @@ export class LibrarianService {
     }
 
     getLibrariansHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http.get(this.LIBRARIANS_URL, { headers }).pipe(
+        return this.http.get(this.LIBRARIANS_URL).pipe(
             map((response: any) => {
                 this.setLibrarians(response.data.librarians);
             })
@@ -65,12 +59,8 @@ export class LibrarianService {
     }
 
     getLibrarianHttp(librarianId: number) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`, {
-                headers
-            })
+            .get(`${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`)
             .pipe(
                 map((response: any) => {
                     this.setLibrarian(response.data.librarian);

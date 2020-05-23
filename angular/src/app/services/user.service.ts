@@ -12,7 +12,7 @@ import { User } from '../models/user.model';
     providedIn: 'root'
 })
 export class UserService {
-    PROFILE_URL = `${serverLink}/my-account`;
+    private PROFILE_URL = `${serverLink}/my-account`;
 
     constructor(
         private http: HttpClient,

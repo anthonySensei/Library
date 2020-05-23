@@ -7,10 +7,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-author-section
-                (onOpenSnackbar)="
+                (openSnackbar)="
                     openSnackBar($event[0], $event[1], snackbarDuration)
                 "
-                (onNothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
             ></app-author-section>
         </mat-expansion-panel>
@@ -21,7 +21,7 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-book-section
-                (onOpenSnackbar)="
+                    (openSnackbar)="
                     openSnackBar($event[0], $event[1], snackbarDuration)
                 "
                 [responseService]="responseService"
@@ -36,10 +36,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-department-section
-                (onOpenSnackbar)="
+                    (openSnackbar)="
                     openSnackBar($event[0], $event[1], snackbarDuration)
                 "
-                (onNothingToChange)="nothingChangeHandle()"
+                    (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
                 [departmentService]="departmentService"
                 [departmentSelect]="departmentSelect"
@@ -53,10 +53,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-genre-section
-                (onOpenSnackbar)="
+                    (openSnackbar)="
                     openSnackBar($event[0], $event[1], snackbarDuration)
                 "
-                (onNothingToChange)="nothingChangeHandle()"
+                    (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
             ></app-genre-section>
         </mat-expansion-panel>
@@ -67,10 +67,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-student-section
-                (onOpenSnackbar)="
+                    (openSnackbar)="
                     openSnackBar($event[0], $event[1], snackbarDuration)
                 "
-                (onNothingToChange)="nothingChangeHandle()"
+                    (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
             ></app-student-section>
         </mat-expansion-panel>

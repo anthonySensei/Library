@@ -2,18 +2,19 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { ValidationService } from '../../../services/validation.service';
-import { MaterialService } from '../../../services/material.service';
-
 import { Observable, Subject, Subscription } from 'rxjs';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { ValidationService } from '../../../services/validation.service';
+import { MaterialService } from '../../../services/material.service';
 import { LibrarianService } from '../../../services/librarian.service';
-import { Response } from '../../../models/response.model';
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
+
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { Department } from '../../../models/department.model';
 import { AngularLinks } from '../../../constants/angularLinks';
+
+import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-create-user',
@@ -24,14 +25,14 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
 
     departments: Department[];
 
-    discard = false;
-    done = false;
+    discard: boolean;
+    done: boolean;
 
     createLibrarianSubscription: Subscription;
-    departmentChangeSubscription: Subscription;
-    departmentFetchSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
 
-    error: string = null;
+    error: string;
 
     snackbarDuration = 5000;
 
@@ -50,14 +51,14 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         private departmentService: DepartmentService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Add librarian';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
         this.departmentsSubscriptionHandle();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.createLibrarianForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,
@@ -69,18 +70,18 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         });
     }
 
-    departmentsSubscriptionHandle() {
-        this.departmentFetchSubscription = this.departmentService
+    departmentsSubscriptionHandle(): void {
+        this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            departments => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe(departments => {
                 this.departments = departments;
-            }
-        );
+            });
     }
 
-    onCreateLibrarian() {
+    onCreateLibrarian(): void {
         const email = this.createLibrarianForm.value.email;
         const departmentId = this.createLibrarianForm.value.department;
         const name = this.createLibrarianForm.value.name;
@@ -129,19 +130,19 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.createLibrarianForm.controls[controlName].hasError(
             errorName
         );
     }
 
-    openSnackBar(message: string, style: string, duration: number) {
+    openSnackBar(message: string, style: string, duration: number): void {
         this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {
-        if (this.createLibrarianSubscription) {
-            this.createLibrarianSubscription.unsubscribe();
-        }
+        this.departmentsSubscription.add(this.departmentsFetchSubscription);
+        this.departmentsSubscription.add(this.createLibrarianSubscription);
+        this.departmentsSubscription.unsubscribe();
     }
 }

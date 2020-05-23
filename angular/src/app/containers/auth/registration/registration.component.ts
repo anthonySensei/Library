@@ -7,13 +7,13 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
 import { MaterialService } from '../../../services/material.service';
+import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { Student } from '../../../models/student.model';
 import { Response } from '../../../models/response.model';
-import { ResponseService } from '../../../services/response.service';
 
 @Component({
     selector: 'app-registration',
@@ -23,7 +23,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     mainInfoForm: FormGroup;
     passwordForm: FormGroup;
 
-    error: string = null;
+    error: string;
     snackbarDuration = 3000;
 
     response: Response;
@@ -37,7 +37,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     hidePassword = true;
     hideRetypePassword = true;
 
-    isPasswordError = false;
+    isPasswordError: boolean;
 
     links = AngularLinks;
     emailError: string;
@@ -83,7 +83,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         });
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         if (this.mainInfoForm.controls[controlName]) {
             return this.mainInfoForm.controls[controlName].hasError(errorName);
         } else if (this.passwordForm.controls[controlName]) {
@@ -91,7 +91,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    checkIcon(hide: boolean, password: string) {
+    checkIcon(hide: boolean, password: string): string {
         if (password == null || password === '') {
             return '';
         } else if (hide) {
@@ -101,7 +101,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    onRegisterUser(stepper) {
+    onRegisterUser(stepper): void {
         const email = this.mainInfoForm.value.email;
         const readerTicket = this.mainInfoForm.value.reader_ticket;
         const name = this.mainInfoForm.value.name;

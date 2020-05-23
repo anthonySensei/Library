@@ -30,13 +30,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
     profileForm: FormGroup;
 
     isLoading: boolean;
-    discard = false;
+    discard: boolean;
     discardChanged = new Subject<boolean>();
 
     user: User;
 
     updateProfileImage: Subscription;
     updateUserDataSubscription: Subscription;
+    userSubscription: Subscription;
+    breakPointSmallSubscription: Subscription;
+    breakPointMediumSubscription: Subscription;
+    breakPointLargeSubscription: Subscription;
+    changeImageDialogSubscription: Subscription;
+    changePasswordDialogSubscription: Subscription;
 
     error: string;
 
@@ -62,7 +68,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         private validationService: ValidationService,
         private breakpointObserver: BreakpointObserver
     ) {
-        breakpointObserver
+        this.breakPointSmallSubscription = breakpointObserver
             .observe([Breakpoints.Small, Breakpoints.XSmall])
             .subscribe(result => {
                 if (result.matches) {
@@ -70,7 +76,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.changePictureModal = '95%';
                 }
             });
-        breakpointObserver
+        this.breakPointMediumSubscription = breakpointObserver
             .observe([Breakpoints.Medium, Breakpoints.Tablet])
             .subscribe(result => {
                 if (result.matches) {
@@ -78,7 +84,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.changePictureModal = '85%';
                 }
             });
-        breakpointObserver
+        this.breakPointLargeSubscription = breakpointObserver
             .observe([Breakpoints.Large, Breakpoints.XLarge])
             .subscribe(result => {
                 if (result.matches) {
@@ -88,7 +94,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Profile';
         this.isLoading = true;
         this.emailValidation = this.validationService.getEmailValidation();
@@ -96,7 +102,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.profileForm = new FormGroup({
             email: new FormControl(this.user.email, [
                 Validators.required,
@@ -107,16 +113,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
         });
     }
 
-    userHandle() {
-        this.user = this.authService.getUser();
+    userHandle(): void {
+        this.userSubscription = this.authService
+            .getUser()
+            .subscribe((user: User) => {
+                this.user = user;
+            });
         this.isLoading = false;
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.profileForm.controls[controlName].hasError(errorName);
     }
 
-    openChangeProfileImageDialog() {
+    openChangeProfileImageDialog(): void {
         const dialogRef = this.dialog.open(ChangeProfileImageModalComponent, {
             width: this.changePictureModal,
             data: {
@@ -124,42 +134,44 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         });
 
-        dialogRef.afterClosed().subscribe((profileImage: string) => {
-            if (profileImage) {
-                this.updateUserDataSubscription = this.userService
-                    .updateUserDataHttp(
-                        { ...this.user, profileImage },
-                        ChangedDataProfile.IMAGE
-                    )
-                    .subscribe(() => {
-                        this.response = this.responseService.getResponse();
-                        if (this.response.isSuccessful) {
-                            this.user.profileImage = profileImage;
-                            localStorage.setItem(
-                                'userData',
-                                JSON.stringify(this.user)
-                            );
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Success,
-                                this.snackbarDuration
-                            );
-                        } else {
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Danger,
-                                this.snackbarDuration
-                            );
-                        }
-                    });
-            } else {
-                this.openSnackBar(
-                    'Image was not selected',
-                    SnackBarClasses.Warn,
-                    this.snackbarDuration
-                );
-            }
-        });
+        this.changeImageDialogSubscription = dialogRef
+            .afterClosed()
+            .subscribe((profileImage: string) => {
+                if (profileImage) {
+                    this.updateUserDataSubscription = this.userService
+                        .updateUserDataHttp(
+                            { ...this.user, profileImage },
+                            ChangedDataProfile.IMAGE
+                        )
+                        .subscribe(() => {
+                            this.response = this.responseService.getResponse();
+                            if (this.response.isSuccessful) {
+                                this.user.profileImage = profileImage;
+                                localStorage.setItem(
+                                    'userData',
+                                    JSON.stringify(this.user)
+                                );
+                                this.openSnackBar(
+                                    this.response.message,
+                                    SnackBarClasses.Success,
+                                    this.snackbarDuration
+                                );
+                            } else {
+                                this.openSnackBar(
+                                    this.response.message,
+                                    SnackBarClasses.Danger,
+                                    this.snackbarDuration
+                                );
+                            }
+                        });
+                } else {
+                    this.openSnackBar(
+                        'Image was not selected',
+                        SnackBarClasses.Warn,
+                        this.snackbarDuration
+                    );
+                }
+            });
     }
 
     openChangePasswordDialog(): void {
@@ -170,10 +182,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         });
 
-        dialogRef.afterClosed().subscribe();
+        this.changePasswordDialogSubscription = dialogRef
+            .afterClosed()
+            .subscribe();
     }
 
-    onChangeUserData() {
+    onChangeUserData(): void {
         const email = this.profileForm.value.email;
         const name = this.profileForm.value.name;
 
@@ -236,16 +250,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
     }
 
-    openSnackBar(message: string, style: string, duration: number) {
+    openSnackBar(message: string, style: string, duration: number): void {
         this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {
-        if (this.updateProfileImage) {
-            this.updateProfileImage.unsubscribe();
-        }
-        if (this.updateUserDataSubscription) {
-            this.updateUserDataSubscription.unsubscribe();
-        }
+        this.breakPointLargeSubscription.add(this.breakPointSmallSubscription);
+        this.breakPointLargeSubscription.add(this.breakPointMediumSubscription);
+        this.breakPointLargeSubscription.add(this.updateProfileImage);
+        this.breakPointLargeSubscription.add(
+            this.changeImageDialogSubscription
+        );
+        this.breakPointLargeSubscription.add(
+            this.changePasswordDialogSubscription
+        );
+        this.breakPointLargeSubscription.add(this.updateUserDataSubscription);
+        this.breakPointLargeSubscription.unsubscribe();
     }
 }

@@ -27,7 +27,7 @@ export class ValidationService {
         return this.isbnValidation;
     }
 
-    comparePasswords(password, passwordRetype) {
+    comparePasswords(password, passwordRetype): boolean {
         return password === passwordRetype;
     }
 }
