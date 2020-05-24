@@ -54,10 +54,6 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     studentsFetchSubscription: Subscription;
     returnBookSubscription: Subscription;
 
-    response: Response;
-
-    snackbarDuration = 3000;
-
     columnsToDisplay: string[] = [
         'loanTime',
         'returnedTime',
@@ -94,14 +90,14 @@ export class LoansPageComponent implements OnInit, OnDestroy {
                 this.date
             )
             .subscribe();
-        this.loansSubscription = this.loansService.getLoans().subscribe(
-            (loans: Loan[]) => {
+        this.loansSubscription = this.loansService
+            .getLoans()
+            .subscribe((loans: Loan[]) => {
                 this.loans = loans;
                 this.dataSource = new MatTableDataSource(this.loans);
                 this.dataSource.paginator = this.paginator;
                 this.dataSource.sort = this.sort;
-            }
-        );
+            });
     }
 
     subscriptionsHandle(): void {
@@ -137,20 +133,8 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         this.returnBookSubscription = this.loansService
             .returnBookHttp(loanId, bookId, new Date())
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
+                if (this.responseService.responseHandle()) {
                     this.setLoans();
-                } else {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
                 }
             });
     }

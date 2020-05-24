@@ -6,16 +6,16 @@ import {
     OnInit,
     Output
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { Response } from '../../../models/response.model';
 import { Student } from '../../../models/student.model';
+
 import { ResponseService } from '../../../services/response.service';
 import { StudentService } from '../../../services/student.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
@@ -24,10 +24,10 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class StudentSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
 
     students: Student[];
 
@@ -43,8 +43,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     newStudentEmail: string;
 
     error: string;
-
-    response: Response;
 
     links = AngularLinks;
 
@@ -117,30 +115,21 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     }
 
     studentResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.setStudents();
             this.newStudentReaderTicket = null;
             this.newStudentEmail = null;
             this.studentSelect = null;
             this.studentEmail = null;
             this.studentReaderTicket = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
-        this.studentsSubscription.add(this.studentsDeleteSubscription);
-        this.studentsSubscription.add(this.studentsEditSubscription);
-        this.studentsSubscription.add(this.studentsFetchSubscription);
-        this.studentsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.studentsSubscription, [
+            this.studentsDeleteSubscription,
+            this.studentsEditSubscription,
+            this.studentsFetchSubscription
+        ]);
     }
 }

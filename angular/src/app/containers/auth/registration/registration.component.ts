@@ -24,9 +24,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     passwordForm: FormGroup;
 
     error: string;
-    snackbarDuration = 3000;
-
-    response: Response;
 
     authSubscription: Subscription;
 
@@ -42,11 +39,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     links = AngularLinks;
     emailError: string;
 
+    response: Response;
+
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
         private router: Router
     ) {}
 
@@ -134,20 +132,15 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             this.authSubscription = this.authService
                 .registerStudentHttp(student)
                 .subscribe(() => {
-                    this.response = this.responseService.getResponse();
-                    if (this.response && this.response.isSuccessful) {
+                    if (this.responseService.responseHandle()) {
                         this.router.navigate(['/' + this.links.LOGIN]);
-                        this.materialService.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Success,
-                            this.snackbarDuration
-                        );
                         this.isPasswordError = false;
                         this.passwordForm.patchValue({
                             password: '',
                             password2: ''
                         });
                     } else {
+                        this.response = this.responseService.getResponse();
                         if (
                             this.response.message
                                 .toLowerCase()
@@ -168,12 +161,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                                 incorrect: true
                             });
                             this.error = this.response.message;
-                        } else {
-                            this.materialService.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Danger,
-                                this.snackbarDuration
-                            );
                         }
                     }
                 });

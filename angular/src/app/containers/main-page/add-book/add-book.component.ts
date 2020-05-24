@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatHorizontalStepper } from '@angular/material';
 
 import { Observable, Subject, Subscription } from 'rxjs';
 
@@ -13,6 +14,8 @@ import { DepartmentService } from '../../../services/department.service';
 import { AuthorService } from '../../../services/author.service';
 import { GenreService } from '../../../services/genre.service';
 import { ValidationService } from '../../../services/validation.service';
+import { HelperService } from '../../../services/helper.service';
+import { ResponseService } from '../../../services/response.service';
 
 import { Book } from '../../../models/book.model';
 import { Department } from '../../../models/department.model';
@@ -24,9 +27,6 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
-import { ResponseService } from '../../../services/response.service';
-import { MatHorizontalStepper } from '@angular/material';
-import { Response } from '../../../models/response.model';
 
 export interface DialogData {
     imageBase64: string;
@@ -42,7 +42,6 @@ export class AddBookComponent
     bookDetailsForm: FormGroup;
 
     error: string;
-    response: Response;
 
     editBookSubscription: Subscription;
     addBookSubscription: Subscription;
@@ -72,8 +71,6 @@ export class AddBookComponent
     authors: Author[];
     genres: Genre[];
 
-    snackbarDuration = 5000;
-
     choosePostImageWidth = '40%';
     addOptionModalWidth = '30%';
 
@@ -94,6 +91,7 @@ export class AddBookComponent
         private authService: AuthService,
         public materialService: MaterialService,
         public validationService: ValidationService,
+        public helperService: HelperService,
         private router: Router,
         private route: ActivatedRoute,
         public dialog: MatDialog
@@ -235,7 +233,6 @@ export class AddBookComponent
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            this.response = null;
             if (!result) {
                 return;
             }
@@ -243,40 +240,16 @@ export class AddBookComponent
                 this.authorService
                     .addAuthorHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.responseService.getResponse();
-                        if (this.response.isSuccessful) {
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Success,
-                                this.snackbarDuration
-                            );
+                        if (this.responseService.responseHandle()) {
                             this.setAuthors();
-                        } else {
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Danger,
-                                this.snackbarDuration
-                            );
                         }
                     });
             } else {
                 this.genreService
                     .addGenreHttp({ id: null, name: result.name })
                     .subscribe(() => {
-                        this.response = this.responseService.getResponse();
-                        if (this.response.isSuccessful) {
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Success,
-                                this.snackbarDuration
-                            );
+                        if (this.responseService.responseHandle()) {
                             this.setGenres();
-                        } else {
-                            this.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Danger,
-                                this.snackbarDuration
-                            );
                         }
                     });
             }
@@ -301,10 +274,9 @@ export class AddBookComponent
         const author = this.authors.find(aut => aut.id === authorId);
         const genre = this.genres.find(gen => gen.id === genreId);
         if (!this.imageToUploadBase64 && !this.editMode) {
-            this.openSnackBar(
+            this.materialService.openSnackbar(
                 'Image was not selected',
-                SnackBarClasses.Warn,
-                this.snackbarDuration
+                SnackBarClasses.Warn
             );
             return;
         }
@@ -337,18 +309,12 @@ export class AddBookComponent
         this.editBookSubscription = this.bookService
             .editBookHttp({ ...book, id: this.bookId }, image)
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
+                if (this.responseService.responseHandle()) {
                     stepper.reset();
                     this.router.navigate(['/books', this.bookId]);
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
                 } else {
                     stepper.selectedIndex = 0;
-                    this.error = this.response.message;
+                    this.error = this.responseService.getResponse().message;
                     this.mainBookInfoForm.controls.isbn.setErrors({
                         incorrect: true
                     });
@@ -360,18 +326,12 @@ export class AddBookComponent
         this.bookService
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    stepper.reset();
+                if (this.responseService.responseHandle()) {
                     this.router.navigate(['/books']);
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
+                    stepper.reset();
                 } else {
                     stepper.selectedIndex = 0;
-                    this.error = this.response.message;
+                    this.error = this.responseService.getResponse().message;
                     this.mainBookInfoForm.controls.isbn.setErrors({
                         incorrect: true
                     });
@@ -379,12 +339,8 @@ export class AddBookComponent
             });
     }
 
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
-    }
-
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.mainBookInfoForm.touched && !this.response) {
+        if (this.mainBookInfoForm.touched) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged
@@ -396,16 +352,17 @@ export class AddBookComponent
     }
 
     ngOnDestroy(): void {
-        this.paramsSubscription.add(this.editBookSubscription);
-        this.paramsSubscription.add(this.addBookSubscription);
-        this.paramsSubscription.add(this.authorsSubscription);
-        this.paramsSubscription.add(this.authorsFetchSubscription);
-        this.paramsSubscription.add(this.departmentsSubscription);
-        this.paramsSubscription.add(this.departmentsFetchSubscription);
-        this.paramsSubscription.add(this.genresSubscription);
-        this.paramsSubscription.add(this.genresFetchSubscription);
-        this.paramsSubscription.add(this.responseSubscription);
-        this.paramsSubscription.add(this.userSubscription);
-        this.paramsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.paramsSubscription, [
+            this.editBookSubscription,
+            this.addBookSubscription,
+            this.authorsSubscription,
+            this.authorsFetchSubscription,
+            this.departmentsSubscription,
+            this.departmentsFetchSubscription,
+            this.genresSubscription,
+            this.genresFetchSubscription,
+            this.responseSubscription,
+            this.userSubscription
+        ]);
     }
 }

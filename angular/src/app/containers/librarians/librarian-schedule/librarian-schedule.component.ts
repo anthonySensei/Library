@@ -7,6 +7,7 @@ import { Days } from '../../../constants/days';
 import { ScheduleService } from '../../../services/schedule.service';
 import { LibrarianService } from '../../../services/librarian.service';
 import { DepartmentService } from '../../../services/department.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Schedule } from '../../../models/schedule.model';
 import { Department } from '../../../models/department.model';
@@ -46,6 +47,7 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     constructor(
         private scheduleService: ScheduleService,
         private librarianService: LibrarianService,
+        private helperService: HelperService,
         private departmentService: DepartmentService
     ) {}
 
@@ -66,11 +68,11 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         this.librariansFetchSubscription = this.librarianService
             .getLibrariansHttp()
             .subscribe();
-        this.librariansSubscription = this.librarianService.getLibrarians().subscribe(
-            (librarians: Librarian[]) => {
+        this.librariansSubscription = this.librarianService
+            .getLibrarians()
+            .subscribe((librarians: Librarian[]) => {
                 this.librarians = librarians;
-            }
-        );
+            });
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
@@ -118,11 +120,12 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.schedulesSubscription.add(this.schedulesFetchSubscription);
-        this.schedulesSubscription.add(this.departmentsSubscription);
-        this.schedulesSubscription.add(this.departmentsFetchSubscription);
-        this.schedulesSubscription.add(this.librariansSubscription);
-        this.schedulesSubscription.add(this.librariansFetchSubscription);
-        this.schedulesSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.schedulesSubscription, [
+            this.schedulesFetchSubscription,
+            this.departmentsSubscription,
+            this.departmentsFetchSubscription,
+            this.librariansSubscription,
+            this.librariansFetchSubscription
+        ]);
     }
 }

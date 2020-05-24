@@ -5,6 +5,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { LibrarianService } from '../../../services/librarian.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
 import { Librarian } from '../../../models/librarian.model';
@@ -68,6 +69,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private librarianService: LibrarianService,
+        private helperService: HelperService,
         private route: ActivatedRoute
     ) {}
 
@@ -86,8 +88,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         this.librarianSubscription = this.librarianService
             .getLibrarianHttp(this.librarianId)
             .subscribe();
-        this.librarianChangedSubscription = this.librarianService.getLibrarian().subscribe(
-            librarian => {
+        this.librarianChangedSubscription = this.librarianService
+            .getLibrarian()
+            .subscribe(librarian => {
                 this.librarian = librarian;
                 this.loans = this.librarian.loans || [];
                 this.loansDataSource = new MatTableDataSource(this.loans);
@@ -98,8 +101,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
                 this.scheduleDataSource.sort = this.scheduleSort;
                 this.setStatisticToChart(this.librarian.statistic);
                 this.isLoading = false;
-            }
-        );
+            });
     }
 
     setStatisticToChart(statistic): void {
@@ -150,8 +152,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     ngOnDestroy(): void {
-        this.paramsSubscription.add(this.librarianChangedSubscription);
-        this.paramsSubscription.add(this.librarianSubscription);
-        this.paramsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.paramsSubscription, [
+            this.librarianChangedSubscription,
+            this.librarianSubscription
+        ]);
     }
 }

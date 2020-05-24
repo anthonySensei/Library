@@ -10,6 +10,7 @@ import { Student } from '../../../models/student.model';
 
 import { StudentService } from '../../../services/student.service';
 import { LoansService } from '../../../services/loans.service';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-user-details',
@@ -76,6 +77,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     constructor(
         private studentService: StudentService,
         private loansService: LoansService,
+        private helperService: HelperService,
         private route: ActivatedRoute
     ) {}
 
@@ -94,8 +96,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         this.studentFetchSubscription = this.studentService
             .getStudentHttp(this.studentId)
             .subscribe();
-        this.studentSubscription = this.studentService.getStudent().subscribe(
-            (student: Student) => {
+        this.studentSubscription = this.studentService
+            .getStudent()
+            .subscribe((student: Student) => {
                 this.student = student;
                 this.loans = this.student.loans || [];
                 this.orders = this.student.orders || [];
@@ -109,8 +112,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
                 this.ordersDataSource.sort = this.loansSort;
                 this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
-            }
-        );
+            });
     }
 
     applyFilter(event: Event): void {
@@ -161,8 +163,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     ngOnDestroy(): void {
-        this.studentSubscription.add(this.studentFetchSubscription);
-        this.studentSubscription.add(this.paramsSubscription);
-        this.studentSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.studentSubscription, [
+            this.studentFetchSubscription,
+            this.paramsSubscription
+        ]);
     }
 }

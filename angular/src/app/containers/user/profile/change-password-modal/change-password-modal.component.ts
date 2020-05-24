@@ -5,14 +5,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 import { ChangePasswordDialogData } from './change-password-dialog-data.model';
-import { Response } from '../../../../models/response.model';
 
 import { ValidationService } from '../../../../services/validation.service';
 import { UserService } from '../../../../services/user.service';
 import { ResponseService } from '../../../../services/response.service';
-import { MaterialService } from '../../../../services/material.service';
 
-import { SnackBarClasses } from '../../../../constants/snackBarClasses';
 import { ChangedDataProfile } from '../../../../constants/changedDataProfile';
 
 @Component({
@@ -33,15 +30,10 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
     error: string;
     retypePasswordError: string;
 
-    response: Response;
-
-    snackbarDuration = 5000;
-
     constructor(
         private validationService: ValidationService,
         private userService: UserService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
         public dialogRef: MatDialogRef<ChangePasswordModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: ChangePasswordDialogData
     ) {
@@ -95,31 +87,26 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
                 passwordsObject
             )
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.dialogRef.close();
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                } else {
-                    if (
-                        this.response.message.toLowerCase().includes('password')
-                    ) {
-                        this.error = this.response.message;
-                        this.passwordsForm.controls.oldPassword.setErrors({
-                            incorrect: true
-                        });
-                    } else {
-                        this.materialService.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Danger,
-                            this.snackbarDuration
-                        );
-                    }
-                }
+                this.responseHandle();
             });
+    }
+
+    responseHandle(): void {
+        if (this.responseService.responseHandle()) {
+            this.dialogRef.close();
+        } else {
+            if (
+                this.responseService
+                    .getResponse()
+                    .message.toLowerCase()
+                    .includes('password')
+            ) {
+                this.error = this.responseService.getResponse().message;
+                this.passwordsForm.controls.oldPassword.setErrors({
+                    incorrect: true
+                });
+            }
+        }
     }
 
     checkIcon(hide: boolean, password: string): string {

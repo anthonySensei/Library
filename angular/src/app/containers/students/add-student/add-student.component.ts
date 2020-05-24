@@ -31,8 +31,6 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     emailError: string;
     readerTicketError: string;
 
-    snackbarDuration = 5000;
-
     response: Response;
 
     emailValidation;
@@ -93,37 +91,28 @@ export class AddStudentComponent implements OnInit, OnDestroy {
                 readerTicket
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (!this.response.isSuccessful) {
-                    if (this.response.message.toLowerCase().includes('email')) {
-                        this.emailError = this.response.message;
-                        this.createStudentForm.controls.email.setErrors({
-                            incorrect: true
-                        });
-                    } else if (
-                        this.response.message.toLowerCase().includes('reader')
-                    ) {
-                        this.createStudentForm.controls.readerTicket.setErrors({
-                            incorrect: true
-                        });
-                        this.readerTicketError = this.response.message;
-                    } else {
-                        this.materialService.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Danger,
-                            this.snackbarDuration
-                        );
-                    }
-                } else {
-                    this.done = true;
-                    this.router.navigate(['/', AngularLinks.STUDENTS]);
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                }
+                this.responseHandle();
             });
+    }
+
+    responseHandle(): void {
+        if (this.responseService.responseHandle()) {
+            this.done = true;
+            this.router.navigate(['/', AngularLinks.STUDENTS]);
+        } else {
+            this.response = this.responseService.getResponse();
+            if (this.response.message.toLowerCase().includes('email')) {
+                this.emailError = this.response.message;
+                this.createStudentForm.controls.email.setErrors({
+                    incorrect: true
+                });
+            } else if (this.response.message.toLowerCase().includes('reader')) {
+                this.createStudentForm.controls.readerTicket.setErrors({
+                    incorrect: true
+                });
+                this.readerTicketError = this.response.message;
+            }
+        }
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
@@ -140,10 +129,6 @@ export class AddStudentComponent implements OnInit, OnDestroy {
 
     hasError(controlName: string, errorName: string): boolean {
         return this.createStudentForm.controls[controlName].hasError(errorName);
-    }
-
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {

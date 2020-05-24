@@ -1,19 +1,11 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
 
 import { Department } from '../../../models/department.model';
-import { Response } from '../../../models/response.model';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { Subscription } from 'rxjs';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-department-section',
@@ -21,10 +13,10 @@ import { Subscription } from 'rxjs';
     styleUrls: ['../edit-page.component.sass']
 })
 export class DepartmentSectionComponent implements OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() departmentService: DepartmentService;
     @Input() departmentSelect: number;
     @Input() departments: Department[];
@@ -39,8 +31,6 @@ export class DepartmentSectionComponent implements OnDestroy {
     departmentsAddSubscription: Subscription;
     departmentsEditSubscription: Subscription;
     departmentsDeleteSubscription: Subscription;
-
-    response: Response;
 
     constructor() {}
 
@@ -91,12 +81,7 @@ export class DepartmentSectionComponent implements OnDestroy {
     }
 
     departmentResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.departmentsFetchSubscription = this.departmentService
                 .fetchAllDepartmentsHttp()
                 .subscribe();
@@ -106,23 +91,17 @@ export class DepartmentSectionComponent implements OnDestroy {
                     this.departments = departments;
                 });
             this.newDepartmentAddress = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
         if (this.departmentsSubscription) {
-            this.departmentsSubscription.add(this.departmentsFetchSubscription);
-            this.departmentsSubscription.add(this.departmentsAddSubscription);
-            this.departmentsSubscription.add(this.departmentsEditSubscription);
-            this.departmentsSubscription.add(
+            this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+                this.departmentsFetchSubscription,
+                this.departmentsAddSubscription,
+                this.departmentsEditSubscription,
                 this.departmentsDeleteSubscription
-            );
-            this.departmentsSubscription.unsubscribe();
+            ]);
         }
     }
 }

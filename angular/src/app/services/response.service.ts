@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { Response } from '../models/response.model';
+import { MaterialService } from './material.service';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +12,7 @@ import { Response } from '../models/response.model';
 export class ResponseService {
     response: Response;
 
-    constructor() {}
+    constructor(private materialService: MaterialService) {}
 
     setResponse(response: Response) {
         this.response = response;
@@ -18,5 +20,20 @@ export class ResponseService {
 
     getResponse(): Response {
         return this.response;
+    }
+
+    responseHandle(): boolean {
+        if (this.response.isSuccessful) {
+            this.materialService.openSnackbar(
+                this.response.message,
+                SnackBarClasses.Success
+            );
+        } else {
+            this.materialService.openSnackbar(
+                this.response.message,
+                SnackBarClasses.Danger
+            );
+        }
+        return this.response.isSuccessful;
     }
 }

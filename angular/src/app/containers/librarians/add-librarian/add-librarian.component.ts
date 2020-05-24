@@ -9,12 +9,11 @@ import { MaterialService } from '../../../services/material.service';
 import { LibrarianService } from '../../../services/librarian.service';
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { Department } from '../../../models/department.model';
-import { AngularLinks } from '../../../constants/angularLinks';
 
-import { Response } from '../../../models/response.model';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-create-user',
@@ -34,10 +33,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
 
     error: string;
 
-    snackbarDuration = 5000;
-
-    response: Response;
-
     emailValidation;
 
     discardChanged = new Subject<boolean>();
@@ -45,6 +40,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     constructor(
         private librarianService: LibrarianService,
         private responseService: ResponseService,
+        private helperService: HelperService,
         private router: Router,
         private materialService: MaterialService,
         private validationService: ValidationService,
@@ -100,20 +96,14 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
                 name
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (!this.response.isSuccessful) {
-                    this.error = this.response.message;
+                if (this.responseService.responseHandle()) {
+                    this.done = true;
+                    this.router.navigate(['/', AngularLinks.LIBRARIANS]);
+                } else {
+                    this.error = this.responseService.getResponse().message;
                     this.createLibrarianForm.controls.email.setErrors({
                         incorrect: true
                     });
-                } else {
-                    this.done = true;
-                    this.router.navigate(['/', AngularLinks.LIBRARIANS]);
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
                 }
             });
     }
@@ -136,13 +126,10 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
         );
     }
 
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
-    }
-
     ngOnDestroy(): void {
-        this.departmentsSubscription.add(this.departmentsFetchSubscription);
-        this.departmentsSubscription.add(this.createLibrarianSubscription);
-        this.departmentsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.createLibrarianSubscription
+        ]);
     }
 }

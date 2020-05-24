@@ -14,8 +14,7 @@ import { Response } from '../../../models/response.model';
 
 import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-author-section',
@@ -23,10 +22,10 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
     styleUrls: ['../edit-page.component.sass']
 })
 export class AuthorSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
 
     authors: Author[];
 
@@ -39,8 +38,6 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     authorSelect: number;
     authorName: string;
     newAuthorName: string;
-
-    response: Response;
 
     showAuthorAdding: boolean;
 
@@ -107,29 +104,20 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     authorResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.setAuthors();
             this.newAuthorName = null;
             this.authorName = null;
             this.authorSelect = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
-        this.authorsSubscription.add(this.authorsFetchSubscription);
-        this.authorsSubscription.add(this.authorsAddSubscription);
-        this.authorsSubscription.add(this.authorsEditSubscription);
-        this.authorsSubscription.add(this.authorsDeleteSubscription);
-        this.authorsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.authorsSubscription, [
+            this.authorsFetchSubscription,
+            this.authorsAddSubscription,
+            this.authorsEditSubscription,
+            this.authorsDeleteSubscription
+        ]);
     }
 }

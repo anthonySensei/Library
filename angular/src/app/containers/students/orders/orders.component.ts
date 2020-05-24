@@ -4,7 +4,6 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 import { Order } from '../../../models/order.model';
-import { Response } from '../../../models/response.model';
 
 import {
     animate,
@@ -15,11 +14,10 @@ import {
 } from '@angular/animations';
 
 import { OrderService } from '../../../services/orders.service';
-import { MaterialService } from '../../../services/material.service';
 import { ResponseService } from '../../../services/response.service';
 import { AuthService } from '../../../services/auth.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { User } from '../../../models/user.model';
 
 @Component({
@@ -40,10 +38,6 @@ import { User } from '../../../models/user.model';
 export class OrdersComponent implements OnInit, OnDestroy {
     user: User;
     orders: Order[];
-
-    response: Response;
-
-    snackbarDuration = 3000;
 
     ordersSubscription: Subscription;
     ordersFetchSubscription: Subscription;
@@ -66,7 +60,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
     constructor(
         private orderService: OrderService,
         private authService: AuthService,
-        private materialService: MaterialService,
+        private helperService: HelperService,
         private responseService: ResponseService
     ) {}
 
@@ -117,28 +111,17 @@ export class OrdersComponent implements OnInit, OnDestroy {
                 new Date()
             )
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
+                if (this.responseService.responseHandle()) {
                     this.setOrders();
-                } else {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
                 }
             });
     }
 
     ngOnDestroy(): void {
-        this.ordersSubscription.add(this.ordersFetchSubscription);
-        this.ordersSubscription.add(this.userSubscription);
-        this.ordersSubscription.add(this.loanBookSubscription);
-        this.ordersSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.ordersSubscription, [
+            this.ordersFetchSubscription,
+            this.userSubscription,
+            this.loanBookSubscription
+        ]);
     }
 }

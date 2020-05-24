@@ -23,10 +23,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     error: string;
 
-    response: Response;
     authSubscription: Subscription;
-
-    snackbarDuration = 5000;
 
     emailValidation;
 
@@ -36,7 +33,6 @@ export class AuthComponent implements OnInit, OnDestroy {
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
         private router: Router
     ) {}
 
@@ -72,29 +68,18 @@ export class AuthComponent implements OnInit, OnDestroy {
             password
         };
         this.authSubscription = this.authService.login(user).subscribe(() => {
-            this.response = this.responseService.getResponse();
-            if (!this.response.isSuccessful) {
+            if (this.responseService.responseHandle()) {
+                this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
+                this.router.navigate([AngularLinks.HOME]);
+                this.loginForm.reset();
+            } else {
                 this.loginForm.patchValue({
                     email,
                     password: ''
                 });
-                this.error = this.response.message;
-                return;
-            } else {
-                this.authService.setIsLoggedIn(this.response.isSuccessful);
-                this.router.navigate([AngularLinks.HOME]);
-                this.loginForm.reset();
-                this.openSnackBar(
-                    'You was logged in successfully',
-                    SnackBarClasses.Success,
-                    this.snackbarDuration
-                );
+                this.error = this.responseService.getResponse().message;
             }
         });
-    }
-
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {

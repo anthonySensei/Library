@@ -11,6 +11,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
 import { MaterialService } from '../../../services/material.service';
 import { ResponseService } from '../../../services/response.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { ChangedDataProfile } from '../../../constants/changedDataProfile';
@@ -19,7 +20,6 @@ import { ChangePasswordModalComponent } from './change-password-modal/change-pas
 import { ChangeProfileImageModalComponent } from './change-profile-image/change-profile-image-modal.component';
 
 import { User } from '../../../models/user.model';
-import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-user',
@@ -50,10 +50,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     newPassword: string;
     retypeNewPassword: string;
 
-    response: Response;
-
-    snackbarDuration = 5000;
-
     emailValidation;
 
     changePasswordModalWidth = '35%';
@@ -63,10 +59,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private userService: UserService,
         private responseService: ResponseService,
-        public dialog: MatDialog,
+        private helperService: HelperService,
         private materialService: MaterialService,
         private validationService: ValidationService,
-        private breakpointObserver: BreakpointObserver
+        private breakpointObserver: BreakpointObserver,
+        public dialog: MatDialog
     ) {
         this.breakPointSmallSubscription = breakpointObserver
             .observe([Breakpoints.Small, Breakpoints.XSmall])
@@ -144,31 +141,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
                             ChangedDataProfile.IMAGE
                         )
                         .subscribe(() => {
-                            this.response = this.responseService.getResponse();
-                            if (this.response.isSuccessful) {
+                            if (this.responseService.responseHandle()) {
                                 this.user.profileImage = profileImage;
                                 localStorage.setItem(
                                     'userData',
                                     JSON.stringify(this.user)
                                 );
-                                this.openSnackBar(
-                                    this.response.message,
-                                    SnackBarClasses.Success,
-                                    this.snackbarDuration
-                                );
-                            } else {
-                                this.openSnackBar(
-                                    this.response.message,
-                                    SnackBarClasses.Danger,
-                                    this.snackbarDuration
-                                );
                             }
                         });
                 } else {
-                    this.openSnackBar(
+                    this.materialService.openSnackbar(
                         'Image was not selected',
-                        SnackBarClasses.Warn,
-                        this.snackbarDuration
+                        SnackBarClasses.Warn
                     );
                 }
             });
@@ -197,10 +181,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
 
         if (this.user.name === name && this.user.email === email) {
-            this.openSnackBar(
+            this.materialService.openSnackbar(
                 'Nothing to change',
-                SnackBarClasses.Warn,
-                this.snackbarDuration
+                SnackBarClasses.Warn
             );
             return;
         }
@@ -211,28 +194,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 ChangedDataProfile.INFO
             )
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
+                if (this.responseService.responseHandle()) {
                     this.user.email = email;
                     this.user.name = name;
                     localStorage.setItem('userData', JSON.stringify(this.user));
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
                 } else {
-                    if (this.response.message.toLowerCase().includes('email')) {
-                        this.error = this.response.message;
+                    if (
+                        this.responseService
+                            .getResponse()
+                            .message.toLowerCase()
+                            .includes('email')
+                    ) {
+                        this.error = this.responseService.getResponse().message;
                         this.profileForm.controls.email.setErrors({
                             incorrect: true
                         });
-                    } else {
-                        this.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Danger,
-                            this.snackbarDuration
-                        );
                     }
                 }
             });
@@ -250,21 +226,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
     }
 
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
-    }
-
     ngOnDestroy(): void {
-        this.breakPointLargeSubscription.add(this.breakPointSmallSubscription);
-        this.breakPointLargeSubscription.add(this.breakPointMediumSubscription);
-        this.breakPointLargeSubscription.add(this.updateProfileImage);
-        this.breakPointLargeSubscription.add(
-            this.changeImageDialogSubscription
-        );
-        this.breakPointLargeSubscription.add(
-            this.changePasswordDialogSubscription
-        );
-        this.breakPointLargeSubscription.add(this.updateUserDataSubscription);
-        this.breakPointLargeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.breakPointLargeSubscription, [
+            this.breakPointSmallSubscription,
+            this.breakPointMediumSubscription,
+            this.updateProfileImage,
+            this.changeImageDialogSubscription,
+            this.changePasswordDialogSubscription,
+            this.updateUserDataSubscription
+        ]);
     }
 }

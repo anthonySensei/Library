@@ -13,6 +13,7 @@ import { MaterialService } from '../../services/material.service';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { Period } from '../../models/period.model';
 import { PeriodService } from '../../services/period.service';
+import { HelperService } from '../../services/helper.service';
 
 @Component({
     selector: 'app-edit-page',
@@ -31,16 +32,14 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     departmentSelect: number;
 
-    snackbarDuration = 3000;
     nothingToChange = 'Nothing to change';
-
-    response: Response;
 
     constructor(
         private departmentService: DepartmentService,
         private responseService: ResponseService,
         private materialService: MaterialService,
-        private periodService: PeriodService
+        private periodService: PeriodService,
+        private helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -67,21 +66,17 @@ export class EditPageComponent implements OnInit, OnDestroy {
     }
 
     nothingChangeHandle(): void {
-        this.openSnackBar(
+        this.materialService.openSnackbar(
             this.nothingToChange,
-            SnackBarClasses.Warn,
-            this.snackbarDuration
+            SnackBarClasses.Warn
         );
     }
 
-    openSnackBar(message: string, style: string, duration: number): void {
-        this.materialService.openSnackBar(message, style, duration);
-    }
-
     ngOnDestroy(): void {
-        this.departmentsSubscription.add(this.departmentsFetchSubscription);
-        this.departmentsSubscription.add(this.periodsSubscription);
-        this.departmentsSubscription.add(this.periodsFetchSubscription);
-        this.departmentsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.periodsSubscription,
+            this.periodsFetchSubscription
+        ]);
     }
 }

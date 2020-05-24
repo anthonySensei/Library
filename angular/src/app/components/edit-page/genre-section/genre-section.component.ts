@@ -11,11 +11,9 @@ import { Subscription } from 'rxjs';
 
 import { ResponseService } from '../../../services/response.service';
 import { GenreService } from '../../../services/genre.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { Response } from '../../../models/response.model';
 import { Genre } from '../../../models/genre.model';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 @Component({
     selector: 'app-genre-section',
@@ -23,10 +21,10 @@ import { SnackBarClasses } from '../../../constants/snackBarClasses';
     styleUrls: ['../edit-page.component.sass']
 })
 export class GenreSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
 
     genres: Genre[];
 
@@ -42,8 +40,6 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
 
     showGenreAdding: boolean;
 
-    response: Response;
-
     constructor(private genreService: GenreService) {}
 
     ngOnInit(): void {
@@ -54,11 +50,11 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
         this.genresFetchSubscription = this.genreService
             .fetchAllGenresHttp()
             .subscribe();
-        this.genresSubscription = this.genreService.getGenres().subscribe(
-            genres => {
+        this.genresSubscription = this.genreService
+            .getGenres()
+            .subscribe(genres => {
                 this.genres = genres;
-            }
-        );
+            });
     }
 
     getGenre(): Genre {
@@ -106,29 +102,20 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     genreResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.setGenres();
             this.newGenreName = null;
             this.genreName = null;
             this.genreSelect = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
-        this.genresSubscription.add(this.genresFetchSubscription);
-        this.genresSubscription.add(this.genresAddSubscription);
-        this.genresSubscription.add(this.genresEditSubscription);
-        this.genresSubscription.add(this.genresDeleteSubscription);
-        this.genresFetchSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.genresSubscription, [
+            this.genresFetchSubscription,
+            this.genresAddSubscription,
+            this.genresEditSubscription,
+            this.genresDeleteSubscription
+        ]);
     }
 }

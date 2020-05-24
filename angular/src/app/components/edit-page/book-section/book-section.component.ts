@@ -1,24 +1,15 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
 import { Book } from '../../../models/book.model';
 import { Department } from '../../../models/department.model';
-import { Response } from '../../../models/response.model';
 
 import { ResponseService } from '../../../services/response.service';
 import { BookService } from '../../../services/book.service';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-book-section',
@@ -26,9 +17,8 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class BookSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
-
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() departmentSelect: number;
     @Input() departments: Department[];
 
@@ -40,8 +30,6 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     booksDeleteSubscription: Subscription;
 
     bookSelect: number = null;
-
-    response: Response;
 
     links = AngularLinks;
 
@@ -83,20 +71,10 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     bookResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.bookSelect = null;
             this.departmentSelect = null;
             this.setBooks();
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
@@ -107,8 +85,9 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.booksSubscription.add(this.booksFetchSubscription);
-        this.booksSubscription.add(this.booksDeleteSubscription);
-        this.booksSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.booksSubscription, [
+            this.booksFetchSubscription,
+            this.booksDeleteSubscription
+        ]);
     }
 }

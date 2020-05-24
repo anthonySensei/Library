@@ -8,13 +8,11 @@ import {
 
 import { Subscription } from 'rxjs';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-
 import { ResponseService } from '../../../services/response.service';
 import { PeriodService } from '../../../services/period.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
-import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-period-section',
@@ -22,10 +20,10 @@ import { Response } from '../../../models/response.model';
     styleUrls: ['../edit-page.component.sass']
 })
 export class PeriodSectionComponent implements OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() periods: Period[];
 
     periodsSubscription: Subscription;
@@ -42,8 +40,6 @@ export class PeriodSectionComponent implements OnDestroy {
     newPeriodEnd: string;
 
     showPeriodAdding = false;
-
-    response: Response;
 
     constructor(private periodService: PeriodService) {}
 
@@ -104,12 +100,7 @@ export class PeriodSectionComponent implements OnDestroy {
     }
 
     periodResponseHandler(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
+        if (this.responseService.responseHandle()) {
             this.periodsFetchSubscription = this.periodService
                 .fetchAllPeriodsHttp()
                 .subscribe();
@@ -123,21 +114,17 @@ export class PeriodSectionComponent implements OnDestroy {
             this.periodStart = null;
             this.periodEnd = null;
             this.periodSelect = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
         if (this.periodsSubscription) {
-            this.periodsSubscription.add(this.periodsFetchSubscription);
-            this.periodsSubscription.add(this.periodsAddSubscription);
-            this.periodsSubscription.add(this.periodsEditSubscription);
-            this.periodsSubscription.add(this.periodsDeleteSubscription);
-            this.periodsSubscription.unsubscribe();
+            this.helperService.unsubscribeHandle(this.periodsSubscription, [
+                this.periodsFetchSubscription,
+                this.periodsAddSubscription,
+                this.periodsEditSubscription,
+                this.periodsDeleteSubscription
+            ]);
         }
     }
 }
