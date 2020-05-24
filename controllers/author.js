@@ -10,35 +10,36 @@ const successMessages = require('../constants/successMessages');
 
 exports.getAuthors = async (req, res) => {
     try {
+        const authors = await Author.findAll();
+        const authorsArr = [];
+        authors.forEach(author => {
+            authorsArr.push({
+                id: author.get().id,
+                name: author.get().name
+            });
+        });
+        const data = {
+            authors: authorsArr,
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        return helper.responseHandle(res, 200, data);
     } catch (error) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
-    const authors = await Author.findAll();
-    const authorsArr = [];
-    authors.forEach(author => {
-        authorsArr.push({
-            id: author.dataValues.id,
-            name: author.dataValues.name
-        });
-    });
-
-    const data = {
-        authors: authorsArr,
-        message: successMessages.SUCCESSFULLY_FETCHED
-    };
-    return helper.responseHandle(res, 200, data);
 };
 
 exports.addAuthor = async (req, res) => {
     const authorName = req.body.author.name;
     try {
-        const count = await Author.count({ where: { name: authorName } });
-        if (count > 0) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.AUTHOR_EXIST
-            };
-            return helper.responseHandle(res, 500, data);
+        const isNotUnique = await Author.findOne({
+            where: { name: authorName }
+        });
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                500,
+                errorMessages.AUTHOR_EXIST
+            );
         } else {
             await Author.create({ name: authorName });
             const data = {
@@ -48,11 +49,11 @@ exports.addAuthor = async (req, res) => {
             return helper.responseHandle(res, 200, data);
         }
     } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -60,18 +61,18 @@ exports.editAuthor = async (req, res) => {
     const authorName = req.body.name;
     const authorId = req.body.authorId;
     try {
-        const checkName = await Author.findOne({
+        const isNotUnique = await Author.findOne({
             where: {
                 name: authorName,
                 id: { [Op.ne]: authorId }
             }
         });
-        if (checkName) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.AUTHOR_EXIST
-            };
-            return helper.responseHandle(res, 500, data);
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                500,
+                errorMessages.AUTHOR_EXIST
+            );
         } else {
             const author = await Author.findOne({ where: { id: authorId } });
             await author.update({ name: authorName });
@@ -82,11 +83,11 @@ exports.editAuthor = async (req, res) => {
             return helper.responseHandle(res, 200, data);
         }
     } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -101,10 +102,10 @@ exports.deleteAuthor = async (req, res) => {
         };
         return helper.responseHandle(res, 200, data);
     } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };

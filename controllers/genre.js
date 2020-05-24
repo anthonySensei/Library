@@ -14,8 +14,8 @@ exports.getGenres = async (req, res) => {
         let genresArr = [];
         genres.forEach(genre => {
             genresArr.push({
-                id: genre.dataValues.id,
-                name: genre.dataValues.name
+                id: genre.get().id,
+                name: genre.get().name
             });
         });
         const data = {
@@ -31,13 +31,13 @@ exports.getGenres = async (req, res) => {
 exports.addGenre = async (req, res) => {
     const genreName = req.body.genre.name;
     try {
-        const count = await Genre.count({ where: { name: genreName } });
-        if (count > 0) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.GENRE_EXIST
-            };
-            return helper.responseHandle(res, 500, data);
+        const isNotUnique = await Genre.findOne({ where: { name: genreName } });
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                500,
+                errorMessages.GENRE_EXIST
+            );
         } else {
             await Genre.create({ name: genreName });
             const data = {
@@ -46,12 +46,12 @@ exports.addGenre = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+    } catch (err) {
+        return helper.responseHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -59,15 +59,15 @@ exports.editGenre = async (req, res) => {
     const genreName = req.body.name;
     const genreId = req.body.genreId;
     try {
-        const checkName = await Genre.findOne({
+        const isNotUnique = await Genre.findOne({
             where: { name: genreName, id: { [Op.ne]: genreId } }
         });
-        if (checkName) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.GENRE_EXIST
-            };
-            return helper.responseHandle(res, 500, data);
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                500,
+                errorMessages.GENRE_EXIST
+            );
         } else {
             const genre = await Genre.findOne({ where: { id: genreId } });
             await genre.update({ name: genreName });
@@ -77,12 +77,12 @@ exports.editGenre = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -96,11 +96,11 @@ exports.deleteGenre = async (req, res) => {
             message: successMessages.DEPARTMENT_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };

@@ -22,8 +22,8 @@ exports.getSchedules = async (req, res) => {
         let schedulesArr = [];
         schedules.forEach(schedule => {
             schedulesArr.push({
-                id: schedule.dataValues.id,
-                day: schedule.dataValues.day,
+                id: schedule.get().id,
+                day: schedule.get().day,
                 period: schedule.period_.get(),
                 librarian: schedule.librarian_.get()
             });
@@ -33,7 +33,7 @@ exports.getSchedules = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
@@ -64,7 +64,7 @@ exports.addSchedule = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -79,7 +79,7 @@ exports.editSchedule = async (req, res) => {
     const periodId = req.body.schedule.period.id;
     const librarianId = req.body.schedule.librarian.id;
     try {
-        const checkUniqueness = await Schedule.findOne({
+        const isNotUnique = await Schedule.findOne({
             where: {
                 day: day,
                 periodId: periodId,
@@ -87,7 +87,7 @@ exports.editSchedule = async (req, res) => {
                 id: { [Op.ne]: scheduleId }
             }
         });
-        if (checkUniqueness) {
+        if (isNotUnique) {
             return helper.responseErrorHandle(
                 res,
                 500,
@@ -108,7 +108,7 @@ exports.editSchedule = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -127,7 +127,7 @@ exports.deleteSchedule = async (req, res) => {
             message: successMessages.SCHEDULE_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

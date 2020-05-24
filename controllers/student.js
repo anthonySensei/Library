@@ -8,6 +8,7 @@ const Book = require('../models/book');
 const Librarian = require('../models/librarian');
 
 const helper = require('../helper/responseHandle');
+const imageHandler = require('../helper/imageHandle');
 const checkUniqueness = require('../helper/checkUniqueness');
 const passwordGenerator = require('../helper/generatePassword');
 
@@ -36,12 +37,11 @@ const getStudentOrders = async studentId => {
         const ordersArr = [];
         if (orders.length > 0) {
             orders.forEach(order => {
-                const orderValues = order.dataValues;
+                const orderValues = order.get();
                 ordersArr.push({
                     orderTime: orderValues.order_time,
-                    bookISBN: orderValues.book_.dataValues.isbn,
-                    departmentAddress:
-                        orderValues.department_.dataValues.address
+                    bookISBN: orderValues.book_.get().isbn,
+                    departmentAddress: orderValues.department_.get().address
                 });
             });
             return ordersArr;
@@ -57,20 +57,21 @@ exports.getStudents = async (req, res) => {
         const students = await Student.findAll();
         const studentsArr = [];
         students.forEach(student => {
-            if (student.dataValues.profile_image) {
-                student.dataValues.profile_image = base64Img.base64Sync(
-                    student.dataValues.profile_image
+            const studentValues = student.get();
+            if (studentValues.profile_image) {
+                studentValues.profile_image = imageHandler.convertToBase64(
+                    studentValues.profile_image
                 );
             } else {
-                student.dataValues.profile_image = '';
+                studentValues.profile_image = '';
             }
             const studentData = {
-                id: student.dataValues.id,
-                name: student.dataValues.name,
-                email: student.dataValues.email,
-                profileImage: student.dataValues.profile_image,
-                readerTicket: student.dataValues.reader_ticket,
-                status: student.dataValues.status
+                id: studentValues.id,
+                name: studentValues.name,
+                email: studentValues.email,
+                profileImage: studentValues.profile_image,
+                readerTicket: studentValues.reader_ticket,
+                status: studentValues.status
             };
             studentsArr.push(studentData);
         });
@@ -79,7 +80,7 @@ exports.getStudents = async (req, res) => {
             students: studentsArr
         };
         return helper.responseHandle(res, 200, data);
-    } catch (e) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             400,
@@ -96,7 +97,7 @@ exports.getStudent = async (req, res) => {
                 id: studentId
             }
         });
-        const studentValues = student.dataValues;
+        const studentValues = student.get();
         const studentLoans = await loanController.getLoans(
             studentValues.id,
             models.STUDENT
@@ -134,38 +135,38 @@ exports.editStudent = async (req, res) => {
     const studentId = req.body.studentId;
     const studentReaderTicket = req.body.readerTicket;
     try {
-        const checkEmailInLibrarians = await Librarian.findOne({
+        const isNotUniqueLibrarianEmail = await Librarian.findOne({
             where: { email: studentEmail }
         });
-        if (checkEmailInLibrarians) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            };
-            return helper.responseHandle(res, 400, data);
+        if (isNotUniqueLibrarianEmail) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+            );
         } else {
-            const checkEmailInStudents = await Student.findOne({
+            const isNotUniqueStudentEmail = await Student.findOne({
                 where: { email: studentEmail, id: { [Op.ne]: studentId } }
             });
-            if (checkEmailInStudents) {
-                const data = {
-                    isSuccessful: false,
-                    message: errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                };
-                return helper.responseHandle(res, 400, data);
+            if (isNotUniqueStudentEmail) {
+                return helper.responseErrorHandle(
+                    res,
+                    400,
+                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+                );
             } else {
-                const checkReaderTicket = await Student.findOne({
+                const isNotUniqueReaderTicket = await Student.findOne({
                     where: {
                         reader_ticket: studentReaderTicket,
                         id: { [Op.ne]: studentId }
                     }
                 });
-                if (checkReaderTicket) {
-                    const data = {
-                        isSuccessful: false,
-                        message: errorMessages.READER_TICKET_ALREADY_IN_USE
-                    };
-                    return helper.responseHandle(res, 400, data);
+                if (isNotUniqueReaderTicket) {
+                    return helper.responseErrorHandle(
+                        res,
+                        400,
+                        errorMessages.READER_TICKET_ALREADY_IN_USE
+                    );
                 } else {
                     const student = await Student.findOne({
                         where: { id: studentId }
@@ -183,11 +184,11 @@ exports.editStudent = async (req, res) => {
             }
         }
     } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -201,12 +202,12 @@ exports.deleteStudent = async (req, res) => {
             message: successMessages.STUDENT_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 500, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
 
@@ -245,7 +246,7 @@ exports.addStudent = async (req, res) => {
             statuses.ACTIVATED,
             res
         );
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             5000,
@@ -291,7 +292,7 @@ const createStudent = async (
             message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

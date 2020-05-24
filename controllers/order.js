@@ -29,10 +29,10 @@ exports.getAllOrders = async (req, res) => {
         });
         const ordersArr = [];
         for (const order of orders) {
-            const ordersValues = order.dataValues;
-            const studentData = ordersValues.student_.dataValues;
-            const departmentData = ordersValues.department_.dataValues;
-            const bookData = ordersValues.book_.dataValues;
+            const ordersValues = order.get();
+            const studentData = ordersValues.student_.get();
+            const departmentData = ordersValues.department_.get();
+            const bookData = ordersValues.book_.get();
             const ordersObj = {
                 id: ordersValues.id,
                 orderTime: ordersValues.order_time,
@@ -52,7 +52,7 @@ exports.getAllOrders = async (req, res) => {
                     name: bookData.name,
                     year: bookData.year,
                     author: {
-                        name: bookData.author_.dataValues.name
+                        name: bookData.author_.get().name
                     }
                 },
                 bookISBN: bookData.isbn,
@@ -66,7 +66,7 @@ exports.getAllOrders = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
@@ -102,12 +102,12 @@ exports.orderBook = async (req, res) => {
         });
         const bookOrder = new Order({
             order_time: orderTime,
-            studentId: student.dataValues.id,
+            studentId: student.get().id,
             bookId: bookId,
-            departmentId: book.dataValues.department_.dataValues.id
+            departmentId: book.get().department_.get().id
         });
         await bookOrder.save();
-        await book.update({ quantity: book.dataValues.quantity - 1 });
+        await book.update({ quantity: book.get().quantity - 1 });
 
         const data = {
             isSuccessful: true,
@@ -115,7 +115,7 @@ exports.orderBook = async (req, res) => {
         };
 
         helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         helper.responseErrorHandle(
             res,
             500,
@@ -150,15 +150,15 @@ exports.loanBookFromOrder = async (req, res) => {
             loan_time: loanTime,
             bookId: bookId,
             studentId: studentId,
-            librarianId: librarian.dataValues.id,
-            departmentId: book.dataValues.departmentId
+            librarianId: librarian.get().id,
+            departmentId: book.get().departmentId
         });
         const data = {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOANED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         helper.responseErrorHandle(
             res,
             500,

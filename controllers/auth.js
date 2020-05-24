@@ -16,28 +16,24 @@ const roles = require('../constants/roles');
 const helper = require('../helper/responseHandle');
 const checkUniqueness = require('../helper/checkUniqueness');
 const generatePassword = require('../helper/generatePassword');
+const imageHandle = require('../helper/imageHandle');
 
-const base64Img = require('base64-img');
+const studentController = require('./student');
 
 const sessionDuration = 3600 * 12;
 
-const studentController = require('./student');
 
 exports.postLoginUser = (req, res, next) => {
     passport.authenticate('local', async (err, user) => {
         if (err) {
-            const data = {
-                isSuccessful: false,
-                message: err
-            };
-            return helper.responseHandle(res, 401, data);
+            return helper.responseErrorHandle(res, 401, err);
         }
         if (!user) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.WRONG_PASSWORD_OR_EMAIL
-            };
-            return helper.responseHandle(res, 401, data);
+            return helper.responseErrorHandle(
+                res,
+                401,
+                errorMessages.WRONG_PASSWORD_OR_EMAIL
+            );
         } else {
             let profileImage;
             if (!user.role) {
@@ -45,14 +41,10 @@ exports.postLoginUser = (req, res, next) => {
                     const role = await Role.findOne({
                         where: { librarian_id: user.id }
                     });
-                    profileImage = handleProfileImage(user.profile_image);
-                    handleAuth(
-                        profileImage,
-                        req,
-                        user,
-                        res,
-                        role.dataValues.role
+                    profileImage = imageHandle.convertToBase64(
+                        user.profile_image
                     );
+                    handleAuth(profileImage, req, user, res, role.get().role);
                 } catch (error) {
                     const data = {
                         isSuccessful: false,
@@ -61,7 +53,7 @@ exports.postLoginUser = (req, res, next) => {
                     return helper.responseHandle(res, 401, data);
                 }
             } else {
-                profileImage = handleProfileImage(user.profile_image);
+                profileImage = imageHandle.convertToBase64(user.profile_image);
                 handleAuth(profileImage, req, user, res, user.role);
             }
         }
@@ -101,18 +93,11 @@ const handleAuth = (profileImage, req, user, res, role) => {
     });
 };
 
-const handleProfileImage = image => {
-    return image ? base64Img.base64Sync(image) : '';
-};
-
 exports.getLogout = (req, res) => {
     req.logout();
     const data = {
-        responseCod: 200,
-        data: {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_LOGGED_OUT
-        }
+        isSuccessful: true,
+        message: successMessages.SUCCESSFULLY_LOGGED_OUT
     };
     return helper.responseHandle(res, 200, data);
 };
@@ -170,11 +155,11 @@ exports.postCheckRegistrationToken = async (req, res, next) => {
     const token = req.body.registrationToken;
 
     if (!token) {
-        const data = {
-            isActivated: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 400, data);
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 
     try {
@@ -186,15 +171,15 @@ exports.postCheckRegistrationToken = async (req, res, next) => {
             registration_token: ''
         });
         const data = {
-            isActivated: true,
+            isSuccessful: true,
             message: successMessages.SUCCESSFULLY_ACTIVATED
         };
         return helper.responseHandle(res, 200, data);
     } catch (error) {
-        const data = {
-            isActivated: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 400, data);
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };
