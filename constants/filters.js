@@ -1,4 +1,7 @@
 module.exports = {
     TITLE: 'title',
-    ISBN: 'isbn'
+    ISBN: 'isbn',
+    EMAIL: 'email',
+    NAME: 'name',
+    READER_TICKET: 'readerTicket'
 };

@@ -15,6 +15,7 @@ exports.DEPARTMENTS_URL = '/departments';
 exports.GENRES_URL = '/genres';
 
 exports.LIBRARIANS_URL = '/librarians';
+exports.LIBRARIANS_ALL_URL = '/all';
 exports.LIBRARIANS_LIBRARIAN_URL = '/details';
 
 exports.LOANS_URL = '/loans';
@@ -24,6 +25,7 @@ exports.LOANS_STATISTIC_TOP_URL = '/top';
 exports.ORDERS_URL = '/orders';
 
 exports.STUDENTS_URL = '/students';
+exports.STUDENTS_ALL_URL = '/all';
 exports.STUDENTS_STUDENT_URL = '/details';
 
 exports.MY_ACCOUNT_URL = '/my-account';

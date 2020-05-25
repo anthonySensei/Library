@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -9,12 +9,14 @@ import { Librarian } from '../models/librarian.model';
 import { ResponseService } from './response.service';
 
 import { serverLink } from '../constants/serverLink';
+import { HelperService } from './helper.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LibrarianService {
     private LIBRARIANS_URL = `${serverLink}/librarians`;
+    private LIBRARIANS_ALL_URL = `${this.LIBRARIANS_URL}/all`;
     private LIBRARIANS_DETAILS_URL = `${this.LIBRARIANS_URL}/details`;
 
     private librarians = new Subject<Librarian[]>();
@@ -23,7 +25,8 @@ export class LibrarianService {
 
     constructor(
         private http: HttpClient,
-        private responseService: ResponseService
+        private responseService: ResponseService,
+        private helperService: HelperService
     ) {}
 
     setLibrarians(librarians: Librarian[]): void {
@@ -50,12 +53,43 @@ export class LibrarianService {
         );
     }
 
-    getLibrariansHttp() {
-        return this.http.get(this.LIBRARIANS_URL).pipe(
-            map((response: any) => {
-                this.setLibrarians(response.data.librarians);
+    getLibrariansHttp(
+        filterName: string = '',
+        filterValue: string = '',
+        departmentId: number = null,
+        sortOrder = 'asc',
+        pageNumber = 0,
+        pageSize = 5
+    ): Observable<Librarian[]> {
+        return this.http
+            .get(this.LIBRARIANS_URL, {
+                params: new HttpParams()
+                    .set('filterName', filterName ? filterName : '')
+                    .set('filterValue', filterValue)
+                    .set(
+                        'departmentId',
+                        departmentId ? departmentId.toString() : ''
+                    )
+                    .set('sortOrder', sortOrder)
+                    .set('pageNumber', (pageNumber + 1).toString())
+                    .set('pageSize', pageSize.toString())
             })
-        );
+            .pipe(
+                map((response: any) => {
+                    this.helperService.setItemsPerPage(response.data.quantity);
+                    return response.data.librarians;
+                })
+            );
+    }
+
+    getAllLibrariansHttp() {
+        return this.http
+            .get(this.LIBRARIANS_ALL_URL)
+            .pipe(
+                map((response: any) => {
+                    this.setLibrarians(response.data.librarians);
+                })
+            );
     }
 
     getLibrarianHttp(librarianId: number) {

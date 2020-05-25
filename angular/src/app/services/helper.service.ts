@@ -5,6 +5,16 @@ import { Subscription } from 'rxjs';
     providedIn: 'root'
 })
 export class HelperService {
+    private allItems: number;
+
+    setItemsPerPage(itemsNumber: number) {
+        this.allItems = itemsNumber;
+    }
+
+    getItemsPerPage(): number {
+        return this.allItems;
+    }
+
     constructor() {}
 
     unsubscribeHandle(

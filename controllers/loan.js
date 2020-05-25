@@ -13,52 +13,79 @@ const helper = require('../helper/responseHandle');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
+const filters = require('../constants/filters');
 
-const getCondition = (departmentId, studentId, loanDate, nextDay) => {
+const getCondition = (departmentId, loanDate, nextDay, isShowDebtors) => {
     let departmentCondition = {};
-    let studentCondition = {};
     let dateCondition = {};
+    let isShowDebtorsCondition = {};
 
     if (departmentId) departmentCondition = { departmentId: departmentId };
-    if (studentId) studentCondition = { studentId: studentId };
-    if (loanDate && loanDate !== 'null')
+    if (loanDate)
         dateCondition = {
             loan_time: {
                 [Op.between]: [loanDate, nextDay]
             }
         };
+    if (isShowDebtors === 'true')
+        isShowDebtorsCondition = {
+            returned_time: null
+        };
 
     return {
         ...departmentCondition,
-        ...studentCondition,
-        ...dateCondition
+        ...dateCondition,
+        ...isShowDebtorsCondition
     };
 };
 
 exports.getAllLoans = async (req, res) => {
+    const page = +req.query.pageNumber;
+    const pageSize = +req.query.pageSize;
+    const sortOrder = req.query.sortOrder.toUpperCase();
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
     const departmentId = +req.query.departmentId;
-    const studentId = +req.query.studentId;
     const loanDate = req.query.loanDate;
     const nextDay = req.query.nextDay;
+    const isShowDebtors = req.query.isShowDebtors;
+    let studentCondition = {};
+    let librarianCondition = {};
+    let bookCondition = {};
+
+    const like = { [Op.iLike]: `%${filterValue}%` };
+    if (filterName === filters.EMAIL) librarianCondition = { email: like };
+    else if (filterName === filters.READER_TICKET)
+        studentCondition = { reader_ticket: like };
+    else if (filterName === filters.ISBN) bookCondition = { isbn: like };
+
     try {
+        const quantity = await Loan.count({
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors)
+        });
         const loans = await Loan.findAll({
-            where: getCondition(departmentId, studentId, loanDate, nextDay),
             include: [
                 {
-                    model: Student
+                    model: Student,
+                    where: studentCondition
                 },
                 {
-                    model: Librarian
+                    model: Librarian,
+                    where: librarianCondition
                 },
                 {
                     model: Book,
                     include: {
                         model: Author
-                    }
+                    },
+                    where: bookCondition
                 },
                 { model: Department }
             ],
-            order: [['loan_time', 'DESC']]
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors),
+            limit: pageSize,
+            order: [['loan_time', sortOrder]],
+            offset: (page - 1) * pageSize
         });
         const loansArr = [];
         for (const loan of loans) {
@@ -98,7 +125,8 @@ exports.getAllLoans = async (req, res) => {
         }
         const data = {
             loans: loansArr,
-            message: successMessages.SUCCESSFULLY_FETCHED
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            quantity: quantity
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

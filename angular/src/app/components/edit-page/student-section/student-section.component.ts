@@ -57,7 +57,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     setStudents(): void {
         this.studentsFetchSubscription = this.studentService
-            .getStudentsHttp()
+            .getAllStudentsHttp()
             .subscribe();
         this.studentsSubscription = this.studentService
             .getStudents()

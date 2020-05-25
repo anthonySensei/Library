@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import {
     animate,
@@ -8,7 +14,7 @@ import {
     trigger
 } from '@angular/animations';
 
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
 import { ResponseService } from '../../../services/response.service';
@@ -18,6 +24,10 @@ import { StudentService } from '../../../services/student.service';
 import { Loan } from '../../../models/loan.model';
 import { Department } from '../../../models/department.model';
 import { Student } from '../../../models/student.model';
+import { HelperService } from '../../../services/helper.service';
+import { LoansDataSource } from '../../../datasources/loans.datasource';
+import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
+import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-loan-page',
@@ -34,21 +44,15 @@ import { Student } from '../../../models/student.model';
         ])
     ]
 })
-export class LoansPageComponent implements OnInit, OnDestroy {
+export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     loans: Loan[];
     departments: Department[];
     students: Student[];
 
-    studentSelect;
-    departmentSelect;
-    date: Date = null;
-
-    loansSubscription: Subscription;
-    loansFetchSubscription: Subscription;
+    mergeSubscription: Subscription;
+    sortSubscription: Subscription;
     departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    studentsSubscription: Subscription;
-    studentsFetchSubscription: Subscription;
     returnBookSubscription: Subscription;
 
     columnsToDisplay: string[] = [
@@ -60,7 +64,12 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     ];
     expandedElement: Loan | null;
 
-    dataSource: MatTableDataSource<Loan>;
+    filterName: string;
+    filterValue: string;
+    departmentSelect: number;
+    date: Date = null;
+
+    dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
@@ -69,35 +78,31 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     constructor(
         private loansService: LoansService,
         private departmentService: DepartmentService,
-        private studentService: StudentService,
+        private helperService: HelperService,
         private responseService: ResponseService
     ) {}
 
     ngOnInit(): void {
         document.title = 'Loans';
+        this.dataSource = new LoansDataSource(this.loansService);
+        this.dataSource.loadLoans('', '', 'desc', 0, 5, null, null, false);
         this.subscriptionsHandle();
     }
 
-    setLoans(): void {
-        this.loansFetchSubscription = this.loansService
-            .fetchLoansHttp(
-                this.departmentSelect,
-                this.studentSelect,
-                this.date
-            )
+    ngAfterViewInit(): void {
+        this.sortSubscription = this.sort.sortChange.subscribe(
+            () => (this.paginator.pageIndex = 0)
+        );
+
+        this.mergeSubscription = merge(
+            this.sort.sortChange,
+            this.paginator.page
+        )
+            .pipe(tap(() => this.loadLoansPage()))
             .subscribe();
-        this.loansSubscription = this.loansService
-            .getLoans()
-            .subscribe((loans: Loan[]) => {
-                this.loans = loans;
-                this.dataSource = new MatTableDataSource(this.loans);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-            });
     }
 
     subscriptionsHandle(): void {
-        this.setLoans();
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
@@ -106,23 +111,6 @@ export class LoansPageComponent implements OnInit, OnDestroy {
             .subscribe((departments: Department[]) => {
                 this.departments = departments;
             });
-        this.studentsFetchSubscription = this.studentService
-            .getStudentsHttp()
-            .subscribe();
-        this.studentsSubscription = this.studentService
-            .getStudents()
-            .subscribe((students: Student[]) => {
-                this.students = students;
-            });
-    }
-
-    applyFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
     }
 
     returnBook(loanId: any, bookId: any): void {
@@ -130,17 +118,33 @@ export class LoansPageComponent implements OnInit, OnDestroy {
             .returnBookHttp(loanId, bookId, new Date())
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
-                    this.setLoans();
+                    this.loadLoansPage();
                 }
             });
     }
 
-    showDebtors(): void {
-        this.isShowingDebtors = !this.isShowingDebtors;
+    loadLoansPage(): void {
+        if (!this.filterName) {
+            this.filterValue = '';
+        }
+        this.dataSource.loadLoans(
+            this.filterName,
+            this.filterValue,
+            this.sort.direction,
+            this.paginator.pageIndex,
+            this.paginator.pageSize,
+            this.departmentSelect,
+            this.date,
+            this.isShowingDebtors
+        );
     }
 
     ngOnDestroy(): void {
-        this.loansFetchSubscription.unsubscribe();
-        this.loansSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.mergeSubscription,
+            this.sortSubscription,
+            this.returnBookSubscription
+        ]);
     }
 }

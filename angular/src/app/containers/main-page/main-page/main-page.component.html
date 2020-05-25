@@ -155,7 +155,7 @@
         </mat-form-field>
     </div>
     <div *ngIf="isLoading" style="text-align: center;">
-        <app-loading-spinner></app-loading-spinner>
+        <mat-spinner></mat-spinner>
     </div>
     <div class="books-container" *ngIf="books.length > 0; else noBooks">
         <div class="flex-container" *ngIf="!isLoading">
