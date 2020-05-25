@@ -151,6 +151,21 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.showFilterButton = !this.showFilterButton;
     }
 
+    isNothingFilter(): boolean {
+        return this.filterName === Filters.NOTHING;
+    }
+
+    isIsbnFilter(): boolean {
+        return this.filterName === Filters.ISBN;
+    }
+
+    isHaveAccess(): boolean {
+        return (
+            this.role.role === this.roles.LIBRARIAN ||
+            this.role.role === this.roles.MANAGER
+        );
+    }
+
     clearInputs(): void {
         this.filterName = Filters.NOTHING;
         this.filterValue = '';
