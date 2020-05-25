@@ -35,7 +35,7 @@
                     matInput
                     name="value"
                     [(ngModel)]="filterValue"
-                    [disabled]="filterName === bookFilters[0].value"
+                    [disabled]="isNothingFilter()"
                 />
             </mat-form-field>
             <mat-divider></mat-divider>
@@ -47,6 +47,7 @@
                     name="yearFrom"
                     placeholder="Ex. 1689"
                     [(ngModel)]="fromYear"
+                    [disabled]="isIsbnFilter()"
                 />
             </mat-form-field>
             <mat-form-field class="d-block">
@@ -54,13 +55,17 @@
                 <input
                     matInput
                     name="yearTo"
-                    [(ngModel)]="toYear"
                     placeholder="Ex. 2010"
+                    [(ngModel)]="toYear"
+                    [disabled]="isIsbnFilter()"
                 />
             </mat-form-field>
             <mat-form-field class="d-block">
                 <mat-label>Author</mat-label>
-                <mat-select [(value)]="authorSelect" required>
+                <mat-select
+                    [(value)]="authorSelect"
+                    [disabled]="isIsbnFilter()"
+                >
                     <mat-option>-</mat-option>
                     <mat-option
                         *ngFor="let author of authors"
@@ -71,7 +76,7 @@
             </mat-form-field>
             <mat-form-field class="d-block">
                 <mat-label>Genre</mat-label>
-                <mat-select [(value)]="genreSelect" required>
+                <mat-select [(value)]="genreSelect" [disabled]="isIsbnFilter()">
                     <mat-option>-</mat-option>
                     <mat-option
                         *ngFor="let genre of genres"
@@ -82,7 +87,7 @@
             </mat-form-field>
             <mat-form-field class="d-block">
                 <mat-label>Department address</mat-label>
-                <mat-select [(value)]="departmentSelect" required>
+                <mat-select [(value)]="departmentSelect">
                     <mat-option value="''">All</mat-option>
                     <mat-option
                         *ngFor="let department of departments"
@@ -122,10 +127,7 @@
     <div class="post-features-container">
         <div style="overflow: hidden;">
             <a
-                *ngIf="
-                    role.role === roles.LIBRARIAN ||
-                    role.role === roles.MANAGER
-                "
+                *ngIf="isHaveAccess()"
                 mat-stroked-button
                 color="primary"
                 class="btn"
@@ -142,7 +144,6 @@
             <mat-select
                 [(value)]="departmentSelect"
                 (valueChange)="showBooksByDepartment()"
-                required
             >
                 <mat-option value="''">All</mat-option>
                 <mat-option
@@ -171,7 +172,7 @@
                     />
                     <div class="data-on-image">
                         <a
-                            [routerLink]="['/',links.BOOKS, book.id]"
+                            [routerLink]="['/', links.BOOKS, book.id]"
                             class="card-details-link"
                             >Details</a
                         >
