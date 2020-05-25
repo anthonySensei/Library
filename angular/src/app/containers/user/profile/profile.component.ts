@@ -199,19 +199,23 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.user.name = name;
                     localStorage.setItem('userData', JSON.stringify(this.user));
                 } else {
-                    if (
-                        this.responseService
-                            .getResponse()
-                            .message.toLowerCase()
-                            .includes('email')
-                    ) {
-                        this.error = this.responseService.getResponse().message;
-                        this.profileForm.controls.email.setErrors({
-                            incorrect: true
-                        });
-                    }
+                    this.fieldsErrorHandle();
                 }
             });
+    }
+
+    fieldsErrorHandle() {
+        if (
+            this.responseService
+                .getResponse()
+                .message.toLowerCase()
+                .includes('email')
+        ) {
+            this.error = this.responseService.getResponse().message;
+            this.profileForm.controls.email.setErrors({
+                incorrect: true
+            });
+        }
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {

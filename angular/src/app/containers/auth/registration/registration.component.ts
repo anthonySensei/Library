@@ -6,14 +6,13 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { MaterialService } from '../../../services/material.service';
 import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { Student } from '../../../models/student.model';
 import { Response } from '../../../models/response.model';
+import { MatHorizontalStepper } from '@angular/material';
 
 @Component({
     selector: 'app-registration',
@@ -99,7 +98,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    onRegisterUser(stepper): void {
+    onRegisterUser(stepper: MatHorizontalStepper): void {
         const email = this.mainInfoForm.value.email;
         const readerTicket = this.mainInfoForm.value.reader_ticket;
         const name = this.mainInfoForm.value.name;
@@ -140,30 +139,26 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                             password2: ''
                         });
                     } else {
-                        this.response = this.responseService.getResponse();
-                        if (
-                            this.response.message
-                                .toLowerCase()
-                                .includes('email')
-                        ) {
-                            stepper.selectedIndex = 0;
-                            this.emailError = this.response.message;
-                            this.mainInfoForm.controls.email.setErrors({
-                                incorrect: true
-                            });
-                        } else if (
-                            this.response.message
-                                .toLowerCase()
-                                .includes('reader')
-                        ) {
-                            stepper.selectedIndex = 0;
-                            this.mainInfoForm.controls.reader_ticket.setErrors({
-                                incorrect: true
-                            });
-                            this.error = this.response.message;
-                        }
+                        this.fieldsErrorHandle(stepper);
                     }
                 });
+        }
+    }
+
+    fieldsErrorHandle(stepper: MatHorizontalStepper): void {
+        this.response = this.responseService.getResponse();
+        if (this.response.message.toLowerCase().includes('email')) {
+            stepper.selectedIndex = 0;
+            this.emailError = this.response.message;
+            this.mainInfoForm.controls.email.setErrors({
+                incorrect: true
+            });
+        } else if (this.response.message.toLowerCase().includes('reader')) {
+            stepper.selectedIndex = 0;
+            this.mainInfoForm.controls.reader_ticket.setErrors({
+                incorrect: true
+            });
+            this.error = this.response.message;
         }
     }
 

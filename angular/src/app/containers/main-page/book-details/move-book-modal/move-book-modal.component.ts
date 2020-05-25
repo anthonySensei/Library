@@ -59,7 +59,7 @@ export class MoveBookModalComponent implements OnInit, OnDestroy {
         this.dialogRef.close(this.data);
     }
 
-    checkQuantity() {
+    checkQuantity(): void {
         if (this.data.booksToMove > this.data.availableBooks) {
             this.quantity.setErrors({
                 incorrect: true

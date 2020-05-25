@@ -10,6 +10,7 @@ import { HelperService } from '../../../services/helper.service';
 import { Loan } from '../../../models/loan.model';
 import { Librarian } from '../../../models/librarian.model';
 import { Schedule } from '../../../models/schedule.model';
+import { Statistic } from '../../../models/statistic.model';
 
 @Component({
     selector: 'app-librarian-details',
@@ -104,9 +105,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             });
     }
 
-    setStatisticToChart(statistic): void {
+    setStatisticToChart(statistic: Statistic[]): void {
         const seriesArr = [];
-        statistic.forEach(stat => {
+        statistic.forEach((stat: Statistic) => {
             const item = {
                 name: stat.loanTime,
                 value: stat.books
@@ -122,17 +123,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             ];
         } else {
             this.xAxisLabel = '';
-            this.multi = [
-                {
-                    name: this.librarian.name,
-                    series: [
-                        {
-                            name: 'Empty',
-                            value: 0
-                        }
-                    ]
-                }
-            ];
+            this.multi = this.helperService.emptyChartHandle(
+                this.librarian.name
+            );
         }
     }
 

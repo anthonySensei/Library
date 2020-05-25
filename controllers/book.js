@@ -175,7 +175,7 @@ exports.getBook = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

@@ -1,16 +1,8 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Subscription } from 'rxjs';
 
 import { Author } from '../../../models/author.model';
-import { Response } from '../../../models/response.model';
 
 import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';

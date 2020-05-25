@@ -12,7 +12,6 @@ import { MaterialService } from '../../../services/material.service';
 import { ValidationService } from '../../../services/validation.service';
 import { StudentService } from '../../../services/student.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
@@ -100,18 +99,22 @@ export class AddStudentComponent implements OnInit, OnDestroy {
             this.done = true;
             this.router.navigate(['/', AngularLinks.STUDENTS]);
         } else {
-            this.response = this.responseService.getResponse();
-            if (this.response.message.toLowerCase().includes('email')) {
-                this.emailError = this.response.message;
-                this.createStudentForm.controls.email.setErrors({
-                    incorrect: true
-                });
-            } else if (this.response.message.toLowerCase().includes('reader')) {
-                this.createStudentForm.controls.readerTicket.setErrors({
-                    incorrect: true
-                });
-                this.readerTicketError = this.response.message;
-            }
+            this.fieldsErrorHandle();
+        }
+    }
+
+    fieldsErrorHandle() {
+        this.response = this.responseService.getResponse();
+        if (this.response.message.toLowerCase().includes('email')) {
+            this.emailError = this.response.message;
+            this.createStudentForm.controls.email.setErrors({
+                incorrect: true
+            });
+        } else if (this.response.message.toLowerCase().includes('reader')) {
+            this.createStudentForm.controls.readerTicket.setErrors({
+                incorrect: true
+            });
+            this.readerTicketError = this.response.message;
         }
     }
 

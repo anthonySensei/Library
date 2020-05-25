@@ -60,7 +60,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
             .subscribe();
         this.periodsSubscription = this.periodService
             .getPeriods()
-            .subscribe(periods => {
+            .subscribe((periods: Period[]) => {
                 this.periods = periods;
             });
     }

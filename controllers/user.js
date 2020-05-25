@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 
 const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/imageHandle');
+const passwordGenerator = require('../helper/generatePassword');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
@@ -71,37 +72,30 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
         const user = await dbTable.findOne({ where: { id: userId } });
         const userData = user.get();
         if (bcrypt.compareSync(passwordObj.oldPassword, userData.password)) {
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(
-                    passwordObj.newPassword,
-                    salt,
-                    async (err, hash) => {
-                        passwordObj.newPassword = hash;
-                        if (
-                            !bcrypt.compareSync(
-                                passwordObj.oldPassword,
-                                passwordObj.newPassword
-                            )
-                        ) {
-                            await user.update({
-                                password: passwordObj.newPassword
-                            });
-                            const data = {
-                                isSuccessful: true,
-                                message:
-                                    successMessages.PASSWORD_SUCCESSFULLY_CHANGED
-                            };
-                            return helper.responseHandle(res, 200, data);
-                        } else {
-                            return helper.responseErrorHandle(
-                                res,
-                                400,
-                                errorMessages.OLD_PASSWORD_EQUEL_NEW_PASSWORD
-                            );
-                        }
-                    }
+            passwordObj.newPassword = passwordGenerator.cryptPassword(
+                passwordObj.newPassword
+            );
+            if (
+                !bcrypt.compareSync(
+                    passwordObj.oldPassword,
+                    passwordObj.newPassword
+                )
+            ) {
+                await user.update({
+                    password: passwordObj.newPassword
+                });
+                const data = {
+                    isSuccessful: true,
+                    message: successMessages.PASSWORD_SUCCESSFULLY_CHANGED
+                };
+                return helper.responseHandle(res, 200, data);
+            } else {
+                return helper.responseErrorHandle(
+                    res,
+                    400,
+                    errorMessages.OLD_PASSWORD_EQUEL_NEW_PASSWORD
                 );
-            });
+            }
         } else {
             return helper.responseErrorHandle(
                 res,
@@ -120,11 +114,11 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
 
 const updateImage = async (res, dbTable, user) => {
     if (!user.profileImage) {
-        const data = {
-            isSuccessful: false,
-            message: errorMessages.SOMETHING_WENT_WRONG
-        };
-        return helper.responseHandle(res, 400, data);
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
     const profileImagePath = imageHandler.getPath(user.profileImage);
     try {

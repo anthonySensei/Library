@@ -22,7 +22,6 @@ const studentController = require('./student');
 
 const sessionDuration = 3600 * 12;
 
-
 exports.postLoginUser = (req, res, next) => {
     passport.authenticate('local', async (err, user) => {
         if (err) {
@@ -45,12 +44,12 @@ exports.postLoginUser = (req, res, next) => {
                         user.profile_image
                     );
                     handleAuth(profileImage, req, user, res, role.get().role);
-                } catch (error) {
-                    const data = {
-                        isSuccessful: false,
-                        message: errorMessages.SOMETHING_WENT_WRONG
-                    };
-                    return helper.responseHandle(res, 401, data);
+                } catch (err) {
+                    return helper.responseErrorHandle(
+                        res,
+                        401,
+                        errorMessages.SOMETHING_WENT_WRONG
+                    );
                 }
             } else {
                 profileImage = imageHandle.convertToBase64(user.profile_image);
@@ -146,7 +145,7 @@ exports.postCreateUser = async (req, res, next) => {
                 );
             }
         }
-    } catch (error) {
+    } catch (err) {
         helper.responseHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
@@ -175,7 +174,7 @@ exports.postCheckRegistrationToken = async (req, res, next) => {
             message: successMessages.SUCCESSFULLY_ACTIVATED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             400,

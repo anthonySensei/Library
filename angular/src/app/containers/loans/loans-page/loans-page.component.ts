@@ -12,15 +12,12 @@ import { Subscription } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
 import { ResponseService } from '../../../services/response.service';
-
-import { Loan } from '../../../models/loan.model';
-import { Response } from '../../../models/response.model';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { MaterialService } from '../../../services/material.service';
-import { Department } from '../../../models/department.model';
-import { Student } from '../../../models/student.model';
 import { DepartmentService } from '../../../services/department.service';
 import { StudentService } from '../../../services/student.service';
+
+import { Loan } from '../../../models/loan.model';
+import { Department } from '../../../models/department.model';
+import { Student } from '../../../models/student.model';
 
 @Component({
     selector: 'app-loan-page',
@@ -73,8 +70,7 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         private loansService: LoansService,
         private departmentService: DepartmentService,
         private studentService: StudentService,
-        private responseService: ResponseService,
-        private materialService: MaterialService
+        private responseService: ResponseService
     ) {}
 
     ngOnInit(): void {

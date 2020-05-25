@@ -37,7 +37,7 @@ exports.addAuthor = async (req, res) => {
         if (isNotUnique) {
             return helper.responseErrorHandle(
                 res,
-                500,
+                400,
                 errorMessages.AUTHOR_EXIST
             );
         } else {
@@ -48,7 +48,7 @@ exports.addAuthor = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -82,7 +82,7 @@ exports.editAuthor = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -101,7 +101,7 @@ exports.deleteAuthor = async (req, res) => {
             message: successMessages.AUTHOR_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

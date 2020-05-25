@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { LoansService } from '../../../services/loans.service';
 
 import { Statistic } from '../../../models/statistic.model';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-loans-chart',
@@ -20,17 +21,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     view: any[] = [700, 300];
 
-    multi: any = [
-        {
-            name: 'Empty',
-            series: [
-                {
-                    name: 'Empty',
-                    value: 0
-                }
-            ]
-        }
-    ];
+    multi: any;
 
     legend = true;
     showLabels = true;
@@ -49,35 +40,43 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     colorScheme = {
         domain: ['#ffaa00', '#5AA454', '#E44D25', '#7aa3e5', '#a8385d']
     };
-    constructor(private loansService: LoansService) {}
+    constructor(
+        private loansService: LoansService,
+        private helperService: HelperService
+    ) {}
 
     ngOnInit(): void {
         document.title = 'Statistic';
+        this.multi = this.helperService.emptyChartHandle('Empty');
     }
 
     statisticHandler(): void {
-        this.statisticChangedSubscription = this.loansService.getStatistic().subscribe(
-            (statistic: Statistic[]) => {
+        this.statisticChangedSubscription = this.loansService
+            .getStatistic()
+            .subscribe((statistic: Statistic[]) => {
                 this.statistic = statistic;
-                const seriesArr = [];
-                for (const stat of this.statistic) {
-                    const item = {
-                        name: stat.loanTime,
-                        value: stat.books
-                    };
-                    seriesArr.push(item);
-                }
-                this.multi = [
-                    {
-                        name:
-                            this.model === 'user'
-                                ? this.statistic[0].student.name
-                                : this.statistic[0].book.name,
-                        series: seriesArr
-                    }
-                ];
+                this.setStatisticToChart();
+            });
+    }
+
+    setStatisticToChart() {
+        const seriesArr = [];
+        this.statistic.forEach((stat: Statistic) => {
+            const item = {
+                name: stat.loanTime,
+                value: stat.books
+            };
+            seriesArr.push(item);
+        });
+        this.multi = [
+            {
+                name:
+                    this.model === 'user'
+                        ? this.statistic[0].student.name
+                        : this.statistic[0].book.name,
+                series: seriesArr
             }
-        );
+        ];
     }
 
     onSelect(data): void {}

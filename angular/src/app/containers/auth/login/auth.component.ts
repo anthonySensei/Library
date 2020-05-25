@@ -6,13 +6,9 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { MaterialService } from '../../../services/material.service';
 import { ResponseService } from '../../../services/response.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
-
-import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-auth',

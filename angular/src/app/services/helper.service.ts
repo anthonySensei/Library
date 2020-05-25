@@ -16,4 +16,18 @@ export class HelperService {
         });
         mainSubscription.unsubscribe();
     }
+
+    emptyChartHandle(name: string): any[] {
+        return [
+            {
+                name,
+                series: [
+                    {
+                        name: 'Empty',
+                        value: 0
+                    }
+                ]
+            }
+        ];
+    }
 }

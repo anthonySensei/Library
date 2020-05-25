@@ -179,24 +179,28 @@ export class AddBookComponent
                 this.editMode = queryParams.id != null;
                 if (this.editMode) {
                     this.bookService.getBookHttp(this.bookId).subscribe();
-                    this.bookService.getBook().subscribe(book => {
-                        this.book = book;
-                        this.mainBookInfoForm.patchValue({
-                            isbn: this.book.isbn,
-                            name: this.book.name,
-                            quantity: this.book.quantity,
-                            address: this.book.department.id
-                        });
-                        this.bookDetailsForm.patchValue({
-                            author: this.book.author.id,
-                            genre: this.book.genre.id,
-                            year: this.book.year,
-                            description: this.book.description
-                        });
+                    this.bookService.getBook().subscribe((book: Book) => {
+                        this.setValuesToFields(book);
                     });
                 }
             }
         );
+    }
+
+    setValuesToFields(book: Book): void {
+        this.book = book;
+        this.mainBookInfoForm.patchValue({
+            isbn: this.book.isbn,
+            name: this.book.name,
+            quantity: this.book.quantity,
+            address: this.book.department.id
+        });
+        this.bookDetailsForm.patchValue({
+            author: this.book.author.id,
+            genre: this.book.genre.id,
+            year: this.book.year,
+            description: this.book.description
+        });
     }
 
     hasError(controlName: string, errorName: string): boolean {

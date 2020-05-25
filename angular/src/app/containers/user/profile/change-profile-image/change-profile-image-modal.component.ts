@@ -11,7 +11,6 @@ import { ChangeProfileImageDialogData } from './change-profile-image-dialog-data
 })
 export class ChangeProfileImageModalComponent {
     imageChangedEvent: any = '';
-    croppedImage: any = '';
 
     constructor(
         public dialogRef: MatDialogRef<ChangeProfileImageModalComponent>,
@@ -25,7 +24,6 @@ export class ChangeProfileImageModalComponent {
     }
 
     imageCropped(event: ImageCroppedEvent): void {
-        this.croppedImage = event.base64;
-        this.data.imageBase64 = this.croppedImage;
+        this.data.imageBase64 = event.base64;
     }
 }

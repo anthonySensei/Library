@@ -9,7 +9,6 @@ import { Order } from '../../../models/order.model';
 import { Student } from '../../../models/student.model';
 
 import { StudentService } from '../../../services/student.service';
-import { LoansService } from '../../../services/loans.service';
 import { HelperService } from '../../../services/helper.service';
 
 @Component({
@@ -64,7 +63,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     timeline = true;
 
     model: string;
-    modelValue: string;
 
     colorScheme = {
         domain: ['#ffaa00']
@@ -76,7 +74,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        private loansService: LoansService,
         private helperService: HelperService,
         private route: ActivatedRoute
     ) {}
@@ -110,6 +107,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
                 this.ordersDataSource = new MatTableDataSource(this.orders);
                 this.ordersDataSource.paginator = this.loansPaginator;
                 this.ordersDataSource.sort = this.loansSort;
+
                 this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
             });
@@ -142,17 +140,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
             ];
         } else {
             this.xAxisLabel = '';
-            this.multi = [
-                {
-                    name: this.student.name,
-                    series: [
-                        {
-                            name: 'Empty',
-                            value: 0
-                        }
-                    ]
-                }
-            ];
+            this.multi = this.helperService.emptyChartHandle(this.student.name);
         }
     }
 
