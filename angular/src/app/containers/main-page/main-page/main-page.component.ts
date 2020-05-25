@@ -18,6 +18,7 @@ import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { Role } from '../../../models/role.model';
 
 @Component({
     selector: 'app-main-page',
@@ -29,7 +30,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     authors: Author[] = [];
     genres: Genre[] = [];
     departments: Department[] = [];
-    user: User;
+    role: Role;
 
     paramsSubscription: Subscription;
     booksSubscription: Subscription;
@@ -140,7 +141,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.userSubscription = this.authService
             .getUser()
             .subscribe((user: User) => {
-                this.user = user;
+                this.role = user
+                    ? user.role
+                    : new Role(null, this.roles.STUDENT);
             });
     }
 

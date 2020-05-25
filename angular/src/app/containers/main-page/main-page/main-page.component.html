@@ -123,8 +123,8 @@
         <div style="overflow: hidden;">
             <a
                 *ngIf="
-                    user.role.role === roles.LIBRARIAN ||
-                    user.role.role === roles.MANAGER
+                    role.role === roles.LIBRARIAN ||
+                    role.role === roles.MANAGER
                 "
                 mat-stroked-button
                 color="primary"
