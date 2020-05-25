@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Loan } from '../models/loan.model';
@@ -14,36 +14,32 @@ import { ResponseService } from './response.service';
     providedIn: 'root'
 })
 export class LoansService {
-    LOANS_URL = `${serverLink}/loans`;
-    LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
-    LOANS_STATISTIC_TOP_URL = `${this.LOANS_STATISTIC_URL}/top`;
+    private LOANS_URL = `${serverLink}/loans`;
+    private LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
+    private LOANS_STATISTIC_TOP_URL = `${this.LOANS_STATISTIC_URL}/top`;
 
-    loansChanged = new Subject<Loan[]>();
-    loans: Loan[];
+    private loans = new Subject<Loan[]>();
 
-    statisticChanged = new Subject<Statistic[]>();
-    statistic: Statistic[];
+    private statistic = new Subject<Statistic[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setLoans(loans: Loan[]) {
-        this.loans = loans;
-        this.loansChanged.next(this.loans);
+    setLoans(loans: Loan[]): void {
+        this.loans.next(loans);
     }
 
-    getLoans() {
+    getLoans(): Observable<Loan[]> {
         return this.loans;
     }
 
-    setStatistic(statistic: Statistic[]) {
-        this.statistic = statistic;
-        this.statisticChanged.next(this.statistic);
+    setStatistic(statistic: Statistic[]): void {
+        this.statistic.next(statistic);
     }
 
-    getStatistic() {
+    getStatistic(): Observable<Statistic[]> {
         return this.statistic;
     }
 
@@ -69,12 +65,8 @@ export class LoansService {
     }
 
     fetchLoansStatisticHttp(model: string, value: string) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.LOANS_STATISTIC_URL}?model=${model}&value=${value}`, {
-                headers
-            })
+            .get(`${this.LOANS_STATISTIC_URL}?model=${model}&value=${value}`)
             .pipe(
                 map((response: any) => {
                     this.setStatistic(response.data.statistic);
@@ -83,12 +75,8 @@ export class LoansService {
     }
 
     fetchTopFiveLoansHttp(model: string) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.LOANS_STATISTIC_TOP_URL}?model=${model}`, {
-                headers
-            })
+            .get(`${this.LOANS_STATISTIC_TOP_URL}?model=${model}`)
             .pipe(
                 map((response: any) => {
                     this.setStatistic(response.data.statistic);

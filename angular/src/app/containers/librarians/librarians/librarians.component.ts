@@ -38,7 +38,7 @@ export class LibrariansComponent implements OnInit, OnDestroy {
     links = AngularLinks;
 
     librariansSubscription: Subscription;
-    librariansChangedSubscription: Subscription;
+    librariansFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = ['name', 'email', 'departmentAddress'];
     expandedElement: Librarian | null;
@@ -48,19 +48,19 @@ export class LibrariansComponent implements OnInit, OnDestroy {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     constructor(private librarianService: LibrarianService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Librarians';
         this.subscriptionHandle();
     }
 
-    subscriptionHandle() {
-        this.librariansSubscription = this.librarianService
+    subscriptionHandle(): void {
+        this.librariansFetchSubscription = this.librarianService
             .getLibrariansHttp()
             .subscribe();
-        this.librariansChangedSubscription = this.librarianService.librariansChanged.subscribe(
-            librarians => {
+        this.librariansSubscription = this.librarianService.getLibrarians().subscribe(
+            (librarians: Librarian[]) => {
                 this.librarians = librarians;
-                librarians.forEach(librarian => {
+                librarians.forEach((librarian: Librarian) => {
                     if (!librarian.schedule) {
                         librarian.schedule = [];
                     }
@@ -70,10 +70,9 @@ export class LibrariansComponent implements OnInit, OnDestroy {
                 this.dataSource.sort = this.sort;
             }
         );
-        this.librarians = this.librarianService.getLibrarians();
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -83,7 +82,7 @@ export class LibrariansComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.librariansSubscription.add(this.librariansFetchSubscription);
         this.librariansSubscription.unsubscribe();
-        this.librariansChangedSubscription.unsubscribe();
     }
 }

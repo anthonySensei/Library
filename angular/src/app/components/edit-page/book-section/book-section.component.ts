@@ -1,24 +1,15 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
 import { Book } from '../../../models/book.model';
 import { Department } from '../../../models/department.model';
-import { Response } from '../../../models/response.model';
 
 import { ResponseService } from '../../../services/response.service';
 import { BookService } from '../../../services/book.service';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-book-section',
@@ -26,38 +17,40 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class BookSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
-
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() departmentSelect: number;
     @Input() departments: Department[];
 
     allBooks: Book[];
     booksForSelect: Book[];
 
+    booksSubscription: Subscription;
     booksFetchSubscription: Subscription;
-    booksChangeSubscription: Subscription;
+    booksDeleteSubscription: Subscription;
 
     bookSelect: number = null;
-
-    response: Response;
 
     links = AngularLinks;
 
     constructor(private bookService: BookService, private router: Router) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.setBooks();
+    }
+
+    setBooks(): void {
         this.booksFetchSubscription = this.bookService
             .fetchBooksISBNsHttp()
             .subscribe();
-        this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
-            books => {
+        this.booksSubscription = this.bookService
+            .getBooks()
+            .subscribe((books: Book[]) => {
                 this.allBooks = books;
-            }
-        );
+            });
     }
 
-    editBook() {
+    editBook(): void {
         if (!this.bookSelect || !this.departmentSelect) {
             return;
         }
@@ -66,42 +59,35 @@ export class BookSectionComponent implements OnInit, OnDestroy {
         });
     }
 
-    deleteBook() {
+    deleteBook(): void {
         if (!this.departmentSelect || !this.bookSelect) {
             return;
         }
-        this.bookSelect = null;
-        this.departmentSelect = null;
-        this.bookService.deleteBookHttp(this.bookSelect).subscribe(() => {
-            this.bookResponseHandler();
-        });
+        this.booksDeleteSubscription = this.bookService
+            .deleteBookHttp(this.bookSelect)
+            .subscribe(() => {
+                this.bookResponseHandler();
+            });
     }
 
-    bookResponseHandler() {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
-            this.bookService.fetchBooksISBNsHttp().subscribe();
-            this.allBooks = this.bookService.getBooks();
-        } else {
-            this.onOpenSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
+    bookResponseHandler(): void {
+        if (this.responseService.responseHandle()) {
+            this.bookSelect = null;
+            this.departmentSelect = null;
+            this.setBooks();
         }
     }
 
-    setBooksForSelect() {
+    setBooksForSelect(): void {
         this.booksForSelect = this.allBooks.filter(
             book => book.department.id === this.departmentSelect
         );
     }
 
     ngOnDestroy(): void {
-        this.booksFetchSubscription.unsubscribe();
-        this.booksChangeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.booksSubscription, [
+            this.booksFetchSubscription,
+            this.booksDeleteSubscription
+        ]);
     }
 }

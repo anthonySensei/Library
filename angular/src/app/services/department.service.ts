@@ -2,50 +2,41 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Department } from '../models/department.model';
 
 import { ResponseService } from './response.service';
 
 import { serverLink } from '../constants/serverLink';
-import { Author } from '../models/author.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DepartmentService {
-    DEPARTMENTS_URL = `${serverLink}/departments`;
+    private DEPARTMENTS_URL = `${serverLink}/departments`;
 
-    departmentsChanged = new Subject<Department[]>();
-    departments: Department[] = [];
+    private departments = new Subject<Department[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setDepartments(departments: Department[]) {
-        this.departments = departments;
-        this.departmentsChanged.next(this.departments);
+    setDepartments(departments: Department[]): void {
+        this.departments.next(departments);
     }
 
-    getDepartments() {
+    getDepartments(): Observable<Department[]> {
         return this.departments;
     }
 
     fetchAllDepartmentsHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http
-            .get(`${this.DEPARTMENTS_URL}`, {
-                headers
+        return this.http.get(`${this.DEPARTMENTS_URL}`).pipe(
+            map((response: any) => {
+                this.setDepartments(response.data.departments);
             })
-            .pipe(
-                map((response: any) => {
-                    this.setDepartments(response.data.departments);
-                })
-            );
+        );
     }
 
     addDepartmentHttp(department: Department) {

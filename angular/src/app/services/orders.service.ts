@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
@@ -14,32 +14,26 @@ import { serverLink } from '../constants/serverLink';
     providedIn: 'root'
 })
 export class OrderService {
-    ORDERS_URL = `${serverLink}/orders`;
+    private ORDERS_URL = `${serverLink}/orders`;
 
-    ordersChanged = new Subject<Order[]>();
-    orders: Order[];
+    private orders = new Subject<Order[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setOrders(orders: Order[]) {
-        this.orders = orders;
-        this.ordersChanged.next(this.orders);
+    setOrders(orders: Order[]): void {
+        this.orders.next(orders);
     }
 
-    getOrders() {
+    getOrders(): Observable<Order[]> {
         return this.orders;
     }
 
     fetchOrdersHttp() {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
-            .get(`${this.ORDERS_URL}`, {
-                headers
-            })
+            .get(`${this.ORDERS_URL}`)
             .pipe(
                 map((response: any) => {
                     this.setOrders(response.data.orders);

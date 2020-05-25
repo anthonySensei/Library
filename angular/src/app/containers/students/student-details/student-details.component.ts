@@ -9,7 +9,7 @@ import { Order } from '../../../models/order.model';
 import { Student } from '../../../models/student.model';
 
 import { StudentService } from '../../../services/student.service';
-import { LoansService } from '../../../services/loans.service';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-user-details',
@@ -23,12 +23,12 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     student: Student;
     studentId: number;
 
-    userSubscription: Subscription;
-    userChangedSubscription: Subscription;
+    studentFetchSubscription: Subscription;
+    studentSubscription: Subscription;
 
     paramsSubscription: Subscription;
 
-    isLoading = false;
+    isLoading: boolean;
 
     displayedLoanColumns: string[] = [
         'loanTime',
@@ -63,7 +63,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     timeline = true;
 
     model: string;
-    modelValue: string;
 
     colorScheme = {
         domain: ['#ffaa00']
@@ -75,11 +74,11 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        private loansService: LoansService,
+        private helperService: HelperService,
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Student';
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
@@ -90,12 +89,13 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         );
     }
 
-    studentSubscriptionHandle() {
-        this.userSubscription = this.studentService
+    studentSubscriptionHandle(): void {
+        this.studentFetchSubscription = this.studentService
             .getStudentHttp(this.studentId)
             .subscribe();
-        this.userChangedSubscription = this.studentService.studentChanged.subscribe(
-            student => {
+        this.studentSubscription = this.studentService
+            .getStudent()
+            .subscribe((student: Student) => {
                 this.student = student;
                 this.loans = this.student.loans || [];
                 this.orders = this.student.orders || [];
@@ -107,14 +107,13 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
                 this.ordersDataSource = new MatTableDataSource(this.orders);
                 this.ordersDataSource.paginator = this.loansPaginator;
                 this.ordersDataSource.sort = this.loansSort;
+
                 this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
-            }
-        );
-        this.student = this.studentService.getStudent();
+            });
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.loansDataSource.filter = filterValue.trim().toLowerCase();
 
@@ -123,7 +122,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    setStatisticToChart(statistic) {
+    setStatisticToChart(statistic): void {
         const seriesArr = [];
         for (const stat of statistic) {
             const item = {
@@ -141,17 +140,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
             ];
         } else {
             this.xAxisLabel = '';
-            this.multi = [
-                {
-                    name: this.student.name,
-                    series: [
-                        {
-                            name: 'Empty',
-                            value: 0
-                        }
-                    ]
-                }
-            ];
+            this.multi = this.helperService.emptyChartHandle(this.student.name);
         }
     }
 
@@ -162,8 +151,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     ngOnDestroy(): void {
-        this.userSubscription.unsubscribe();
-        this.userChangedSubscription.unsubscribe();
-        this.paramsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.studentSubscription, [
+            this.studentFetchSubscription,
+            this.paramsSubscription
+        ]);
     }
 }

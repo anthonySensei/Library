@@ -12,7 +12,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     providedIn: 'root'
 })
 export class MaterialService {
-    changeDiscardModalWidth = '25%';
+    private changeDiscardModalWidth = '25%';
+    private snackbarDuration = 3000;
 
     constructor(
         private snackBar: MatSnackBar,
@@ -35,21 +36,20 @@ export class MaterialService {
             });
     }
 
-    public openSnackBar(
+    public openSnackbar(
         message: string,
-        snackBarClass: string,
-        duration: number
-    ) {
+        snackBarClass: string
+    ): void {
         const config = new MatSnackBarConfig();
         config.panelClass = [snackBarClass];
-        config.duration = duration;
+        config.duration = this.snackbarDuration;
         this.snackBar.open(message, null, config);
     }
 
     openDiscardChangesDialog(
         discard: boolean,
         discardChanged: Subject<boolean>
-    ) {
+    ): void {
         const dialogRef = this.dialog.open(DiscardChangesModalComponent, {
             width: this.changeDiscardModalWidth
         });

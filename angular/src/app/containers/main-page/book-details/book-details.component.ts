@@ -9,19 +9,17 @@ import { Book } from '../../../models/book.model';
 
 import { BookService } from '../../../services/book.service';
 import { AuthService } from '../../../services/auth.service';
-import { MaterialService } from '../../../services/material.service';
 import { OrderService } from '../../../services/orders.service';
 import { ResponseService } from '../../../services/response.service';
 
 import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
+import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
 
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { User } from '../../../models/user.model';
-import { Response } from '../../../models/response.model';
-import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-book-details',
@@ -34,20 +32,21 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     user: User;
 
     bookId: number;
-    snackbarDuration = 5000;
 
-    isLoading = false;
+    isLoading: boolean;
 
     paramsSubscription: Subscription;
     bookSubscription: Subscription;
-    getBookSubscription: Subscription;
+    bookFetchSubscription: Subscription;
+    bookMoveSubscription: Subscription;
+    bookOrderSubscription: Subscription;
+    bookLoanSubscription: Subscription;
     userSubscription: Subscription;
 
     userRole: string;
 
     readerTicket: string;
 
-    response: Response;
     links = AngularLinks;
 
     constructor(
@@ -56,12 +55,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         private bookService: BookService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
+        private helperService: HelperService,
         private orderService: OrderService,
         public dialog: MatDialog
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Library';
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
@@ -73,26 +72,24 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.handleUserSubscription();
     }
 
-    handleBookSubscriptions() {
-        this.getBookSubscription = this.bookService
+    handleBookSubscriptions(): void {
+        this.bookFetchSubscription = this.bookService
             .getBookHttp(this.bookId)
             .subscribe();
-        this.bookSubscription = this.bookService.bookChanged.subscribe(book => {
+        this.bookSubscription = this.bookService.getBook().subscribe(book => {
             this.book = book;
             if (!this.book) {
                 this.router.navigate([AngularLinks.ERROR_PAGE]);
             }
             this.isLoading = false;
         });
-        this.book = this.bookService.getBook();
     }
 
-    handleUserSubscription() {
-        this.userSubscription = this.authService.userChanged.subscribe(user => {
+    handleUserSubscription(): void {
+        this.userSubscription = this.authService.getUser().subscribe(user => {
             this.user = user;
             this.userRole = user.role.role;
         });
-        this.userRole = this.authService.getUser().role.role;
     }
 
     openLoanBookModal(): void {
@@ -113,10 +110,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 bookId: this.bookId,
                 time: new Date()
             };
-            this.bookService.loanBookHttp(loanData).subscribe(() => {
-                this.response = this.responseService.getResponse();
-                this.responseHandle();
-            });
+            this.bookLoanSubscription = this.bookService
+                .loanBookHttp(loanData)
+                .subscribe(() => {
+                    this.responseHandle();
+                    this.handleBookSubscriptions();
+                });
         });
     }
 
@@ -133,7 +132,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
             if (!result) {
                 return;
             }
-            this.bookService
+            this.bookMoveSubscription = this.bookService
                 .moveBookHttp(
                     this.book,
                     result.departmentId,
@@ -146,28 +145,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         });
     }
 
-    responseHandle(): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackBar(
-                this.response.message,
-                SnackBarClasses.Success,
-                this.snackbarDuration
-            );
-        } else {
-            this.openSnackBar(
-                this.response.message,
-                SnackBarClasses.Danger,
-                this.snackbarDuration
-            );
-        }
-    }
-
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
-    }
-
-    orderBook() {
+    orderBook(): void {
         this.orderService
             .orderBookHttp({
                 studentEmail: this.user.email,
@@ -175,28 +153,22 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 time: new Date()
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                } else {
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
-                }
+                this.responseService.responseHandle();
             });
     }
 
-    moveBook() {}
+    responseHandle(): void {
+        this.responseService.responseHandle();
+    }
 
     ngOnDestroy(): void {
-        this.paramsSubscription.unsubscribe();
-        this.getBookSubscription.unsubscribe();
-        this.bookSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.paramsSubscription, [
+            this.bookSubscription,
+            this.bookFetchSubscription,
+            this.bookLoanSubscription,
+            this.bookMoveSubscription,
+            this.bookOrderSubscription,
+            this.userSubscription
+        ]);
     }
 }

@@ -9,6 +9,7 @@ const loanController = require('./loan');
 const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
+const imageHandler = require('../helper/imageHandle');
 const passwordGenerator = require('../helper/generatePassword');
 const checkUniqueness = require('../helper/checkUniqueness');
 
@@ -21,8 +22,8 @@ const getLibrarianRole = async librarianId => {
         const role = await Role.findOne({
             where: { librarian_id: librarianId }
         });
-        return role.dataValues.role;
-    } catch (error) {
+        return role.get().role;
+    } catch (err) {
         return null;
     }
 };
@@ -36,7 +37,7 @@ const getLibrarianSchedule = async librarianId => {
         const scheduleArr = [];
         if (schedules.length > 0) {
             schedules.forEach(schedule => {
-                const scheduleValues = schedule.dataValues;
+                const scheduleValues = schedule.get();
                 scheduleArr.push({
                     day: scheduleValues.day,
                     period: scheduleValues.period_.get()
@@ -45,7 +46,7 @@ const getLibrarianSchedule = async librarianId => {
             return scheduleArr;
         }
         return [];
-    } catch (error) {
+    } catch (err) {
         return [];
     }
 };
@@ -55,13 +56,13 @@ exports.getLibrarians = async (req, res) => {
         include: { model: Department }
     });
     const librariansArr = [];
-    for (const librarian of librarians) {
-        const librarianValues = librarian.dataValues;
-        try {
+    try {
+        for (const librarian of librarians) {
+            const librarianValues = librarian.get();
             const librarianRole = await getLibrarianRole(librarianValues.id);
             if (librarianRole === roles.LIBRARIAN) {
                 if (librarianValues.profile_image) {
-                    librarianValues.profile_image = base64Img.base64Sync(
+                    librarianValues.profile_image = imageHandler.convertToBase64(
                         librarianValues.profile_image
                     );
                 } else {
@@ -75,25 +76,25 @@ exports.getLibrarians = async (req, res) => {
                     name: librarianValues.name,
                     email: librarianValues.email,
                     profileImage: librarianValues.profile_image,
-                    departmentAddress:
-                        librarianValues.department_.dataValues.address,
+                    departmentAddress: librarianValues.department_.get()
+                        .address,
                     schedule: librarianSchedule
                 };
                 librariansArr.push(librarianData);
             }
-        } catch (error) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.SOMETHING_WENT_WRONG
-            );
         }
+        const data = {
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            librarians: librariansArr
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
-    const data = {
-        message: successMessages.SUCCESSFULLY_FETCHED,
-        librarians: librariansArr
-    };
-    return helper.responseHandle(res, 200, data);
 };
 
 exports.getLibrarian = async (req, res) => {
@@ -105,9 +106,9 @@ exports.getLibrarian = async (req, res) => {
             },
             include: { model: Department }
         });
-        const librarianValues = librarian.dataValues;
+        const librarianValues = librarian.get();
         if (librarianValues.profile_image) {
-            librarianValues.profile_image = base64Img.base64Sync(
+            librarianValues.profile_image = imageHandler.convertToBase64(
                 librarianValues.profile_image
             );
         } else {
@@ -129,7 +130,7 @@ exports.getLibrarian = async (req, res) => {
             email: librarianValues.email,
             profileImage: librarianValues.profile_image,
             department: {
-                address: librarianValues.department_.dataValues.address
+                address: librarianValues.department_.get().address
             },
             schedule: librarianSchedule,
             loans: librarianLoans,

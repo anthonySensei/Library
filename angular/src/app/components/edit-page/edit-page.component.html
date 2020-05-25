@@ -7,11 +7,9 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-author-section
-                (onOpenSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
-                (onNothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
+                [helperService]="helperService"
             ></app-author-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -21,12 +19,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-book-section
-                (onOpenSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
                 [responseService]="responseService"
                 [departmentSelect]="departmentSelect"
                 [departments]="departments"
+                [helperService]="helperService"
             ></app-book-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -36,14 +32,12 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-department-section
-                (onOpenSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
-                (onNothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
                 [departmentService]="departmentService"
                 [departmentSelect]="departmentSelect"
                 [departments]="departments"
+                [helperService]="helperService"
             ></app-department-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -53,11 +47,9 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-genre-section
-                (onOpenSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
-                (onNothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
+                [helperService]="helperService"
             ></app-genre-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -67,11 +59,9 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-student-section
-                (onOpenSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
-                (onNothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
+                [helperService]="helperService"
             ></app-student-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -81,12 +71,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-schedule-section
-                    (openSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
-                    (nothingToChange)="nothingChangeHandle()"
+                (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
                 [periods]="periods"
+                [helperService]="helperService"
             ></app-schedule-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
@@ -96,12 +84,10 @@
                 </mat-panel-title>
             </mat-expansion-panel-header>
             <app-period-section
-                (openSnackbar)="
-                    openSnackBar($event[0], $event[1], snackbarDuration)
-                "
                 (nothingToChange)="nothingChangeHandle()"
                 [responseService]="responseService"
                 [periods]="periods"
+                [helperService]="helperService"
             ></app-period-section>
         </mat-expansion-panel>
     </mat-accordion>

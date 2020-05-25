@@ -12,13 +12,11 @@ import { Subscription } from 'rxjs';
 import { ResponseService } from '../../../services/response.service';
 import { ScheduleService } from '../../../services/schedule.service';
 import { LibrarianService } from '../../../services/librarian.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { Response } from '../../../models/response.model';
 import { Schedule } from '../../../models/schedule.model';
 import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { Days } from '../../../constants/days';
 
@@ -28,35 +26,35 @@ import { Days } from '../../../constants/days';
     styleUrls: ['../edit-page.component.sass']
 })
 export class ScheduleSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() periods: Period[];
 
     schedules: Schedule[];
     showedSchedules: Schedule[] = [];
     librarians: Librarian[];
 
+    schedulesSubscription: Subscription;
     schedulesFetchSubscription: Subscription;
-    schedulesChangeSubscription: Subscription;
+    schedulesAddSubscription: Subscription;
+    schedulesEditSubscription: Subscription;
+    schedulesDeleteSubscription: Subscription;
+    librariansSubscription: Subscription;
     librariansFetchSubscription: Subscription;
-    librariansChangeSubscription: Subscription;
 
-    scheduleSelect = null;
-    periodSelect = null;
-    librarianSelect = null;
-    scheduleDay = null;
-    schedulePeriodId = null;
-    scheduleLibrarianId = null;
+    scheduleSelect: number;
+    librarianSelect: number;
+    scheduleDay: string;
+    schedulePeriodId: number;
+    scheduleLibrarianId: number;
 
-    newScheduleDay = null;
-    newSchedulePeriodId = null;
-    newScheduleLibrarianId = null;
+    newScheduleDay: string;
+    newSchedulePeriodId: number;
+    newScheduleLibrarianId: number;
 
     showScheduleAdding = false;
-
-    response: Response;
 
     days = Object.values(Days);
 
@@ -66,22 +64,26 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.schedulesFetchSubscription = this.scheduleService
-            .fetchAllSchedulesHttp()
-            .subscribe();
-        this.schedulesChangeSubscription = this.scheduleService.schedulesChanged.subscribe(
-            schedules => {
-                this.schedules = schedules;
-            }
-        );
         this.librariansFetchSubscription = this.librarianService
             .getLibrariansHttp()
             .subscribe();
-        this.librariansChangeSubscription = this.librarianService.librariansChanged.subscribe(
-            librarians => {
+        this.librariansSubscription = this.librarianService
+            .getLibrarians()
+            .subscribe(librarians => {
                 this.librarians = librarians;
-            }
-        );
+            });
+        this.setSchedules();
+    }
+
+    setSchedules(): void {
+        this.schedulesFetchSubscription = this.scheduleService
+            .fetchAllSchedulesHttp()
+            .subscribe();
+        this.schedulesSubscription = this.scheduleService
+            .getSchedules()
+            .subscribe(schedules => {
+                this.schedules = schedules;
+            });
     }
 
     getSchedule(): Schedule {
@@ -96,13 +98,13 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         return this.librarians.find(lib => lib.id === librarianId);
     }
 
-    setShowedSchedule() {
+    setShowedSchedule(): void {
         this.showedSchedules = this.schedules.filter(
             sch => sch.librarian.id === this.librarianSelect
         );
     }
 
-    setSchedule() {
+    setSchedule(): void {
         if (this.scheduleSelect) {
             this.scheduleDay = this.getSchedule().day;
             this.schedulePeriodId = this.getSchedule().period.id;
@@ -110,7 +112,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    addSchedule() {
+    addSchedule(): void {
         this.scheduleService
             .addScheduleHttp({
                 id: null,
@@ -119,12 +121,11 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
                 librarian: this.getLibrarian(this.newScheduleLibrarianId)
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
                 this.scheduleResponseHandler();
             });
     }
 
-    editSchedule() {
+    editSchedule(): void {
         if (
             !this.scheduleDay ||
             !this.scheduleLibrarianId ||
@@ -152,7 +153,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    deleteSchedule() {
+    deleteSchedule(): void {
         if (!this.scheduleSelect) {
             return;
         }
@@ -167,28 +168,24 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    scheduleResponseHandler() {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
-            this.scheduleService.fetchAllSchedulesHttp().subscribe();
-            this.schedules = this.scheduleService.getSchedules();
+    scheduleResponseHandler(): void {
+        if (this.responseService.responseHandle()) {
+            this.setSchedules();
+            this.setShowedSchedule();
             this.newScheduleDay = null;
             this.newSchedulePeriodId = null;
             this.newScheduleLibrarianId = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
         }
     }
 
     ngOnDestroy(): void {
-        this.schedulesFetchSubscription.unsubscribe();
-        this.schedulesChangeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.schedulesSubscription, [
+            this.schedulesFetchSubscription,
+            this.schedulesAddSubscription,
+            this.schedulesEditSubscription,
+            this.schedulesDeleteSubscription,
+            this.librariansSubscription,
+            this.librariansFetchSubscription
+        ]);
     }
 }

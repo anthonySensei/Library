@@ -62,15 +62,15 @@ exports.getAllLoans = async (req, res) => {
         });
         const loansArr = [];
         for (const loan of loans) {
-            const loanData = loan.dataValues;
-            const studentData = loan.dataValues.student_.dataValues;
-            const librarianData = loan.dataValues.librarian_.dataValues;
-            const departmentData = loan.dataValues.department_.dataValues;
-            const bookData = loan.dataValues.book_.dataValues;
+            const loanValues = loan.get();
+            const studentData = loanValues.student_.get();
+            const librarianData = loanValues.librarian_.get();
+            const departmentData = loanValues.department_.get();
+            const bookData = loanValues.book_.get();
             const loanObj = {
-                id: loanData.id,
-                loanTime: loanData.loan_time,
-                returnedTime: loanData.returned_time,
+                id: loanValues.id,
+                loanTime: loanValues.loan_time,
+                returnedTime: loanValues.returned_time,
                 student: {
                     name: studentData.name,
                     email: studentData.email,
@@ -88,7 +88,7 @@ exports.getAllLoans = async (req, res) => {
                     isbn: bookData.isbn,
                     name: bookData.name,
                     year: bookData.year,
-                    author: bookData.author_.dataValues.name
+                    author: bookData.author_.get().name
                 },
                 bookISBN: bookData.isbn,
                 studentReaderTicket: studentData.reader_ticket,
@@ -101,7 +101,7 @@ exports.getAllLoans = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
@@ -160,30 +160,30 @@ exports.getLoans = async (modelId, modelName) => {
         const loansArr = [];
         if (loans.length > 0) {
             loans.forEach(loan => {
-                const loanData = loan.dataValues;
+                const loanValues = loan.get();
 
                 if (modelName === models.LIBRARIAN)
                     info = {
-                        studentTicketReader:
-                            loanData.student_.dataValues.reader_ticket
+                        studentTicketReader: loanValues.student_.get()
+                            .reader_ticket
                     };
                 else if (modelName === models.STUDENT)
                     info = {
-                        librarianEmail: loanData.librarian_.dataValues.email,
-                        departmentAddress: loanData.department_.address
+                        librarianEmail: loanValues.librarian_.get().email,
+                        departmentAddress: loanValues.department_.get().address
                     };
 
                 loansArr.push({
                     ...info,
-                    loanTime: loanData.loan_time,
-                    returnedTime: loanData.returned_time,
-                    bookISBN: loanData.book_.dataValues.isbn
+                    loanTime: loanValues.loan_time,
+                    returnedTime: loanValues.returned_time,
+                    bookISBN: loanValues.book_.get().isbn
                 });
             });
             return loansArr;
         }
         return null;
-    } catch (error) {
+    } catch (err) {
         return null;
     }
 };
@@ -209,7 +209,13 @@ exports.returnBook = async (req, res) => {
             message: successMessages.SUCCESSFULLY_RETURNED_BOOK
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {}
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            200,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
 };
 
 exports.getLoansStatistic = (req, res) => {
@@ -250,15 +256,15 @@ exports.getLoansStatistic = (req, res) => {
         .then(loans => {
             const loansStatisticArr = [];
             for (const loan of loans) {
-                const loanData = loan.dataValues;
-                const studentData = loan.dataValues.student_.dataValues;
-                const bookData = loan.dataValues.book_.dataValues;
-                loanData.loan_time.setHours(0, 0, 0, 0);
+                const loanValues = loan.get();
+                const studentData = loanValues.student_.get();
+                const bookData = loanValues.book_.get();
+                loanValues.loan_time.setHours(0, 0, 0, 0);
                 const loanObj = {
                     books: 1,
-                    loanTime: loanData.loan_time.toLocaleDateString(),
-                    returnedTime: loanData.returned_time
-                        ? loanData.returned_time.toLocaleDateString()
+                    loanTime: loanValues.loan_time.toLocaleDateString(),
+                    returnedTime: loanValues.returned_time
+                        ? loanValues.returned_time.toLocaleDateString()
                         : '',
                     student: {
                         name: studentData.name,
@@ -299,70 +305,6 @@ exports.getLoansStatistic = (req, res) => {
 
 exports.getTopFive = (req, res) => {
     const model = req.query.model;
-
-    Loan.findAll({
-        include: [
-            {
-                model: Student
-            },
-            {
-                model: Librarian
-            },
-            { model: Book },
-            { model: Department }
-        ],
-        order: [['loan_time', 'ASC']],
-        limit: 30
-    })
-        .then(loans => {
-            const loansStatisticArr = [];
-            const userStatisticArr = [];
-            for (const loan of loans) {
-                const loanData = loan.dataValues;
-                const studentData = loan.dataValues.student_.dataValues;
-                const bookData = loan.dataValues.book_.dataValues;
-                loanData.loan_time.setHours(0, 0, 0, 0);
-                const loanObj = {
-                    books: 1,
-                    loanTime: loanData.loan_time.toLocaleDateString(),
-                    returnedTime: loanData.returned_time
-                        ? loanData.returned_time.toLocaleDateString()
-                        : '',
-                    student: {
-                        name: studentData.name,
-                        readerTicket: studentData.reader_ticket
-                    },
-                    book: {
-                        name: bookData.name
-                    }
-                };
-                if (loansStatisticArr.length > 0) {
-                    let index;
-                    index = loansStatisticArr.findIndex(
-                        statistic => statistic.loanTime === loanObj.loanTime
-                    );
-                    if (index !== -1) {
-                        loansStatisticArr[index].books += 1;
-                    } else {
-                        loansStatisticArr.push(loanObj);
-                    }
-                } else {
-                    loansStatisticArr.push(loanObj);
-                }
-            }
-            const data = {
-                statistic: loansStatisticArr,
-                message: successMessages.SUCCESSFULLY_FETCHED
-            };
-            return helper.responseHandle(res, 200, data);
-        })
-        .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.CANNOT_FETCH
-            );
-        });
 };
 
 exports.loanBook = async (req, res) => {
@@ -401,14 +343,14 @@ exports.loanBook = async (req, res) => {
         });
         const bookLoan = new Loan({
             loan_time: loanTime,
-            studentId: student.dataValues.id,
+            studentId: student.get().id,
             bookId: bookId,
-            librarianId: librarian.dataValues.id,
-            departmentId: librarian.dataValues.department_.dataValues.id
+            librarianId: librarian.get().id,
+            departmentId: librarian.get().department_.get().id
         });
         await bookLoan.save();
         const book = await Book.findOne({ where: { id: bookId } });
-        await book.update({ quantity: book.dataValues.quantity - 1 });
+        await book.update({ quantity: book.get().quantity - 1 });
 
         const data = {
             isSuccessful: true,

@@ -6,10 +6,6 @@ const Genre = require('../models/genre');
 const Author = require('../models/author');
 const Department = require('../models/department');
 
-const uuidv4 = require('uuid/v4');
-
-const base64Img = require('base64-img');
-
 const statuses = require('../constants/statuses');
 const filters = require('../constants/filters');
 const successMessages = require('../constants/successMessages');
@@ -18,6 +14,7 @@ const errorMessages = require('../constants/errorMessages');
 const ITEMS_PER_PAGE = 8;
 
 const helper = require('../helper/responseHandle');
+const imageHandler = require('../helper/imageHandle');
 
 const getCondition = (
     filterName,
@@ -101,19 +98,19 @@ exports.getBooks = async (req, res) => {
         });
         const booksArr = [];
         books.forEach(book => {
-            const bookValues = book.dataValues;
-            bookValues.image = base64Img.base64Sync(bookValues.image);
+            const bookValues = book.get();
+            bookValues.image = imageHandler.convertToBase64(bookValues.image);
             if (bookValues.quantity > 0)
                 booksArr.push({
                     id: bookValues.id,
                     name: bookValues.name,
                     year: bookValues.year,
-                    author: bookValues.author_.dataValues,
-                    genre: bookValues.genre_.dataValues,
+                    author: bookValues.author_.get(),
+                    genre: bookValues.genre_.get(),
                     image: bookValues.image,
                     description: bookValues.description,
                     status: bookValues.status,
-                    department: bookValues.department_.dataValues
+                    department: bookValues.department_.get()
                 });
         });
         const data = {
@@ -128,9 +125,8 @@ exports.getBooks = async (req, res) => {
                 lastPage: Math.ceil(totalBooks / ITEMS_PER_PAGE)
             }
         };
-
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -156,31 +152,30 @@ exports.getBook = async (req, res) => {
             where: condition,
             include: [{ model: Author }, { model: Genre }]
         });
-        const bookValues = book.dataValues;
+        const bookValues = book.get();
         const department = await Department.findOne({
-            where: { id: book.dataValues.departmentId }
+            where: { id: book.get().departmentId }
         });
-        book.dataValues.image = base64Img.base64Sync(book.dataValues.image);
-
+        bookValues.image = imageHandler.convertToBase64(bookValues.image);
         const bookData = {
             id: bookValues.id,
             isbn: bookValues.isbn,
             quantity: bookValues.quantity,
             name: bookValues.name,
-            author: bookValues.author_.dataValues,
-            genre: bookValues.genre_.dataValues,
+            author: bookValues.author_.get(),
+            genre: bookValues.genre_.get(),
             image: bookValues.image,
             status: bookValues.status,
             description: bookValues.description,
             year: bookValues.year,
-            department: department.dataValues
+            department: department.get()
         };
         const data = {
             book: bookData,
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -208,7 +203,7 @@ exports.getAllBooksISBN = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -229,24 +224,24 @@ exports.addBook = async (req, res) => {
         return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
 
-    const filepath = base64Img.imgSync(imageBase64, '../images/', uuidv4());
+    const filepath = imageHandler.getPath(imageBase64);
 
     status = statuses.FREE;
 
     try {
-        const count = await Book.count({
+        const isNotUnique = await Book.findOne({
             where: {
                 isbn: bookData.isbn,
                 departmentId: bookData.department.id
             }
         });
 
-        if (count > 0) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.ISBN_EXIST
-            };
-            return helper.responseHandle(res, 200, data);
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                200,
+                errorMessages.ISBN_EXIST
+            );
         } else {
             const newBook = new Book({
                 isbn: bookData.isbn,
@@ -269,7 +264,7 @@ exports.addBook = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -287,21 +282,13 @@ exports.editBook = async (req, res) => {
     }
 
     if (imageBase64.image) {
-        bookData.image = base64Img.imgSync(
-            imageBase64.image,
-            '../images/',
-            uuidv4()
-        );
+        bookData.image = imageHandler(imageBase64.image);
     } else {
-        bookData.image = base64Img.imgSync(
-            bookData.image,
-            '../images/',
-            uuidv4()
-        );
+        bookData.image = imageHandler(bookData.image);
     }
 
     try {
-        const count = await Book.count({
+        const isNotUnique = await Book.findOne({
             where: {
                 isbn: bookData.isbn,
                 departmentId: bookData.department.id,
@@ -309,12 +296,12 @@ exports.editBook = async (req, res) => {
             }
         });
 
-        if (count > 0) {
-            const data = {
-                isSuccessful: false,
-                message: errorMessages.ISBN_EXIST
-            };
-            return helper.responseHandle(res, 200, data);
+        if (isNotUnique) {
+            return helper.responseErrorHandle(
+                res,
+                200,
+                errorMessages.ISBN_EXIST
+            );
         } else {
             const book = await Book.findOne({
                 where: {
@@ -330,7 +317,7 @@ exports.editBook = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -349,7 +336,7 @@ exports.deleteBook = async (req, res) => {
             message: successMessages.BOOK_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -371,11 +358,7 @@ exports.moveBook = async (req, res) => {
         quantity: quantity
     };
     try {
-        newBook.image = base64Img.imgSync(
-            newBook.image,
-            '../images/',
-            uuidv4()
-        );
+        newBook.image = imageHandler.getPath(newBook.image);
         const isNotUnique = await Book.findOne({
             where: {
                 isbn: newBook.isbn,
@@ -383,7 +366,11 @@ exports.moveBook = async (req, res) => {
             }
         });
         if (isNotUnique) {
-            return helper.responseErrorHandle(res, 200, errorMessages.ISBN_EXIST);
+            return helper.responseErrorHandle(
+                res,
+                200,
+                errorMessages.ISBN_EXIST
+            );
         }
         await Book.create(newBook);
         const bookInDb = await Book.findOne({ where: { id: book.id } });
@@ -393,7 +380,7 @@ exports.moveBook = async (req, res) => {
             message: successMessages.BOOK_SUCCESSFULLY_MOVED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

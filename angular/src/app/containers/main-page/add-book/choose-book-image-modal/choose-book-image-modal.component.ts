@@ -11,7 +11,6 @@ import { DialogData } from '../add-book.component';
 })
 export class ModalBookCreateDialogComponent {
     imageChangedEvent: any = '';
-    croppedImage: any = '';
 
     constructor(
         public dialogRef: MatDialogRef<ModalBookCreateDialogComponent>,
@@ -23,8 +22,7 @@ export class ModalBookCreateDialogComponent {
     fileChangeEvent(event: any): void {
         this.imageChangedEvent = event;
     }
-    imageCropped(event: ImageCroppedEvent) {
-        this.croppedImage = event.base64;
-        this.data.imageBase64 = this.croppedImage;
+    imageCropped(event: ImageCroppedEvent): void {
+        this.data.imageBase64 = event.base64;
     }
 }

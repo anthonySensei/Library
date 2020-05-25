@@ -12,7 +12,6 @@ import { MaterialService } from '../../../services/material.service';
 import { ValidationService } from '../../../services/validation.service';
 import { StudentService } from '../../../services/student.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
@@ -22,16 +21,14 @@ import { AngularLinks } from '../../../constants/angularLinks';
 export class AddStudentComponent implements OnInit, OnDestroy {
     createStudentForm: FormGroup;
 
-    discard = false;
-    done = false;
+    discard: boolean;
+    done: boolean;
 
     createStudentSubscription: Subscription;
 
-    error: string = null;
-    emailError: string = null;
-    readerTicketError: string = null;
-
-    snackbarDuration = 5000;
+    error: string;
+    emailError: string;
+    readerTicketError: string;
 
     response: Response;
 
@@ -49,14 +46,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         private validationService: ValidationService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Add librarian';
         this.emailValidation = this.validationService.getEmailValidation();
         this.readerTicketValidation = this.validationService.getReaderTicketValidation();
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.createStudentForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,
@@ -71,7 +68,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         });
     }
 
-    onCreateStudent() {
+    onCreateStudent(): void {
         const email = this.createStudentForm.value.email;
         const readerTicket = this.createStudentForm.value.readerTicket;
         const name = this.createStudentForm.value.name;
@@ -93,37 +90,32 @@ export class AddStudentComponent implements OnInit, OnDestroy {
                 readerTicket
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (!this.response.isSuccessful) {
-                    if (this.response.message.toLowerCase().includes('email')) {
-                        this.emailError = this.response.message;
-                        this.createStudentForm.controls.email.setErrors({
-                            incorrect: true
-                        });
-                    } else if (
-                        this.response.message.toLowerCase().includes('reader')
-                    ) {
-                        this.createStudentForm.controls.readerTicket.setErrors({
-                            incorrect: true
-                        });
-                        this.readerTicketError = this.response.message;
-                    } else {
-                        this.materialService.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Danger,
-                            this.snackbarDuration
-                        );
-                    }
-                } else {
-                    this.done = true;
-                    this.router.navigate(['/', AngularLinks.STUDENTS]);
-                    this.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                }
+                this.responseHandle();
             });
+    }
+
+    responseHandle(): void {
+        if (this.responseService.responseHandle()) {
+            this.done = true;
+            this.router.navigate(['/', AngularLinks.STUDENTS]);
+        } else {
+            this.fieldsErrorHandle();
+        }
+    }
+
+    fieldsErrorHandle() {
+        this.response = this.responseService.getResponse();
+        if (this.response.message.toLowerCase().includes('email')) {
+            this.emailError = this.response.message;
+            this.createStudentForm.controls.email.setErrors({
+                incorrect: true
+            });
+        } else if (this.response.message.toLowerCase().includes('reader')) {
+            this.createStudentForm.controls.readerTicket.setErrors({
+                incorrect: true
+            });
+            this.readerTicketError = this.response.message;
+        }
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
@@ -138,12 +130,8 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.createStudentForm.controls[controlName].hasError(errorName);
-    }
-
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {

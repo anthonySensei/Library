@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Subscription } from 'rxjs';
 
@@ -11,71 +11,72 @@ import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
 import { SnackBarClasses } from '../../constants/snackBarClasses';
-import { LibrarianService } from '../../services/librarian.service';
 import { Period } from '../../models/period.model';
 import { PeriodService } from '../../services/period.service';
+import { HelperService } from '../../services/helper.service';
 
 @Component({
     selector: 'app-edit-page',
     templateUrl: './edit-page.component.html',
     styleUrls: ['./edit-page.component.sass']
 })
-export class EditPageComponent implements OnInit {
+export class EditPageComponent implements OnInit, OnDestroy {
     departments: Department[];
     students: Student[];
     periods: Period[];
 
+    departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    departmentsChangeSubscription: Subscription;
+    periodsSubscription: Subscription;
     periodsFetchSubscription: Subscription;
-    periodsChangeSubscription: Subscription;
 
-    departmentSelect = null;
+    departmentSelect: number;
 
-    snackbarDuration = 3000;
     nothingToChange = 'Nothing to change';
-
-    response: Response;
 
     constructor(
         private departmentService: DepartmentService,
         private responseService: ResponseService,
         private materialService: MaterialService,
-        private periodService: PeriodService
+        private periodService: PeriodService,
+        private helperService: HelperService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.selectsValuesSubscriptionHandle();
     }
 
-    selectsValuesSubscriptionHandle() {
+    selectsValuesSubscriptionHandle(): void {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            departments => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
-            }
-        );
+            });
         this.periodsFetchSubscription = this.periodService
             .fetchAllPeriodsHttp()
             .subscribe();
-        this.periodsChangeSubscription = this.periodService.periodsChanged.subscribe(
-            periods => {
+        this.periodsSubscription = this.periodService
+            .getPeriods()
+            .subscribe((periods: Period[]) => {
                 this.periods = periods;
-            }
-        );
+            });
     }
 
-    nothingChangeHandle() {
-        this.openSnackBar(
+    nothingChangeHandle(): void {
+        this.materialService.openSnackbar(
             this.nothingToChange,
-            SnackBarClasses.Warn,
-            this.snackbarDuration
+            SnackBarClasses.Warn
         );
     }
 
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
+    ngOnDestroy(): void {
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.periodsSubscription,
+            this.periodsFetchSubscription
+        ]);
     }
 }

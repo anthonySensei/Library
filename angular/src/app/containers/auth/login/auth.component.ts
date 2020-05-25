@@ -6,12 +6,9 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { MaterialService } from '../../../services/material.service';
-
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { AngularLinks } from '../../../constants/angularLinks';
-import { Response } from '../../../models/response.model';
 import { ResponseService } from '../../../services/response.service';
+
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-auth',
@@ -20,12 +17,9 @@ import { ResponseService } from '../../../services/response.service';
 export class AuthComponent implements OnInit, OnDestroy {
     loginForm: FormGroup;
 
-    error: string = null;
+    error: string;
 
-    response: Response;
     authSubscription: Subscription;
-
-    snackbarDuration = 5000;
 
     emailValidation;
 
@@ -35,17 +29,16 @@ export class AuthComponent implements OnInit, OnDestroy {
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
         private router: Router
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Login';
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
     }
 
-    initializeForm() {
+    initializeForm(): void {
         this.loginForm = new FormGroup({
             email: new FormControl('', [
                 Validators.required,
@@ -56,11 +49,11 @@ export class AuthComponent implements OnInit, OnDestroy {
         });
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         return this.loginForm.controls[controlName].hasError(errorName);
     }
 
-    onLoginUser() {
+    onLoginUser(): void {
         const email = this.loginForm.value.email;
         const password = this.loginForm.value.password;
         if (this.loginForm.invalid) {
@@ -71,29 +64,18 @@ export class AuthComponent implements OnInit, OnDestroy {
             password
         };
         this.authSubscription = this.authService.login(user).subscribe(() => {
-            this.response = this.responseService.getResponse();
-            if (!this.response.isSuccessful) {
+            if (this.responseService.responseHandle()) {
+                this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
+                this.router.navigate([AngularLinks.HOME]);
+                this.loginForm.reset();
+            } else {
                 this.loginForm.patchValue({
                     email,
                     password: ''
                 });
-                this.error = this.response.message;
-                return false;
-            } else {
-                this.authService.setIsLoggedIn(this.response.isSuccessful);
-                this.router.navigate([AngularLinks.HOME]);
-                this.loginForm.reset();
-                this.openSnackBar(
-                    'You was logged in successfully',
-                    SnackBarClasses.Success,
-                    this.snackbarDuration
-                );
+                this.error = this.responseService.getResponse().message;
             }
         });
-    }
-
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {

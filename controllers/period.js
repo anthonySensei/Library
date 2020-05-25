@@ -14,9 +14,9 @@ exports.getPeriods = async (req, res) => {
         let periodsArr = [];
         periods.forEach(period => {
             periodsArr.push({
-                id: period.dataValues.id,
-                start: period.dataValues.start,
-                end: period.dataValues.end
+                id: period.get().id,
+                start: period.get().start,
+                end: period.get().end
             });
         });
         const data = {
@@ -53,7 +53,7 @@ exports.addPeriod = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -92,7 +92,7 @@ exports.editPeriod = async (req, res) => {
             };
             return helper.responseHandle(res, 200, data);
         }
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,
@@ -111,7 +111,7 @@ exports.deletePeriod = async (req, res) => {
             message: successMessages.PERIOD_SUCCESSFULLY_DELETED
         };
         return helper.responseHandle(res, 200, data);
-    } catch (error) {
+    } catch (err) {
         return helper.responseErrorHandle(
             res,
             500,

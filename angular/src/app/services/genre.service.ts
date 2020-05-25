@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Genre } from '../models/genre.model';
 
@@ -14,33 +14,29 @@ import { serverLink } from '../constants/serverLink';
     providedIn: 'root'
 })
 export class GenreService {
-    GENRES_URL = `${serverLink}/genres`;
+    private GENRES_URL = `${serverLink}/genres`;
 
-    genresChanged = new Subject<Genre[]>();
-    genres: Genre[] = [];
+    private genres = new Subject<Genre[]>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setGenres(genres: Genre[]) {
-        this.genres = genres;
-        this.genresChanged.next(this.genres);
+    setGenres(genres: Genre[]): void {
+        this.genres.next(genres);
     }
 
-    getGenres() {
+    getGenres(): Observable<Genre[]> {
         return this.genres;
     }
 
     fetchAllGenresHttp() {
-        return this.http
-            .get(`${this.GENRES_URL}`)
-            .pipe(
-                map((response: any) => {
-                    this.setGenres(response.data.genres);
-                })
-            );
+        return this.http.get(`${this.GENRES_URL}`).pipe(
+            map((response: any) => {
+                this.setGenres(response.data.genres);
+            })
+        );
     }
 
     addGenreHttp(genre: Genre) {
@@ -52,22 +48,18 @@ export class GenreService {
     }
 
     ediGenreHttp(genreId: number, name: string) {
-        return this.http
-            .put(this.GENRES_URL, { genreId, name })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+        return this.http.put(this.GENRES_URL, { genreId, name }).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 
     deleteGenreHttp(genreId: number) {
-        return this.http
-            .delete(`${this.GENRES_URL}?genreId=${genreId}`)
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+        return this.http.delete(`${this.GENRES_URL}?genreId=${genreId}`).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
     }
 }

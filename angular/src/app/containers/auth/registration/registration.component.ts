@@ -6,14 +6,13 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { MaterialService } from '../../../services/material.service';
+import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 import { Student } from '../../../models/student.model';
 import { Response } from '../../../models/response.model';
-import { ResponseService } from '../../../services/response.service';
+import { MatHorizontalStepper } from '@angular/material';
 
 @Component({
     selector: 'app-registration',
@@ -23,10 +22,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     mainInfoForm: FormGroup;
     passwordForm: FormGroup;
 
-    error: string = null;
-    snackbarDuration = 3000;
-
-    response: Response;
+    error: string;
 
     authSubscription: Subscription;
 
@@ -37,16 +33,17 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     hidePassword = true;
     hideRetypePassword = true;
 
-    isPasswordError = false;
+    isPasswordError: boolean;
 
     links = AngularLinks;
     emailError: string;
+
+    response: Response;
 
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private materialService: MaterialService,
         private router: Router
     ) {}
 
@@ -83,7 +80,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         });
     }
 
-    hasError(controlName: string, errorName: string) {
+    hasError(controlName: string, errorName: string): boolean {
         if (this.mainInfoForm.controls[controlName]) {
             return this.mainInfoForm.controls[controlName].hasError(errorName);
         } else if (this.passwordForm.controls[controlName]) {
@@ -91,7 +88,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    checkIcon(hide: boolean, password: string) {
+    checkIcon(hide: boolean, password: string): string {
         if (password == null || password === '') {
             return '';
         } else if (hide) {
@@ -101,7 +98,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         }
     }
 
-    onRegisterUser(stepper) {
+    onRegisterUser(stepper: MatHorizontalStepper): void {
         const email = this.mainInfoForm.value.email;
         const readerTicket = this.mainInfoForm.value.reader_ticket;
         const name = this.mainInfoForm.value.name;
@@ -134,49 +131,34 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             this.authSubscription = this.authService
                 .registerStudentHttp(student)
                 .subscribe(() => {
-                    this.response = this.responseService.getResponse();
-                    if (this.response && this.response.isSuccessful) {
+                    if (this.responseService.responseHandle()) {
                         this.router.navigate(['/' + this.links.LOGIN]);
-                        this.materialService.openSnackBar(
-                            this.response.message,
-                            SnackBarClasses.Success,
-                            this.snackbarDuration
-                        );
                         this.isPasswordError = false;
                         this.passwordForm.patchValue({
                             password: '',
                             password2: ''
                         });
                     } else {
-                        if (
-                            this.response.message
-                                .toLowerCase()
-                                .includes('email')
-                        ) {
-                            stepper.selectedIndex = 0;
-                            this.emailError = this.response.message;
-                            this.mainInfoForm.controls.email.setErrors({
-                                incorrect: true
-                            });
-                        } else if (
-                            this.response.message
-                                .toLowerCase()
-                                .includes('reader')
-                        ) {
-                            stepper.selectedIndex = 0;
-                            this.mainInfoForm.controls.reader_ticket.setErrors({
-                                incorrect: true
-                            });
-                            this.error = this.response.message;
-                        } else {
-                            this.materialService.openSnackBar(
-                                this.response.message,
-                                SnackBarClasses.Danger,
-                                this.snackbarDuration
-                            );
-                        }
+                        this.fieldsErrorHandle(stepper);
                     }
                 });
+        }
+    }
+
+    fieldsErrorHandle(stepper: MatHorizontalStepper): void {
+        this.response = this.responseService.getResponse();
+        if (this.response.message.toLowerCase().includes('email')) {
+            stepper.selectedIndex = 0;
+            this.emailError = this.response.message;
+            this.mainInfoForm.controls.email.setErrors({
+                incorrect: true
+            });
+        } else if (this.response.message.toLowerCase().includes('reader')) {
+            stepper.selectedIndex = 0;
+            this.mainInfoForm.controls.reader_ticket.setErrors({
+                incorrect: true
+            });
+            this.error = this.response.message;
         }
     }
 

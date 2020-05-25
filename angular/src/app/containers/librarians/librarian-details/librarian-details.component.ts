@@ -2,12 +2,15 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { LibrarianService } from '../../../services/librarian.service';
-
 import { Subscription } from 'rxjs';
+
+import { LibrarianService } from '../../../services/librarian.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
 import { Librarian } from '../../../models/librarian.model';
+import { Schedule } from '../../../models/schedule.model';
+import { Statistic } from '../../../models/statistic.model';
 
 @Component({
     selector: 'app-librarian-details',
@@ -16,7 +19,7 @@ import { Librarian } from '../../../models/librarian.model';
 })
 export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     loans: Loan[];
-    schedule;
+    schedule: Schedule[];
 
     librarian: Librarian;
     librarianId: number;
@@ -26,7 +29,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
 
     paramsSubscription: Subscription;
 
-    isLoading = false;
+    isLoading: boolean;
 
     displayedLoansColumns: string[] = [
         'loanTime',
@@ -67,10 +70,11 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private librarianService: LibrarianService,
+        private helperService: HelperService,
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Librarian';
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
@@ -81,12 +85,13 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         );
     }
 
-    librarianSubscriptionHandle() {
+    librarianSubscriptionHandle(): void {
         this.librarianSubscription = this.librarianService
             .getLibrarianHttp(this.librarianId)
             .subscribe();
-        this.librarianChangedSubscription = this.librarianService.librarianChanged.subscribe(
-            librarian => {
+        this.librarianChangedSubscription = this.librarianService
+            .getLibrarian()
+            .subscribe(librarian => {
                 this.librarian = librarian;
                 this.loans = this.librarian.loans || [];
                 this.loansDataSource = new MatTableDataSource(this.loans);
@@ -97,13 +102,12 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
                 this.scheduleDataSource.sort = this.scheduleSort;
                 this.setStatisticToChart(this.librarian.statistic);
                 this.isLoading = false;
-            }
-        );
+            });
     }
 
-    setStatisticToChart(statistic) {
+    setStatisticToChart(statistic: Statistic[]): void {
         const seriesArr = [];
-        statistic.forEach(stat => {
+        statistic.forEach((stat: Statistic) => {
             const item = {
                 name: stat.loanTime,
                 value: stat.books
@@ -119,21 +123,13 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             ];
         } else {
             this.xAxisLabel = '';
-            this.multi = [
-                {
-                    name: this.librarian.name,
-                    series: [
-                        {
-                            name: 'Empty',
-                            value: 0
-                        }
-                    ]
-                }
-            ];
+            this.multi = this.helperService.emptyChartHandle(
+                this.librarian.name
+            );
         }
     }
 
-    applyLoansFilter(event: Event) {
+    applyLoansFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.loansDataSource.filter = filterValue.trim().toLowerCase();
 
@@ -149,8 +145,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     ngOnDestroy(): void {
-        this.librarianSubscription.unsubscribe();
-        this.librarianChangedSubscription.unsubscribe();
-        this.paramsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.paramsSubscription, [
+            this.librarianChangedSubscription,
+            this.librarianSubscription
+        ]);
     }
 }

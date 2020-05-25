@@ -32,23 +32,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
     user: User;
 
     paramsSubscription: Subscription;
-    booksChangeSubscription: Subscription;
+    booksSubscription: Subscription;
     booksFetchSubscription: Subscription;
+    departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    departmentChangeSubscription: Subscription;
+    authorsSubscription: Subscription;
     authorsFetchSubscription: Subscription;
-    authorsChangeSubscription: Subscription;
+    genresSubscription: Subscription;
     genresFetchSubscription: Subscription;
-    genresChangeSubscription: Subscription;
+    userSubscription: Subscription;
 
-    isLoading = false;
+    isLoading: boolean;
     showFilterButton = true;
 
     filterName = Filters.NOTHING;
-    authorSelect = null;
-    genreSelect = null;
-    departmentSelect = null;
-    filterValue = null;
+    authorSelect: number;
+    genreSelect: number;
+    departmentSelect: number;
+    filterValue: string;
 
     fromYear: number;
     toYear: number;
@@ -73,15 +74,14 @@ export class MainPageComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Library';
         this.isLoading = true;
         this.paramsHandle();
         this.subscriptionsHandle();
-        this.user = this.authService.getUser();
     }
 
-    paramsHandle() {
+    paramsHandle(): void {
         this.paramsSubscription = this.route.queryParams.subscribe(
             (params: Params) => {
                 this.currentPage = +params.page || 1;
@@ -89,7 +89,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         );
     }
 
-    booksSubscriptionHandle() {
+    booksSubscriptionHandle(): void {
         this.booksFetchSubscription = this.bookService
             .fetchAllBooksHttp(
                 this.currentPage,
@@ -102,58 +102,62 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.filterValue
             )
             .subscribe();
-        this.booksChangeSubscription = this.bookService.booksChanged.subscribe(
-            (books: Book[]) => {
+        this.booksSubscription = this.bookService
+            .getBooks()
+            .subscribe((books: Book[]) => {
                 this.books = books || [];
                 this.isLoading = false;
-            }
-        );
-        this.books = this.bookService.getBooks() || [];
+            });
     }
 
-    subscriptionsHandle() {
+    subscriptionsHandle(): void {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            departments => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
                 this.departmentSelect = departments[0].id;
                 this.booksSubscriptionHandle();
-            }
-        );
+            });
         this.authorsFetchSubscription = this.authorService
             .fetchAllAuthorsHttp()
             .subscribe();
-        this.authorsChangeSubscription = this.authorService.authorsChanged.subscribe(
-            authors => {
+        this.authorsSubscription = this.authorService
+            .getAuthors()
+            .subscribe((authors: Author[]) => {
                 this.authors = authors;
-            }
-        );
+            });
         this.genresFetchSubscription = this.genreService
             .fetchAllGenresHttp()
             .subscribe();
-        this.genresChangeSubscription = this.genreService.genresChanged.subscribe(
-            genres => {
+        this.genresSubscription = this.genreService
+            .getGenres()
+            .subscribe((genres: Genre[]) => {
                 this.genres = genres;
-            }
-        );
+            });
+        this.userSubscription = this.authService
+            .getUser()
+            .subscribe((user: User) => {
+                this.user = user;
+            });
     }
 
-    toggleFilterButton() {
+    toggleFilterButton(): void {
         this.showFilterButton = !this.showFilterButton;
     }
 
-    clearInputs() {
+    clearInputs(): void {
         this.filterName = Filters.NOTHING;
         this.filterValue = '';
-        this.genreSelect = '';
-        this.authorSelect = '';
+        this.genreSelect = null;
+        this.authorSelect = null;
         this.fromYear = null;
         this.toYear = null;
     }
 
-    showBooksByDepartment() {
+    showBooksByDepartment(): void {
         this.filterName = Filters.NOTHING;
         this.authorSelect = null;
         this.genreSelect = null;
@@ -162,12 +166,13 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.paramsSubscription.add(this.booksSubscription);
+        this.paramsSubscription.add(this.booksFetchSubscription);
+        this.paramsSubscription.add(this.departmentsSubscription);
+        this.paramsSubscription.add(this.departmentsFetchSubscription);
+        this.paramsSubscription.add(this.authorsSubscription);
+        this.paramsSubscription.add(this.authorsFetchSubscription);
+        this.paramsSubscription.add(this.userSubscription);
         this.paramsSubscription.unsubscribe();
-        this.booksChangeSubscription.unsubscribe();
-        this.booksFetchSubscription.unsubscribe();
-        this.departmentsFetchSubscription.unsubscribe();
-        this.departmentChangeSubscription.unsubscribe();
-        this.authorsFetchSubscription.unsubscribe();
-        this.authorsChangeSubscription.unsubscribe();
     }
 }

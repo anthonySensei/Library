@@ -184,7 +184,7 @@ sequelize
                                     managerName,
                                     managerEmail,
                                     managerPassword,
-                                    dep.dataValues.id
+                                    dep.get().id
                                 );
                             })
                             .catch();
@@ -193,7 +193,7 @@ sequelize
                             managerName,
                             managerEmail,
                             managerPassword,
-                            depart.dataValues.id
+                            depart.get().id
                         );
                     }
                 })

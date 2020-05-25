@@ -12,15 +12,12 @@ import { Subscription } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
 import { ResponseService } from '../../../services/response.service';
-
-import { Loan } from '../../../models/loan.model';
-import { Response } from '../../../models/response.model';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { MaterialService } from '../../../services/material.service';
-import { Department } from '../../../models/department.model';
-import { Student } from '../../../models/student.model';
 import { DepartmentService } from '../../../services/department.service';
 import { StudentService } from '../../../services/student.service';
+
+import { Loan } from '../../../models/loan.model';
+import { Department } from '../../../models/department.model';
+import { Student } from '../../../models/student.model';
 
 @Component({
     selector: 'app-loan-page',
@@ -42,20 +39,17 @@ export class LoansPageComponent implements OnInit, OnDestroy {
     departments: Department[];
     students: Student[];
 
-    studentSelect: number = null;
-    departmentSelect: number = null;
+    studentSelect;
+    departmentSelect;
     date: Date = null;
 
     loansSubscription: Subscription;
-    loansChangedSubscription: Subscription;
+    loansFetchSubscription: Subscription;
+    departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    departmentsChangeSubscription: Subscription;
+    studentsSubscription: Subscription;
     studentsFetchSubscription: Subscription;
-    studentsChangeSubscription: Subscription;
-
-    response: Response;
-
-    snackbarDuration = 3000;
+    returnBookSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         'loanTime',
@@ -76,54 +70,53 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         private loansService: LoansService,
         private departmentService: DepartmentService,
         private studentService: StudentService,
-        private responseService: ResponseService,
-        private materialService: MaterialService
+        private responseService: ResponseService
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Loans';
         this.subscriptionsHandle();
     }
 
-    getLoans() {
-        this.loansSubscription = this.loansService
+    setLoans(): void {
+        this.loansFetchSubscription = this.loansService
             .fetchLoansHttp(
                 this.departmentSelect,
                 this.studentSelect,
                 this.date
             )
             .subscribe();
-        this.loansChangedSubscription = this.loansService.loansChanged.subscribe(
-            (loans: Loan[]) => {
+        this.loansSubscription = this.loansService
+            .getLoans()
+            .subscribe((loans: Loan[]) => {
                 this.loans = loans;
                 this.dataSource = new MatTableDataSource(this.loans);
                 this.dataSource.paginator = this.paginator;
                 this.dataSource.sort = this.sort;
-            }
-        );
+            });
     }
 
-    subscriptionsHandle() {
-        this.getLoans();
+    subscriptionsHandle(): void {
+        this.setLoans();
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            (departments: Department[]) => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
-            }
-        );
+            });
         this.studentsFetchSubscription = this.studentService
             .getStudentsHttp()
             .subscribe();
-        this.studentsChangeSubscription = this.studentService.studentsChanged.subscribe(
-            (students: Student[]) => {
+        this.studentsSubscription = this.studentService
+            .getStudents()
+            .subscribe((students: Student[]) => {
                 this.students = students;
-            }
-        );
+            });
     }
 
-    applyFilter(event: Event) {
+    applyFilter(event: Event): void {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataSource.filter = filterValue.trim().toLowerCase();
 
@@ -132,41 +125,22 @@ export class LoansPageComponent implements OnInit, OnDestroy {
         }
     }
 
-    returnBook(loanId: any, bookId: any) {
-        this.loansService
+    returnBook(loanId: any, bookId: any): void {
+        this.returnBookSubscription = this.loansService
             .returnBookHttp(loanId, bookId, new Date())
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                if (this.response.isSuccessful) {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Success,
-                        this.snackbarDuration
-                    );
-                    this.loansService
-                        .fetchLoansHttp(
-                            this.departmentSelect,
-                            this.studentSelect,
-                            this.date
-                        )
-                        .subscribe();
-                    this.loans = this.loansService.getLoans();
-                } else {
-                    this.materialService.openSnackBar(
-                        this.response.message,
-                        SnackBarClasses.Danger,
-                        this.snackbarDuration
-                    );
+                if (this.responseService.responseHandle()) {
+                    this.setLoans();
                 }
             });
     }
 
-    showDebtors() {
+    showDebtors(): void {
         this.isShowingDebtors = !this.isShowingDebtors;
     }
 
     ngOnDestroy(): void {
+        this.loansFetchSubscription.unsubscribe();
         this.loansSubscription.unsubscribe();
-        this.loansChangedSubscription.unsubscribe();
     }
 }

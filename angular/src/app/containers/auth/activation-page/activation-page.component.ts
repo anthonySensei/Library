@@ -1,34 +1,28 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+
 import { Subscription } from 'rxjs';
-import { MaterialService } from '../../../services/material.service';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { AngularLinks } from '../../../constants/angularLinks';
+
+import { AuthService } from '../../../services/auth.service';
 import { ResponseService } from '../../../services/response.service';
+
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-activation-page',
     templateUrl: './activation-page.component.html'
 })
 export class ActivationPageComponent implements OnInit, OnDestroy {
-    registrationToken: string = null;
+    registrationToken: string;
 
     paramsSubscription: Subscription;
     authSubscription: Subscription;
-
-    response;
-    isActivated: boolean;
-
-    message;
-    error;
 
     constructor(
         private route: ActivatedRoute,
         private authService: AuthService,
         private responseService: ResponseService,
-        private router: Router,
-        private materialService: MaterialService
+        private router: Router
     ) {}
 
     ngOnInit() {
@@ -43,29 +37,10 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
         this.authSubscription = this.authService
             .checkRegistrationToken(this.registrationToken)
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
-                this.isActivated = this.response.data.isActivated;
-                if (this.isActivated) {
-                    this.message = this.response.data.message;
-                    this.openSnackBar(
-                        this.response.data.message,
-                        SnackBarClasses.Success,
-                        5000
-                    );
+                if (this.responseService.responseHandle()) {
                     this.router.navigate(['/' + AngularLinks.LOGIN]);
-                } else {
-                    this.error = this.response.data.message;
-                    this.openSnackBar(
-                        this.response.data.message,
-                        SnackBarClasses.Danger,
-                        5000
-                    );
                 }
             });
-    }
-
-    openSnackBar(message: string, style: string, duration: number) {
-        this.materialService.openSnackBar(message, style, duration);
     }
 
     ngOnDestroy(): void {

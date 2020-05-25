@@ -3,22 +3,37 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { Response } from '../models/response.model';
+import { MaterialService } from './material.service';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ResponseService {
-    responseChanged = new Subject<Response>();
     response: Response;
 
-    constructor() {}
+    constructor(private materialService: MaterialService) {}
 
     setResponse(response: Response) {
         this.response = response;
-        this.responseChanged.next(this.response);
     }
 
     getResponse(): Response {
         return this.response;
+    }
+
+    responseHandle(): boolean {
+        if (this.response.isSuccessful) {
+            this.materialService.openSnackbar(
+                this.response.message,
+                SnackBarClasses.Success
+            );
+        } else {
+            this.materialService.openSnackbar(
+                this.response.message,
+                SnackBarClasses.Danger
+            );
+        }
+        return this.response.isSuccessful;
     }
 }

@@ -3,70 +3,70 @@ import {
     EventEmitter,
     Input,
     OnDestroy,
-    OnInit,
     Output
 } from '@angular/core';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { Subscription } from 'rxjs';
 
 import { ResponseService } from '../../../services/response.service';
 import { PeriodService } from '../../../services/period.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
-import { Response } from '../../../models/response.model';
 
 @Component({
     selector: 'app-period-section',
     templateUrl: './period-section.component.html',
     styleUrls: ['../edit-page.component.sass']
 })
-export class PeriodSectionComponent implements OnInit, OnDestroy {
-    @Output() openSnackbar = new EventEmitter();
+export class PeriodSectionComponent implements OnDestroy {
     @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
     @Input() periods: Period[];
 
-    periodSelect = null;
-    periodStart = null;
-    periodEnd = null;
+    periodsSubscription: Subscription;
+    periodsFetchSubscription: Subscription;
+    periodsAddSubscription: Subscription;
+    periodsEditSubscription: Subscription;
+    periodsDeleteSubscription: Subscription;
 
-    newPeriodStart = null;
-    newPeriodEnd = null;
+    periodSelect: number;
+    periodStart: string;
+    periodEnd: string;
+
+    newPeriodStart: string;
+    newPeriodEnd: string;
 
     showPeriodAdding = false;
 
-    response: Response;
-
     constructor(private periodService: PeriodService) {}
-
-    ngOnInit() {}
 
     getPeriod(): Period {
         return this.periods.find(per => per.id === this.periodSelect);
     }
 
-    setPeriod() {
+    setPeriod(): void {
         if (this.periodSelect) {
             this.periodStart = this.getPeriod().start;
             this.periodEnd = this.getPeriod().end;
         }
     }
 
-    addPeriod() {
-        this.periodService
+    addPeriod(): void {
+        this.periodsAddSubscription = this.periodService
             .addPeriodsHttp({
                 id: null,
                 start: this.newPeriodStart,
                 end: this.newPeriodEnd
             })
             .subscribe(() => {
-                this.response = this.responseService.getResponse();
                 this.periodResponseHandler();
             });
     }
 
-    editPeriod() {
+    editPeriod(): void {
         if (!this.periodStart || !this.periodEnd) {
             return;
         }
@@ -77,7 +77,7 @@ export class PeriodSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.periodService
+        this.periodsEditSubscription = this.periodService
             .ediPeriodsHttp({
                 id: this.periodSelect,
                 start: this.periodStart,
@@ -88,38 +88,43 @@ export class PeriodSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    deletePeriod() {
+    deletePeriod(): void {
         if (!this.periodSelect) {
             return;
         }
-        this.periodService
+        this.periodsDeleteSubscription = this.periodService
             .deletePeriodsHttp(this.periodSelect)
             .subscribe(() => {
                 this.periodResponseHandler();
-                this.periodStart = null;
-                this.periodEnd = null;
-                this.periodSelect = null;
             });
     }
 
-    periodResponseHandler() {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
-            this.periodService.fetchAllPeriodsHttp().subscribe();
-            this.periods = this.periodService.getPeriods();
+    periodResponseHandler(): void {
+        if (this.responseService.responseHandle()) {
+            this.periodsFetchSubscription = this.periodService
+                .fetchAllPeriodsHttp()
+                .subscribe();
+            this.periodsSubscription = this.periodService
+                .getPeriods()
+                .subscribe((periods: Period[]) => {
+                    this.periods = periods;
+                });
             this.newPeriodEnd = null;
             this.newPeriodStart = null;
-        } else {
-            this.openSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
+            this.periodStart = null;
+            this.periodEnd = null;
+            this.periodSelect = null;
         }
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+        if (this.periodsSubscription) {
+            this.helperService.unsubscribeHandle(this.periodsSubscription, [
+                this.periodsFetchSubscription,
+                this.periodsAddSubscription,
+                this.periodsEditSubscription,
+                this.periodsDeleteSubscription
+            ]);
+        }
+    }
 }

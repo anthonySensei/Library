@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { LoansService } from '../../../services/loans.service';
 
 import { Statistic } from '../../../models/statistic.model';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-loans-chart',
@@ -20,17 +21,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     view: any[] = [700, 300];
 
-    multi: any = [
-        {
-            name: 'Empty',
-            series: [
-                {
-                    name: 'Empty',
-                    value: 0
-                }
-            ]
-        }
-    ];
+    multi: any;
 
     legend = true;
     showLabels = true;
@@ -49,37 +40,43 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     colorScheme = {
         domain: ['#ffaa00', '#5AA454', '#E44D25', '#7aa3e5', '#a8385d']
     };
-    constructor(private loansService: LoansService) {}
+    constructor(
+        private loansService: LoansService,
+        private helperService: HelperService
+    ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         document.title = 'Statistic';
-        this.statisticHandler();
+        this.multi = this.helperService.emptyChartHandle('Empty');
     }
 
-    statisticHandler() {
-        this.statisticChangedSubscription = this.loansService.statisticChanged.subscribe(
-            statistic => {
+    statisticHandler(): void {
+        this.statisticChangedSubscription = this.loansService
+            .getStatistic()
+            .subscribe((statistic: Statistic[]) => {
                 this.statistic = statistic;
-                const seriesArr = [];
-                for (const stat of this.statistic) {
-                    const item = {
-                        name: stat.loanTime,
-                        value: stat.books
-                    };
-                    seriesArr.push(item);
-                }
-                this.multi = [
-                    {
-                        name:
-                            this.model === 'user'
-                                ? this.statistic[0].student.name
-                                : this.statistic[0].book.name,
-                        series: seriesArr
-                    }
-                ];
+                this.setStatisticToChart();
+            });
+    }
+
+    setStatisticToChart() {
+        const seriesArr = [];
+        this.statistic.forEach((stat: Statistic) => {
+            const item = {
+                name: stat.loanTime,
+                value: stat.books
+            };
+            seriesArr.push(item);
+        });
+        this.multi = [
+            {
+                name:
+                    this.model === 'user'
+                        ? this.statistic[0].student.name
+                        : this.statistic[0].book.name,
+                series: seriesArr
             }
-        );
-        this.statistic = this.loansService.getStatistic();
+        ];
     }
 
     onSelect(data): void {}
@@ -88,13 +85,14 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     onDeactivate(data): void {}
 
-    showStatistic() {
+    showStatistic(): void {
         this.statisticSubscription = this.loansService
             .fetchLoansStatisticHttp(this.model, this.modelValue)
             .subscribe();
+        this.statisticHandler();
     }
 
-    showTopFive() {
+    showTopFive(): void {
         this.statisticTopFiveSubscription = this.loansService
             .fetchTopFiveLoansHttp(this.model)
             .subscribe();
@@ -102,11 +100,14 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         if (this.statisticSubscription) {
+            this.statisticSubscription.add(this.statisticChangedSubscription);
             this.statisticSubscription.unsubscribe();
         }
         if (this.statisticTopFiveSubscription) {
+            this.statisticTopFiveSubscription.add(
+                this.statisticChangedSubscription
+            );
             this.statisticTopFiveSubscription.unsubscribe();
         }
-        this.statisticChangedSubscription.unsubscribe();
     }
 }

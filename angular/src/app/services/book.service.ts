@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
 
@@ -14,39 +14,35 @@ import { serverLink } from '../constants/serverLink';
     providedIn: 'root'
 })
 export class BookService {
-    BOOKS_URL = `${serverLink}/books`;
-    BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
-    BOOKS_MOVE_URL = `${this.BOOKS_URL}/move`;
-    BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
+    private BOOKS_URL = `${serverLink}/books`;
+    private BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
+    private BOOKS_MOVE_URL = `${this.BOOKS_URL}/move`;
+    private BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
 
-    LOAN_BOOK_URL = `${serverLink}/loans`;
+    private LOAN_BOOK_URL = `${serverLink}/loans`;
 
-    booksChanged = new Subject<Book[]>();
-    books: Book[] = [];
+    private books = new Subject<Book[]>();
 
-    bookChanged = new Subject<Book>();
-    book: Book;
+    private book = new Subject<Book>();
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
 
-    setBooks(books: Book[]) {
-        this.books = books;
-        this.booksChanged.next(books);
+    setBooks(books: Book[]): void {
+        this.books.next(books);
     }
 
-    getBooks(): Book[] {
+    getBooks(): Observable<Book[]> {
         return this.books;
     }
 
-    setBook(book: Book) {
-        this.book = book;
-        this.bookChanged.next(book);
+    setBook(book: Book): void {
+        this.book.next(book);
     }
 
-    getBook(): Book {
+    getBook(): Observable<Book> {
         return this.book;
     }
 
@@ -58,10 +54,8 @@ export class BookService {
         yearFrom: number,
         yearTo: number,
         filterName: string,
-        filterValue: number
+        filterValue: string
     ) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
         return this.http
             .get(
                 `${this.BOOKS_URL}?page=${page}` +
@@ -71,10 +65,7 @@ export class BookService {
                     `&genre=${genre}` +
                     `&department=${department}` +
                     `&filterName=${filterName}` +
-                    `&filterValue=${filterValue}`,
-                {
-                    headers
-                }
+                    `&filterValue=${filterValue}`
             )
             .pipe(
                 map((response: any) => {
@@ -92,15 +83,11 @@ export class BookService {
     }
 
     getBookHttp(bookId: number) {
-        const headers = new HttpHeaders();
-        headers.append('Content-type', 'application/json');
-        return this.http
-            .get(`${this.BOOKS_DETAILS_URL}?bookId=${bookId}`, { headers })
-            .pipe(
-                map((response: any) => {
-                    this.setBook(response.data.book);
-                })
-            );
+        return this.http.get(`${this.BOOKS_DETAILS_URL}?bookId=${bookId}`).pipe(
+            map((response: any) => {
+                this.setBook(response.data.book);
+            })
+        );
     }
 
     addBookHttp(book: Book, imageToUploadBase64: string) {

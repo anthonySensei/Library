@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
+import { Subscription } from 'rxjs';
+
 import { Days } from '../../../constants/days';
 
 import { ScheduleService } from '../../../services/schedule.service';
+import { LibrarianService } from '../../../services/librarian.service';
+import { DepartmentService } from '../../../services/department.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Schedule } from '../../../models/schedule.model';
 import { Department } from '../../../models/department.model';
 import { Librarian } from '../../../models/librarian.model';
-import { Subscription } from 'rxjs';
-import { LibrarianService } from '../../../services/librarian.service';
-import { DepartmentService } from '../../../services/department.service';
 
 @Component({
     selector: 'app-librarian-schedule',
@@ -22,12 +24,12 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     departments: Department[];
     librarians: Librarian[];
 
+    schedulesSubscription: Subscription;
     schedulesFetchSubscription: Subscription;
-    schedulesChangeSubscription: Subscription;
+    librariansSubscription: Subscription;
     librariansFetchSubscription: Subscription;
-    librariansChangeSubscription: Subscription;
+    departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
-    departmentsChangeSubscription: Subscription;
 
     mnSchedules: Schedule[];
     tsSchedules: Schedule[];
@@ -39,12 +41,13 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
     days = Object.values(Days);
 
-    departmentSelect = null;
-    librarianSelect = null;
+    departmentSelect: number;
+    librarianSelect: number;
 
     constructor(
         private scheduleService: ScheduleService,
         private librarianService: LibrarianService,
+        private helperService: HelperService,
         private departmentService: DepartmentService
     ) {}
 
@@ -56,28 +59,28 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         this.schedulesFetchSubscription = this.scheduleService
             .fetchAllSchedulesHttp()
             .subscribe();
-        this.schedulesChangeSubscription = this.scheduleService.schedulesChanged.subscribe(
-            (schedules: Schedule[]) => {
+        this.schedulesSubscription = this.scheduleService
+            .getSchedules()
+            .subscribe((schedules: Schedule[]) => {
                 this.schedules = schedules;
                 this.setSchedules();
-            }
-        );
+            });
         this.librariansFetchSubscription = this.librarianService
             .getLibrariansHttp()
             .subscribe();
-        this.librariansChangeSubscription = this.librarianService.librariansChanged.subscribe(
-            (librarians: Librarian[]) => {
+        this.librariansSubscription = this.librarianService
+            .getLibrarians()
+            .subscribe((librarians: Librarian[]) => {
                 this.librarians = librarians;
-            }
-        );
+            });
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.departmentsChanged.subscribe(
-            (departments: Department[]) => {
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
-            }
-        );
+            });
     }
 
     getScheduleByDay(schedule: Schedule[], day: string): Schedule[] {
@@ -117,7 +120,12 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.schedulesFetchSubscription.unsubscribe();
-        this.schedulesChangeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.schedulesSubscription, [
+            this.schedulesFetchSubscription,
+            this.departmentsSubscription,
+            this.departmentsFetchSubscription,
+            this.librariansSubscription,
+            this.librariansFetchSubscription
+        ]);
     }
 }

@@ -11,7 +11,7 @@ module.exports = {
     INVALID_EMAIL: 'Invalid email',
     PASSWORD_ERROR_CHANGED: "Password has'n changed",
     OLD_PASSWORD_EQUEL_NEW_PASSWORD:
-        'Password has not changed. Old password equels to new password',
+        'Password has not been changed. Old password equels to new password',
     DIFFERENT_PASSWORDS: 'Passwords are different!',
     WRONG_OLD_PASSWORD: 'Wrong old password',
     AUTHOR_EXIST: 'Author with this name has already existed.',

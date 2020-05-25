@@ -6,16 +6,16 @@ import {
     OnInit,
     Output
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { Response } from '../../../models/response.model';
 import { Student } from '../../../models/student.model';
+
 import { ResponseService } from '../../../services/response.service';
 import { StudentService } from '../../../services/student.service';
+import { HelperService } from '../../../services/helper.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
@@ -24,25 +24,25 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class StudentSectionComponent implements OnInit, OnDestroy {
-    @Output() onOpenSnackbar = new EventEmitter();
-    @Output() onNothingToChange = new EventEmitter();
+    @Output() nothingToChange = new EventEmitter();
 
     @Input() responseService: ResponseService;
+    @Input() helperService: HelperService;
 
     students: Student[];
 
     studentsSubscription: Subscription;
-    studentsChangedSubscription: Subscription;
+    studentsFetchSubscription: Subscription;
+    studentsEditSubscription: Subscription;
+    studentsDeleteSubscription: Subscription;
 
-    studentSelect = null;
-    studentReaderTicket = null;
-    studentEmail = null;
-    newStudentReaderTicket = null;
-    newStudentEmail = null;
+    studentSelect: number;
+    studentReaderTicket: string;
+    studentEmail: string;
+    newStudentReaderTicket: string;
+    newStudentEmail: string;
 
-    error = null;
-
-    response: Response;
+    error: string;
 
     links = AngularLinks;
 
@@ -51,33 +51,37 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         private router: Router
     ) {}
 
-    ngOnInit() {
-        this.studentsSubscription = this.studentService
+    ngOnInit(): void {
+        this.setStudents();
+    }
+
+    setStudents(): void {
+        this.studentsFetchSubscription = this.studentService
             .getStudentsHttp()
             .subscribe();
-        this.studentsChangedSubscription = this.studentService.studentsChanged.subscribe(
-            students => {
+        this.studentsSubscription = this.studentService
+            .getStudents()
+            .subscribe(students => {
                 this.students = students;
-            }
-        );
+            });
     }
 
     getStudent(): Student {
         return this.students.find(st => st.id === this.studentSelect);
     }
 
-    setStudentData() {
+    setStudentData(): void {
         if (this.studentSelect) {
             this.studentReaderTicket = this.getStudent().readerTicket;
             this.studentEmail = this.getStudent().email;
         }
     }
 
-    addStudent() {
+    addStudent(): void {
         this.router.navigate(['/', this.links.STUDENTS, 'add']);
     }
 
-    editStudent() {
+    editStudent(): void {
         if (!this.studentEmail || !this.studentReaderTicket) {
             return;
         }
@@ -85,7 +89,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             this.studentEmail === this.getStudent().email &&
             this.studentReaderTicket === this.getStudent().readerTicket
         ) {
-            this.onNothingToChange.emit();
+            this.nothingToChange.emit();
             return;
         }
         this.studentService
@@ -99,7 +103,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             });
     }
 
-    deleteStudent() {
+    deleteStudent(): void {
         if (!this.studentSelect) {
             return;
         }
@@ -107,33 +111,25 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             .deleteStudentHttp(this.studentSelect)
             .subscribe(() => {
                 this.studentResponseHandler();
-                this.studentSelect = null;
-                this.studentEmail = null;
-                this.studentReaderTicket = null;
             });
     }
 
-    studentResponseHandler() {
-        this.response = this.responseService.getResponse();
-        if (this.response.isSuccessful) {
-            this.onOpenSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Success
-            ]);
-            this.studentService.getStudentsHttp().subscribe();
-            this.students = this.studentService.getStudents();
+    studentResponseHandler(): void {
+        if (this.responseService.responseHandle()) {
+            this.setStudents();
             this.newStudentReaderTicket = null;
             this.newStudentEmail = null;
-        } else {
-            this.onOpenSnackbar.emit([
-                this.response.message,
-                SnackBarClasses.Danger
-            ]);
+            this.studentSelect = null;
+            this.studentEmail = null;
+            this.studentReaderTicket = null;
         }
     }
 
     ngOnDestroy(): void {
-        this.studentsChangedSubscription.unsubscribe();
-        this.studentsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.studentsSubscription, [
+            this.studentsDeleteSubscription,
+            this.studentsEditSubscription,
+            this.studentsFetchSubscription
+        ]);
     }
 }
