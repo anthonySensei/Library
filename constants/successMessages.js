@@ -5,11 +5,13 @@ module.exports = {
     SUCCESSFULLY_ORDERED: 'Book has been successfully ordered!',
     SUCCESSFULLY_RETURNED_BOOK: 'Book has been successfully returned!',
     SUCCESSFULLY_INFO_UPDATED: 'User info has been successfully changed!',
-    ACCOUNT_SUCCESSFULLY_CREATED: 'Account has successfully created',
+    ACCOUNT_SUCCESSFULLY_CREATED:
+        'Account has successfully created. Please confirm email to activate account',
     BOOK_SUCCESSFULLY_CREATED: 'Book has been successfully created',
     BOOK_SUCCESSFULLY_UPDATED: 'Book has been successfully updated',
     BOOK_SUCCESSFULLY_DELETED: 'Book has been successfully deleted',
-    BOOK_SUCCESSFULLY_MOVED: 'Book has been successfully moved to another department',
+    BOOK_SUCCESSFULLY_MOVED:
+        'Book has been successfully moved to another department',
     AUTHOR_SUCCESSFULLY_CREATED: 'Author has successfully created',
     AUTHOR_SUCCESSFULLY_UPDATED: 'Author has successfully updated',
     AUTHOR_SUCCESSFULLY_DELETED: 'Author has successfully deleted',

@@ -25,7 +25,7 @@
                 [helperService]="helperService"
             ></app-book-section>
         </mat-expansion-panel>
-        <mat-expansion-panel>
+        <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Departments
@@ -64,7 +64,7 @@
                 [helperService]="helperService"
             ></app-student-section>
         </mat-expansion-panel>
-        <mat-expansion-panel>
+        <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Schedule
@@ -77,7 +77,7 @@
                 [helperService]="helperService"
             ></app-schedule-section>
         </mat-expansion-panel>
-        <mat-expansion-panel>
+        <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     Period

@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 
 import { Department } from '../../models/department.model';
 import { Student } from '../../models/student.model';
-import { Response } from '../../models/response.model';
 
 import { DepartmentService } from '../../services/department.service';
 import { ResponseService } from '../../services/response.service';
@@ -14,6 +13,7 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { Period } from '../../models/period.model';
 import { PeriodService } from '../../services/period.service';
 import { HelperService } from '../../services/helper.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-edit-page',
@@ -33,9 +33,11 @@ export class EditPageComponent implements OnInit, OnDestroy {
     departmentSelect: number;
 
     nothingToChange = 'Nothing to change';
+    isManager: boolean;
 
     constructor(
         private departmentService: DepartmentService,
+        private authService: AuthService,
         private responseService: ResponseService,
         private materialService: MaterialService,
         private periodService: PeriodService,
@@ -44,6 +46,9 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.selectsValuesSubscriptionHandle();
+        this.authService.isManager().then(isManager => {
+            this.isManager = isManager;
+        });
     }
 
     selectsValuesSubscriptionHandle(): void {
