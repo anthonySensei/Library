@@ -42,8 +42,6 @@ export class MyOrdersModalComponent
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    isShowingNotLoaned: boolean;
-
     constructor(
         private orderService: OrderService,
         private departmentService: DepartmentService,
@@ -62,7 +60,7 @@ export class MyOrdersModalComponent
             5,
             null,
             null,
-            false,
+            true,
             this.data.studentId
         );
         this.subscriptionsHandle();
@@ -101,7 +99,7 @@ export class MyOrdersModalComponent
             this.paginator.pageSize,
             this.departmentSelect,
             null,
-            this.isShowingNotLoaned,
+            true,
             this.data.studentId
         );
     }

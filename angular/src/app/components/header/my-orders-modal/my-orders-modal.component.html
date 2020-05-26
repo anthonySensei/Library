@@ -4,7 +4,7 @@
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        Filters
+                        Department
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
@@ -22,13 +22,6 @@
                         >
                     </mat-select>
                 </mat-form-field>
-                <mat-slide-toggle
-                        color="primary"
-                        class="d-block"
-                        [(ngModel)]="isShowingNotLoaned"
-                        (ngModelChange)="loadOrdersPage()"
-                >Show only not loaned</mat-slide-toggle
-                >
             </mat-expansion-panel>
         </mat-accordion>
     </section>
