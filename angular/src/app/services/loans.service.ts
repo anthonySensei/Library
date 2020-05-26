@@ -11,6 +11,7 @@ import { serverLink } from '../constants/serverLink';
 import { ResponseService } from './response.service';
 import { Student } from '../models/student.model';
 import { HelperService } from './helper.service';
+import { log } from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -54,7 +55,9 @@ export class LoansService {
         pageSize = 5,
         departmentId: number = null,
         loanDate: Date = null,
-        isShowDebtors = false
+        isShowDebtors = false,
+        librarianId: number = null,
+        studentId: number = null
     ): Observable<Loan[]> {
         let nextDay: Date;
         if (loanDate) {
@@ -76,6 +79,11 @@ export class LoansService {
                     .set('loanDate', loanDate ? loanDate.toDateString() : '')
                     .set('nextDay', nextDay ? nextDay.toDateString() : '')
                     .set('isShowDebtors', isShowDebtors.toString())
+                    .set(
+                        'librarianId',
+                        librarianId ? librarianId.toString() : ''
+                    )
+                    .set('studentId', studentId ? studentId.toString() : '')
             })
             .pipe(
                 map((response: any) => {

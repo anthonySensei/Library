@@ -1,3 +1,6 @@
+const { Sequelize } = require('sequelize');
+const Op = Sequelize.Op;
+
 const Order = require('../models/order');
 const Loan = require('../models/loan');
 const Author = require('../models/author');
@@ -10,22 +13,86 @@ const helper = require('../helper/responseHandle');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
+const filters = require('../constants/filters');
+
+const getCondition = (departmentId, loanDate, nextDay, isShowNotLoaned) => {
+    let departmentCondition = {};
+    let dateCondition = {};
+    let isShowNotLoanedCondition = {};
+
+    if (departmentId) departmentCondition = { departmentId: departmentId };
+    if (loanDate)
+        dateCondition = {
+            loan_time: {
+                [Op.between]: [loanDate, nextDay]
+            }
+        };
+    if (isShowNotLoaned === 'true')
+        isShowNotLoanedCondition = {
+            loan_time: null
+        };
+
+    return {
+        ...departmentCondition,
+        ...dateCondition,
+        ...isShowNotLoanedCondition
+    };
+};
 
 exports.getAllOrders = async (req, res) => {
+    const page = +req.query.pageNumber;
+    const pageSize = +req.query.pageSize;
+    const sortOrder = req.query.sortOrder.toUpperCase();
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
+    const departmentId = +req.query.departmentId;
+    const orderDate = req.query.orderDate;
+    const nextDay = req.query.nextDay;
+    const isShowNotLoaned = req.query.isShowNotLoaned;
+    const studentId = +req.query.studentId;
+    let studentCondition = {};
+    let bookCondition = {};
+
+    const like = { [Op.iLike]: `%${filterValue}%` };
+    if (filterName === filters.READER_TICKET)
+        studentCondition = { reader_ticket: like };
+    else if (filterName === filters.ISBN) bookCondition = { isbn: like };
+
+    if (studentId) studentCondition = { id: studentId };
+
     try {
+        const quantity = await Order.count({
+            where: getCondition(
+                departmentId,
+                orderDate,
+                nextDay,
+                isShowNotLoaned
+            )
+        });
         const orders = await Order.findAll({
             include: [
                 {
-                    model: Student
+                    model: Student,
+                    where: studentCondition
                 },
                 {
                     model: Book,
                     include: {
                         model: Author
-                    }
+                    },
+                    where: bookCondition
                 },
                 { model: Department }
-            ]
+            ],
+            where: getCondition(
+                departmentId,
+                orderDate,
+                nextDay,
+                isShowNotLoaned
+            ),
+            limit: pageSize,
+            order: [['order_time', sortOrder]],
+            offset: (page - 1) * pageSize
         });
         const ordersArr = [];
         for (const order of orders) {
@@ -33,37 +100,42 @@ exports.getAllOrders = async (req, res) => {
             const studentData = ordersValues.student_.get();
             const departmentData = ordersValues.department_.get();
             const bookData = ordersValues.book_.get();
-            const ordersObj = {
+            let ordersObj = {
                 id: ordersValues.id,
                 orderTime: ordersValues.order_time,
                 loanTime: ordersValues.loan_time,
-                student: {
-                    id: studentData.id,
-                    name: studentData.name,
-                    email: studentData.email,
-                    readerTicket: studentData.reader_ticket
-                },
-                department: {
-                    address: departmentData.address
-                },
-                book: {
-                    bookId: bookData.id,
-                    isbn: bookData.isbn,
-                    name: bookData.name,
-                    year: bookData.year,
-                    author: {
-                        name: bookData.author_.get().name
-                    }
-                },
                 bookISBN: bookData.isbn,
-                studentReaderTicket: studentData.reader_ticket,
                 departmentAddress: departmentData.address
             };
+            if (!studentId)
+                ordersObj = {
+                    ...ordersObj,
+                    student: {
+                        id: studentData.id,
+                        name: studentData.name,
+                        email: studentData.email,
+                        readerTicket: studentData.reader_ticket
+                    },
+                    department: {
+                        address: departmentData.address
+                    },
+                    book: {
+                        bookId: bookData.id,
+                        isbn: bookData.isbn,
+                        name: bookData.name,
+                        year: bookData.year,
+                        author: {
+                            name: bookData.author_.get().name
+                        }
+                    },
+                    studentReaderTicket: studentData.reader_ticket
+                };
             ordersArr.push(ordersObj);
         }
         const data = {
             orders: ordersArr,
-            message: successMessages.SUCCESSFULLY_FETCHED
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            quantity: quantity
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

@@ -2,60 +2,56 @@ import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
+import { Order } from '../models/order.model';
+import { OrderService } from '../services/orders.service';
 
-import { Loan } from '../models/loan.model';
-
-import { LoansService } from '../services/loans.service';
-
-export class LoansDataSource implements DataSource<Loan> {
-    private loansSubject = new BehaviorSubject<Loan[]>([]);
+export class OrdersDataSource implements DataSource<Order> {
+    private ordersSubject = new BehaviorSubject<Order[]>([]);
 
     private loadingSubject = new BehaviorSubject<boolean>(false);
 
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private loansService: LoansService) {}
+    constructor(private orderService: OrderService) {}
 
-    loadLoans(
+    loadOrders(
         filterName: string,
         filterValue: string,
         sortOrder: string,
         pageIndex: number,
         pageSize: number,
         departmentId: number,
-        loanDate: Date,
-        isShowDebtors: boolean,
-        librarianId: number = null,
+        orderDate: Date,
+        isShowNotLoaned: boolean,
         studentId: number = null
     ) {
         this.loadingSubject.next(true);
 
-        this.loansService
-            .fetchLoansHttp(
+        this.orderService
+            .fetchOrdersHttp(
                 filterName,
                 filterValue,
                 sortOrder,
                 pageIndex,
                 pageSize,
                 departmentId,
-                loanDate,
-                isShowDebtors,
-                librarianId,
+                orderDate,
+                isShowNotLoaned,
                 studentId
             )
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe((loans: Loan[]) => this.loansSubject.next(loans));
+            .subscribe((orders: Order[]) => this.ordersSubject.next(orders));
     }
 
-    connect(collectionViewer: CollectionViewer): Observable<Loan[]> {
-        return this.loansSubject.asObservable();
+    connect(collectionViewer: CollectionViewer): Observable<Order[]> {
+        return this.ordersSubject.asObservable();
     }
 
     disconnect(collectionViewer: CollectionViewer): void {
-        this.loansSubject.complete();
+        this.ordersSubject.complete();
         this.loadingSubject.complete();
     }
 }

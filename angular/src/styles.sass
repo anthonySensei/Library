@@ -123,11 +123,6 @@ body
 .d-block
   display: block
 
-/* Pagination */
-
-.pagination-container
-  margin-left: 40%
-
 
 /* Animation */
 
@@ -162,6 +157,11 @@ body
   position: relative
   width: 1000px
   margin: 20px auto
+  &.user-details
+    width: 90%
+    table
+      width: 100%
+      text-align: left
   .add-btn
     position: absolute
     right: 0
@@ -176,6 +176,16 @@ body
     position: fixed
     left: 40%
     top: 40%
+
+.user-loans-table
+  width: 95%
+  margin: 0 auto 10px
+  table
+    width: 95%
+    margin: 0 auto
+    td, th
+      width: 20%
+      text-align: left
 
 
 // user-table-expand
@@ -237,16 +247,6 @@ body
 
     .user-library-info
       flex: 50%
-
-.user-loans-table
-  width: 95%
-  margin: 0 auto 10px
-  table
-    width: 95%
-    margin: 0 auto
-    td, th
-      width: 20%
-      text-align: left
 
 //Statistic section
 
@@ -310,12 +310,11 @@ body
 .fadeIn.fourth
   animation-delay: 1s
 
+//  Spinner
 
-/* Pagination */
-
-.pagination
-  margin: 2rem 0 2rem 0
-  text-align: center
+.spinner-container
+  .spinner
+    margin: 0 auto
 
 /* Snackbar */
 

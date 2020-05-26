@@ -80,7 +80,8 @@ exports.getBooks = async (req, res) => {
         const totalBooks = await Book.count({
             include: {
                 model: Department
-            }
+            },
+            where: condition
         });
         const books = await Book.findAll({
             include: [
@@ -282,9 +283,9 @@ exports.editBook = async (req, res) => {
     }
 
     if (imageBase64.image) {
-        bookData.image = imageHandler(imageBase64.image);
+        bookData.image = imageHandler.getPath(imageBase64.image);
     } else {
-        bookData.image = imageHandler(bookData.image);
+        bookData.image = imageHandler.getPath(bookData.image);
     }
 
     try {

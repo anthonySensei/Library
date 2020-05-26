@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-
-import { Subscription } from 'rxjs';
-
-import { Order } from '../../../models/order.model';
-
+import {
+    AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild
+} from '@angular/core';
+import { MatPaginator, MatSort } from '@angular/material';
 import {
     animate,
     state,
@@ -13,12 +14,20 @@ import {
     trigger
 } from '@angular/animations';
 
+import { merge, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { Order } from '../../../models/order.model';
+import { User } from '../../../models/user.model';
+import { Department } from '../../../models/department.model';
+
 import { OrderService } from '../../../services/orders.service';
 import { ResponseService } from '../../../services/response.service';
 import { AuthService } from '../../../services/auth.service';
 import { HelperService } from '../../../services/helper.service';
+import { DepartmentService } from '../../../services/department.service';
 
-import { User } from '../../../models/user.model';
+import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
 @Component({
     selector: 'app-orders',
@@ -35,14 +44,22 @@ import { User } from '../../../models/user.model';
         ])
     ]
 })
-export class OrdersComponent implements OnInit, OnDestroy {
+export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     user: User;
     orders: Order[];
+    departments: Department[];
 
-    ordersSubscription: Subscription;
-    ordersFetchSubscription: Subscription;
+    mergeSubscription: Subscription;
+    sortSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
     userSubscription: Subscription;
     loanBookSubscription: Subscription;
+
+    filterName: string;
+    filterValue: string;
+    departmentSelect: number;
+    date: Date = null;
 
     columnsToDisplay: string[] = [
         'orderTime',
@@ -53,52 +70,54 @@ export class OrdersComponent implements OnInit, OnDestroy {
     ];
     expandedElement: Order | null;
 
-    dataSource: MatTableDataSource<Order>;
+    dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
+
+    isShowingNotLoaned: boolean;
 
     constructor(
         private orderService: OrderService,
         private authService: AuthService,
+        private departmentService: DepartmentService,
         private helperService: HelperService,
         private responseService: ResponseService
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Loans';
-        this.setOrders();
+        document.title = 'Orders';
+        this.dataSource = new OrdersDataSource(this.orderService);
+        this.dataSource.loadOrders('', '', 'desc', 0, 5, null, null, false);
         this.subscriptionsHandle();
     }
 
-    setOrders(): void {
-        this.ordersFetchSubscription = this.orderService
-            .fetchOrdersHttp()
+    ngAfterViewInit(): void {
+        this.sortSubscription = this.sort.sortChange.subscribe(
+            () => (this.paginator.pageIndex = 0)
+        );
+
+        this.mergeSubscription = merge(
+            this.sort.sortChange,
+            this.paginator.page
+        )
+            .pipe(tap(() => this.loadOrdersPage()))
             .subscribe();
-        this.ordersSubscription = this.orderService
-            .getOrders()
-            .subscribe(orders => {
-                this.orders = orders;
-                this.dataSource = new MatTableDataSource(this.orders);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-            });
     }
 
     subscriptionsHandle(): void {
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
         this.userSubscription = this.authService
             .getUser()
             .subscribe((user: User) => {
                 this.user = user;
             });
-    }
-
-    applyFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
     }
 
     loanBook(orderId: number, bookId: number, studentId: number) {
@@ -112,16 +131,32 @@ export class OrdersComponent implements OnInit, OnDestroy {
             )
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
-                    this.setOrders();
+                    this.loadOrdersPage();
                 }
             });
     }
 
+    loadOrdersPage(): void {
+        if (!this.filterName) {
+            this.filterValue = '';
+        }
+        this.dataSource.loadOrders(
+            this.filterName,
+            this.filterValue,
+            this.sort.direction,
+            this.paginator.pageIndex,
+            this.paginator.pageSize,
+            this.departmentSelect,
+            this.date,
+            this.isShowingNotLoaned
+        );
+    }
+
     ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.ordersSubscription, [
-            this.ordersFetchSubscription,
-            this.userSubscription,
-            this.loanBookSubscription
+        this.helperService.unsubscribeHandle(this.userSubscription, [
+            this.loanBookSubscription,
+            this.mergeSubscription,
+            this.sortSubscription
         ]);
     }
 }

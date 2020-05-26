@@ -9,14 +9,20 @@ import { StudentsComponent } from './students/students.component';
 import { StudentDetailsComponent } from './student-details/student-details.component';
 import { OrdersComponent } from './orders/orders.component';
 import { AddStudentComponent } from './add-student/add-student.component';
-
+import { LoanSectionComponent } from './student-details/loan-section/loan-section.component';
+import { OrdersSectionComponent } from './student-details/orders-section/orders-section.component';
 
 @NgModule({
     declarations: [
         StudentsComponent,
         StudentDetailsComponent,
         OrdersComponent,
-        AddStudentComponent
+        AddStudentComponent,
+        LoanSectionComponent,
+        OrdersSectionComponent
+    ],
+    exports: [
+        LoanSectionComponent
     ],
     imports: [CommonModule, FormsModule, SharedModule, StudentsRoutingModule]
 })

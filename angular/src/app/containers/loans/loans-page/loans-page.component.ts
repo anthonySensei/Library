@@ -45,9 +45,7 @@ import { tap } from 'rxjs/operators';
     ]
 })
 export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
-    loans: Loan[];
     departments: Department[];
-    students: Student[];
 
     mergeSubscription: Subscription;
     sortSubscription: Subscription;
