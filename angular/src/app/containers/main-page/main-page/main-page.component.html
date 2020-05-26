@@ -102,7 +102,7 @@
                     color="primary"
                     class="btn filter-form-button"
                     (click)="
-                        booksSubscriptionHandle();
+                        search();
                         drawer.toggle();
                         toggleFilterButton()
                     "
@@ -137,6 +137,58 @@
             >
                 <i class="material-icons">add</i> Add book
             </a>
+            <section class="pagination-section" *ngIf="!isLoading">
+                <button
+                    *ngIf="hasPreviousPage"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn"
+                    (click)="paginate(previousPage)"
+                >
+                    Previous page
+                </button>
+                <button
+                    *ngIf="hasNextPage || hasPreviousPage"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn"
+                    [class.active]="currentPage === 1"
+                    (click)="paginate(1)"
+                >
+                    1
+                </button>
+                <span *ngIf="currentPage !== 1 && previousPage !== 1">...</span>
+                <button
+                    *ngIf="currentPage > 1"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn active"
+                    (click)="paginate(currentPage)"
+                >
+                    {{ currentPage }}
+                </button>
+                <span *ngIf="lastPage !== currentPage && nextPage !== lastPage"
+                    >...</span
+                >
+                <button
+                    *ngIf="lastPage !== currentPage"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn"
+                    (click)="paginate(lastPage)"
+                >
+                    {{ lastPage }}
+                </button>
+                <button
+                    *ngIf="hasNextPage"
+                    mat-stroked-button
+                    color="primary"
+                    class="btn"
+                    (click)="paginate(nextPage)"
+                >
+                    Next page
+                </button>
+            </section>
         </div>
         <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
         <mat-form-field class="department-select">
@@ -153,9 +205,32 @@
                 >
             </mat-select>
         </mat-form-field>
+        <!--        <button *ngIf="hasPreviousPage" (click)="paginate(previousPage)">-->
+        <!--            Previous page-->
+        <!--        </button>-->
+        <!--        <button *ngIf="hasNextPage || hasPreviousPage" (click)="paginate(1)">-->
+        <!--            1-->
+        <!--        </button>-->
+        <!--        <span *ngIf="currentPage !== 1 && previousPage !== 1">...</span>-->
+        <!--        <button-->
+        <!--                *ngIf="currentPage > 1"-->
+        <!--                (click)="paginate(currentPage)"-->
+        <!--                class="pagination-active"-->
+        <!--        >-->
+        <!--            {{ currentPage }}-->
+        <!--        </button>-->
+        <!--        <span *ngIf="lastPage !== currentPage && nextPage !== lastPage"-->
+        <!--        >...</span-->
+        <!--        >-->
+        <!--        <button *ngIf="lastPage !== currentPage" (click)="paginate(lastPage)">-->
+        <!--            {{ lastPage }}-->
+        <!--        </button>-->
+        <!--        <button *ngIf="hasNextPage" (click)="paginate(nextPage)">-->
+        <!--            Next page-->
+        <!--        </button>-->
     </div>
-    <div *ngIf="isLoading" style="text-align: center;">
-        <app-loading-spinner></app-loading-spinner>
+    <div *ngIf="isLoading" class="spinner-container">
+        <mat-spinner class="spinner"></mat-spinner>
     </div>
     <div class="books-container" *ngIf="books.length > 0; else noBooks">
         <div class="flex-container" *ngIf="!isLoading">

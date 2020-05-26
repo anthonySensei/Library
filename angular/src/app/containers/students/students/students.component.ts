@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import {
     animate,
     state,
@@ -8,13 +14,17 @@ import {
 } from '@angular/animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 
 import { Student } from '../../../models/student.model';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 
 import { StudentService } from '../../../services/student.service';
+import { StudentsDataSource } from '../../../datasources/students.datasource';
+import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
+import { tap } from 'rxjs/operators';
+import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-users',
@@ -32,53 +42,63 @@ import { StudentService } from '../../../services/student.service';
         ])
     ]
 })
-export class StudentsComponent implements OnInit, OnDestroy {
+export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     students: Student[];
 
     links = AngularLinks;
 
-    studentsSubscription: Subscription;
-    studentsFetchSubscription: Subscription;
-
     columnsToDisplay: string[] = ['name', 'email', 'readerTicket', 'status'];
     expandedElement: Student | null;
 
-    dataSource: MatTableDataSource<Student>;
+    mergeSubscription: Subscription;
+    sortSubscription: Subscription;
+
+    filterName: string;
+    filterValue: string;
+
+    dataSource: StudentsDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(private studentService: StudentService) {}
+    constructor(
+        private studentService: StudentService,
+        private helperService: HelperService
+    ) {}
 
     ngOnInit(): void {
         document.title = 'Students';
-        this.subscriptionsHandle();
+        this.dataSource = new StudentsDataSource(this.studentService);
+        this.dataSource.loadStudents('', '', 'asc', 0, 5);
     }
 
-    subscriptionsHandle(): void {
-        this.studentsFetchSubscription = this.studentService
-            .getStudentsHttp()
+    ngAfterViewInit(): void {
+        this.sortSubscription = this.sort.sortChange.subscribe(
+            () => (this.paginator.pageIndex = 0)
+        );
+
+        this.mergeSubscription = merge(
+            this.sort.sortChange,
+            this.paginator.page
+        )
+            .pipe(tap(() => this.loadStudentsPage()))
             .subscribe();
-        this.studentsSubscription = this.studentService.getStudents().subscribe(
-            (students: Student[]) => {
-                this.students = students;
-                this.dataSource = new MatTableDataSource(this.students);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-            }
+    }
+
+    loadStudentsPage(): void {
+        if (!this.filterName) {
+            this.filterValue = '';
+        }
+        this.dataSource.loadStudents(
+            this.filterName,
+            this.filterValue,
+            this.sort.direction,
+            this.paginator.pageIndex,
+            this.paginator.pageSize
         );
     }
 
-    applyFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
-    }
-
     ngOnDestroy(): void {
-        this.studentsSubscription.add(this.studentsFetchSubscription);
-        this.studentsSubscription.unsubscribe();
+        this.sortSubscription.unsubscribe();
+        this.mergeSubscription.unsubscribe();
     }
 }

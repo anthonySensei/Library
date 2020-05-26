@@ -13,52 +13,102 @@ const helper = require('../helper/responseHandle');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
+const filters = require('../constants/filters');
 
-const getCondition = (departmentId, studentId, loanDate, nextDay) => {
+const getCondition = (departmentId, loanDate, nextDay, isShowDebtors) => {
     let departmentCondition = {};
-    let studentCondition = {};
     let dateCondition = {};
+    let isShowDebtorsCondition = {};
 
     if (departmentId) departmentCondition = { departmentId: departmentId };
-    if (studentId) studentCondition = { studentId: studentId };
-    if (loanDate && loanDate !== 'null')
+    if (loanDate)
         dateCondition = {
             loan_time: {
                 [Op.between]: [loanDate, nextDay]
             }
         };
+    if (isShowDebtors === 'true')
+        isShowDebtorsCondition = {
+            returned_time: null
+        };
 
     return {
         ...departmentCondition,
-        ...studentCondition,
-        ...dateCondition
+        ...dateCondition,
+        ...isShowDebtorsCondition
     };
 };
 
 exports.getAllLoans = async (req, res) => {
+    const page = +req.query.pageNumber;
+    const pageSize = +req.query.pageSize;
+    const sortOrder = req.query.sortOrder.toUpperCase();
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
     const departmentId = +req.query.departmentId;
-    const studentId = +req.query.studentId;
     const loanDate = req.query.loanDate;
     const nextDay = req.query.nextDay;
+    const isShowDebtors = req.query.isShowDebtors;
+    const librarianId = +req.query.librarianId;
+    const studentId = +req.query.studentId;
+    let studentCondition = {};
+    let librarianCondition = {};
+    let bookCondition = {};
+
+    const like = { [Op.iLike]: `%${filterValue}%` };
+    if (filterName === filters.EMAIL) librarianCondition = { email: like };
+    else if (filterName === filters.READER_TICKET)
+        studentCondition = { reader_ticket: like };
+    else if (filterName === filters.ISBN) bookCondition = { isbn: like };
+
+    if (studentId) studentCondition = { id: studentId };
+    else if (librarianId)
+        librarianCondition = { id: librarianId };
+
     try {
-        const loans = await Loan.findAll({
-            where: getCondition(departmentId, studentId, loanDate, nextDay),
+        const quantity = await Loan.count({
             include: [
                 {
-                    model: Student
+                    model: Student,
+                    where: studentCondition
                 },
                 {
-                    model: Librarian
+                    model: Librarian,
+                    where: librarianCondition
                 },
                 {
                     model: Book,
                     include: {
                         model: Author
-                    }
+                    },
+                    where: bookCondition
+                }
+            ],
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors)
+        });
+        const loans = await Loan.findAll({
+            include: [
+                {
+                    model: Student,
+                    where: studentCondition
+                },
+                {
+                    model: Librarian,
+                    where: librarianCondition
+                },
+                {
+                    model: Book,
+                    include: {
+                        model: Author
+                    },
+                    where: bookCondition
                 },
                 { model: Department }
             ],
-            order: [['loan_time', 'DESC']]
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors),
+            limit: pageSize,
+            order: [['loan_time', sortOrder]],
+            offset: (page - 1) * pageSize
         });
         const loansArr = [];
         for (const loan of loans) {
@@ -67,38 +117,53 @@ exports.getAllLoans = async (req, res) => {
             const librarianData = loanValues.librarian_.get();
             const departmentData = loanValues.department_.get();
             const bookData = loanValues.book_.get();
-            const loanObj = {
+            let loanObj = {
                 id: loanValues.id,
                 loanTime: loanValues.loan_time,
                 returnedTime: loanValues.returned_time,
-                student: {
-                    name: studentData.name,
-                    email: studentData.email,
-                    readerTicket: studentData.reader_ticket
-                },
-                librarian: {
-                    name: librarianData.name,
-                    email: librarianData.email
-                },
-                department: {
-                    address: departmentData.address
-                },
-                book: {
-                    bookId: bookData.id,
-                    isbn: bookData.isbn,
-                    name: bookData.name,
-                    year: bookData.year,
-                    author: bookData.author_.get().name
-                },
-                bookISBN: bookData.isbn,
-                studentReaderTicket: studentData.reader_ticket,
-                librarianEmail: librarianData.email
+                bookISBN: bookData.isbn
             };
+            if (!librarianId && !studentId) {
+                loanObj = {
+                    ...loanObj,
+                    student: {
+                        name: studentData.name,
+                        email: studentData.email,
+                        readerTicket: studentData.reader_ticket
+                    },
+                    librarian: {
+                        name: librarianData.name,
+                        email: librarianData.email
+                    },
+                    department: {
+                        address: departmentData.address
+                    },
+                    book: {
+                        bookId: bookData.id,
+                        isbn: bookData.isbn,
+                        name: bookData.name,
+                        year: bookData.year,
+                        author: bookData.author_.get().name
+                    },
+                    studentReaderTicket: studentData.reader_ticket,
+                    librarianEmail: librarianData.email
+                };
+            }
+            if (librarianId) {
+                loanObj = {
+                    ...loanObj,
+                    studentReaderTicket: studentData.reader_ticket
+                };
+            }
+            if (studentId) {
+                loanObj = { ...loanObj, librarianEmail: librarianData.email };
+            }
             loansArr.push(loanObj);
         }
         const data = {
             loans: loansArr,
-            message: successMessages.SUCCESSFULLY_FETCHED
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            quantity: quantity
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

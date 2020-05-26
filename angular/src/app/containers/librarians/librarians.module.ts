@@ -9,14 +9,17 @@ import { AddLibrarianComponent } from './add-librarian/add-librarian.component';
 import { LibrarianScheduleComponent } from './librarian-schedule/librarian-schedule.component';
 import { LibrariansComponent } from './librarians/librarians.component';
 import { LibrarianDetailsComponent } from './librarian-details/librarian-details.component';
+import { LoansSectionComponent } from './librarian-details/loans-section/loans-section.component';
+import { StudentsModule } from '../students/students.module';
 
 @NgModule({
     declarations: [
         AddLibrarianComponent,
         LibrarianScheduleComponent,
         LibrariansComponent,
-        LibrarianDetailsComponent
+        LibrarianDetailsComponent,
+        LoansSectionComponent
     ],
-    imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule]
+    imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule, StudentsModule]
 })
 export class LibrariansModule {}

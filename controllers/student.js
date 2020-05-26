@@ -20,6 +20,7 @@ const loanController = require('./loan');
 const models = require('../constants/models');
 const roles = require('../constants/roles');
 const statuses = require('../constants/userStatuses');
+const filters = require('../constants/filters');
 
 const getStudentOrders = async studentId => {
     try {
@@ -52,9 +53,65 @@ const getStudentOrders = async studentId => {
     }
 };
 
-exports.getStudents = async (req, res) => {
+exports.getAllStudents = async (req, res) => {
     try {
         const students = await Student.findAll();
+        const studentsArr = [];
+        students.forEach(student => {
+            const studentValues = student.get();
+            if (studentValues.profile_image) {
+                studentValues.profile_image = imageHandler.convertToBase64(
+                    studentValues.profile_image
+                );
+            } else {
+                studentValues.profile_image = '';
+            }
+            const studentData = {
+                id: studentValues.id,
+                name: studentValues.name,
+                email: studentValues.email,
+                readerTicket: studentValues.reader_ticket
+            };
+            studentsArr.push(studentData);
+        });
+        const data = {
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            students: studentsArr
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.getStudents = async (req, res) => {
+    const page = +req.query.pageNumber;
+    const pageSize = +req.query.pageSize;
+    const sortOrder = req.query.sortOrder.toUpperCase();
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
+    let filterCondition = {};
+
+    const like = { [Op.iLike]: `%${filterValue}%` };
+    if (filterName === filters.EMAIL) filterCondition = { email: like };
+    else if (filterName === filters.NAME) filterCondition = { name: like };
+    else if (filterName === filters.READER_TICKET)
+        filterCondition = { reader_ticket: like };
+
+    try {
+        const quantityOfLibrarians = await Student.count({
+            where: filterCondition
+        });
+        const students = await Student.findAll({
+            where: filterCondition,
+            limit: pageSize,
+            order: [['name', sortOrder]],
+            offset: (page - 1) * pageSize
+        });
         const studentsArr = [];
         students.forEach(student => {
             const studentValues = student.get();
@@ -77,7 +134,8 @@ exports.getStudents = async (req, res) => {
         });
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
-            students: studentsArr
+            students: studentsArr,
+            quantity: quantityOfLibrarians
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

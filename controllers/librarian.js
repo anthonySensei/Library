@@ -1,3 +1,6 @@
+const { Sequelize } = require('sequelize');
+const Op = Sequelize.Op;
+
 const Librarian = require('../models/librarian');
 const Department = require('../models/department');
 const Role = require('../models/role');
@@ -16,6 +19,7 @@ const checkUniqueness = require('../helper/checkUniqueness');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
+const filters = require('../constants/filters');
 
 const getLibrarianRole = async librarianId => {
     try {
@@ -51,7 +55,7 @@ const getLibrarianSchedule = async librarianId => {
     }
 };
 
-exports.getLibrarians = async (req, res) => {
+exports.getAllLibrarians = async (req, res) => {
     const librarians = await Librarian.findAll({
         include: { model: Department }
     });
@@ -61,24 +65,11 @@ exports.getLibrarians = async (req, res) => {
             const librarianValues = librarian.get();
             const librarianRole = await getLibrarianRole(librarianValues.id);
             if (librarianRole === roles.LIBRARIAN) {
-                if (librarianValues.profile_image) {
-                    librarianValues.profile_image = imageHandler.convertToBase64(
-                        librarianValues.profile_image
-                    );
-                } else {
-                    librarianValues.profile_image = '';
-                }
-                const librarianSchedule = await getLibrarianSchedule(
-                    librarianValues.id
-                );
                 const librarianData = {
                     id: librarianValues.id,
                     name: librarianValues.name,
                     email: librarianValues.email,
-                    profileImage: librarianValues.profile_image,
-                    departmentAddress: librarianValues.department_.get()
-                        .address,
-                    schedule: librarianSchedule
+                    departmentAddress: librarianValues.department_.get().address
                 };
                 librariansArr.push(librarianData);
             }
@@ -86,6 +77,86 @@ exports.getLibrarians = async (req, res) => {
         const data = {
             message: successMessages.SUCCESSFULLY_FETCHED,
             librarians: librariansArr
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            400,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.getLibrarians = async (req, res) => {
+    const page = +req.query.pageNumber;
+    const pageSize = +req.query.pageSize;
+    const sortOrder = req.query.sortOrder.toUpperCase();
+    const filterName = req.query.filterName;
+    const filterValue = req.query.filterValue;
+    const departmentId = +req.query.departmentId;
+    let filterCondition = {};
+    let departmentCondition = {};
+
+    const like = { [Op.iLike]: `%${filterValue}%` };
+    if (filterName === filters.EMAIL) filterCondition = { email: like };
+    else if (filterName === filters.NAME) filterCondition = { name: like };
+    if (departmentId > 0) departmentCondition = { departmentId: departmentId };
+
+    try {
+        const role = await Role.findOne({
+            where: { role: roles.MANAGER }
+        });
+        const checkIsNotManager = {
+            id: {
+                [Op.ne]: role.get().librarian_id
+            }
+        };
+        const quantityOfLibrarians = await Librarian.count({
+            where: {
+                ...checkIsNotManager,
+                ...filterCondition,
+                ...departmentCondition
+            }
+        });
+        const librarians = await Librarian.findAll({
+            where: {
+                ...checkIsNotManager,
+                ...filterCondition,
+                ...departmentCondition
+            },
+            include: { model: Department },
+            limit: pageSize,
+            order: [['name', sortOrder]],
+            offset: (page - 1) * pageSize
+        });
+        const librariansArr = [];
+        for (const librarian of librarians) {
+            const librarianValues = librarian.get();
+            if (librarianValues.profile_image) {
+                librarianValues.profile_image = imageHandler.convertToBase64(
+                    librarianValues.profile_image
+                );
+            } else {
+                librarianValues.profile_image = '';
+            }
+            const librarianSchedule = await getLibrarianSchedule(
+                librarianValues.id
+            );
+            const librarianData = {
+                id: librarianValues.id,
+                name: librarianValues.name,
+                email: librarianValues.email,
+                profileImage: librarianValues.profile_image,
+                departmentAddress: librarianValues.department_.get().address,
+                schedule: librarianSchedule
+            };
+            librariansArr.push(librarianData);
+        }
+        const data = {
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            librarians: librariansArr,
+            quantity: quantityOfLibrarians
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {

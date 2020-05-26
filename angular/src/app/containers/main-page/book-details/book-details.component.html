@@ -1,6 +1,6 @@
 <div class="wrapper">
     <div class="form-content">
-        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
         <div class="book-container" *ngIf="!isLoading">
             <h2>{{ book.name }}</h2>
             <img class="book-detail-image" src="{{ book.image }}" alt="img" />

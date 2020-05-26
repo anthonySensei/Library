@@ -2,9 +2,6 @@
     <div class="form-content">
         <span class="page-title">New book</span>
         <hr style="background-color: #0d0d0d;" />
-        <!--        <div *ngIf="isLoading && editMode" style="text-align: center;">-->
-        <!--            <app-loading-spinner></app-loading-spinner>-->
-        <!--        </div>-->
         <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="mainBookInfoForm">
                 <form [formGroup]="mainBookInfoForm">
@@ -217,9 +214,7 @@
                         mat-raised-button
                         class="form-btn add-form-btn"
                         color="primary"
-                        (click)="
-                            onAddBook(stepper)
-                        "
+                        (click)="onAddBook(stepper)"
                     >
                         {{ editMode ? 'Update book' : 'Add book' }}
                     </button>

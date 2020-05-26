@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,6 +9,9 @@ import { Statistic } from '../models/statistic.model';
 
 import { serverLink } from '../constants/serverLink';
 import { ResponseService } from './response.service';
+import { Student } from '../models/student.model';
+import { HelperService } from './helper.service';
+import { log } from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +27,8 @@ export class LoansService {
 
     constructor(
         private http: HttpClient,
-        private responseService: ResponseService
+        private responseService: ResponseService,
+        private helperService: HelperService
     ) {}
 
     setLoans(loans: Loan[]): void {
@@ -43,23 +47,49 @@ export class LoansService {
         return this.statistic;
     }
 
-    fetchLoansHttp(departmentId: number, studentId: number, loanDate: Date) {
-        let nextDay;
+    fetchLoansHttp(
+        filterName: string = '',
+        filterValue: string = '',
+        sortOrder = 'desc',
+        pageNumber = 0,
+        pageSize = 5,
+        departmentId: number = null,
+        loanDate: Date = null,
+        isShowDebtors = false,
+        librarianId: number = null,
+        studentId: number = null
+    ): Observable<Loan[]> {
+        let nextDay: Date;
         if (loanDate) {
             nextDay = new Date();
             nextDay.setDate(loanDate.getDate() + 1);
         }
         return this.http
-            .get(
-                `${this.LOANS_URL}?` +
-                    `departmentId=${departmentId}&` +
-                    `studentId=${studentId}&` +
-                    `loanDate=${loanDate}&` +
-                    `nextDay=${nextDay}`
-            )
+            .get(this.LOANS_URL, {
+                params: new HttpParams()
+                    .set('filterName', filterName ? filterName : '')
+                    .set('filterValue', filterValue)
+                    .set('sortOrder', sortOrder)
+                    .set('pageNumber', (pageNumber + 1).toString())
+                    .set('pageSize', pageSize.toString())
+                    .set(
+                        'departmentId',
+                        departmentId ? departmentId.toString() : ''
+                    )
+                    .set('loanDate', loanDate ? loanDate.toDateString() : '')
+                    .set('nextDay', nextDay ? nextDay.toDateString() : '')
+                    .set('isShowDebtors', isShowDebtors.toString())
+                    .set(
+                        'librarianId',
+                        librarianId ? librarianId.toString() : ''
+                    )
+                    .set('studentId', studentId ? studentId.toString() : '')
+            })
             .pipe(
                 map((response: any) => {
                     this.setLoans(response.data.loans);
+                    this.helperService.setItemsPerPage(response.data.quantity);
+                    return response.data.loans;
                 })
             );
     }

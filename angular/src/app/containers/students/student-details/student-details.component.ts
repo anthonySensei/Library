@@ -1,15 +1,14 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { Loan } from '../../../models/loan.model';
-import { Order } from '../../../models/order.model';
 import { Student } from '../../../models/student.model';
+import { Department } from '../../../models/department.model';
 
 import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
+import { DepartmentService } from '../../../services/department.service';
 
 @Component({
     selector: 'app-user-details',
@@ -17,40 +16,18 @@ import { HelperService } from '../../../services/helper.service';
     styleUrls: ['./student-details.component.sass']
 })
 export class StudentDetailsComponent implements OnInit, OnDestroy {
-    loans: Loan[];
-    orders: Order[];
+    departments: Department[];
 
     student: Student;
     studentId: number;
 
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
     studentFetchSubscription: Subscription;
     studentSubscription: Subscription;
-
     paramsSubscription: Subscription;
 
     isLoading: boolean;
-
-    displayedLoanColumns: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'librarianEmail',
-        'departmentAddress'
-    ];
-
-    displayedOrderColumns: string[] = [
-        'orderTime',
-        'bookISBN',
-        'departmentAddress'
-    ];
-
-    loansDataSource: MatTableDataSource<Loan>;
-    @ViewChild(MatPaginator, { static: true }) loansPaginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) loansSort: MatSort;
-
-    ordersDataSource: MatTableDataSource<Order>;
-    @ViewChild(MatPaginator, { static: true }) ordersPaginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) ordersSort: MatSort;
 
     showLabels = true;
     animations = true;
@@ -75,6 +52,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     constructor(
         private studentService: StudentService,
         private helperService: HelperService,
+        private departmentService: DepartmentService,
         private route: ActivatedRoute
     ) {}
 
@@ -97,29 +75,17 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
             .getStudent()
             .subscribe((student: Student) => {
                 this.student = student;
-                this.loans = this.student.loans || [];
-                this.orders = this.student.orders || [];
-
-                this.loansDataSource = new MatTableDataSource(this.loans);
-                this.loansDataSource.paginator = this.loansPaginator;
-                this.loansDataSource.sort = this.loansSort;
-
-                this.ordersDataSource = new MatTableDataSource(this.orders);
-                this.ordersDataSource.paginator = this.loansPaginator;
-                this.ordersDataSource.sort = this.loansSort;
-
                 this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
             });
-    }
-
-    applyFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.loansDataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.loansDataSource.paginator) {
-            this.loansDataSource.paginator.firstPage();
-        }
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
     }
 
     setStatisticToChart(statistic): void {
@@ -153,7 +119,9 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.helperService.unsubscribeHandle(this.studentSubscription, [
             this.studentFetchSubscription,
-            this.paramsSubscription
+            this.paramsSubscription,
+            this.departmentsFetchSubscription,
+            this.departmentsSubscription
         ]);
     }
 }

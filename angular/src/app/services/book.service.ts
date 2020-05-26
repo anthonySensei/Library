@@ -9,6 +9,7 @@ import { Book } from '../models/book.model';
 import { ResponseService } from './response.service';
 
 import { serverLink } from '../constants/serverLink';
+import { HelperService } from './helper.service';
 
 @Injectable({
     providedIn: 'root'
@@ -27,6 +28,7 @@ export class BookService {
 
     constructor(
         private http: HttpClient,
+        private helperService: HelperService,
         private responseService: ResponseService
     ) {}
 
@@ -70,6 +72,9 @@ export class BookService {
             .pipe(
                 map((response: any) => {
                     this.setBooks(response.data.books);
+                    this.helperService.setPaginationData(
+                        response.data.paginationData
+                    );
                 })
             );
     }
@@ -111,7 +116,15 @@ export class BookService {
             'base64',
             JSON.stringify({ image: imageToUploadBase64 })
         );
-        formData.append('book_data', JSON.stringify(book));
+        formData.append(
+            'book_data',
+            JSON.stringify({
+                ...book,
+                authorId: book.author.id,
+                genreId: book.genre.id,
+                departmentId: book.department.id
+            })
+        );
         return this.http.put(this.BOOKS_URL, formData, { headers }).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);

@@ -2,7 +2,7 @@
     <div class="form-content">
         <span class="page-title">Profile</span>
         <hr style="background-color: #0d0d0d;" />
-        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
         <div *ngIf="!isLoading">
             <img
                 class="profile-image"

@@ -65,7 +65,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.librariansFetchSubscription = this.librarianService
-            .getLibrariansHttp()
+            .getAllLibrariansHttp()
             .subscribe();
         this.librariansSubscription = this.librarianService
             .getLibrarians()

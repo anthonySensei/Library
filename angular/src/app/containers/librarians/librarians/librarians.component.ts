@@ -1,13 +1,23 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import {
+    AfterViewInit,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild
+} from '@angular/core';
+import { MatPaginator, MatSort } from '@angular/material';
 
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { LibrarianService } from '../../../services/librarian.service';
+import { HelperService } from '../../../services/helper.service';
+import { DepartmentService } from '../../../services/department.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 
 import { Librarian } from '../../../models/librarian.model';
+import { Department } from '../../../models/department.model';
 
 import {
     animate,
@@ -16,6 +26,8 @@ import {
     transition,
     trigger
 } from '@angular/animations';
+
+import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
 
 @Component({
     selector: 'app-librarians',
@@ -32,57 +44,83 @@ import {
         ])
     ]
 })
-export class LibrariansComponent implements OnInit, OnDestroy {
+export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     librarians: Librarian[];
+    departments: Department[];
 
     links = AngularLinks;
 
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
+    mergeSubscription: Subscription;
+    sortSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = ['name', 'email', 'departmentAddress'];
     expandedElement: Librarian | null;
 
-    dataSource: MatTableDataSource<Librarian>;
+    filterName: string;
+    filterValue: string;
+    departmentSelect: number;
+
+    dataSource: LibrariansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
-    constructor(private librarianService: LibrarianService) {}
+    constructor(
+        private librarianService: LibrarianService,
+        private departmentService: DepartmentService,
+        private helperService: HelperService
+    ) {}
 
     ngOnInit(): void {
         document.title = 'Librarians';
+        this.dataSource = new LibrariansDataSource(this.librarianService);
+        this.dataSource.loadLibrarians('', '', null, 'asc', 0, 5);
         this.subscriptionHandle();
     }
 
     subscriptionHandle(): void {
-        this.librariansFetchSubscription = this.librarianService
-            .getLibrariansHttp()
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
             .subscribe();
-        this.librariansSubscription = this.librarianService.getLibrarians().subscribe(
-            (librarians: Librarian[]) => {
-                this.librarians = librarians;
-                librarians.forEach((librarian: Librarian) => {
-                    if (!librarian.schedule) {
-                        librarian.schedule = [];
-                    }
-                });
-                this.dataSource = new MatTableDataSource(this.librarians);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-            }
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
+    }
+
+    ngAfterViewInit(): void {
+        this.sortSubscription = this.sort.sortChange.subscribe(
+            () => (this.paginator.pageIndex = 0)
+        );
+
+        this.mergeSubscription = merge(
+            this.sort.sortChange,
+            this.paginator.page
+        )
+            .pipe(tap(() => this.loadLibrariansPage()))
+            .subscribe();
+    }
+
+    loadLibrariansPage(): void {
+        if (!this.filterName) {
+            this.filterValue = '';
+        }
+        this.dataSource.loadLibrarians(
+            this.filterName,
+            this.filterValue,
+            this.departmentSelect,
+            this.sort.direction,
+            this.paginator.pageIndex,
+            this.paginator.pageSize
         );
     }
 
-    applyFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.dataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
-    }
-
     ngOnDestroy(): void {
-        this.librariansSubscription.add(this.librariansFetchSubscription);
-        this.librariansSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.mergeSubscription,
+            this.sortSubscription
+        ]);
     }
 }

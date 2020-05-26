@@ -11,6 +11,8 @@ import { Loan } from '../../../models/loan.model';
 import { Librarian } from '../../../models/librarian.model';
 import { Schedule } from '../../../models/schedule.model';
 import { Statistic } from '../../../models/statistic.model';
+import { Department } from '../../../models/department.model';
+import { DepartmentService } from '../../../services/department.service';
 
 @Component({
     selector: 'app-librarian-details',
@@ -18,31 +20,22 @@ import { Statistic } from '../../../models/statistic.model';
     styleUrls: ['./librarian-details.component.sass']
 })
 export class LibrarianDetailsComponent implements OnInit, OnDestroy {
-    loans: Loan[];
     schedule: Schedule[];
+    departments: Department[];
 
     librarian: Librarian;
     librarianId: number;
 
     librarianSubscription: Subscription;
     librarianChangedSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
 
     paramsSubscription: Subscription;
 
     isLoading: boolean;
 
-    displayedLoansColumns: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'studentTicketReader'
-    ];
-
     displayedScheduleColumns: string[] = ['day', 'start', 'end'];
-
-    loansDataSource: MatTableDataSource<Loan>;
-    @ViewChild(MatPaginator, { static: true }) loansPaginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) loansSort: MatSort;
 
     scheduleDataSource: MatTableDataSource<{}>;
     @ViewChild(MatSort, { static: true }) scheduleSort: MatSort;
@@ -71,6 +64,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     constructor(
         private librarianService: LibrarianService,
         private helperService: HelperService,
+        private departmentService: DepartmentService,
         private route: ActivatedRoute
     ) {}
 
@@ -93,15 +87,19 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             .getLibrarian()
             .subscribe(librarian => {
                 this.librarian = librarian;
-                this.loans = this.librarian.loans || [];
-                this.loansDataSource = new MatTableDataSource(this.loans);
-                this.loansDataSource.paginator = this.loansPaginator;
-                this.loansDataSource.sort = this.loansSort;
                 this.schedule = this.librarian.schedule || [];
                 this.scheduleDataSource = new MatTableDataSource(this.schedule);
                 this.scheduleDataSource.sort = this.scheduleSort;
                 this.setStatisticToChart(this.librarian.statistic);
                 this.isLoading = false;
+            });
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
             });
     }
 
@@ -129,15 +127,6 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    applyLoansFilter(event: Event): void {
-        const filterValue = (event.target as HTMLInputElement).value;
-        this.loansDataSource.filter = filterValue.trim().toLowerCase();
-
-        if (this.loansDataSource.paginator) {
-            this.loansDataSource.paginator.firstPage();
-        }
-    }
-
     onSelect(data): void {}
 
     onActivate(data): void {}
@@ -147,7 +136,9 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.helperService.unsubscribeHandle(this.paramsSubscription, [
             this.librarianChangedSubscription,
-            this.librarianSubscription
+            this.librarianSubscription,
+            this.departmentsFetchSubscription,
+            this.departmentsSubscription
         ]);
     }
 }

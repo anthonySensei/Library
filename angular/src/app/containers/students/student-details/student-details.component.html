@@ -2,7 +2,7 @@
     <div class="form-content">
         <span class="page-title">User info</span>
         <hr style="background-color: #0d0d0d;" />
-        <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
         <section class="user-info-section" *ngIf="!isLoading">
             <aside class="image-aside">
                 <img
@@ -54,176 +54,18 @@
         <mat-divider style="margin: 10px auto 0;"></mat-divider>
         <mat-tab-group>
             <mat-tab label="Loans">
-                <section class="student-loan-info">
-                    <mat-form-field>
-                        <mat-label>Filter</mat-label>
-                        <input
-                            matInput
-                            (keyup)="applyFilter($event)"
-                            placeholder="Ex. Mia"
-                        />
-                    </mat-form-field>
-
-                    <div class="mat-elevation-z8 user-loans-table">
-                        <table mat-table [dataSource]="loansDataSource" matSort>
-                            <ng-container matColumnDef="loanTime">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Loan time
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.loanTime | date }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="returnedTime">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Returned time
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{
-                                        row.returnedTime
-                                            ? (row.returnedTime | date)
-                                            : 'Not returned yet'
-                                    }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="bookISBN">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    ISBN
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.bookISBN }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="librarianEmail">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Librarian email
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.librarianEmail }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="departmentAddress">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Department address
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.departmentAddress }}
-                                </td>
-                            </ng-container>
-
-                            <tr
-                                mat-header-row
-                                *matHeaderRowDef="displayedLoanColumns"
-                            ></tr>
-                            <tr
-                                mat-row
-                                *matRowDef="
-                                    let row;
-                                    columns: displayedLoanColumns
-                                "
-                            ></tr>
-                        </table>
-
-                        <mat-paginator [pageSizeOptions]="[5]"></mat-paginator>
-                    </div>
-                </section>
+                <app-loan-section
+                    [studentId]="studentId"
+                    [departments]="departments"
+                    [helperService]="helperService"
+                ></app-loan-section>
             </mat-tab>
             <mat-tab label="Orders">
-                <section class="student-loan-info">
-                    <mat-form-field>
-                        <mat-label>Filter</mat-label>
-                        <input
-                            matInput
-                            (keyup)="applyFilter($event)"
-                            placeholder="Ex. Mia"
-                        />
-                    </mat-form-field>
-
-                    <div class="mat-elevation-z8 user-loans-table">
-                        <table
-                            mat-table
-                            [dataSource]="ordersDataSource"
-                            matSort
-                        >
-                            <ng-container matColumnDef="orderTime">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Order time
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.orderTime | date }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="bookISBN">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    ISBN
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.bookISBN }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="departmentAddress">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Department address
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.departmentAddress }}
-                                </td>
-                            </ng-container>
-
-                            <tr
-                                mat-header-row
-                                *matHeaderRowDef="displayedOrderColumns"
-                            ></tr>
-                            <tr
-                                mat-row
-                                *matRowDef="
-                                    let row;
-                                    columns: displayedOrderColumns
-                                "
-                            ></tr>
-                        </table>
-
-                        <mat-paginator [pageSizeOptions]="[5]"></mat-paginator>
-                    </div>
-                </section>
+                <app-orders-section
+                    [studentId]="studentId"
+                    [departments]="departments"
+                    [helperService]="helperService"
+                ></app-orders-section>
             </mat-tab>
             <mat-tab label="Statistic">
                 <section class="statistic-section">

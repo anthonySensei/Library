@@ -7,11 +7,17 @@ const librarianController = require('../controllers/librarian');
 const passport = require('passport');
 
 const librarianUrl = require('../constants/links').LIBRARIANS_LIBRARIAN_URL;
+const librarianAllUrl = require('../constants/links').LIBRARIANS_ALL_URL;
 
 router.get(
     '',
     passport.authenticate('jwt', { session: false }),
     librarianController.getLibrarians
+);
+router.get(
+    librarianAllUrl,
+    passport.authenticate('jwt', { session: false }),
+    librarianController.getAllLibrarians
 );
 
 router.get(

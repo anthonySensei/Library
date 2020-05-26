@@ -5,6 +5,7 @@ const router = express.Router();
 const studentController = require('../controllers/student');
 
 const studentStudentUrl = require('../constants/links').STUDENTS_STUDENT_URL;
+const studentAllUrl = require('../constants/links').STUDENTS_ALL_URL;
 
 const passport = require('passport');
 
@@ -12,6 +13,12 @@ router.get(
     '',
     passport.authenticate('jwt', { session: false }),
     studentController.getStudents
+);
+
+router.get(
+    studentAllUrl,
+    passport.authenticate('jwt', { session: false }),
+    studentController.getAllStudents
 );
 
 router.put(

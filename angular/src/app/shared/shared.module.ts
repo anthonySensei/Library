@@ -3,7 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
 
-import { MatNativeDateModule, MatRadioModule, MatSnackBarModule } from '@angular/material';
+import {
+    MatNativeDateModule,
+    MatProgressSpinnerModule,
+    MatRadioModule,
+    MatSnackBarModule
+} from '@angular/material';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,10 +29,10 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
 
-import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { DiscardChangesModalComponent } from './discard-changes-modal/discard-changes-modal.component';
 
 import { CanDeactivateGuard } from './can-deactivate-guard.service';
@@ -39,7 +44,7 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 @NgModule({
-    declarations: [LoadingSpinnerComponent, DiscardChangesModalComponent],
+    declarations: [DiscardChangesModalComponent],
     imports: [CommonModule],
     exports: [
         CommonModule,
@@ -58,7 +63,6 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
         MatSidenavModule,
         MatRadioModule,
         ImageCropperModule,
-        LoadingSpinnerComponent,
         ReactiveFormsModule,
         OwlNativeDateTimeModule,
         OwlDateTimeModule,
@@ -78,7 +82,9 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
         NgxMaterialTimepickerModule,
         MatCardModule,
         MatDatepickerModule,
-        MatNativeDateModule
+        MatNativeDateModule,
+        MatProgressSpinnerModule,
+        MatSlideToggleModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]
