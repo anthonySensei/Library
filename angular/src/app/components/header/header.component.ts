@@ -25,7 +25,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isSmallScreen: boolean;
 
     links = AngularLinks;
-    userRoles = UserRoles;
 
     userSubscription: Subscription;
     breakpointSubscription: Subscription;
@@ -33,7 +32,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     user: User;
 
-    role: string;
+    isManager: boolean;
+    isLibrarian: boolean;
+    isStudent: boolean;
     openMyOrdersModalWidth = '70%';
 
     constructor(
@@ -63,9 +64,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.user = user;
             this.isLoggedIn = !!user;
             if (user) {
-                this.role = this.user.role.role;
-            } else {
-                this.role = null;
+                const role = user.role.role;
+                if (role === UserRoles.MANAGER) {
+                    this.isManager = true;
+                } else if (role === UserRoles.LIBRARIAN) {
+                    this.isLibrarian = true;
+                } else if (role === UserRoles.STUDENT) {
+                    this.isStudent = true;
+                }
             }
         });
     }

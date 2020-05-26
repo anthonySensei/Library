@@ -5,9 +5,11 @@ import { LayoutModule } from '@angular/cdk/layout';
 
 import {
     MatNativeDateModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatRadioModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSortModule
 } from '@angular/material';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
@@ -26,7 +28,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -42,10 +43,11 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { LineChartModule } from '@swimlane/ngx-charts';
 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { ChartSectionComponent } from './chart-section/chart-section.component';
 
 @NgModule({
-    declarations: [DiscardChangesModalComponent],
-    imports: [CommonModule],
+    declarations: [DiscardChangesModalComponent, ChartSectionComponent],
+    imports: [CommonModule, LineChartModule],
     exports: [
         CommonModule,
         MatMenuModule,
@@ -84,7 +86,8 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
         MatDatepickerModule,
         MatNativeDateModule,
         MatProgressSpinnerModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        ChartSectionComponent
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

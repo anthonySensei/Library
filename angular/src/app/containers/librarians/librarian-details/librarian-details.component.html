@@ -3,124 +3,32 @@
         <span class="page-title">Librarian info</span>
         <hr style="background-color: #0d0d0d;" />
         <mat-spinner *ngIf="isLoading"></mat-spinner>
-        <section class="user-info-section" *ngIf="!isLoading">
-            <aside class="image-aside">
-                <img
-                    class="profile-image"
-                    src="{{
-                        librarian.profileImage
-                            ? librarian.profileImage
-                            : 'https://www.w3schools.com/w3css/img_avatar3.png'
-                    }}"
-                    alt="Avatar"
-                />
-            </aside>
-            <section class="info-section">
-                <section class="user-personal-info">
-                    <p>
-                        Name: <b>{{ librarian.name }}</b>
-                    </p>
-                    <p>
-                        Email: <b>{{ librarian.email }}</b>
-                    </p>
-                    <p>
-                        Department: <b>{{ librarian.department.address }}</b>
-                    </p>
-                </section>
-            </section>
-        </section>
+        <app-personal-info-section
+            *ngIf="!isLoading"
+            [librarian]="librarian"
+        ></app-personal-info-section>
         <mat-divider style="margin: 10px auto 0;"></mat-divider>
-        <section class="student-loan-info">
-            <mat-tab-group>
-                <mat-tab label="Loans">
-                    <app-loans-section
-                        [librarianId]="librarianId"
-                        [departments]="departments"
-                        [helperService]="helperService"
-                    ></app-loans-section>
-                </mat-tab>
-                <mat-tab label="Schedule">
-                    <br />
-                    <div class="mat-elevation-z8 user-loans-table">
-                        <table
-                            mat-table
-                            [dataSource]="scheduleDataSource"
-                            matSort
-                        >
-                            <ng-container matColumnDef="day">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Day
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.day }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="start">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    Start
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.period.start }}
-                                </td>
-                            </ng-container>
-
-                            <ng-container matColumnDef="end">
-                                <th
-                                    mat-header-cell
-                                    *matHeaderCellDef
-                                    mat-sort-header
-                                >
-                                    End
-                                </th>
-                                <td mat-cell *matCellDef="let row">
-                                    {{ row.period.end }}
-                                </td>
-                            </ng-container>
-
-                            <tr
-                                mat-header-row
-                                *matHeaderRowDef="displayedScheduleColumns"
-                            ></tr>
-                            <tr
-                                mat-row
-                                *matRowDef="
-                                    let row;
-                                    columns: displayedScheduleColumns
-                                "
-                            ></tr>
-                        </table>
-                    </div>
-                </mat-tab>
-                <mat-tab label="Statistic">
-                    <section class="statistic-section">
-                        <ngx-charts-line-chart
-                            [view]="view"
-                            [scheme]="colorScheme"
-                            [showXAxisLabel]="showXAxisLabel"
-                            [showYAxisLabel]="showYAxisLabel"
-                            [xAxis]="xAxis"
-                            [yAxis]="yAxis"
-                            [xAxisLabel]="xAxisLabel"
-                            [yAxisLabel]="yAxisLabel"
-                            [timeline]="timeline"
-                            [results]="multi"
-                            (select)="onSelect($event)"
-                            (activate)="onActivate($event)"
-                            (deactivate)="onDeactivate($event)"
-                        >
-                        </ngx-charts-line-chart>
-                    </section>
-                </mat-tab>
-            </mat-tab-group>
-        </section>
+        <mat-tab-group>
+            <mat-tab label="Loans">
+                <app-loans-section
+                    [librarianId]="librarianId"
+                    [helperService]="helperService"
+                ></app-loans-section>
+            </mat-tab>
+            <mat-tab label="Schedule">
+                <app-schedule-section
+                    *ngIf="!isLoading"
+                    [schedule]="schedule"
+                ></app-schedule-section>
+            </mat-tab>
+            <mat-tab label="Statistic">
+                <app-chart-section
+                    *ngIf="!isLoading"
+                    [name]="librarian.name"
+                    [helperService]="helperService"
+                    [statistic]="librarian.statistic"
+                ></app-chart-section>
+            </mat-tab>
+        </mat-tab-group>
     </div>
 </div>

@@ -17,19 +17,21 @@ import { LoansService } from '../../../../services/loans.service';
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { Department } from '../../../../models/department.model';
+import { DepartmentService } from '../../../../services/department.service';
 
 @Component({
     selector: 'app-loans-section',
-    templateUrl: './loans-section.component.html',
-    styleUrls: ['./loans-section.component.sass']
+    templateUrl: './loans-section.component.html'
 })
 export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() librarianId: number;
-    @Input() departments: Department[];
     @Input() helperService: HelperService;
+    departments: Department[];
 
     mergeSubscription: Subscription;
     sortSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         'loanTime',
@@ -46,7 +48,10 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isShowingDebtors: boolean;
 
-    constructor(private loansService: LoansService) {}
+    constructor(
+        private loansService: LoansService,
+        private departmentService: DepartmentService
+    ) {}
 
     ngOnInit(): void {
         this.dataSource = new LoansDataSource(this.loansService);
@@ -62,6 +67,7 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.librarianId,
             null
         );
+        this.subscriptionHandle();
     }
 
     ngAfterViewInit(): void {
@@ -75,6 +81,17 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         )
             .pipe(tap(() => this.loadLoansPage()))
             .subscribe();
+    }
+
+    subscriptionHandle() {
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
     }
 
     loadLoansPage(): void {
@@ -93,7 +110,10 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.mergeSubscription.add(this.sortSubscription);
-        this.mergeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.mergeSubscription, [
+            this.sortSubscription,
+            this.departmentsFetchSubscription,
+            this.departmentsSubscription
+        ]);
     }
 }

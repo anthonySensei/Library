@@ -11,6 +11,9 @@ import { LibrariansComponent } from './librarians/librarians.component';
 import { LibrarianDetailsComponent } from './librarian-details/librarian-details.component';
 import { LoansSectionComponent } from './librarian-details/loans-section/loans-section.component';
 import { StudentsModule } from '../students/students.module';
+import { ScheduleSectionComponent } from './librarian-details/schedule-section/schedule-section.component';
+import { PersonalInfoSectionComponent } from './librarian-details/personal-info-section/personal-info-section.component';
+import { ScheduleFilterSectionComponent } from './librarian-schedule/schedule-filter-section/schedule-filter-section.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +21,10 @@ import { StudentsModule } from '../students/students.module';
         LibrarianScheduleComponent,
         LibrariansComponent,
         LibrarianDetailsComponent,
-        LoansSectionComponent
+        LoansSectionComponent,
+        ScheduleSectionComponent,
+        PersonalInfoSectionComponent,
+        ScheduleFilterSectionComponent
     ],
     imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule, StudentsModule]
 })
