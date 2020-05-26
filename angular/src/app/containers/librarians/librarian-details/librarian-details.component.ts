@@ -87,6 +87,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             .getLibrarian()
             .subscribe(librarian => {
                 this.librarian = librarian;
+                console.log(librarian);
                 this.schedule = this.librarian.schedule || [];
                 this.scheduleDataSource = new MatTableDataSource(this.schedule);
                 this.scheduleDataSource.sort = this.scheduleSort;
