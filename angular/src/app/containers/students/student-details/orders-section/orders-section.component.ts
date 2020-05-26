@@ -20,8 +20,7 @@ import { HelperService } from '../../../../services/helper.service';
 
 @Component({
     selector: 'app-orders-section',
-    templateUrl: './orders-section.component.html',
-    styleUrls: ['./orders-section.component.sass']
+    templateUrl: './orders-section.component.html'
 })
 export class OrdersSectionComponent
     implements OnInit, AfterViewInit, OnDestroy {

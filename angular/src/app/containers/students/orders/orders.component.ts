@@ -155,6 +155,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.helperService.unsubscribeHandle(this.userSubscription, [
             this.loanBookSubscription,
+            this.departmentsSubscription,
+            this.departmentsFetchSubscription,
             this.mergeSubscription,
             this.sortSubscription
         ]);

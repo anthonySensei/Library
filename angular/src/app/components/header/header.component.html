@@ -102,6 +102,15 @@
                 >
                     Profile
                 </a>
+                <button
+                    mat-menu-item
+                    routerLinkActive="menu-active"
+                    class="mat-menu-item"
+                    (click)="openMyOrdersModal()"
+                    *ngIf="role === userRoles.STUDENT"
+                >
+                    My orders
+                </button>
                 <div class="small-screen-container" *ngIf="isSmallScreen">
                     <a
                         routerLinkActive="menu-active"
@@ -142,11 +151,11 @@
                         Statistic
                     </a>
                     <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.LIBRARIANS"
-                            *ngIf="role === userRoles.MANAGER"
-                            mat-menu-item
-                            class="mat-menu-item"
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.LIBRARIANS"
+                        *ngIf="role === userRoles.MANAGER"
+                        mat-menu-item
+                        class="mat-menu-item"
                     >
                         Librarians
                     </a>

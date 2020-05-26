@@ -27,6 +27,7 @@ import { LibrariansModule } from './containers/librarians/librarians.module';
 import { StudentsModule } from './containers/students/students.module';
 import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
+import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,8 @@ import { PeriodSectionComponent } from './components/edit-page/period-section/pe
         GenreSectionComponent,
         StudentSectionComponent,
         ScheduleSectionComponent,
-        PeriodSectionComponent
+        PeriodSectionComponent,
+        MyOrdersModalComponent
     ],
     imports: [
         BrowserModule,
@@ -63,6 +65,7 @@ import { PeriodSectionComponent } from './components/edit-page/period-section/pe
             multi: true
         }
     ],
+    entryComponents: [MyOrdersModalComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

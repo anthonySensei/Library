@@ -11,6 +11,9 @@ import { AngularLinks } from '../../constants/angularLinks';
 import { UserRoles } from '../../constants/userRoles';
 
 import { User } from '../../models/user.model';
+import { AddOptionModalComponent } from '../../containers/main-page/add-book/add-option-modal/add-option-modal.component';
+import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-header',
@@ -31,12 +34,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     user: User;
 
     role: string;
+    openMyOrdersModalWidth = '70%';
 
     constructor(
         private breakpointObserver: BreakpointObserver,
         private authService: AuthService,
         private helperService: HelperService,
-        private router: Router
+        private router: Router,
+        public dialog: MatDialog
     ) {
         this.breakpointSubscription = breakpointObserver
             .observe([Breakpoints.Small, Breakpoints.XSmall])
@@ -63,6 +68,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 this.role = null;
             }
         });
+    }
+
+    openMyOrdersModal(): void {
+        const dialogRef = this.dialog.open(MyOrdersModalComponent, {
+            width: this.openMyOrdersModalWidth,
+            data: {
+                studentId: this.user.id
+            }
+        });
+
+        dialogRef.afterClosed().subscribe();
     }
 
     onLogoutUser(): void {

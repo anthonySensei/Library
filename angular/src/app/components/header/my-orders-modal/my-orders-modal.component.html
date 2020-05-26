@@ -1,0 +1,86 @@
+<section class="table-section user-details">
+    <section class="mb-1">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Department
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <mat-form-field class="d-block">
+                    <mat-label>Department address</mat-label>
+                    <mat-select
+                            [(ngModel)]="departmentSelect"
+                            (ngModelChange)="loadOrdersPage()"
+                    >
+                        <mat-option value="''">All</mat-option>
+                        <mat-option
+                                *ngFor="let department of departments"
+                                [value]="department.id"
+                        >{{ department.address }}</mat-option
+                        >
+                    </mat-select>
+                </mat-form-field>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </section>
+    <table
+            mat-table
+            [dataSource]="dataSource"
+            multiTemplateDataRows
+            class="mat-elevation-z8"
+            matSort
+            matSortActive="orderTime"
+            matSortDirection="asc"
+            matSortDisableClear
+    >
+        <ng-container matColumnDef="orderTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Order time
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.orderTime | date }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="loanTime">
+            <th mat-header-cell *matHeaderCellDef>
+                Loan time
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{
+                element.loanTime
+                    ? (element.loanTime | date)
+                    : 'Not loaned yet'
+                }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="bookISBN">
+            <th mat-header-cell *matHeaderCellDef>
+                ISBN
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.bookISBN }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="departmentAddress">
+            <th mat-header-cell *matHeaderCellDef>
+                Department address
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.departmentAddress }}
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+    </table>
+
+    <mat-paginator
+            [length]="helperService.getItemsPerPage()"
+            [pageSize]="5"
+    ></mat-paginator>
+</section>
