@@ -1,4 +1,7 @@
 export enum DbModels {
     USER = 'user',
-    AUTHOR = 'author'
+    AUTHOR = 'author',
+    DEPARTMENT = 'department',
+    BOOK = 'book',
+    LIBRARIAN = 'librarian'
 }

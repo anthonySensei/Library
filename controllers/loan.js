@@ -1,4 +1,4 @@
-const { Sequelize } = require('sequelize');
+const { Sequelize, literal } = require('sequelize');
 const Op = Sequelize.Op;
 
 const Loan = require('../models/loan');
@@ -259,6 +259,8 @@ exports.getLoansStatistic = (req, res) => {
     const value = req.query.value;
     let userCondition = {};
     let bookCondition = {};
+    let librarianCondition = {};
+    let departmentCondition = {};
     if (model === models.USER) {
         userCondition = {
             reader_ticket: value
@@ -266,6 +268,14 @@ exports.getLoansStatistic = (req, res) => {
     } else if (model === models.BOOK) {
         bookCondition = {
             isbn: value
+        };
+    } else if (model === models.LIBRARIAN) {
+        librarianCondition = {
+            email: value
+        };
+    } else if (model === models.DEPARTMENT) {
+        departmentCondition = {
+            id: value
         };
     } else {
         const data = {
@@ -281,13 +291,18 @@ exports.getLoansStatistic = (req, res) => {
                 where: userCondition
             },
             {
-                model: Librarian
+                model: Librarian,
+                where: librarianCondition
             },
             { model: Book, where: bookCondition },
-            { model: Department }
+            { model: Department, where: departmentCondition }
         ],
-        order: [['loan_time', 'ASC']],
-        limit: 30
+        where: {
+            loan_time: {
+                [Op.gte]: new Date().setDate(new Date().getDate() - 30)
+            }
+        },
+        order: [['loan_time', 'ASC']]
     })
         .then(loans => {
             const loansStatisticArr = [];
@@ -308,6 +323,12 @@ exports.getLoansStatistic = (req, res) => {
                     },
                     book: {
                         name: bookData.name
+                    },
+                    librarian: {
+                        name: loanValues.librarian_.get().name
+                    },
+                    department: {
+                        address: loanValues.department_.get().address
                     }
                 };
                 if (loansStatisticArr.length > 0) {

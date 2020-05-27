@@ -2,16 +2,31 @@
     <section class="chart-options">
         <mat-form-field style="margin: 1% 1% 0 3%;">
             <mat-label>Select an option</mat-label>
-            <mat-select [(value)]="model" required>
-                <mat-option value="user">User</mat-option>
+            <mat-select
+                [(ngModel)]="model"
+                (ngModelChange)="modelValue = null"
+                required
+            >
+                <mat-option value="user">Student</mat-option>
                 <mat-option value="book">Book</mat-option>
+                <mat-option value="librarian">Librarian</mat-option>
+                <mat-option value="department">Department</mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field>
-            <mat-label>{{
-                model === 'user' ? 'Reader ticket' : 'ISBN'
-            }}</mat-label>
+        <mat-form-field *ngIf="model !== 'department'">
+            <mat-label>{{ getInputName() }}</mat-label>
             <input matInput [(ngModel)]="modelValue" [disabled]="!model" />
+        </mat-form-field>
+        <mat-form-field *ngIf="model === 'department'">
+            <mat-label>Address</mat-label>
+            <mat-select name="address" [(ngModel)]="modelValue">
+                <mat-option
+                    *ngFor="let department of departments"
+                    [value]="department.id"
+                >
+                    {{ department.address }}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
         <button
             style="margin: 0 1%;"
