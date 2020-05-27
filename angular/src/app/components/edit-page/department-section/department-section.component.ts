@@ -13,6 +13,9 @@ import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Department } from '../../../models/department.model';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-department-section',
@@ -39,7 +42,7 @@ export class DepartmentSectionComponent implements OnDestroy {
     departmentsEditSubscription: Subscription;
     departmentsDeleteSubscription: Subscription;
 
-    constructor() {}
+    constructor(private dialog: MatDialog) {}
 
     getDepartment(): Department {
         return this.departments.find(dep => dep.id === this.departmentSelect);
@@ -85,6 +88,18 @@ export class DepartmentSectionComponent implements OnDestroy {
                 this.departmentAddress = null;
                 this.departmentSelect = null;
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteDepartment();
+            }
+        });
     }
 
     departmentResponseHandler(): void {

@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output
+} from '@angular/core';
 
 import { Subscription } from 'rxjs';
 
@@ -11,6 +18,9 @@ import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
 
 import { Days } from '../../../constants/days';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-schedule-section',
@@ -50,6 +60,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     constructor(
         private scheduleService: ScheduleService,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit() {
@@ -149,6 +160,18 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
                 this.scheduleLibrarianId = null;
                 this.scheduleSelect = null;
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteSchedule();
+            }
+        });
     }
 
     scheduleResponseHandler(): void {

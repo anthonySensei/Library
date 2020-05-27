@@ -44,9 +44,14 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
+import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-delete-modal.component';
 
 @NgModule({
-    declarations: [DiscardChangesModalComponent, ChartSectionComponent],
+    declarations: [
+        DiscardChangesModalComponent,
+        ChartSectionComponent,
+        ConfirmDeleteModalComponent
+    ],
     imports: [CommonModule, LineChartModule],
     exports: [
         CommonModule,
@@ -90,6 +95,6 @@ import { ChartSectionComponent } from './chart-section/chart-section.component';
         ChartSectionComponent
     ],
     providers: [CanDeactivateGuard],
-    entryComponents: [DiscardChangesModalComponent]
+    entryComponents: [DiscardChangesModalComponent, ConfirmDeleteModalComponent]
 })
 export class SharedModule {}

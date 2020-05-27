@@ -1,12 +1,23 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output
+} from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 import { Author } from '../../../models/author.model';
 
 import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
+import { DiscardChangesModalComponent } from '../../../shared/discard-changes-modal/discard-changes-modal.component';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-author-section',
@@ -33,7 +44,10 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
 
     showAuthorAdding: boolean;
 
-    constructor(private authorService: AuthorService) {}
+    constructor(
+        private authorService: AuthorService,
+        private dialog: MatDialog
+    ) {}
 
     ngOnInit(): void {
         this.setAuthors();
@@ -81,6 +95,18 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.authorResponseHandler();
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteAuthor();
+            }
+        });
     }
 
     deleteAuthor(): void {

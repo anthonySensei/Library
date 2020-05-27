@@ -14,6 +14,9 @@ import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Genre } from '../../../models/genre.model';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-genre-section',
@@ -40,7 +43,10 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
 
     showGenreAdding: boolean;
 
-    constructor(private genreService: GenreService) {}
+    constructor(
+        private genreService: GenreService,
+        private dialog: MatDialog
+    ) {}
 
     ngOnInit(): void {
         this.setGenres();
@@ -99,6 +105,18 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.genreResponseHandler();
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteGenre();
+            }
+        });
     }
 
     genreResponseHandler(): void {

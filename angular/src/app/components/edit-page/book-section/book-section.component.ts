@@ -11,6 +11,9 @@ import { BookService } from '../../../services/book.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-book-section',
@@ -34,7 +37,11 @@ export class BookSectionComponent implements OnInit, OnDestroy {
 
     links = AngularLinks;
 
-    constructor(private bookService: BookService, private router: Router) {}
+    constructor(
+        private bookService: BookService,
+        private router: Router,
+        private dialog: MatDialog
+    ) {}
 
     ngOnInit(): void {
         this.setBooks();
@@ -57,6 +64,18 @@ export class BookSectionComponent implements OnInit, OnDestroy {
         }
         this.router.navigate(['/', this.links.ADD_BOOK], {
             queryParams: { id: this.bookSelect }
+        });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteBook();
+            }
         });
     }
 
