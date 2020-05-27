@@ -85,7 +85,11 @@ export class MainPageComponent implements OnInit, OnDestroy {
         private genreService: GenreService,
         private router: Router,
         private route: ActivatedRoute
-    ) {}
+    ) {
+        this.router.routeReuseStrategy.shouldReuseRoute = () => {
+            return false;
+        };
+    }
 
     ngOnInit(): void {
         document.title = PageTitles.CATALOG;
@@ -97,9 +101,51 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.paramsSubscription = this.route.queryParams.subscribe(
             (params: Params) => {
                 this.currentPage = +params.page || 1;
+                this.departmentSelect = +params.department || null;
+                this.authorSelect = +params.author || null;
+                this.genreSelect = +params.genre || null;
+                this.fromYear = +params.fYear || null;
+                this.toYear = +params.tYear || null;
+                this.filterName = params.fName || null;
+                this.filterValue = params.fValue || null;
                 this.subscriptionsHandle();
             }
         );
+    }
+
+    subscriptionsHandle(): void {
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+                this.booksSubscriptionHandle();
+            });
+        this.authorsFetchSubscription = this.authorService
+            .fetchAllAuthorsHttp()
+            .subscribe();
+        this.authorsSubscription = this.authorService
+            .getAuthors()
+            .subscribe((authors: Author[]) => {
+                this.authors = authors;
+            });
+        this.genresFetchSubscription = this.genreService
+            .fetchAllGenresHttp()
+            .subscribe();
+        this.genresSubscription = this.genreService
+            .getGenres()
+            .subscribe((genres: Genre[]) => {
+                this.genres = genres;
+            });
+        this.userSubscription = this.authService
+            .getUser()
+            .subscribe((user: User) => {
+                this.role = user
+                    ? user.role
+                    : new Role(null, this.roles.STUDENT);
+            });
     }
 
     booksSubscriptionHandle(): void {
@@ -131,52 +177,29 @@ export class MainPageComponent implements OnInit, OnDestroy {
             });
     }
 
-    subscriptionsHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-                this.departmentSelect = departments[0].id;
-                this.booksSubscriptionHandle();
-            });
-        this.authorsFetchSubscription = this.authorService
-            .fetchAllAuthorsHttp()
-            .subscribe();
-        this.authorsSubscription = this.authorService
-            .getAuthors()
-            .subscribe((authors: Author[]) => {
-                this.authors = authors;
-            });
-        this.genresFetchSubscription = this.genreService
-            .fetchAllGenresHttp()
-            .subscribe();
-        this.genresSubscription = this.genreService
-            .getGenres()
-            .subscribe((genres: Genre[]) => {
-                this.genres = genres;
-            });
-        this.userSubscription = this.authService
-            .getUser()
-            .subscribe((user: User) => {
-                this.role = user
-                    ? user.role
-                    : new Role(null, this.roles.STUDENT);
-            });
-    }
-
-    search() {
-        this.currentPage = 1;
-        this.booksSubscriptionHandle();
-    }
-
     paginate(page: number) {
         this.isLoading = true;
-        this.currentPage = page;
-        this.router.navigate(['/', this.links.BOOKS], {
-            queryParams: { page }
+        const department = this.departmentSelect
+            ? { department: this.departmentSelect }
+            : {};
+        const author = this.authorSelect ? { author: this.authorSelect } : {};
+        const genre = this.genreSelect ? { genre: this.genreSelect } : {};
+        const fYear = this.fromYear ? { fYear: this.fromYear } : {};
+        const tYear = this.toYear ? { tYear: this.toYear } : {};
+        const fName = this.filterName ? { fName: this.filterName } : {};
+        const fValue = this.filterValue ? { fValue: this.filterValue } : {};
+        this.router.navigate([''], {
+            relativeTo: this.route,
+            queryParams: {
+                ...department,
+                ...author,
+                ...genre,
+                ...fYear,
+                ...tYear,
+                ...fName,
+                ...fValue,
+                page
+            }
         });
     }
 
@@ -213,7 +236,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.authorSelect = null;
         this.genreSelect = null;
         this.filterValue = null;
-        this.booksSubscriptionHandle();
+        this.fromYear = null;
+        this.toYear = null;
+        this.paginate(1);
     }
 
     ngOnDestroy(): void {
