@@ -104,4 +104,30 @@ export class LibrarianService {
                 })
             );
     }
+
+    ediLibrarianHttp(librarianId: number, email: string, departmentId: number) {
+        return this.http
+            .put(this.LIBRARIANS_URL, {
+                librarianId,
+                email,
+                departmentId
+            })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
+
+    deleteLibrarianHttp(librarianId: number) {
+        return this.http
+            .delete(this.LIBRARIANS_URL, {
+                params: new HttpParams().set('librarianId', librarianId.toString())
+            })
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
+    }
 }

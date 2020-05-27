@@ -1,17 +1,9 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Subscription } from 'rxjs';
 
 import { ResponseService } from '../../../services/response.service';
 import { ScheduleService } from '../../../services/schedule.service';
-import { LibrarianService } from '../../../services/librarian.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Schedule } from '../../../models/schedule.model';
@@ -31,18 +23,16 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     @Input() responseService: ResponseService;
     @Input() helperService: HelperService;
     @Input() periods: Period[];
+    @Input() librarians: Librarian[];
 
     schedules: Schedule[];
     showedSchedules: Schedule[] = [];
-    librarians: Librarian[];
 
     schedulesSubscription: Subscription;
     schedulesFetchSubscription: Subscription;
     schedulesAddSubscription: Subscription;
     schedulesEditSubscription: Subscription;
     schedulesDeleteSubscription: Subscription;
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
 
     scheduleSelect: number;
     librarianSelect: number;
@@ -60,18 +50,9 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     constructor(
         private scheduleService: ScheduleService,
-        private librarianService: LibrarianService
     ) {}
 
     ngOnInit() {
-        this.librariansFetchSubscription = this.librarianService
-            .getAllLibrariansHttp()
-            .subscribe();
-        this.librariansSubscription = this.librarianService
-            .getLibrarians()
-            .subscribe((librarians: Librarian[]) => {
-                this.librarians = librarians;
-            });
         this.setSchedules();
     }
 
@@ -185,9 +166,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             this.schedulesFetchSubscription,
             this.schedulesAddSubscription,
             this.schedulesEditSubscription,
-            this.schedulesDeleteSubscription,
-            this.librariansSubscription,
-            this.librariansFetchSubscription
+            this.schedulesDeleteSubscription
         ]);
     }
 }

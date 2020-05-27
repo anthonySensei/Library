@@ -8,7 +8,6 @@ export class Librarian extends User {
     loans?;
     schedule?;
     statistic?;
-    departmentId: number;
 
     constructor(
         id: number,

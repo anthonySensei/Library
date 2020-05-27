@@ -52,6 +52,21 @@
                 [helperService]="helperService"
             ></app-genre-section>
         </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="isManager">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Librarians
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <app-librarian-section
+                (nothingToChange)="nothingChangeHandle()"
+                [responseService]="responseService"
+                [departments]="departments"
+                [librarians]="librarians"
+                [librarianService]="librarianService"
+                (setLibrarian)="onSetLibrarians()"
+            ></app-librarian-section>
+        </mat-expansion-panel>
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -75,6 +90,7 @@
                 [responseService]="responseService"
                 [periods]="periods"
                 [helperService]="helperService"
+                [librarians]="librarians"
             ></app-schedule-section>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
