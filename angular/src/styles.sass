@@ -65,6 +65,9 @@ body
   padding: 0
   box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3)
   text-align: center
+  .mat-tab-group
+    @media screen and (max-width: 968px)
+      display: none
 
 .form-footer
   background-color: rgb(246, 246, 246)
@@ -92,6 +95,7 @@ body
 .btn-group
   .expanded-btn
     float: right
+
   .form-button
     margin: 0 auto 15px
     width: 25%
@@ -164,8 +168,10 @@ body
 
 .table-section
   position: relative
-  width: 1000px
+  width: 80%
   margin: 20px auto
+  @media screen and (max-width: 768px)
+    display: none
 
   &.user-details
     width: 90%
@@ -193,6 +199,9 @@ body
 
   table
     width: 100%
+    @media screen and (width: 1280px)
+      width: 90%
+      margin: 0 auto
 
   tr.detail-row
     height: 0
@@ -217,9 +226,9 @@ body
     border: 1px solid black
     padding: 8px
     margin: 8px 0
+
   .loan-info
     flex: 33.3%
-
 
 .user-loans-table
   width: 95%
@@ -273,6 +282,8 @@ body
 
 .user-info-section
   display: flex
+  @media screen and (max-width: 968px)
+    display: block
 
   .image-aside
     flex: 30%
@@ -292,6 +303,8 @@ body
 
     .user-personal-info
       flex: 50%
+      @media screen and (max-width: 968px)
+        text-align: center
 
     .user-library-info
       flex: 50%

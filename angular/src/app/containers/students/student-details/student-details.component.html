@@ -23,23 +23,6 @@
                     <p>
                         Email: <b>{{ student.email }}</b>
                     </p>
-                    <button
-                        mat-raised-button
-                        color="primary"
-                        type="button"
-                        class="btn"
-                        matTooltip="{{
-                            student.status === 'ACTIVATED'
-                                ? 'Block librarian'
-                                : 'Activate librarian'
-                        }}"
-                    >
-                        {{
-                            student.status === 'ACTIVATED'
-                                ? 'Block'
-                                : 'Activate'
-                        }}
-                    </button>
                 </section>
                 <section class="user-library-info">
                     <p>
