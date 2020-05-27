@@ -10,6 +10,11 @@ import { Statistic } from '../../../models/statistic.model';
 import { WarnMessages } from '../../../constants/warnMessages';
 import { PageTitles } from '../../../constants/pageTitles';
 import { DbModels } from '../../../constants/dbModels';
+import { DepartmentService } from '../../../services/department.service';
+import { Department } from '../../../models/department.model';
+import { FiltersName } from '../../../constants/filtersName';
+import { MaterialService } from '../../../services/material.service';
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
 
 @Component({
     selector: 'app-loans-chart',
@@ -18,9 +23,11 @@ import { DbModels } from '../../../constants/dbModels';
 })
 export class LoansChartComponent implements OnInit, OnDestroy {
     statistic: Statistic[];
+    departments: Department[];
 
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
     statisticSubscription: Subscription;
-    statisticTopFiveSubscription: Subscription;
     statisticChangedSubscription: Subscription;
 
     view: any[] = [700, 300];
@@ -46,12 +53,15 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     };
     constructor(
         private loansService: LoansService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private materialService: MaterialService,
+        private departmentService: DepartmentService
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STATISTIC;
         this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
+        this.subscriptionHandle();
     }
 
     statisticHandler(): void {
@@ -65,22 +75,59 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     setStatisticToChart() {
         const seriesArr = [];
-        this.statistic.forEach((stat: Statistic) => {
-            const item = {
-                name: stat.loanTime,
-                value: stat.books
-            };
-            seriesArr.push(item);
-        });
-        this.multi = [
-            {
-                name:
-                    this.model === DbModels.USER
-                        ? this.statistic[0].student.name
-                        : this.statistic[0].book.name,
-                series: seriesArr
-            }
-        ];
+        if (this.statistic.length > 0) {
+            this.statistic.forEach((stat: Statistic) => {
+                const item = {
+                    name: stat.loanTime,
+                    value: stat.books
+                };
+                seriesArr.push(item);
+            });
+            this.multi = [
+                {
+                    name: this.getLegendName(),
+                    series: seriesArr
+                }
+            ];
+        } else {
+            this.multi = this.helperService.emptyChartHandle(
+                WarnMessages.EMPTY
+            );
+            this.materialService.openSnackbar(
+                WarnMessages.EMPTY_STATISTIC,
+                SnackBarClasses.Warn
+            );
+        }
+    }
+
+    getInputName(): string {
+        switch (this.model) {
+            case DbModels.USER:
+                return FiltersName.READER_TICKET;
+            case DbModels.LIBRARIAN:
+                return FiltersName.EMAIL;
+            case DbModels.BOOK:
+                return FiltersName.ISBN;
+            case DbModels.DEPARTMENT:
+                return FiltersName.ADDRESS;
+            default:
+                return FiltersName.NOTHING;
+        }
+    }
+
+    getLegendName(): string {
+        switch (this.model) {
+            case DbModels.USER:
+                return this.statistic[0].student.name;
+            case DbModels.LIBRARIAN:
+                return this.statistic[0].librarian.name;
+            case DbModels.BOOK:
+                return this.statistic[0].book.name;
+            case DbModels.DEPARTMENT:
+                return this.statistic[0].department.address;
+            default:
+                return FiltersName.NOTHING;
+        }
     }
 
     onSelect(data): void {}
@@ -96,16 +143,22 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         this.statisticHandler();
     }
 
+    subscriptionHandle(): void {
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
+    }
+
     ngOnDestroy(): void {
-        if (this.statisticSubscription) {
-            this.statisticSubscription.add(this.statisticChangedSubscription);
-            this.statisticSubscription.unsubscribe();
-        }
-        if (this.statisticTopFiveSubscription) {
-            this.statisticTopFiveSubscription.add(
-                this.statisticChangedSubscription
-            );
-            this.statisticTopFiveSubscription.unsubscribe();
-        }
+        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
+            this.departmentsFetchSubscription,
+            this.statisticSubscription,
+            this.statisticChangedSubscription
+        ]);
     }
 }
