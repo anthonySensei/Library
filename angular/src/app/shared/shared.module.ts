@@ -45,12 +45,14 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
 import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-delete-modal.component';
+import { SmallScreenComponent } from './small-screen/small-screen.component';
 
 @NgModule({
     declarations: [
         DiscardChangesModalComponent,
         ChartSectionComponent,
-        ConfirmDeleteModalComponent
+        ConfirmDeleteModalComponent,
+        SmallScreenComponent
     ],
     imports: [CommonModule, LineChartModule],
     exports: [
@@ -92,7 +94,8 @@ import { ConfirmDeleteModalComponent } from './confirm-delete-modal/confirm-dele
         MatNativeDateModule,
         MatProgressSpinnerModule,
         MatSlideToggleModule,
-        ChartSectionComponent
+        ChartSectionComponent,
+        SmallScreenComponent
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent, ConfirmDeleteModalComponent]
