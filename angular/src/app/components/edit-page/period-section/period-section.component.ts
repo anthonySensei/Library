@@ -13,6 +13,9 @@ import { PeriodService } from '../../../services/period.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
+import { MatDialog } from '@angular/material';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
 
 @Component({
     selector: 'app-period-section',
@@ -41,7 +44,10 @@ export class PeriodSectionComponent implements OnDestroy {
 
     showPeriodAdding = false;
 
-    constructor(private periodService: PeriodService) {}
+    constructor(
+        private periodService: PeriodService,
+        private dialog: MatDialog
+    ) {}
 
     getPeriod(): Period {
         return this.periods.find((per: Period) => per.id === this.periodSelect);
@@ -97,6 +103,18 @@ export class PeriodSectionComponent implements OnDestroy {
             .subscribe(() => {
                 this.periodResponseHandler();
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deletePeriod();
+            }
+        });
     }
 
     periodResponseHandler(): void {

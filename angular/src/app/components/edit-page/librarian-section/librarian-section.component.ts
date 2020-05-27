@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output
+} from '@angular/core';
 import { ResponseService } from '../../../services/response.service';
 import { Librarian } from '../../../models/librarian.model';
 import { LibrarianService } from '../../../services/librarian.service';
@@ -6,14 +13,16 @@ import { Department } from '../../../models/department.model';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { Subscription } from 'rxjs';
-import { Student } from '../../../models/student.model';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-librarian-section',
     templateUrl: './librarian-section.component.html',
     styleUrls: ['../edit-page.component.sass']
 })
-export class LibrarianSectionComponent implements OnInit {
+export class LibrarianSectionComponent implements OnInit, OnDestroy {
     @Output() nothingToChange = new EventEmitter();
     @Output() setLibrarians = new EventEmitter();
 
@@ -33,7 +42,7 @@ export class LibrarianSectionComponent implements OnInit {
 
     error: string;
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private dialog: MatDialog) {}
 
     ngOnInit() {}
 
@@ -65,7 +74,7 @@ export class LibrarianSectionComponent implements OnInit {
             this.nothingToChange.emit();
             return;
         }
-        this.librarianService
+        this.librarianEditSubscription = this.librarianService
             .ediLibrarianHttp(
                 this.librarianSelect,
                 this.librarianEmail,
@@ -80,11 +89,23 @@ export class LibrarianSectionComponent implements OnInit {
         if (!this.librarianSelect) {
             return;
         }
-        this.librarianService
+        this.librarianDeleteSubscription = this.librarianService
             .deleteLibrarianHttp(this.librarianSelect)
             .subscribe(() => {
                 this.librarianResponseHandler();
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteLibrarian();
+            }
+        });
     }
 
     librarianResponseHandler(): void {
@@ -93,6 +114,15 @@ export class LibrarianSectionComponent implements OnInit {
             this.librarianSelect = null;
             this.librarianEmail = null;
             this.librarianDepartment = null;
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.librarianDeleteSubscription) {
+            this.librarianDeleteSubscription.unsubscribe();
+        }
+        if (this.librarianEditSubscription) {
+            this.librarianEditSubscription.unsubscribe();
         }
     }
 }

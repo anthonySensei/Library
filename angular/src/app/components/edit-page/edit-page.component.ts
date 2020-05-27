@@ -19,6 +19,7 @@ import { LibrarianService } from '../../services/librarian.service';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-edit-page',
@@ -50,7 +51,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
         private materialService: MaterialService,
         private periodService: PeriodService,
         private helperService: HelperService,
-        private librarianService: LibrarianService
+        private librarianService: LibrarianService,
     ) {}
 
     ngOnInit(): void {

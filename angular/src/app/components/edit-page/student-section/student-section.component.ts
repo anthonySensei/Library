@@ -17,6 +17,9 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-student-section',
@@ -46,7 +49,8 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        private router: Router
+        private router: Router,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -112,6 +116,18 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             .subscribe(() => {
                 this.studentResponseHandler();
             });
+    }
+
+    openConfirmDeleteDialog(): void {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.deleteStudent();
+            }
+        });
     }
 
     studentResponseHandler(): void {
