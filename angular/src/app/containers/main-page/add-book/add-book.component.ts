@@ -66,6 +66,7 @@ export class AddBookComponent
     bookId: number;
 
     isLoading: boolean;
+    done: boolean;
 
     discard: boolean;
     discardChanged = new Subject<boolean>();
@@ -317,6 +318,7 @@ export class AddBookComponent
             .editBookHttp({ ...book, id: this.bookId }, image)
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
+                    this.done = true;
                     stepper.reset();
                     this.router.navigate([
                         '/',
@@ -338,6 +340,7 @@ export class AddBookComponent
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
+                    this.done = true;
                     this.router.navigate(['/', AngularLinks.BOOKS]);
                     stepper.reset();
                 } else {
@@ -351,7 +354,7 @@ export class AddBookComponent
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.mainBookInfoForm.touched) {
+        if (this.mainBookInfoForm.touched && !this.done) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged

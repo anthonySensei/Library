@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatHorizontalStepper } from '@angular/material';
 import { Router } from '@angular/router';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
@@ -17,6 +17,7 @@ import { PasswordVisibility } from '../../../constants/passwordVisibility';
 import { ErrorMessages } from '../../../constants/errorMessages';
 import { KeyWords } from '../../../constants/keyWords';
 import { PageTitles } from '../../../constants/pageTitles';
+import { MaterialService } from '../../../services/material.service';
 
 @Component({
     selector: 'app-registration',
@@ -44,10 +45,16 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     response: Response;
 
+    discard: boolean;
+    discardChanged = new Subject<boolean>();
+
+    done: boolean;
+
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
+        private materialService: MaterialService,
         private router: Router
     ) {}
 
@@ -136,12 +143,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 .registerStudentHttp(student)
                 .subscribe(() => {
                     if (this.responseService.responseHandle()) {
+                        this.done = true;
                         this.router.navigate(['/' + this.links.LOGIN]);
-                        this.isPasswordError = false;
-                        this.passwordForm.patchValue({
-                            password: '',
-                            password2: ''
-                        });
                     } else {
                         this.fieldsErrorHandle(stepper);
                     }
@@ -165,6 +168,18 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 incorrect: true
             });
             this.error = this.response.message;
+        }
+    }
+
+    canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+        if (this.mainInfoForm.touched && !this.done) {
+            this.materialService.openDiscardChangesDialog(
+                this.discard,
+                this.discardChanged
+            );
+            return this.discardChanged;
+        } else {
+            return true;
         }
     }
 
