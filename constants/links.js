@@ -20,7 +20,6 @@ exports.LIBRARIANS_LIBRARIAN_URL = '/details';
 
 exports.LOANS_URL = '/loans';
 exports.LOANS_STATISTIC_URL = '/statistic';
-exports.LOANS_STATISTIC_TOP_URL = '/top';
 
 exports.ORDERS_URL = '/orders';
 

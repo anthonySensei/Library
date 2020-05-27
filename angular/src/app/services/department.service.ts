@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -32,7 +32,7 @@ export class DepartmentService {
     }
 
     fetchAllDepartmentsHttp() {
-        return this.http.get(`${this.DEPARTMENTS_URL}`).pipe(
+        return this.http.get(this.DEPARTMENTS_URL).pipe(
             map((response: any) => {
                 this.setDepartments(response.data.departments);
             })
@@ -57,7 +57,12 @@ export class DepartmentService {
     }
     deleteDepartmentHttp(departmentId: number) {
         return this.http
-            .delete(`${this.DEPARTMENTS_URL}?departmentId=${departmentId}`)
+            .delete(this.DEPARTMENTS_URL, {
+                params: new HttpParams().set(
+                    'departmentId',
+                    departmentId.toString()
+                )
+            })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

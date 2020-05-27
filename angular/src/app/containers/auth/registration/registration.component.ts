@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatHorizontalStepper } from '@angular/material';
 import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -12,7 +13,10 @@ import { AngularLinks } from '../../../constants/angularLinks';
 
 import { Student } from '../../../models/student.model';
 import { Response } from '../../../models/response.model';
-import { MatHorizontalStepper } from '@angular/material';
+import { PasswordVisibility } from '../../../constants/passwordVisibility';
+import { ErrorMessages } from '../../../constants/errorMessages';
+import { KeyWords } from '../../../constants/keyWords';
+import { PageTitles } from '../../../constants/pageTitles';
 
 @Component({
     selector: 'app-registration',
@@ -23,6 +27,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     passwordForm: FormGroup;
 
     error: string;
+    emailError: string;
 
     authSubscription: Subscription;
 
@@ -36,7 +41,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     isPasswordError: boolean;
 
     links = AngularLinks;
-    emailError: string;
 
     response: Response;
 
@@ -48,7 +52,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        document.title = 'Registration';
+        document.title = PageTitles.REGISTRATION;
         this.emailValidation = this.validationService.getEmailValidation();
         this.passwordValidation = this.validationService.getPasswordValidation();
         this.readerTicketValidation = this.validationService.getReaderTicketValidation();
@@ -92,9 +96,9 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         if (password == null || password === '') {
             return '';
         } else if (hide) {
-            return 'visibility';
+            return PasswordVisibility.VISIBLE;
         } else {
-            return 'visibility_off';
+            return PasswordVisibility.INVISIBLE;
         }
     }
 
@@ -121,7 +125,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
         if (!this.validationService.comparePasswords(password, password2)) {
             this.isPasswordError = true;
-            this.error = 'Passwords are different';
+            this.error = ErrorMessages.DIFFERENT_PASSWORDS;
             stepper.selectedIndex = 1;
             this.passwordForm.patchValue({
                 password: '',
@@ -147,13 +151,15 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     fieldsErrorHandle(stepper: MatHorizontalStepper): void {
         this.response = this.responseService.getResponse();
-        if (this.response.message.toLowerCase().includes('email')) {
+        if (this.response.message.toLowerCase().includes(KeyWords.EMAIL)) {
             stepper.selectedIndex = 0;
             this.emailError = this.response.message;
             this.mainInfoForm.controls.email.setErrors({
                 incorrect: true
             });
-        } else if (this.response.message.toLowerCase().includes('reader')) {
+        } else if (
+            this.response.message.toLowerCase().includes(KeyWords.READER)
+        ) {
             stepper.selectedIndex = 0;
             this.mainInfoForm.controls.reader_ticket.setErrors({
                 incorrect: true

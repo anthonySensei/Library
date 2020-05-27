@@ -29,6 +29,10 @@ import { DepartmentService } from '../../../services/department.service';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
+import { TableColumns } from '../../../constants/tableColumns';
+import { PageTitles } from '../../../constants/pageTitles';
+import { SortOrder } from '../../../constants/sortOrder';
+
 @Component({
     selector: 'app-orders',
     templateUrl: './orders.component.html',
@@ -62,13 +66,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     date: Date = null;
 
     columnsToDisplay: string[] = [
-        'orderTime',
-        'loanTime',
-        'bookISBN',
-        'studentReaderTicket',
-        'departmentAddress'
+        TableColumns.ORDER_TIME,
+        TableColumns.LOAN_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.READER_TICKET,
+        TableColumns.DEPARTMENT_ADDRESS
     ];
     expandedElement: Order | null;
+    tableColumns = TableColumns;
 
     dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -85,9 +90,18 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Orders';
+        document.title = PageTitles.ORDERS;
         this.dataSource = new OrdersDataSource(this.orderService);
-        this.dataSource.loadOrders('', '', 'desc', 0, 5, null, null, false);
+        this.dataSource.loadOrders(
+            '',
+            '',
+            SortOrder.DESC,
+            0,
+            5,
+            null,
+            null,
+            false
+        );
         this.subscriptionsHandle();
     }
 

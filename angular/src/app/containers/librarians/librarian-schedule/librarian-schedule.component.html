@@ -1,34 +1,12 @@
 <div class="wrapper">
     <div class="form-content">
         <span class="page-title">Schedule</span>
-        <mat-form-field class="d-block">
-            <mat-label>Department address</mat-label>
-            <mat-select
-                [(ngModel)]="departmentSelect"
-                (ngModelChange)="setSchedules()"
-            >
-                <mat-option>All</mat-option>
-                <mat-option
-                    *ngFor="let department of departments"
-                    [value]="department.id"
-                    >{{ department.address }}</mat-option
-                >
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="d-block">
-            <mat-label>Librarian</mat-label>
-            <mat-select
-                [(ngModel)]="librarianSelect"
-                (ngModelChange)="setSchedules()"
-            >
-                <mat-option>All</mat-option>
-                <mat-option
-                    *ngFor="let librarian of librarians"
-                    [value]="librarian.id"
-                    >{{ librarian.name }}</mat-option
-                >
-            </mat-select>
-        </mat-form-field>
+        <app-schedule-filter-section
+            [(departmentSelect)]="departmentSelect"
+            [(librarianSelect)]="librarianSelect"
+            (setSchedules)="setSchedules()"
+            [helperService]="helperService"
+        ></app-schedule-filter-section>
         <hr style="background-color: #0d0d0d;" />
         <mat-tab-group style="max-height: 500px; min-height: 500px;">
             <mat-tab label="{{ day }}" *ngFor="let day of days">

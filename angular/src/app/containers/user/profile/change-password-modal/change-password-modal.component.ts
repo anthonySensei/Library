@@ -11,6 +11,9 @@ import { UserService } from '../../../../services/user.service';
 import { ResponseService } from '../../../../services/response.service';
 
 import { ChangedDataProfile } from '../../../../constants/changedDataProfile';
+import { ErrorMessages } from '../../../../constants/errorMessages';
+import { KeyWords } from '../../../../constants/keyWords';
+import { PasswordVisibility } from '../../../../constants/passwordVisibility';
 
 @Component({
     selector: 'app-dialog',
@@ -67,7 +70,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
             return;
         }
         if (newPassword !== retypeNewPassword) {
-            this.retypePasswordError = 'Passwords are different';
+            this.retypePasswordError = ErrorMessages.DIFFERENT_PASSWORDS;
             this.passwordsForm.controls.newPassword.setErrors({
                 incorrect: true
             });
@@ -99,7 +102,7 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
                 this.responseService
                     .getResponse()
                     .message.toLowerCase()
-                    .includes('password')
+                    .includes(KeyWords.PASSWORD)
             ) {
                 this.error = this.responseService.getResponse().message;
                 this.passwordsForm.controls.oldPassword.setErrors({
@@ -113,9 +116,9 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
         if (password == null || password === '') {
             return '';
         } else if (hide) {
-            return 'visibility';
+            return PasswordVisibility.VISIBLE;
         } else {
-            return 'visibility_off';
+            return PasswordVisibility.INVISIBLE;
         }
     }
 

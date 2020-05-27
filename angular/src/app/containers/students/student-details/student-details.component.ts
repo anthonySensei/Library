@@ -10,6 +10,8 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 import { DepartmentService } from '../../../services/department.service';
 
+import { PageTitles } from '../../../constants/pageTitles';
+
 @Component({
     selector: 'app-user-details',
     templateUrl: './student-details.component.html',
@@ -29,26 +31,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
 
     isLoading: boolean;
 
-    showLabels = true;
-    animations = true;
-    xAxis = true;
-    yAxis = true;
-    showYAxisLabel = true;
-    showXAxisLabel = true;
-    xAxisLabel = 'Date';
-    yAxisLabel = 'Quantity of books';
-    timeline = true;
-
-    model: string;
-
-    colorScheme = {
-        domain: ['#ffaa00']
-    };
-
-    view: any[] = [700, 300];
-
-    multi: any;
-
     constructor(
         private studentService: StudentService,
         private helperService: HelperService,
@@ -57,7 +39,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Student';
+        document.title = PageTitles.STUDENT_DETAILS;
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {
@@ -75,7 +57,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
             .getStudent()
             .subscribe((student: Student) => {
                 this.student = student;
-                this.setStatisticToChart(this.student.statistic);
                 this.isLoading = false;
             });
         this.departmentsFetchSubscription = this.departmentService
@@ -87,34 +68,6 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
                 this.departments = departments;
             });
     }
-
-    setStatisticToChart(statistic): void {
-        const seriesArr = [];
-        for (const stat of statistic) {
-            const item = {
-                name: stat.loanTime,
-                value: stat.books
-            };
-            seriesArr.push(item);
-        }
-        if (seriesArr.length > 0) {
-            this.multi = [
-                {
-                    name: this.student.name,
-                    series: seriesArr
-                }
-            ];
-        } else {
-            this.xAxisLabel = '';
-            this.multi = this.helperService.emptyChartHandle(this.student.name);
-        }
-    }
-
-    onSelect(data): void {}
-
-    onActivate(data): void {}
-
-    onDeactivate(data): void {}
 
     ngOnDestroy(): void {
         this.helperService.unsubscribeHandle(this.studentSubscription, [

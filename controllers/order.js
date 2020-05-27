@@ -10,34 +10,11 @@ const Book = require('../models/book');
 const Department = require('../models/department');
 
 const helper = require('../helper/responseHandle');
+const conditionGenerator = require('../helper/orderLoanCondition');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const filters = require('../constants/filters');
-
-const getCondition = (departmentId, loanDate, nextDay, isShowNotLoaned) => {
-    let departmentCondition = {};
-    let dateCondition = {};
-    let isShowNotLoanedCondition = {};
-
-    if (departmentId) departmentCondition = { departmentId: departmentId };
-    if (loanDate)
-        dateCondition = {
-            loan_time: {
-                [Op.between]: [loanDate, nextDay]
-            }
-        };
-    if (isShowNotLoaned === 'true')
-        isShowNotLoanedCondition = {
-            loan_time: null
-        };
-
-    return {
-        ...departmentCondition,
-        ...dateCondition,
-        ...isShowNotLoanedCondition
-    };
-};
 
 exports.getAllOrders = async (req, res) => {
     const page = +req.query.pageNumber;
@@ -60,9 +37,25 @@ exports.getAllOrders = async (req, res) => {
 
     if (studentId) studentCondition = { id: studentId };
 
+    const includeArr = [
+        {
+            model: Student,
+            where: studentCondition
+        },
+        {
+            model: Book,
+            include: {
+                model: Author
+            },
+            where: bookCondition
+        },
+        { model: Department }
+    ];
+
     try {
         const quantity = await Order.count({
-            where: getCondition(
+            include: includeArr,
+            where: conditionGenerator.generateCondition(
                 departmentId,
                 orderDate,
                 nextDay,
@@ -70,21 +63,8 @@ exports.getAllOrders = async (req, res) => {
             )
         });
         const orders = await Order.findAll({
-            include: [
-                {
-                    model: Student,
-                    where: studentCondition
-                },
-                {
-                    model: Book,
-                    include: {
-                        model: Author
-                    },
-                    where: bookCondition
-                },
-                { model: Department }
-            ],
-            where: getCondition(
+            include: includeArr,
+            where: conditionGenerator.generateCondition(
                 departmentId,
                 orderDate,
                 nextDay,

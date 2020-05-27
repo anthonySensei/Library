@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
@@ -7,6 +7,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { PageTitles } from '../../../constants/pageTitles';
 
 @Component({
     selector: 'app-activation-page',
@@ -26,10 +27,12 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        document.title = 'Activation page';
-        this.paramsSubscription = this.route.queryParams.subscribe(params => {
-            this.registrationToken = params.rtoken;
-        });
+        document.title = PageTitles.ACTIVATION_PAGE;
+        this.paramsSubscription = this.route.queryParams.subscribe(
+            (params: Params) => {
+                this.registrationToken = params.rtoken;
+            }
+        );
         this.subscriptionHandle();
     }
 

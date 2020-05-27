@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -9,11 +10,11 @@ import { HelperService } from '../../services/helper.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
 import { UserRoles } from '../../constants/userRoles';
+import { ModalWidth } from '../../constants/modalWidth';
 
 import { User } from '../../models/user.model';
-import { AddOptionModalComponent } from '../../containers/main-page/add-book/add-option-modal/add-option-modal.component';
+
 import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-header',
@@ -25,16 +26,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isSmallScreen: boolean;
 
     links = AngularLinks;
-    userRoles = UserRoles;
 
     userSubscription: Subscription;
     breakpointSubscription: Subscription;
     authServiceSubscription: Subscription;
 
     user: User;
-
     role: string;
-    openMyOrdersModalWidth = '70%';
+    userRoles = UserRoles;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
@@ -72,7 +71,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     openMyOrdersModal(): void {
         const dialogRef = this.dialog.open(MyOrdersModalComponent, {
-            width: this.openMyOrdersModalWidth,
+            width: ModalWidth.W70P,
             data: {
                 studentId: this.user.id
             }

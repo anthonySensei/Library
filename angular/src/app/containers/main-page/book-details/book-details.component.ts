@@ -6,20 +6,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 import { Book } from '../../../models/book.model';
+import { User } from '../../../models/user.model';
 
 import { BookService } from '../../../services/book.service';
 import { AuthService } from '../../../services/auth.service';
 import { OrderService } from '../../../services/orders.service';
 import { ResponseService } from '../../../services/response.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
 import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
 
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
-
-import { User } from '../../../models/user.model';
-import { HelperService } from '../../../services/helper.service';
+import { PageTitles } from '../../../constants/pageTitles';
+import { ModalWidth } from '../../../constants/modalWidth';
 
 @Component({
     selector: 'app-book-details',
@@ -61,7 +62,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Library';
+        document.title = PageTitles.BOOK_DETAILS;
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {
@@ -76,25 +77,29 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.bookFetchSubscription = this.bookService
             .getBookHttp(this.bookId)
             .subscribe();
-        this.bookSubscription = this.bookService.getBook().subscribe(book => {
-            this.book = book;
-            if (!this.book) {
-                this.router.navigate([AngularLinks.ERROR_PAGE]);
-            }
-            this.isLoading = false;
-        });
+        this.bookSubscription = this.bookService
+            .getBook()
+            .subscribe((book: Book) => {
+                this.book = book;
+                if (!this.book) {
+                    this.router.navigate([AngularLinks.ERROR_PAGE]);
+                }
+                this.isLoading = false;
+            });
     }
 
     handleUserSubscription(): void {
-        this.userSubscription = this.authService.getUser().subscribe(user => {
-            this.user = user;
-            this.userRole = user.role.role;
-        });
+        this.userSubscription = this.authService
+            .getUser()
+            .subscribe((user: User) => {
+                this.user = user;
+                this.userRole = user.role.role;
+            });
     }
 
     openLoanBookModal(): void {
         const dialogRef = this.dialog.open(LoanBookModalComponent, {
-            width: '30%',
+            width: ModalWidth.W30P,
             data: {
                 readerTicket: this.readerTicket
             }
@@ -121,7 +126,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
     openMoveBookModal(): void {
         const dialogRef = this.dialog.open(MoveBookModalComponent, {
-            width: '30%',
+            width: ModalWidth.W30P,
             data: {
                 availableBooks: this.book.quantity,
                 bookDepartmentId: this.book.id

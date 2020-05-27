@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -32,7 +32,7 @@ export class GenreService {
     }
 
     fetchAllGenresHttp() {
-        return this.http.get(`${this.GENRES_URL}`).pipe(
+        return this.http.get(this.GENRES_URL).pipe(
             map((response: any) => {
                 this.setGenres(response.data.genres);
             })
@@ -56,10 +56,14 @@ export class GenreService {
     }
 
     deleteGenreHttp(genreId: number) {
-        return this.http.delete(`${this.GENRES_URL}?genreId=${genreId}`).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
+        return this.http
+            .delete(this.GENRES_URL, {
+                params: new HttpParams().set('genreId', genreId.toString())
             })
-        );
+            .pipe(
+                map((response: any) => {
+                    this.responseService.setResponse(response.data);
+                })
+            );
     }
 }

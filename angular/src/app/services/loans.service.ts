@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -8,10 +8,9 @@ import { Loan } from '../models/loan.model';
 import { Statistic } from '../models/statistic.model';
 
 import { serverLink } from '../constants/serverLink';
+
 import { ResponseService } from './response.service';
-import { Student } from '../models/student.model';
 import { HelperService } from './helper.service';
-import { log } from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +18,6 @@ import { log } from 'util';
 export class LoansService {
     private LOANS_URL = `${serverLink}/loans`;
     private LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
-    private LOANS_STATISTIC_TOP_URL = `${this.LOANS_STATISTIC_URL}/top`;
 
     private loans = new Subject<Loan[]>();
 
@@ -30,14 +28,6 @@ export class LoansService {
         private responseService: ResponseService,
         private helperService: HelperService
     ) {}
-
-    setLoans(loans: Loan[]): void {
-        this.loans.next(loans);
-    }
-
-    getLoans(): Observable<Loan[]> {
-        return this.loans;
-    }
 
     setStatistic(statistic: Statistic[]): void {
         this.statistic.next(statistic);
@@ -87,7 +77,6 @@ export class LoansService {
             })
             .pipe(
                 map((response: any) => {
-                    this.setLoans(response.data.loans);
                     this.helperService.setItemsPerPage(response.data.quantity);
                     return response.data.loans;
                 })
@@ -96,17 +85,9 @@ export class LoansService {
 
     fetchLoansStatisticHttp(model: string, value: string) {
         return this.http
-            .get(`${this.LOANS_STATISTIC_URL}?model=${model}&value=${value}`)
-            .pipe(
-                map((response: any) => {
-                    this.setStatistic(response.data.statistic);
-                })
-            );
-    }
-
-    fetchTopFiveLoansHttp(model: string) {
-        return this.http
-            .get(`${this.LOANS_STATISTIC_TOP_URL}?model=${model}`)
+            .get(this.LOANS_STATISTIC_URL, {
+                params: new HttpParams().set('model', model).set('value', value)
+            })
             .pipe(
                 map((response: any) => {
                     this.setStatistic(response.data.statistic);
@@ -120,7 +101,7 @@ export class LoansService {
             bookId,
             returnedTime
         };
-        return this.http.put(`${this.LOANS_URL}`, updatedData).pipe(
+        return this.http.put(this.LOANS_URL, updatedData).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
             })

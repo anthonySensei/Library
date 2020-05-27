@@ -5,13 +5,9 @@ import { Subscription } from 'rxjs';
 import { Days } from '../../../constants/days';
 
 import { ScheduleService } from '../../../services/schedule.service';
-import { LibrarianService } from '../../../services/librarian.service';
-import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Schedule } from '../../../models/schedule.model';
-import { Department } from '../../../models/department.model';
-import { Librarian } from '../../../models/librarian.model';
 
 @Component({
     selector: 'app-librarian-schedule',
@@ -21,15 +17,9 @@ import { Librarian } from '../../../models/librarian.model';
 export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     schedules: Schedule[];
     schedulesForDisplay: Schedule[];
-    departments: Department[];
-    librarians: Librarian[];
 
     schedulesSubscription: Subscription;
     schedulesFetchSubscription: Subscription;
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
 
     mnSchedules: Schedule[];
     tsSchedules: Schedule[];
@@ -46,9 +36,7 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
     constructor(
         private scheduleService: ScheduleService,
-        private librarianService: LibrarianService,
-        private helperService: HelperService,
-        private departmentService: DepartmentService
+        private helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -64,22 +52,6 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
             .subscribe((schedules: Schedule[]) => {
                 this.schedules = schedules;
                 this.setSchedules();
-            });
-        this.librariansFetchSubscription = this.librarianService
-            .getLibrariansHttp()
-            .subscribe();
-        this.librariansSubscription = this.librarianService
-            .getLibrarians()
-            .subscribe((librarians: Librarian[]) => {
-                this.librarians = librarians;
-            });
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
             });
     }
 
@@ -121,11 +93,7 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.helperService.unsubscribeHandle(this.schedulesSubscription, [
-            this.schedulesFetchSubscription,
-            this.departmentsSubscription,
-            this.departmentsFetchSubscription,
-            this.librariansSubscription,
-            this.librariansFetchSubscription
+            this.schedulesFetchSubscription
         ]);
     }
 }

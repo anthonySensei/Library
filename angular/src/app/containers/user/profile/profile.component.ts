@@ -20,6 +20,11 @@ import { ChangePasswordModalComponent } from './change-password-modal/change-pas
 import { ChangeProfileImageModalComponent } from './change-profile-image/change-profile-image-modal.component';
 
 import { User } from '../../../models/user.model';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { PageTitles } from '../../../constants/pageTitles';
+import { WarnMessages } from '../../../constants/warnMessages';
+import { ErrorMessages } from '../../../constants/errorMessages';
+import { KeyWords } from '../../../constants/keyWords';
 
 @Component({
     selector: 'app-user',
@@ -52,8 +57,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     emailValidation;
 
-    changePasswordModalWidth = '35%';
-    changePictureModal = '40%';
+    changePasswordModalWidth = ModalWidth.W35P;
+    changePictureModal = ModalWidth.W40P;
 
     constructor(
         private authService: AuthService,
@@ -69,30 +74,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
             .observe([Breakpoints.Small, Breakpoints.XSmall])
             .subscribe(result => {
                 if (result.matches) {
-                    this.changePasswordModalWidth = '95%';
-                    this.changePictureModal = '95%';
+                    this.changePasswordModalWidth = ModalWidth.W95P;
+                    this.changePictureModal = ModalWidth.W95P;
                 }
             });
         this.breakPointMediumSubscription = breakpointObserver
             .observe([Breakpoints.Medium, Breakpoints.Tablet])
             .subscribe(result => {
                 if (result.matches) {
-                    this.changePasswordModalWidth = '75%';
-                    this.changePictureModal = '85%';
+                    this.changePasswordModalWidth = ModalWidth.W75P;
+                    this.changePictureModal = ModalWidth.W85P;
                 }
             });
         this.breakPointLargeSubscription = breakpointObserver
             .observe([Breakpoints.Large, Breakpoints.XLarge])
             .subscribe(result => {
                 if (result.matches) {
-                    this.changePasswordModalWidth = '35%';
-                    this.changePictureModal = '40%';
+                    this.changePasswordModalWidth = ModalWidth.W35P;
+                    this.changePictureModal = ModalWidth.W40P;
                 }
             });
     }
 
     ngOnInit(): void {
-        document.title = 'Profile';
+        document.title = PageTitles.PROFILE;
         this.isLoading = true;
         this.emailValidation = this.validationService.getEmailValidation();
         this.userHandle();
@@ -151,7 +156,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         });
                 } else {
                     this.materialService.openSnackbar(
-                        'Image was not selected',
+                        WarnMessages.IMAGE_NOT_SELECTED,
                         SnackBarClasses.Warn
                     );
                 }
@@ -176,13 +181,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
         const name = this.profileForm.value.name;
 
         if (!email || !name) {
-            this.error = 'Please fill in all fields';
+            this.error = ErrorMessages.EMPTY_FIELDS;
             return;
         }
 
         if (this.user.name === name && this.user.email === email) {
             this.materialService.openSnackbar(
-                'Nothing to change',
+                WarnMessages.NOTHING_TO_CHANGE,
                 SnackBarClasses.Warn
             );
             return;
@@ -209,7 +214,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.responseService
                 .getResponse()
                 .message.toLowerCase()
-                .includes('email')
+                .includes(KeyWords.EMAIL)
         ) {
             this.error = this.responseService.getResponse().message;
             this.profileForm.controls.email.setErrors({

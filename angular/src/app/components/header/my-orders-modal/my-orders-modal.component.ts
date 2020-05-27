@@ -7,14 +7,19 @@ import {
     ViewChild
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Department } from '../../../models/department.model';
-import { HelperService } from '../../../services/helper.service';
-import { merge, Subscription } from 'rxjs';
-import { OrdersDataSource } from '../../../datasources/orders.datasource';
 import { MatPaginator, MatSort } from '@angular/material';
+
+import { merge, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { Department } from '../../../models/department.model';
+
+import { OrdersDataSource } from '../../../datasources/orders.datasource';
+
+import { HelperService } from '../../../services/helper.service';
 import { OrderService } from '../../../services/orders.service';
 import { DepartmentService } from '../../../services/department.service';
-import { tap } from 'rxjs/operators';
+import { SortOrder } from '../../../constants/sortOrder';
 
 @Component({
     selector: 'app-add-option-dialog',
@@ -55,7 +60,7 @@ export class MyOrdersModalComponent
         this.dataSource.loadOrders(
             '',
             '',
-            'desc',
+            SortOrder.DESC,
             0,
             5,
             null,

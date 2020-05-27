@@ -13,6 +13,7 @@ import { AddBookComponent } from './add-book/add-book.component';
 import { ModalBookCreateDialogComponent } from './add-book/choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-book/add-option-modal/add-option-modal.component';
 import { MoveBookModalComponent } from './book-details/move-book-modal/move-book-modal.component';
+import { BooksSectionComponent } from './main-page/books-section/books-section.component';
 
 @NgModule({
     declarations: [
@@ -22,7 +23,8 @@ import { MoveBookModalComponent } from './book-details/move-book-modal/move-book
         ModalBookCreateDialogComponent,
         AddOptionModalComponent,
         LoanBookModalComponent,
-        MoveBookModalComponent
+        MoveBookModalComponent,
+        BooksSectionComponent
     ],
     imports: [RouterModule, MainPageRoutingModule, SharedModule, FormsModule],
     entryComponents: [

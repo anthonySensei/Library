@@ -61,13 +61,13 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             .subscribe();
         this.studentsSubscription = this.studentService
             .getStudents()
-            .subscribe(students => {
+            .subscribe((students: Student[]) => {
                 this.students = students;
             });
     }
 
     getStudent(): Student {
-        return this.students.find(st => st.id === this.studentSelect);
+        return this.students.find((st: Student) => st.id === this.studentSelect);
     }
 
     setStudentData(): void {

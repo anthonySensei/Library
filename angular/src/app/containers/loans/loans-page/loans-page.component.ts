@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort } from '@angular/material';
 import {
     animate,
     state,
@@ -15,24 +15,25 @@ import {
 } from '@angular/animations';
 
 import { merge, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { LoansService } from '../../../services/loans.service';
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
-import { StudentService } from '../../../services/student.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
 import { Department } from '../../../models/department.model';
-import { Student } from '../../../models/student.model';
-import { HelperService } from '../../../services/helper.service';
+
 import { LoansDataSource } from '../../../datasources/loans.datasource';
-import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
-import { tap } from 'rxjs/operators';
+
+import { TableColumns } from '../../../constants/tableColumns';
+import { PageTitles } from '../../../constants/pageTitles';
+import { SortOrder } from '../../../constants/sortOrder';
 
 @Component({
     selector: 'app-loan-page',
     templateUrl: './loans-page.component.html',
-    styleUrls: ['./loans-page.component.sass'],
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -54,13 +55,14 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     returnBookSubscription: Subscription;
 
     columnsToDisplay: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'studentReaderTicket',
-        'librarianEmail'
+        TableColumns.LOAN_TIME,
+        TableColumns.RETURNED_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.READER_TICKET,
+        TableColumns.EMAIL
     ];
     expandedElement: Loan | null;
+    tableColumns = TableColumns;
 
     filterName: string;
     filterValue: string;
@@ -81,9 +83,18 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Loans';
+        document.title = PageTitles.LOANS;
         this.dataSource = new LoansDataSource(this.loansService);
-        this.dataSource.loadLoans('', '', 'desc', 0, 5, null, null, false);
+        this.dataSource.loadLoans(
+            '',
+            '',
+            SortOrder.DESC,
+            0,
+            5,
+            null,
+            null,
+            false
+        );
         this.subscriptionsHandle();
     }
 

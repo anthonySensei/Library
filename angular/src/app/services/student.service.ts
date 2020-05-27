@@ -77,7 +77,9 @@ export class StudentService {
 
     getStudentHttp(studentId: number) {
         return this.http
-            .get(`${this.STUDENTS_DETAILS_URL}?studentId=${studentId}`)
+            .get(this.STUDENTS_DETAILS_URL, {
+                params: new HttpParams().set('studentId', studentId.toString())
+            })
             .pipe(
                 map((response: any) => {
                     this.setStudent(response.data.student);
@@ -105,7 +107,9 @@ export class StudentService {
 
     deleteStudentHttp(studentId: number) {
         return this.http
-            .delete(`${this.STUDENTS_URL}?studentId=${studentId}`)
+            .delete(this.STUDENTS_URL, {
+                params: new HttpParams().set('studentId', studentId.toString())
+            })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

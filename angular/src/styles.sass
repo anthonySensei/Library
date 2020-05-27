@@ -35,6 +35,7 @@ body
 .w-78-center
   width: 78%
   margin: 10px auto
+
   &.image-section
     margin: 0 auto
 
@@ -74,9 +75,9 @@ body
 
 .modal-form
   text-align: center
+
   .modal-input
     width: 80%
-
 
 
 /* form input */
@@ -89,20 +90,28 @@ body
 
 
 .btn-group
+  .expanded-btn
+    float: right
   .form-button
     margin: 0 auto 15px
     width: 25%
     transition: all 0.7s ease-in-out
+
   .form-btn
     width: 38%
+
     &.move-btn
       border: 1px solid $color-main
+
     &.add-form-btn
       width: 29%
+
     &:first-of-type
       margin-right: 2%
+
   .choose-img-btn
-     margin-bottom: 10px
+    margin-bottom: 10px
+
   .btn
     margin-left: 5px
 
@@ -157,35 +166,72 @@ body
   position: relative
   width: 1000px
   margin: 20px auto
+
   &.user-details
     width: 90%
+
     table
-      width: 100%
       text-align: left
+
   .add-btn
     position: absolute
     right: 0
     top: 15px
+
   .mb-1
     margin-bottom: 10px
+
   .d-block
     display: block
     width: 35%
     margin: 0 auto
+
   .spinner-container
     position: fixed
     left: 40%
     top: 40%
 
+  table
+    width: 100%
+
+  tr.detail-row
+    height: 0
+
+  tr.element-row:not(.expanded-row):hover
+    background: whitesmoke
+
+  tr.element-row:not(.expanded-row):active
+    background: #efefef
+
+  .element-row td
+    border-bottom-width: 0
+
+  .loan-detail
+    overflow: hidden
+    display: flex
+
+  .loan-diagram
+    display: flex
+    min-width: 80px
+    width: 100%
+    border: 1px solid black
+    padding: 8px
+    margin: 8px 0
+  .loan-info
+    flex: 33.3%
+
+
 .user-loans-table
   width: 95%
-  margin: 0 auto 10px
+  margin: 10px auto 10px
+
   table
     width: 95%
     margin: 0 auto
-    td, th
-      width: 20%
-      text-align: left
+
+  td, th
+    width: 20%
+    text-align: left
 
 
 // user-table-expand
@@ -211,6 +257,7 @@ body
     flex: 10%
     align-items: center
     justify-content: center
+
     .user-link-button
       display: block
       color: $color-main
@@ -242,6 +289,7 @@ body
     display: flex
     flex: 70%
     text-align: left
+
     .user-personal-info
       flex: 50%
 
@@ -253,6 +301,7 @@ body
 .statistic-section
   display: flex
   justify-content: center
+
   ngx-charts-line-chart
     margin-top: 5%
 

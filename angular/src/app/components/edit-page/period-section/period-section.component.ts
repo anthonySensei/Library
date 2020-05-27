@@ -44,7 +44,7 @@ export class PeriodSectionComponent implements OnDestroy {
     constructor(private periodService: PeriodService) {}
 
     getPeriod(): Period {
-        return this.periods.find(per => per.id === this.periodSelect);
+        return this.periods.find((per: Period) => per.id === this.periodSelect);
     }
 
     setPeriod(): void {

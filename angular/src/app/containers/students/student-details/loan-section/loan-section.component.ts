@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 
 import { merge, Subscription } from 'rxjs';
@@ -10,6 +17,9 @@ import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { LoansService } from '../../../../services/loans.service';
 import { HelperService } from '../../../../services/helper.service';
+
+import { TableColumns } from '../../../../constants/tableColumns';
+import { SortOrder } from '../../../../constants/sortOrder';
 
 @Component({
     selector: 'app-loan-section',
@@ -25,11 +35,12 @@ export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     sortSubscription: Subscription;
 
     columnsToDisplay: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'librarianEmail'
+        TableColumns.LOAN_TIME,
+        TableColumns.RETURNED_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.EMAIL
     ];
+    tableColumns = TableColumns;
 
     departmentSelect: number;
 
@@ -39,16 +50,14 @@ export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isShowingDebtors: boolean;
 
-    constructor(
-        private loansService: LoansService
-    ) {}
+    constructor(private loansService: LoansService) {}
 
     ngOnInit(): void {
         this.dataSource = new LoansDataSource(this.loansService);
         this.dataSource.loadLoans(
             '',
             '',
-            'desc',
+            SortOrder.DESC,
             0,
             5,
             null,

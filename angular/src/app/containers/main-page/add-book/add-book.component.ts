@@ -23,10 +23,15 @@ import { User } from '../../../models/user.model';
 import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-
 import { ModalBookCreateDialogComponent } from './choose-book-image-modal/choose-book-image-modal.component';
 import { AddOptionModalComponent } from './add-option-modal/add-option-modal.component';
+
+import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { ModalWidth } from '../../../constants/modalWidth';
+import { PageTitles } from '../../../constants/pageTitles';
+import { DbModels } from '../../../constants/dbModels';
+import { WarnMessages } from '../../../constants/warnMessages';
+import { AngularLinks } from '../../../constants/angularLinks';
 
 export interface DialogData {
     imageBase64: string;
@@ -71,9 +76,6 @@ export class AddBookComponent
     authors: Author[];
     genres: Genre[];
 
-    choosePostImageWidth = '40%';
-    addOptionModalWidth = '30%';
-
     imageToUploadBase64: string;
 
     oldPassword: string;
@@ -98,6 +100,7 @@ export class AddBookComponent
     ) {}
 
     ngOnInit(): void {
+        document.title = PageTitles.ADD_BOOK;
         this.isbnValidation = this.validationService.getIsbnValidation();
         this.initializeForm();
         this.handleParams();
@@ -217,7 +220,7 @@ export class AddBookComponent
 
     openChoosePostImageDialog(): void {
         const dialogRef = this.dialog.open(ModalBookCreateDialogComponent, {
-            width: this.choosePostImageWidth,
+            width: ModalWidth.W40P,
             data: {
                 imageBase64: ''
             }
@@ -230,7 +233,7 @@ export class AddBookComponent
 
     openAddOptionModal(option: string): void {
         const dialogRef = this.dialog.open(AddOptionModalComponent, {
-            width: this.addOptionModalWidth,
+            width: ModalWidth.W30P,
             data: {
                 option
             }
@@ -240,7 +243,7 @@ export class AddBookComponent
             if (!result) {
                 return;
             }
-            if (result.option === 'author') {
+            if (result.option === DbModels.AUTHOR) {
                 this.authorService
                     .addAuthorHttp({ id: null, name: result.name })
                     .subscribe(() => {
@@ -279,7 +282,7 @@ export class AddBookComponent
         const genre = this.genres.find(gen => gen.id === genreId);
         if (!this.imageToUploadBase64 && !this.editMode) {
             this.materialService.openSnackbar(
-                'Image was not selected',
+                WarnMessages.IMAGE_NOT_SELECTED,
                 SnackBarClasses.Warn
             );
             return;
@@ -315,7 +318,11 @@ export class AddBookComponent
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
                     stepper.reset();
-                    this.router.navigate(['/books', this.bookId]);
+                    this.router.navigate([
+                        '/',
+                        AngularLinks.BOOKS,
+                        this.bookId
+                    ]);
                 } else {
                     stepper.selectedIndex = 0;
                     this.error = this.responseService.getResponse().message;
@@ -331,7 +338,7 @@ export class AddBookComponent
             .addBookHttp(book, imageToUploadBase64)
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
-                    this.router.navigate(['/books']);
+                    this.router.navigate(['/', AngularLinks.BOOKS]);
                     stepper.reset();
                 } else {
                     stepper.selectedIndex = 0;

@@ -52,7 +52,7 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
             .subscribe();
         this.genresSubscription = this.genreService
             .getGenres()
-            .subscribe(genres => {
+            .subscribe((genres: Genre[]) => {
                 this.genres = genres;
             });
     }

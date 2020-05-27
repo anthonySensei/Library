@@ -13,30 +13,37 @@ import { tap } from 'rxjs/operators';
 
 import { HelperService } from '../../../../services/helper.service';
 import { LoansService } from '../../../../services/loans.service';
+import { DepartmentService } from '../../../../services/department.service';
 
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { Department } from '../../../../models/department.model';
 
+import { SortOrder } from '../../../../constants/sortOrder';
+import { TableColumns } from '../../../../constants/tableColumns';
+
 @Component({
     selector: 'app-loans-section',
-    templateUrl: './loans-section.component.html',
-    styleUrls: ['./loans-section.component.sass']
+    templateUrl: './loans-section.component.html'
 })
 export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() librarianId: number;
-    @Input() departments: Department[];
     @Input() helperService: HelperService;
+    departments: Department[];
 
     mergeSubscription: Subscription;
     sortSubscription: Subscription;
+    departmentsSubscription: Subscription;
+    departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'studentTicketReader'
+        TableColumns.LOAN_TIME,
+        TableColumns.RETURNED_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.READER_TICKET,
+        TableColumns.DEPARTMENT_ADDRESS,
     ];
+    tableColumns = TableColumns;
 
     departmentSelect: number;
 
@@ -46,14 +53,17 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isShowingDebtors: boolean;
 
-    constructor(private loansService: LoansService) {}
+    constructor(
+        private loansService: LoansService,
+        private departmentService: DepartmentService
+    ) {}
 
     ngOnInit(): void {
         this.dataSource = new LoansDataSource(this.loansService);
         this.dataSource.loadLoans(
             '',
             '',
-            'desc',
+            SortOrder.DESC,
             0,
             5,
             null,
@@ -62,6 +72,7 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.librarianId,
             null
         );
+        this.subscriptionHandle();
     }
 
     ngAfterViewInit(): void {
@@ -75,6 +86,17 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         )
             .pipe(tap(() => this.loadLoansPage()))
             .subscribe();
+    }
+
+    subscriptionHandle(): void {
+        this.departmentsFetchSubscription = this.departmentService
+            .fetchAllDepartmentsHttp()
+            .subscribe();
+        this.departmentsSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
     }
 
     loadLoansPage(): void {
@@ -93,7 +115,10 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.mergeSubscription.add(this.sortSubscription);
-        this.mergeSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.mergeSubscription, [
+            this.sortSubscription,
+            this.departmentsFetchSubscription,
+            this.departmentsSubscription
+        ]);
     }
 }

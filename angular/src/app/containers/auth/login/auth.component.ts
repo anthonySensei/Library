@@ -9,6 +9,7 @@ import { ValidationService } from '../../../services/validation.service';
 import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { PageTitles } from '../../../constants/pageTitles';
 
 @Component({
     selector: 'app-auth',
@@ -33,7 +34,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Login';
+        document.title = PageTitles.LOGIN;
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
     }
