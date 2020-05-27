@@ -85,23 +85,12 @@
                     >
                 </mat-select>
             </mat-form-field>
-            <mat-form-field class="d-block">
-                <mat-label>Department address</mat-label>
-                <mat-select [(value)]="departmentSelect">
-                    <mat-option value="''">All</mat-option>
-                    <mat-option
-                        *ngFor="let department of departments"
-                        [value]="department.id"
-                        >{{ department.address }}</mat-option
-                    >
-                </mat-select>
-            </mat-form-field>
             <div class="button-group">
                 <button
                     mat-stroked-button
                     color="primary"
                     class="btn filter-form-button"
-                    (click)="search(); drawer.toggle(); toggleFilterButton()"
+                    (click)="paginate(1); drawer.toggle(); toggleFilterButton()"
                 >
                     <i class="material-icons">search</i>
                 </button>
@@ -190,8 +179,8 @@
         <mat-form-field class="department-select">
             <mat-label>Department address</mat-label>
             <mat-select
-                [(value)]="departmentSelect"
-                (valueChange)="showBooksByDepartment()"
+                [(ngModel)]="departmentSelect"
+                (ngModelChange)="showBooksByDepartment()"
             >
                 <mat-option value="''">All</mat-option>
                 <mat-option

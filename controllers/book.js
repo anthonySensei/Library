@@ -39,7 +39,7 @@ const getCondition = (
     }
 
     if (author) authorCondition = { authorId: author };
-    if (genre) authorCondition = { genreId: genre };
+    if (genre) genreCondition = { genreId: genre };
     if (department) departmentCondition = { departmentId: department };
 
     if (toYear && fromYear)
@@ -66,21 +66,23 @@ exports.getBooks = async (req, res) => {
     const filterName = req.query.filterName;
     const filterValue = req.query.filterValue;
 
-    const condition = getCondition(
-        filterName,
-        filterValue,
-        author,
-        genre,
-        department,
-        toYear,
-        fromYear
-    );
+    const condition = {
+        ...getCondition(
+            filterName,
+            filterValue,
+            author,
+            genre,
+            department,
+            toYear,
+            fromYear
+        ),
+        quantity: {
+            [Op.gte]: 0
+        }
+    };
 
     try {
         const totalBooks = await Book.count({
-            include: {
-                model: Department
-            },
             where: condition
         });
         const books = await Book.findAll({
@@ -93,6 +95,7 @@ exports.getBooks = async (req, res) => {
                 },
                 { model: Genre }
             ],
+            order: [['year', 'DESC']],
             where: condition,
             limit: ITEMS_PER_PAGE,
             offset: (page - 1) * ITEMS_PER_PAGE
@@ -101,18 +104,17 @@ exports.getBooks = async (req, res) => {
         books.forEach(book => {
             const bookValues = book.get();
             bookValues.image = imageHandler.convertToBase64(bookValues.image);
-            if (bookValues.quantity > 0)
-                booksArr.push({
-                    id: bookValues.id,
-                    name: bookValues.name,
-                    year: bookValues.year,
-                    author: bookValues.author_.get(),
-                    genre: bookValues.genre_.get(),
-                    image: bookValues.image,
-                    description: bookValues.description,
-                    status: bookValues.status,
-                    department: bookValues.department_.get()
-                });
+            booksArr.push({
+                id: bookValues.id,
+                name: bookValues.name,
+                year: bookValues.year,
+                author: bookValues.author_.get(),
+                genre: bookValues.genre_.get(),
+                image: bookValues.image,
+                description: bookValues.description,
+                status: bookValues.status,
+                department: bookValues.department_.get()
+            });
         });
         const data = {
             books: booksArr,
