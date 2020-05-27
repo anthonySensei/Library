@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { Student } from '../../models/student.model';
 import { Period } from '../../models/period.model';
+import { Librarian } from '../../models/librarian.model';
 
 import { DepartmentService } from '../../services/department.service';
 import { ResponseService } from '../../services/response.service';
@@ -13,6 +14,7 @@ import { MaterialService } from '../../services/material.service';
 import { PeriodService } from '../../services/period.service';
 import { HelperService } from '../../services/helper.service';
 import { AuthService } from '../../services/auth.service';
+import { LibrarianService } from '../../services/librarian.service';
 
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
@@ -25,6 +27,7 @@ import { WarnMessages } from '../../constants/warnMessages';
 })
 export class EditPageComponent implements OnInit, OnDestroy {
     departments: Department[];
+    librarians: Librarian[];
     students: Student[];
     periods: Period[];
 
@@ -32,6 +35,8 @@ export class EditPageComponent implements OnInit, OnDestroy {
     departmentsFetchSubscription: Subscription;
     periodsSubscription: Subscription;
     periodsFetchSubscription: Subscription;
+    librariansSubscription: Subscription;
+    librariansFetchSubscription: Subscription;
 
     departmentSelect: number;
 
@@ -44,7 +49,8 @@ export class EditPageComponent implements OnInit, OnDestroy {
         private responseService: ResponseService,
         private materialService: MaterialService,
         private periodService: PeriodService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private librarianService: LibrarianService
     ) {}
 
     ngOnInit(): void {
@@ -72,6 +78,18 @@ export class EditPageComponent implements OnInit, OnDestroy {
             .subscribe((periods: Period[]) => {
                 this.periods = periods;
             });
+        this.onSetLibrarians();
+    }
+
+    onSetLibrarians(): void {
+        this.librariansFetchSubscription = this.librarianService
+            .getAllLibrariansHttp()
+            .subscribe();
+        this.librariansSubscription = this.librarianService
+            .getLibrarians()
+            .subscribe((librarians: Librarian[]) => {
+                this.librarians = librarians;
+            });
     }
 
     nothingChangeHandle(): void {
@@ -85,7 +103,9 @@ export class EditPageComponent implements OnInit, OnDestroy {
         this.helperService.unsubscribeHandle(this.departmentsSubscription, [
             this.departmentsFetchSubscription,
             this.periodsSubscription,
-            this.periodsFetchSubscription
+            this.periodsFetchSubscription,
+            this.librariansSubscription,
+            this.librariansFetchSubscription
         ]);
     }
 }

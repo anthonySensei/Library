@@ -1,27 +1,27 @@
 <section class="edit-section">
     <h3>
-        Please select student(left side) and change fields(right) to edit
-        student:
+        Please select librarian(left side) and change fields(right) to edit
+        librarian:
     </h3>
     <div class="input-groups flex">
         <div class="left-side">
             <mat-form-field class="edit-field">
-                <mat-label>Student</mat-label>
+                <mat-label>Librarian</mat-label>
                 <mat-select
                     name="genreName"
-                    [(ngModel)]="studentSelect"
-                    (ngModelChange)="setStudentData()"
+                    [(ngModel)]="librarianSelect"
+                    (ngModelChange)="setLibrarianData()"
                     required
                 >
                     <mat-option
-                        *ngFor="let student of students"
-                        [value]="student.id"
+                        *ngFor="let librarian of librarians"
+                        [value]="librarian.id"
                     >
-                        {{ student.readerTicket }}({{student.name}})
+                        {{ librarian.email }}({{ librarian.name }})
                     </mat-option>
                     <mat-divider></mat-divider>
-                    <mat-option (click)="addStudent()">
-                        <b>Add Student</b>
+                    <mat-option (click)="addLibrarian()">
+                        <b>Add Librarian</b>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
@@ -32,29 +32,30 @@
         ></mat-divider>
         <div class="right-side">
             <mat-form-field class="edit-field">
-                <mat-label>Reader ticket</mat-label>
-                <input matInput type="text" [(ngModel)]="studentReaderTicket" />
-                <button
-                    mat-button
-                    *ngIf="studentReaderTicket"
-                    matSuffix
-                    mat-icon-button
-                    aria-label="Clear"
-                    (click)="studentReaderTicket = ''"
+                <mat-label>Address</mat-label>
+                <mat-select
+                    name="address"
+                    [(ngModel)]="librarianDepartment"
+                    required
                 >
-                    <mat-icon>close</mat-icon>
-                </button>
+                    <mat-option
+                        *ngFor="let department of departments"
+                        [value]="department.id"
+                    >
+                        {{ department.address }}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
             <mat-form-field class="edit-field">
                 <mat-label>Email</mat-label>
-                <input matInput type="text" [(ngModel)]="studentEmail" />
+                <input matInput type="text" [(ngModel)]="librarianEmail" />
                 <button
                     mat-button
-                    *ngIf="studentEmail"
+                    *ngIf="librarianEmail"
                     matSuffix
                     mat-icon-button
                     aria-label="Clear"
-                    (click)="studentEmail = ''"
+                    (click)="librarianEmail = ''"
                 >
                     <mat-icon>close</mat-icon>
                 </button>
@@ -65,8 +66,8 @@
                     class="form-btn edit-btn"
                     color="primary"
                     type="submit"
-                    [disabled]="!studentSelect"
-                    (click)="editStudent()"
+                    [disabled]="!librarianSelect"
+                    (click)="editLibrarian()"
                 >
                     Edit
                 </button>
@@ -75,8 +76,8 @@
                     class="form-btn edit-btn"
                     color="warn"
                     type="button"
-                    [disabled]="!studentSelect"
-                    (click)="deleteStudent()"
+                    [disabled]="!librarianSelect"
+                    (click)="deleteLibrarian()"
                 >
                     Delete
                 </button>

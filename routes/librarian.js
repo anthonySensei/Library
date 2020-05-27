@@ -20,6 +20,18 @@ router.get(
     librarianController.getAllLibrarians
 );
 
+router.put(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    librarianController.editLibrarian
+);
+
+router.delete(
+    '',
+    passport.authenticate('jwt', { session: false }),
+    librarianController.deleteLibrarian
+);
+
 router.get(
     librarianUrl,
     passport.authenticate('jwt', { session: false }),

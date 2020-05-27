@@ -39,8 +39,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     studentSelect: number;
     studentReaderTicket: string;
     studentEmail: string;
-    newStudentReaderTicket: string;
-    newStudentEmail: string;
 
     error: string;
 
@@ -67,7 +65,9 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     }
 
     getStudent(): Student {
-        return this.students.find((st: Student) => st.id === this.studentSelect);
+        return this.students.find(
+            (st: Student) => st.id === this.studentSelect
+        );
     }
 
     setStudentData(): void {
@@ -92,7 +92,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.studentService
+        this.studentsEditSubscription = this.studentService
             .ediStudentHttp(
                 this.studentSelect,
                 this.studentEmail,
@@ -107,7 +107,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         if (!this.studentSelect) {
             return;
         }
-        this.studentService
+        this.studentsDeleteSubscription = this.studentService
             .deleteStudentHttp(this.studentSelect)
             .subscribe(() => {
                 this.studentResponseHandler();
@@ -117,8 +117,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     studentResponseHandler(): void {
         if (this.responseService.responseHandle()) {
             this.setStudents();
-            this.newStudentReaderTicket = null;
-            this.newStudentEmail = null;
             this.studentSelect = null;
             this.studentEmail = null;
             this.studentReaderTicket = null;

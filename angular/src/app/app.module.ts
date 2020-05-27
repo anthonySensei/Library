@@ -28,6 +28,7 @@ import { StudentsModule } from './containers/students/students.module';
 import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
+import { LibrarianSectionComponent } from './components/edit-page/librarian-section/librarian-section.component';
 
 @NgModule({
     declarations: [
@@ -42,7 +43,8 @@ import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-o
         StudentSectionComponent,
         ScheduleSectionComponent,
         PeriodSectionComponent,
-        MyOrdersModalComponent
+        MyOrdersModalComponent,
+        LibrarianSectionComponent
     ],
     imports: [
         BrowserModule,

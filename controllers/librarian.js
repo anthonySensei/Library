@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
 const Librarian = require('../models/librarian');
+const Student = require('../models/student');
 const Department = require('../models/department');
 const Role = require('../models/role');
 const Schedule = require('../models/schedule');
@@ -69,7 +70,12 @@ exports.getAllLibrarians = async (req, res) => {
                     id: librarianValues.id,
                     name: librarianValues.name,
                     email: librarianValues.email,
-                    departmentAddress: librarianValues.department_.get().address
+                    departmentAddress: librarianValues.department_.get()
+                        .address,
+                    department: {
+                        id: librarianValues.department_.get().id,
+                        address: librarianValues.department_.get().address
+                    }
                 };
                 librariansArr.push(librarianData);
             }
@@ -252,5 +258,78 @@ exports.addLibrarian = async (req, res) => {
         return helper.responseHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 400, err);
+    }
+};
+
+exports.editLibrarian = async (req, res) => {
+    const librarianEmail = req.body.email;
+    const librarianId = req.body.librarianId;
+    const departmentId = req.body.departmentId;
+    try {
+        const isNotUniqueLibrarianEmail = await Librarian.findOne({
+            where: { email: librarianEmail, id: { [Op.ne]: librarianId } }
+        });
+        if (isNotUniqueLibrarianEmail) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+            );
+        } else {
+            const isNotUniqueStudentEmail = await Student.findOne({
+                where: { email: librarianEmail }
+            });
+            if (isNotUniqueStudentEmail) {
+                return helper.responseErrorHandle(
+                    res,
+                    400,
+                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
+                );
+            } else {
+                const librarian = await Librarian.findOne({
+                    where: { id: librarianId }
+                });
+                await librarian.update({
+                    email: librarianEmail,
+                    departmentId: departmentId
+                });
+                const data = {
+                    isSuccessful: true,
+                    message: successMessages.LIBRARIAN_SUCCESSFULLY_UPDATED
+                };
+                return helper.responseHandle(res, 200, data);
+            }
+        }
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
+    }
+};
+
+exports.deleteLibrarian = async (req, res) => {
+    const librarianId = req.query.librarianId;
+    try {
+        const role = await Role.findOne({
+            where: { librarian_id: librarianId }
+        });
+        role.destroy();
+        const librarian = await Librarian.findOne({
+            where: { id: librarianId }
+        });
+        await librarian.destroy();
+        const data = {
+            isSuccessful: true,
+            message: successMessages.LIBRARIAN_SUCCESSFULLY_DELETED
+        };
+        return helper.responseHandle(res, 200, data);
+    } catch (err) {
+        return helper.responseErrorHandle(
+            res,
+            500,
+            errorMessages.SOMETHING_WENT_WRONG
+        );
     }
 };

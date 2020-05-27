@@ -31,6 +31,8 @@ module.exports = {
     STUDENT_SUCCESSFULLY_UPDATED: 'Student has successfully updated',
     STUDENT_SUCCESSFULLY_DELETED: 'Student has successfully deleted',
     LIBRARIAN_SUCCESSFULLY_CREATED: 'Librarian has successfully created',
+    LIBRARIAN_SUCCESSFULLY_UPDATED: 'Librarian has successfully updated',
+    LIBRARIAN_SUCCESSFULLY_DELETED: 'Librarian has successfully deleted',
     SUCCESSFULLY_ACTIVATED: 'Account has successfully activated',
     SUCCESSFULLY_FETCHED: 'Successfully fetched',
     PASSWORD_SUCCESSFULLY_CHANGED: 'Password has successfully changed',
