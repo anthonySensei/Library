@@ -12,25 +12,26 @@ import {
     transition,
     trigger
 } from '@angular/animations';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort } from '@angular/material';
 
+import { tap } from 'rxjs/operators';
 import { merge, Subscription } from 'rxjs';
 
 import { Student } from '../../../models/student.model';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { TableColumns } from '../../../constants/tableColumns';
+import { PageTitles } from '../../../constants/pageTitles';
+import { SortOrder } from '../../../constants/sortOrder';
 
 import { StudentService } from '../../../services/student.service';
-import { StudentsDataSource } from '../../../datasources/students.datasource';
-import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
-import { tap } from 'rxjs/operators';
 import { HelperService } from '../../../services/helper.service';
+
+import { StudentsDataSource } from '../../../datasources/students.datasource';
 
 @Component({
     selector: 'app-users',
     templateUrl: './students.component.html',
-    styleUrls: ['../../../app.component.sass'],
-
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -47,7 +48,12 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     links = AngularLinks;
 
-    columnsToDisplay: string[] = ['name', 'email', 'readerTicket', 'status'];
+    columnsToDisplay: string[] = [
+        TableColumns.NAME,
+        TableColumns.EMAIL,
+        TableColumns.READER_TICKET,
+        TableColumns.STATUS
+    ];
     expandedElement: Student | null;
 
     mergeSubscription: Subscription;
@@ -66,9 +72,9 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Students';
+        document.title = PageTitles.STUDENTS;
         this.dataSource = new StudentsDataSource(this.studentService);
-        this.dataSource.loadStudents('', '', 'asc', 0, 5);
+        this.dataSource.loadStudents('', '', SortOrder.ASC, 0, 5);
     }
 
     ngAfterViewInit(): void {

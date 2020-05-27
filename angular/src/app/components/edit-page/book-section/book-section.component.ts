@@ -8,8 +8,9 @@ import { Department } from '../../../models/department.model';
 
 import { ResponseService } from '../../../services/response.service';
 import { BookService } from '../../../services/book.service';
-import { AngularLinks } from '../../../constants/angularLinks';
 import { HelperService } from '../../../services/helper.service';
+
+import { AngularLinks } from '../../../constants/angularLinks';
 
 @Component({
     selector: 'app-book-section',

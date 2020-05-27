@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
 
 import { ResponseService } from './response.service';
+import { HelperService } from './helper.service';
 
 import { serverLink } from '../constants/serverLink';
-import { HelperService } from './helper.service';
-import { log } from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -18,21 +17,11 @@ import { log } from 'util';
 export class OrderService {
     private ORDERS_URL = `${serverLink}/orders`;
 
-    private orders = new Subject<Order[]>();
-
     constructor(
         private http: HttpClient,
         private responseService: ResponseService,
         private helperService: HelperService
     ) {}
-
-    setOrders(orders: Order[]): void {
-        this.orders.next(orders);
-    }
-
-    getOrders(): Observable<Order[]> {
-        return this.orders;
-    }
 
     fetchOrdersHttp(
         filterName: string = '',
@@ -72,7 +61,6 @@ export class OrderService {
             })
             .pipe(
                 map((response: any) => {
-                    this.setOrders(response.data.orders);
                     this.helperService.setItemsPerPage(response.data.quantity);
                     return response.data.orders;
                 })

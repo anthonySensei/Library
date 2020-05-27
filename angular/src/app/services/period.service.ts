@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { serverLink } from '../constants/serverLink';
 import { Observable, Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ResponseService } from './response.service';
 import { map } from 'rxjs/operators';
 import { Period } from '../models/period.model';
@@ -28,7 +28,7 @@ export class PeriodService {
     }
 
     fetchAllPeriodsHttp() {
-        return this.http.get(`${this.PERIODS_URL}`).pipe(
+        return this.http.get(this.PERIODS_URL).pipe(
             map((response: any) => {
                 this.setPeriods(response.data.periods);
             })
@@ -53,7 +53,9 @@ export class PeriodService {
 
     deletePeriodsHttp(periodId: number) {
         return this.http
-            .delete(`${this.PERIODS_URL}?periodId=${periodId}`)
+            .delete(this.PERIODS_URL, {
+                params: new HttpParams().set('periodId', periodId.toString())
+            })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

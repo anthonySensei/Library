@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -32,7 +32,7 @@ export class ScheduleService {
     }
 
     fetchAllSchedulesHttp() {
-        return this.http.get(`${this.SCHEDULES_URL}`).pipe(
+        return this.http.get(this.SCHEDULES_URL).pipe(
             map((response: any) => {
                 this.setSchedule(response.data.schedules);
             })
@@ -57,7 +57,12 @@ export class ScheduleService {
 
     deleteScheduleHttp(scheduleId: number) {
         return this.http
-            .delete(`${this.SCHEDULES_URL}?scheduleId=${scheduleId}`)
+            .delete(this.SCHEDULES_URL, {
+                params: new HttpParams().set(
+                    'scheduleId',
+                    scheduleId.toString()
+                )
+            })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

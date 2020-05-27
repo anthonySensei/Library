@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -9,11 +10,11 @@ import { HelperService } from '../../services/helper.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
 import { UserRoles } from '../../constants/userRoles';
+import { ModalWidth } from '../../constants/modalWidth';
 
 import { User } from '../../models/user.model';
-import { AddOptionModalComponent } from '../../containers/main-page/add-book/add-option-modal/add-option-modal.component';
+
 import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-header',
@@ -31,11 +32,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     authServiceSubscription: Subscription;
 
     user: User;
-
-    isManager: boolean;
-    isLibrarian: boolean;
-    isStudent: boolean;
-    openMyOrdersModalWidth = '70%';
+    role: string;
+    userRoles = UserRoles;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
@@ -64,21 +62,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.user = user;
             this.isLoggedIn = !!user;
             if (user) {
-                const role = user.role.role;
-                if (role === UserRoles.MANAGER) {
-                    this.isManager = true;
-                } else if (role === UserRoles.LIBRARIAN) {
-                    this.isLibrarian = true;
-                } else if (role === UserRoles.STUDENT) {
-                    this.isStudent = true;
-                }
+                this.role = this.user.role.role;
+            } else {
+                this.role = null;
             }
         });
     }
 
     openMyOrdersModal(): void {
         const dialogRef = this.dialog.open(MyOrdersModalComponent, {
-            width: this.openMyOrdersModalWidth,
+            width: ModalWidth.W70P,
             data: {
                 studentId: this.user.id
             }

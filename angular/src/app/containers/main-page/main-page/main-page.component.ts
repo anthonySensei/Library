@@ -10,10 +10,11 @@ import { AuthorService } from '../../../services/author.service';
 import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
 
-
 import { Filters } from '../../../constants/filters';
 import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
+import { FiltersName } from '../../../constants/filtersName';
+import { PageTitles } from '../../../constants/pageTitles';
 
 import { Book } from '../../../models/book.model';
 import { Author } from '../../../models/author.model';
@@ -22,7 +23,6 @@ import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { Role } from '../../../models/role.model';
 import { Pagination } from '../../../models/pagination.model';
-
 
 @Component({
     selector: 'app-main-page',
@@ -56,7 +56,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     genreSelect: number;
     departmentSelect: number;
     filterValue: string;
-
     fromYear: number;
     toYear: number;
 
@@ -64,9 +63,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     links = AngularLinks;
 
     bookFilters = [
-        { name: 'Nothing', value: Filters.NOTHING },
-        { name: 'Title', value: Filters.TITLE },
-        { name: 'ISBN', value: Filters.ISBN }
+        { name: FiltersName.NOTHING, value: Filters.NOTHING },
+        { name: FiltersName.TITLE, value: Filters.TITLE },
+        { name: FiltersName.ISBN, value: Filters.ISBN }
     ];
 
     currentPage: number;
@@ -89,7 +88,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Library';
+        document.title = PageTitles.CATALOG;
         this.isLoading = true;
         this.paramsHandle();
     }
@@ -176,7 +175,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     paginate(page: number) {
         this.isLoading = true;
         this.currentPage = page;
-        this.router.navigate(['/books'], { queryParams: { page } });
+        this.router.navigate(['/', this.links.BOOKS], {
+            queryParams: { page }
+        });
     }
 
     toggleFilterButton(): void {

@@ -37,13 +37,13 @@ export class MoveBookModalComponent implements OnInit, OnDestroy {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();
-        this.departmentsChangeSubscription = this.departmentService.getDepartments().subscribe(
-            departments => {
+        this.departmentsChangeSubscription = this.departmentService
+            .getDepartments()
+            .subscribe((departments: Department[]) => {
                 this.departments = departments.filter(
-                    dep => dep.id !== this.data.bookDepartmentId
+                    (dep: Department) => dep.id !== this.data.bookDepartmentId
                 );
-            }
-        );
+            });
     }
 
     ngOnDestroy(): void {}

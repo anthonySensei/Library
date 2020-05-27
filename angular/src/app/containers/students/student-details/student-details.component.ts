@@ -10,6 +10,8 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 import { DepartmentService } from '../../../services/department.service';
 
+import { PageTitles } from '../../../constants/pageTitles';
+
 @Component({
     selector: 'app-user-details',
     templateUrl: './student-details.component.html',
@@ -37,7 +39,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Student';
+        document.title = PageTitles.STUDENT_DETAILS;
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {

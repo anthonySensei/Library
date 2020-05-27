@@ -4,16 +4,19 @@ import { Subscription } from 'rxjs';
 
 import { Department } from '../../models/department.model';
 import { Student } from '../../models/student.model';
+import { Period } from '../../models/period.model';
 
 import { DepartmentService } from '../../services/department.service';
 import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
-import { SnackBarClasses } from '../../constants/snackBarClasses';
-import { Period } from '../../models/period.model';
 import { PeriodService } from '../../services/period.service';
 import { HelperService } from '../../services/helper.service';
 import { AuthService } from '../../services/auth.service';
+
+import { SnackBarClasses } from '../../constants/snackBarClasses';
+import { PageTitles } from '../../constants/pageTitles';
+import { WarnMessages } from '../../constants/warnMessages';
 
 @Component({
     selector: 'app-edit-page',
@@ -32,7 +35,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     departmentSelect: number;
 
-    nothingToChange = 'Nothing to change';
+    nothingToChange = WarnMessages.NOTHING_TO_CHANGE;
     isManager: boolean;
 
     constructor(
@@ -45,8 +48,9 @@ export class EditPageComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        document.title = PageTitles.MANAGING;
         this.selectsValuesSubscriptionHandle();
-        this.authService.isManager().then(isManager => {
+        this.authService.isManager().then((isManager: boolean) => {
             this.isManager = isManager;
         });
     }

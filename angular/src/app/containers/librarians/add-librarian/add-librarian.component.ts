@@ -14,6 +14,7 @@ import { HelperService } from '../../../services/helper.service';
 import { Department } from '../../../models/department.model';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { PageTitles } from '../../../constants/pageTitles';
 
 @Component({
     selector: 'app-create-user',
@@ -48,7 +49,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Add librarian';
+        document.title = PageTitles.ADD_LIBRARIAN;
         this.emailValidation = this.validationService.getEmailValidation();
         this.initializeForm();
         this.departmentsSubscriptionHandle();
@@ -72,7 +73,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
             .subscribe();
         this.departmentsSubscription = this.departmentService
             .getDepartments()
-            .subscribe(departments => {
+            .subscribe((departments: Department[]) => {
                 this.departments = departments;
             });
     }

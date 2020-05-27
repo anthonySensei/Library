@@ -83,18 +83,21 @@ export class LibrarianService {
     }
 
     getAllLibrariansHttp() {
-        return this.http
-            .get(this.LIBRARIANS_ALL_URL)
-            .pipe(
-                map((response: any) => {
-                    this.setLibrarians(response.data.librarians);
-                })
-            );
+        return this.http.get(this.LIBRARIANS_ALL_URL).pipe(
+            map((response: any) => {
+                this.setLibrarians(response.data.librarians);
+            })
+        );
     }
 
     getLibrarianHttp(librarianId: number) {
         return this.http
-            .get(`${this.LIBRARIANS_DETAILS_URL}?librarianId=${librarianId}`)
+            .get(this.LIBRARIANS_DETAILS_URL, {
+                params: new HttpParams().set(
+                    'librarianId',
+                    librarianId.toString()
+                )
+            })
             .pipe(
                 map((response: any) => {
                     this.setLibrarian(response.data.librarian);

@@ -15,6 +15,9 @@ import { HelperService } from '../../../services/helper.service';
 import { DepartmentService } from '../../../services/department.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { TableColumns } from '../../../constants/tableColumns';
+import { PageTitles } from '../../../constants/pageTitles';
+import { SortOrder } from '../../../constants/sortOrder';
 
 import { Librarian } from '../../../models/librarian.model';
 import { Department } from '../../../models/department.model';
@@ -55,8 +58,13 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     departmentsSubscription: Subscription;
     departmentsFetchSubscription: Subscription;
 
-    columnsToDisplay: string[] = ['name', 'email', 'departmentAddress'];
+    columnsToDisplay: string[] = [
+        TableColumns.NAME,
+        TableColumns.EMAIL,
+        TableColumns.DEPARTMENT_ADDRESS
+    ];
     expandedElement: Librarian | null;
+    tableColumns = TableColumns;
 
     filterName: string;
     filterValue: string;
@@ -72,9 +80,9 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Librarians';
+        document.title = PageTitles.LIBRARIANS;
         this.dataSource = new LibrariansDataSource(this.librarianService);
-        this.dataSource.loadLibrarians('', '', null, 'asc', 0, 5);
+        this.dataSource.loadLibrarians('', '', null, SortOrder.ASC, 0, 5);
         this.subscriptionHandle();
     }
 

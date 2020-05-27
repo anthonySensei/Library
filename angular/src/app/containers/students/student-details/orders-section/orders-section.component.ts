@@ -18,6 +18,9 @@ import { OrdersDataSource } from '../../../../datasources/orders.datasource';
 import { OrderService } from '../../../../services/orders.service';
 import { HelperService } from '../../../../services/helper.service';
 
+import { TableColumns } from '../../../../constants/tableColumns';
+import { SortOrder } from '../../../../constants/sortOrder';
+
 @Component({
     selector: 'app-orders-section',
     templateUrl: './orders-section.component.html'
@@ -34,11 +37,12 @@ export class OrdersSectionComponent
     departmentSelect: number;
 
     columnsToDisplay: string[] = [
-        'orderTime',
-        'loanTime',
-        'bookISBN',
-        'departmentAddress'
+        TableColumns.ORDER_TIME,
+        TableColumns.LOAN_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.DEPARTMENT_ADDRESS
     ];
+    tableColumns = TableColumns;
 
     dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -53,7 +57,7 @@ export class OrdersSectionComponent
         this.dataSource.loadOrders(
             '',
             '',
-            'desc',
+            SortOrder.DESC,
             0,
             5,
             null,

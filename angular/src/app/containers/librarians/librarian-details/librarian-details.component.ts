@@ -9,6 +9,8 @@ import { HelperService } from '../../../services/helper.service';
 import { Librarian } from '../../../models/librarian.model';
 import { Schedule } from '../../../models/schedule.model';
 
+import { PageTitles } from '../../../constants/pageTitles';
+
 @Component({
     selector: 'app-librarian-details',
     templateUrl: './librarian-details.component.html',
@@ -34,7 +36,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Librarian';
+        document.title = PageTitles.LIBRARIAN_DETAILS;
         this.isLoading = true;
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {
@@ -50,7 +52,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
             .subscribe();
         this.librarianChangedSubscription = this.librarianService
             .getLibrarian()
-            .subscribe(librarian => {
+            .subscribe((librarian: Librarian) => {
                 this.librarian = librarian;
                 this.schedule = this.librarian.schedule || [];
                 this.isLoading = false;

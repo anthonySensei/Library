@@ -42,7 +42,7 @@
         matSortDirection="asc"
         matSortDisableClear
     >
-        <ng-container matColumnDef="orderTime">
+        <ng-container [matColumnDef]="tableColumns.ORDER_TIME">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Order time
             </th>
@@ -51,7 +51,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="loanTime">
+        <ng-container [matColumnDef]="tableColumns.LOAN_TIME">
             <th mat-header-cell *matHeaderCellDef>
                 Loan time
             </th>
@@ -64,7 +64,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="bookISBN">
+        <ng-container [matColumnDef]="tableColumns.BOOK_ISBN">
             <th mat-header-cell *matHeaderCellDef>
                 ISBN
             </th>
@@ -73,7 +73,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="departmentAddress">
+        <ng-container [matColumnDef]="tableColumns.DEPARTMENT_ADDRESS">
             <th mat-header-cell *matHeaderCellDef>
                 Department address
             </th>

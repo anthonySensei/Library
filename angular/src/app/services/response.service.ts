@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { Subject } from 'rxjs';
-
 import { Response } from '../models/response.model';
+
 import { MaterialService } from './material.service';
+
 import { SnackBarClasses } from '../constants/snackBarClasses';
 
 @Injectable({

@@ -2,16 +2,88 @@
     <img src="assets/main.png" alt="logo" style="width: 40px;" />
     <a [routerLink]="links.HOME" class="navbar-name">Library</a>
     <mat-divider
-        [vertical]="true"
-        style="height: 80%; background-color: black; margin: 0 0.3% 0 0;"
+            [vertical]="true"
+            style="height: 80%; background-color: black; margin: 0 0.3% 0 0;"
     ></mat-divider>
     <div class="not-small-screen-container" *ngIf="!isSmallScreen">
-        <app-navbar-links
-            [links]="links"
-            [isManager]="isManager"
-            [isLibrarian]="isLibrarian"
-            [isStudent]="isStudent"
-        ></app-navbar-links>
+        <ul class="main-header-item-list">
+            <li class="main-header-item" routerLinkActive="active">
+                <a [routerLink]="'/' + links.BOOKS" class="navbar-link"
+                >Books</a
+                >
+            </li>
+            <li
+                    *ngIf="role === userRoles.MANAGER"
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a
+                        [routerLink]="'/' + links.LIBRARIAN_SCHEDULE"
+                        class="navbar-link"
+                >Schedule</a
+                >
+            </li>
+            <li
+                    *ngIf="role === userRoles.LIBRARIAN"
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.LOANS" class="navbar-link"
+                >Loans</a
+                >
+            </li>
+            <li
+                    *ngIf="role === userRoles.LIBRARIAN"
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.ORDERS" class="navbar-link"
+                >Orders</a
+                >
+            </li>
+            <li
+                    *ngIf="
+                    role === userRoles.LIBRARIAN || role === userRoles.MANAGER
+                "
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.LOANS_CHART" class="navbar-link"
+                >Statistic</a
+                >
+            </li>
+            <li
+                    *ngIf="role === userRoles.MANAGER"
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.LIBRARIANS" class="navbar-link"
+                >Librarians</a
+                >
+            </li>
+            <li
+                    *ngIf="
+                    role === userRoles.LIBRARIAN || role === userRoles.MANAGER
+                "
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.STUDENTS" class="navbar-link"
+                >Students</a
+                >
+            </li>
+            <li
+                    *ngIf="
+                    role === userRoles.LIBRARIAN || role === userRoles.MANAGER
+                "
+                    class="main-header-item"
+                    routerLinkActive="active"
+            >
+                <a [routerLink]="'/' + links.EDIT_PAGE" class="navbar-link"
+                >Managing</a
+                >
+            </li>
+        </ul>
     </div>
 
     <span class="fill-remaining-space"></span>
@@ -22,26 +94,100 @@
         </li>
         <ng-template #logout>
             <mat-menu #appMenu="matMenu">
-                <app-menu-links
-                    [links]="links"
-                    [isManager]="isManager"
-                    [isLibrarian]="isLibrarian"
-                    [isStudent]="isStudent"
-                    [isSmallScreen]="isSmallScreen"
-                ></app-menu-links>
+                <a
+                        mat-menu-item
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.MY_ACCOUNT"
+                        class="mat-menu-item"
+                >
+                    Profile
+                </a>
                 <button
-                    mat-menu-item
-                    routerLinkActive="menu-active"
-                    class="mat-menu-item"
-                    (click)="openMyOrdersModal()"
-                    *ngIf="isStudent"
+                        mat-menu-item
+                        routerLinkActive="menu-active"
+                        class="mat-menu-item"
+                        (click)="openMyOrdersModal()"
+                        *ngIf="role === userRoles.STUDENT"
                 >
                     My orders
                 </button>
+                <div class="small-screen-container" *ngIf="isSmallScreen">
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.BOOKS"
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Books
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.LOANS"
+                            *ngIf="role === userRoles.LIBRARIAN"
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Loans
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.ORDERS"
+                            *ngIf="role === userRoles.LIBRARIAN"
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Orders
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.LOANS_CHART"
+                            *ngIf="
+                            role === userRoles.LIBRARIAN ||
+                            role === userRoles.MANAGER
+                        "
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Statistic
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.LIBRARIANS"
+                            *ngIf="role === userRoles.MANAGER"
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Librarians
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.STUDENTS"
+                            *ngIf="
+                            role === userRoles.LIBRARIAN ||
+                            role === userRoles.MANAGER
+                        "
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Students
+                    </a>
+                    <a
+                            routerLinkActive="menu-active"
+                            [routerLink]="'/' + links.EDIT_PAGE"
+                            *ngIf="
+                            role === userRoles.LIBRARIAN ||
+                            role === userRoles.MANAGER
+                        "
+                            mat-menu-item
+                            class="mat-menu-item"
+                    >
+                        Managing
+                    </a>
+                </div>
                 <button
-                    mat-menu-item
-                    (click)="onLogoutUser()"
-                    class="mat-menu-item"
+                        mat-menu-item
+                        (click)="onLogoutUser()"
+                        class="mat-menu-item"
                 >
                     Logout
                 </button>
@@ -50,13 +196,13 @@
             <button mat-icon-button [matMenuTriggerFor]="appMenu">
                 <span class="image-cropper">
                     <img
-                        class="navbar-profile-image"
-                        src="{{
+                            class="navbar-profile-image"
+                            src="{{
                             user.profileImage
                                 ? user.profileImage
                                 : 'https://www.w3schools.com/w3css/img_avatar3.png'
                         }}"
-                        alt="profile_image"
+                            alt="profile_image"
                     />
                 </span>
             </button>

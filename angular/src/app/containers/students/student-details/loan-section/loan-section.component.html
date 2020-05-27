@@ -41,7 +41,7 @@
         matSortDisableClear
         class="mat-elevation-z8"
     >
-        <ng-container matColumnDef="loanTime">
+        <ng-container [matColumnDef]="tableColumns.LOAN_TIME">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
                 Loan time
             </th>
@@ -50,7 +50,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="returnedTime">
+        <ng-container [matColumnDef]="tableColumns.RETURNED_TIME">
             <th mat-header-cell *matHeaderCellDef>
                 Returned time
             </th>
@@ -63,7 +63,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="bookISBN">
+        <ng-container [matColumnDef]="tableColumns.BOOK_ISBN">
             <th mat-header-cell *matHeaderCellDef>
                 ISBN
             </th>
@@ -72,7 +72,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="librarianEmail">
+        <ng-container [matColumnDef]="tableColumns.EMAIL">
             <th mat-header-cell *matHeaderCellDef>
                 Librarian email
             </th>
@@ -81,7 +81,7 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="departmentAddress">
+        <ng-container [matColumnDef]="tableColumns.DEPARTMENT_ADDRESS">
             <th mat-header-cell *matHeaderCellDef>
                 Department address
             </th>

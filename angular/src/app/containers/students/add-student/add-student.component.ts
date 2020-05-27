@@ -13,6 +13,8 @@ import { ValidationService } from '../../../services/validation.service';
 import { StudentService } from '../../../services/student.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
+import { PageTitles } from '../../../constants/pageTitles';
+import { KeyWords } from '../../../constants/keyWords';
 
 @Component({
     selector: 'app-add-student',
@@ -47,7 +49,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Add librarian';
+        document.title = PageTitles.ADD_STUDENT;
         this.emailValidation = this.validationService.getEmailValidation();
         this.readerTicketValidation = this.validationService.getReaderTicketValidation();
         this.initializeForm();
@@ -105,12 +107,12 @@ export class AddStudentComponent implements OnInit, OnDestroy {
 
     fieldsErrorHandle() {
         this.response = this.responseService.getResponse();
-        if (this.response.message.toLowerCase().includes('email')) {
+        if (this.response.message.toLowerCase().includes(KeyWords.EMAIL)) {
             this.emailError = this.response.message;
             this.createStudentForm.controls.email.setErrors({
                 incorrect: true
             });
-        } else if (this.response.message.toLowerCase().includes('reader')) {
+        } else if (this.response.message.toLowerCase().includes(KeyWords.READER)) {
             this.createStudentForm.controls.readerTicket.setErrors({
                 incorrect: true
             });

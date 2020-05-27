@@ -69,7 +69,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             .subscribe();
         this.librariansSubscription = this.librarianService
             .getLibrarians()
-            .subscribe(librarians => {
+            .subscribe((librarians: Librarian[]) => {
                 this.librarians = librarians;
             });
         this.setSchedules();
@@ -87,20 +87,22 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     getSchedule(): Schedule {
-        return this.schedules.find(sch => sch.id === this.scheduleSelect);
+        return this.schedules.find(
+            (sch: Schedule) => sch.id === this.scheduleSelect
+        );
     }
 
     getPeriod(periodId): Period {
-        return this.periods.find(per => per.id === periodId);
+        return this.periods.find((per: Period) => per.id === periodId);
     }
 
     getLibrarian(librarianId): Librarian {
-        return this.librarians.find(lib => lib.id === librarianId);
+        return this.librarians.find((lib: Librarian) => lib.id === librarianId);
     }
 
     setShowedSchedule(): void {
         this.showedSchedules = this.schedules.filter(
-            sch => sch.librarian.id === this.librarianSelect
+            (sch: Schedule) => sch.librarian.id === this.librarianSelect
         );
     }
 

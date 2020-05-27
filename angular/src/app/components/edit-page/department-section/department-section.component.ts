@@ -1,11 +1,18 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    Output
+} from '@angular/core';
+
+import { Subscription } from 'rxjs';
 
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Department } from '../../../models/department.model';
-import { Subscription } from 'rxjs';
-import { HelperService } from '../../../services/helper.service';
 
 @Component({
     selector: 'app-department-section',

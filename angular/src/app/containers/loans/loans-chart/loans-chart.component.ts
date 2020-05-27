@@ -3,9 +3,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
+import { HelperService } from '../../../services/helper.service';
 
 import { Statistic } from '../../../models/statistic.model';
-import { HelperService } from '../../../services/helper.service';
+
+import { WarnMessages } from '../../../constants/warnMessages';
+import { PageTitles } from '../../../constants/pageTitles';
+import { DbModels } from '../../../constants/dbModels';
 
 @Component({
     selector: 'app-loans-chart',
@@ -38,7 +42,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     modelValue: string;
 
     colorScheme = {
-        domain: ['#ffaa00', '#5AA454', '#E44D25', '#7aa3e5', '#a8385d']
+        domain: ['#ffaa00']
     };
     constructor(
         private loansService: LoansService,
@@ -46,8 +50,8 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        document.title = 'Statistic';
-        this.multi = this.helperService.emptyChartHandle('Empty');
+        document.title = PageTitles.STATISTIC;
+        this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
     }
 
     statisticHandler(): void {
@@ -71,7 +75,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         this.multi = [
             {
                 name:
-                    this.model === 'user'
+                    this.model === DbModels.USER
                         ? this.statistic[0].student.name
                         : this.statistic[0].book.name,
                 series: seriesArr
@@ -90,12 +94,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
             .fetchLoansStatisticHttp(this.model, this.modelValue)
             .subscribe();
         this.statisticHandler();
-    }
-
-    showTopFive(): void {
-        this.statisticTopFiveSubscription = this.loansService
-            .fetchTopFiveLoansHttp(this.model)
-            .subscribe();
     }
 
     ngOnDestroy(): void {

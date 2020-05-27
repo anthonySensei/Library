@@ -13,11 +13,14 @@ import { tap } from 'rxjs/operators';
 
 import { HelperService } from '../../../../services/helper.service';
 import { LoansService } from '../../../../services/loans.service';
+import { DepartmentService } from '../../../../services/department.service';
 
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { Department } from '../../../../models/department.model';
-import { DepartmentService } from '../../../../services/department.service';
+
+import { SortOrder } from '../../../../constants/sortOrder';
+import { TableColumns } from '../../../../constants/tableColumns';
 
 @Component({
     selector: 'app-loans-section',
@@ -34,11 +37,13 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = [
-        'loanTime',
-        'returnedTime',
-        'bookISBN',
-        'studentTicketReader'
+        TableColumns.LOAN_TIME,
+        TableColumns.RETURNED_TIME,
+        TableColumns.BOOK_ISBN,
+        TableColumns.READER_TICKET,
+        TableColumns.DEPARTMENT_ADDRESS,
     ];
+    tableColumns = TableColumns;
 
     departmentSelect: number;
 
@@ -58,7 +63,7 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataSource.loadLoans(
             '',
             '',
-            'desc',
+            SortOrder.DESC,
             0,
             5,
             null,
@@ -83,7 +88,7 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe();
     }
 
-    subscriptionHandle() {
+    subscriptionHandle(): void {
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();

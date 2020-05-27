@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -32,13 +32,11 @@ export class AuthorService {
     }
 
     fetchAllAuthorsHttp() {
-        return this.http
-            .get(`${this.AUTHORS_URL}`)
-            .pipe(
-                map((response: any) => {
-                    this.setAuthors(response.data.authors);
-                })
-            );
+        return this.http.get(this.AUTHORS_URL).pipe(
+            map((response: any) => {
+                this.setAuthors(response.data.authors);
+            })
+        );
     }
 
     addAuthorHttp(author: Author) {
@@ -57,7 +55,9 @@ export class AuthorService {
     }
     deleteAuthorHttp(authorId: number) {
         return this.http
-            .delete(`${this.AUTHORS_URL}?authorId=${authorId}`)
+            .delete(this.AUTHORS_URL, {
+                params: new HttpParams().set('authorId', authorId.toString())
+            })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);
