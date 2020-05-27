@@ -25,7 +25,6 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
 
     departments: Department[];
 
-    discard: boolean;
     done: boolean;
 
     createLibrarianSubscription: Subscription;
@@ -36,6 +35,7 @@ export class AddLibrarianComponent implements OnInit, OnDestroy {
 
     emailValidation;
 
+    discard: boolean;
     discardChanged = new Subject<boolean>();
 
     constructor(
