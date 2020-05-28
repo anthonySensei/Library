@@ -17,6 +17,5 @@ exports.generatePassword = () => {
     for (let i = 0, n = charset.length; i < lengthOfGeneratedPassword; ++i) {
         retVal += charset.charAt(Math.floor(Math.random() * n));
     }
-    return cryptPassword(retVal);
+    return { encrypted: cryptPassword(retVal), password: retVal };
 };
-

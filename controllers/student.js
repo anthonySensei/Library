@@ -11,9 +11,11 @@ const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/imageHandle');
 const checkUniqueness = require('../helper/checkUniqueness');
 const passwordGenerator = require('../helper/generatePassword');
+const mailSender = require('../helper/mailSender');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
+const mailMessages = require('../constants/mailMessages');
 
 const loanController = require('./loan');
 
@@ -339,12 +341,24 @@ const createStudent = async (
             name: name,
             reader_ticket: readerTicket,
             status: status,
-            password: password
+            password: password.encrypted
         });
     }
 
     try {
         await newStudent.save();
+        if (registrationToken)
+            await mailSender.sendMail(
+                email,
+                mailMessages.subjects.ACCOUNT_ACTIVATION,
+                mailMessages.generateActivationMessage(registrationToken)
+            );
+        else
+            await mailSender.sendMail(
+                email,
+                mailMessages.subjects.ACCOUNT_CREATED,
+                mailMessages.generatePasswordMessage(email, password.password)
+            );
         const data = {
             isSuccessful: true,
             message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED

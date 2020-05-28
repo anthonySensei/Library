@@ -16,11 +16,13 @@ const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/imageHandle');
 const passwordGenerator = require('../helper/generatePassword');
 const checkUniqueness = require('../helper/checkUniqueness');
+const mailSender = require('../helper/mailSender');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
 const filters = require('../constants/filters');
+const mailMessages = require('../constants/mailMessages');
 
 const getLibrarianRole = async librarianId => {
     try {
@@ -241,16 +243,23 @@ exports.addLibrarian = async (req, res) => {
             );
         }
 
+        const passwordObj = passwordGenerator.generatePassword();
+
         const newLibrarian = await Librarian.create({
             name: name,
             email: email,
             departmentId: departmentId,
-            password: passwordGenerator.generatePassword()
+            password: passwordObj.encrypted
         });
         await Role.create({
             librarian_id: newLibrarian.get().id,
             role: roles.LIBRARIAN
         });
+        await mailSender.sendMail(
+            email,
+            mailMessages.subjects.ACCOUNT_CREATED,
+            mailMessages.generatePasswordMessage(email, passwordObj.password)
+        );
         const data = {
             isSuccessful: true,
             message: successMessages.LIBRARIAN_SUCCESSFULLY_CREATED
