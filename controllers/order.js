@@ -11,10 +11,12 @@ const Department = require('../models/department');
 
 const helper = require('../helper/responseHandle');
 const conditionGenerator = require('../helper/orderLoanCondition');
+const mailSender = require('../helper/mailSender');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const filters = require('../constants/filters');
+const mailMessages = require('../constants/mailMessages');
 
 exports.getAllOrders = async (req, res) => {
     const page = +req.query.pageNumber;
@@ -160,6 +162,11 @@ exports.orderBook = async (req, res) => {
         });
         await bookOrder.save();
         await book.update({ quantity: book.get().quantity - 1 });
+        await mailSender.sendMail(
+            studentEmail,
+            mailMessages.subjects.BOOK_ORDERED,
+            mailMessages.messages.BOOK_ORDERED
+        );
 
         const data = {
             isSuccessful: true,

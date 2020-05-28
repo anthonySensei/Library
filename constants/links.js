@@ -5,6 +5,7 @@ exports.BOOKS_MOVE_URL = `/move`;
 
 exports.AUTH_REGISTRATION_URL = '/registration';
 exports.AUTH_CHECK_REGISTRATION_TOKEN_URL = '/check-registration-token';
+exports.AUTH_ACTIVATION_PAGE_URL = '/activation-page';
 exports.AUTH_LOGIN_URL = '/login';
 exports.AUTH_LOGOUT_URL = '/logout';
 
@@ -33,3 +34,4 @@ exports.PERIODS_URL = '/periods';
 
 exports.SCHEDULES_URL = '/schedules';
 exports.SCHEDULES_SORTED_URL = '/sorted';
+
