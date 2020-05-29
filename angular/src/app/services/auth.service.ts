@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,6 +19,8 @@ export class AuthService {
     private LOGIN_URL = `${serverLink}/login`;
     private LOGOUT_URL = `${serverLink}/logout`;
     private CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
+    private PALINDROME_URL =
+        'https://palindrome-inc.herokuapp.com/api/user-app/profile';
 
     private isLoggedIn = false;
     private loggedChange = new Subject<boolean>();
@@ -195,11 +197,24 @@ export class AuthService {
         const token = {
             registrationToken
         };
+        return this.http.post(this.CHECK_REGISTRATION_TOKEN_URL, token).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+
+    loginWithPalindrome(token: string) {
         return this.http
-            .post(this.CHECK_REGISTRATION_TOKEN_URL, token)
+            .get(this.PALINDROME_URL, {
+                headers: new HttpHeaders().set(
+                    'Authorization',
+                    `Bearer ${token}`
+                )
+            })
             .pipe(
                 map((response: any) => {
-                    this.responseService.setResponse(response.data);
+                    console.log(response);
                 })
             );
     }
