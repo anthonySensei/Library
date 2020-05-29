@@ -163,7 +163,10 @@ export class AddBookComponent
         this.bookDetailsForm = new FormGroup({
             author: new FormControl(null, [Validators.required]),
             genre: new FormControl(null, [Validators.required]),
-            year: new FormControl(null, [Validators.required]),
+            year: new FormControl(null, [
+                ...this.validationService.getYearValidation(),
+                Validators.required
+            ]),
             description: new FormControl(null, [Validators.required])
         });
     }
