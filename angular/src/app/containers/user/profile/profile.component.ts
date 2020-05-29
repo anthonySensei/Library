@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     isLoading: boolean;
     discard: boolean;
     discardChanged = new Subject<boolean>();
+    done: boolean;
 
     user: User;
 
@@ -147,6 +148,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         )
                         .subscribe(() => {
                             if (this.responseService.responseHandle()) {
+                                this.done = true;
                                 this.user.profileImage = profileImage;
                                 localStorage.setItem(
                                     'userData',
@@ -200,6 +202,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             )
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
+                    this.done = true;
                     this.user.email = email;
                     this.user.name = name;
                     localStorage.setItem('userData', JSON.stringify(this.user));
@@ -224,7 +227,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.profileForm.touched) {
+        if (this.profileForm.touched && !this.done) {
             this.materialService.openDiscardChangesDialog(
                 this.discard,
                 this.discardChanged

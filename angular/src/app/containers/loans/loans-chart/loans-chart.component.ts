@@ -15,6 +15,7 @@ import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-loans-chart',
@@ -29,6 +30,8 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     departmentsFetchSubscription: Subscription;
     statisticSubscription: Subscription;
     statisticChangedSubscription: Subscription;
+
+    isManager: boolean;
 
     view: any[] = [700, 300];
 
@@ -55,6 +58,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         private loansService: LoansService,
         private helperService: HelperService,
         private materialService: MaterialService,
+        private authService: AuthService,
         private departmentService: DepartmentService
     ) {}
 
@@ -62,6 +66,9 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         document.title = PageTitles.STATISTIC;
         this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
         this.subscriptionHandle();
+        this.authService.isManager().then((isManager: boolean) => {
+            this.isManager = isManager;
+        });
     }
 
     statisticHandler(): void {

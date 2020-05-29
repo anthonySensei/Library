@@ -369,11 +369,16 @@ exports.moveBook = async (req, res) => {
             }
         });
         if (isNotUnique) {
-            return helper.responseErrorHandle(
-                res,
-                200,
-                errorMessages.ISBN_EXIST
-            );
+            await isNotUnique.update({
+                quantity: isNotUnique.get().quantity + quantity
+            });
+            const bookInDb = await Book.findOne({ where: { id: book.id } });
+            await bookInDb.update({ quantity: bookInDb.get().quantity - quantity });
+            const data = {
+                isSuccessful: true,
+                message: successMessages.BOOK_SUCCESSFULLY_MOVED
+            };
+            return helper.responseHandle(res, 200, data);
         }
         await Book.create(newBook);
         const bookInDb = await Book.findOne({ where: { id: book.id } });

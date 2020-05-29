@@ -9,8 +9,12 @@
             >
                 <mat-option value="user">Student</mat-option>
                 <mat-option value="book">Book</mat-option>
-                <mat-option value="librarian">Librarian</mat-option>
-                <mat-option value="department">Department</mat-option>
+                <mat-option value="librarian" *ngIf="isManager"
+                    >Librarian</mat-option
+                >
+                <mat-option value="department" *ngIf="isManager"
+                    >Department</mat-option
+                >
             </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="model !== 'department'">
@@ -33,7 +37,7 @@
             mat-stroked-button
             color="primary"
             type="button"
-            class="btn"
+            class="ml-5"
             matTooltip="Show statistic"
             [disabled]="!model || !modelValue"
             (click)="showStatistic()"

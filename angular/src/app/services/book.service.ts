@@ -10,7 +10,6 @@ import { ResponseService } from './response.service';
 
 import { serverLink } from '../constants/serverLink';
 import { HelperService } from './helper.service';
-import { log } from 'util';
 
 @Injectable({
     providedIn: 'root'

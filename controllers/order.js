@@ -10,13 +10,36 @@ const Book = require('../models/book');
 const Department = require('../models/department');
 
 const helper = require('../helper/responseHandle');
-const conditionGenerator = require('../helper/orderLoanCondition');
 const mailSender = require('../helper/mailSender');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const filters = require('../constants/filters');
 const mailMessages = require('../constants/mailMessages');
+
+const getCondition = (departmentId, loanDate, nextDay, isShowNotLoaned) => {
+    let departmentCondition = {};
+    let dateCondition = {};
+    let isShowNotLoanedCondition = {};
+
+    if (departmentId) departmentCondition = { departmentId: departmentId };
+    if (loanDate)
+        dateCondition = {
+            loan_time: {
+                [Op.between]: [loanDate, nextDay]
+            }
+        };
+    if (isShowNotLoaned === 'true')
+        isShowNotLoanedCondition = {
+            loan_time: null
+        };
+
+    return {
+        ...departmentCondition,
+        ...dateCondition,
+        ...isShowNotLoanedCondition
+    };
+};
 
 exports.getAllOrders = async (req, res) => {
     const page = +req.query.pageNumber;
@@ -57,7 +80,7 @@ exports.getAllOrders = async (req, res) => {
     try {
         const quantity = await Order.count({
             include: includeArr,
-            where: conditionGenerator.generateCondition(
+            where: getCondition(
                 departmentId,
                 orderDate,
                 nextDay,
@@ -66,7 +89,7 @@ exports.getAllOrders = async (req, res) => {
         });
         const orders = await Order.findAll({
             include: includeArr,
-            where: conditionGenerator.generateCondition(
+            where: getCondition(
                 departmentId,
                 orderDate,
                 nextDay,

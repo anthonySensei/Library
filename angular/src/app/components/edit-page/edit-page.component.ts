@@ -19,7 +19,6 @@ import { LibrarianService } from '../../services/librarian.service';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
-import { MatDialog } from '@angular/material';
 
 @Component({
     selector: 'app-edit-page',
