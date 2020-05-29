@@ -19,5 +19,7 @@ module.exports = {
     GENRE_EXIST: 'Genre has already existed.',
     PERIOD_EXIST: 'Period has already existed.',
     SCHEDULE_EXIST: 'Schedule has already existed.',
+    THERE_ARE_NO_AVAILABLE_BOOKS:
+        'There are no books available on the department.',
     ISBN_EXIST: 'Book with this isbn exist in this department'
 };

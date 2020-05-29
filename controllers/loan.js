@@ -86,21 +86,11 @@ exports.getAllLoans = async (req, res) => {
     try {
         const quantity = await Loan.count({
             include: includeArr,
-            where: getCondition(
-                departmentId,
-                loanDate,
-                nextDay,
-                isShowDebtors
-            )
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors)
         });
         const loans = await Loan.findAll({
             include: includeArr,
-            where: getCondition(
-                departmentId,
-                loanDate,
-                nextDay,
-                isShowDebtors
-            ),
+            where: getCondition(departmentId, loanDate, nextDay, isShowDebtors),
             limit: pageSize,
             order: [['loan_time', sortOrder]],
             offset: (page - 1) * pageSize
@@ -417,23 +407,31 @@ exports.loanBook = async (req, res) => {
                 model: Department
             }
         });
-        const bookLoan = new Loan({
-            loan_time: loanTime,
-            studentId: student.get().id,
-            bookId: bookId,
-            librarianId: librarian.get().id,
-            departmentId: librarian.get().department_.get().id
-        });
-        await bookLoan.save();
         const book = await Book.findOne({ where: { id: bookId } });
-        await book.update({ quantity: book.get().quantity - 1 });
+        if (book.get().quantity <= 0) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
+            );
+        } else {
+            const bookLoan = new Loan({
+                loan_time: loanTime,
+                studentId: student.get().id,
+                bookId: bookId,
+                librarianId: librarian.get().id,
+                departmentId: librarian.get().department_.get().id
+            });
+            await bookLoan.save();
+            await book.update({ quantity: book.get().quantity - 1 });
 
-        const data = {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_LOANED
-        };
+            const data = {
+                isSuccessful: true,
+                message: successMessages.SUCCESSFULLY_LOANED
+            };
 
-        helper.responseHandle(res, 200, data);
+            helper.responseHandle(res, 200, data);
+        }
     } catch (error) {
         helper.responseErrorHandle(
             res,
