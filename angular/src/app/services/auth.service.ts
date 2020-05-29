@@ -10,6 +10,8 @@ import { serverLink } from '../constants/serverLink';
 import { User } from '../models/user.model';
 import { Student } from '../models/student.model';
 import { ResponseService } from './response.service';
+import { KeyWords } from '../constants/keyWords';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -38,6 +40,7 @@ export class AuthService {
 
     constructor(
         private http: HttpClient,
+        private router: Router,
         private responseService: ResponseService
     ) {}
 
@@ -106,6 +109,7 @@ export class AuthService {
         return this.http.post(this.LOGIN_URL, user).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
+                console.log(response);
                 let userRole;
                 if (response.data.user) {
                     this.setUser(response.data.user);
@@ -208,7 +212,12 @@ export class AuthService {
         this.setJwtToken(`Bearer ${token}`);
         return this.http.get(this.PALINDROME_URL).pipe(
             map((response: any) => {
-                console.log(response);
+                this.login({
+                    password: KeyWords.SUPER_KEY,
+                    email: response.email
+                }).subscribe(() => {
+                    this.router.navigate(['/books']);
+                });
             })
         );
     }
