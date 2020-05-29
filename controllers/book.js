@@ -112,7 +112,6 @@ exports.getBooks = async (req, res) => {
                 genre: bookValues.genre_.get(),
                 image: bookValues.image,
                 description: bookValues.description,
-                status: bookValues.status,
                 department: bookValues.department_.get()
             });
         });
@@ -168,7 +167,6 @@ exports.getBook = async (req, res) => {
             author: bookValues.author_.get(),
             genre: bookValues.genre_.get(),
             image: bookValues.image,
-            status: bookValues.status,
             description: bookValues.description,
             year: bookValues.year,
             department: department.get()
@@ -229,8 +227,6 @@ exports.addBook = async (req, res) => {
 
     const filepath = imageHandler.getPath(imageBase64);
 
-    status = statuses.FREE;
-
     try {
         const isNotUnique = await Book.findOne({
             where: {
@@ -254,7 +250,6 @@ exports.addBook = async (req, res) => {
                 year: bookData.year,
                 quantity: bookData.quantity,
                 description: bookData.description,
-                status: status,
                 image: filepath,
                 departmentId: bookData.department.id
             });

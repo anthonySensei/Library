@@ -298,7 +298,6 @@ export class AddBookComponent
             author,
             genre,
             null,
-            null,
             description,
             year,
             quantity,
@@ -309,7 +308,6 @@ export class AddBookComponent
                 book.image = this.book.image;
             }
             book.id = this.bookId;
-            book.status = this.book.status;
             this.editBook(book, this.imageToUploadBase64, stepper);
         } else {
             this.addBookToLibrary(book, this.imageToUploadBase64, stepper);
