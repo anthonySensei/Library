@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -205,17 +205,11 @@ export class AuthService {
     }
 
     loginWithPalindrome(token: string) {
-        return this.http
-            .get(this.PALINDROME_URL, {
-                headers: new HttpHeaders().set(
-                    'Authorization',
-                    `Bearer ${token}`
-                )
+        this.setJwtToken(`Bearer ${token}`);
+        return this.http.get(this.PALINDROME_URL).pipe(
+            map((response: any) => {
+                console.log(response);
             })
-            .pipe(
-                map((response: any) => {
-                    console.log(response);
-                })
-            );
+        );
     }
 }
