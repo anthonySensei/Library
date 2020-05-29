@@ -173,6 +173,12 @@
                         >
                             Year is required
                         </mat-error>
+                        <mat-error *ngIf="hasError('year', 'min') && !error">
+                            You cannot set minus year
+                        </mat-error>
+                        <mat-error *ngIf="hasError('year', 'max') && !error">
+                            You cannot set higher year than present year
+                        </mat-error>
                     </mat-form-field>
                     <div class="btn-group">
                         <button

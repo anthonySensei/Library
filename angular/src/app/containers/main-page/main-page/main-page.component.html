@@ -46,9 +46,16 @@
                     type="number"
                     name="yearFrom"
                     placeholder="Ex. 1689"
+                    [formControl]="fromYearControl"
                     [(ngModel)]="fromYear"
                     [disabled]="isIsbnFilter()"
                 />
+                <mat-error *ngIf="fromYearControl.hasError('max')">
+                    You cannot set higher year than present year
+                </mat-error>
+                <mat-error *ngIf="fromYearControl.hasError('min')">
+                    You cannot set minus year
+                </mat-error>
             </mat-form-field>
             <mat-form-field class="d-block">
                 <mat-label>To</mat-label>
@@ -56,9 +63,16 @@
                     matInput
                     name="yearTo"
                     placeholder="Ex. 2010"
+                    [formControl]="toYearControl"
                     [(ngModel)]="toYear"
                     [disabled]="isIsbnFilter()"
                 />
+                <mat-error *ngIf="toYearControl.hasError('max')">
+                    You cannot set higher year than present year
+                </mat-error>
+                <mat-error *ngIf="toYearControl.hasError('min')">
+                    You cannot set minus year
+                </mat-error>
             </mat-form-field>
             <mat-form-field class="d-block">
                 <mat-label>Author</mat-label>
@@ -91,6 +105,9 @@
                     color="primary"
                     class="ml-5 filter-form-button"
                     (click)="paginate(1); drawer.toggle(); toggleFilterButton()"
+                    [disabled]="
+                        fromYearControl.invalid || toYearControl.invalid
+                    "
                 >
                     <i class="material-icons">search</i>
                 </button>
@@ -122,7 +139,10 @@
             >
                 <i class="material-icons">add</i> Add book
             </a>
-            <section class="pagination-section" *ngIf="!isLoading && books.length > 0">
+            <section
+                class="pagination-section"
+                *ngIf="!isLoading && books.length > 0"
+            >
                 <button
                     *ngIf="hasPreviousPage"
                     mat-stroked-button
