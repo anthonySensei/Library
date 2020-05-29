@@ -18,7 +18,7 @@ import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
 
 import { Days } from '../../../constants/days';
-import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -163,7 +163,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+        const dialogRef = this.dialog.open(AreYouSureComponent, {
             width: ModalWidth.W30P
         });
 
