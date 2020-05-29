@@ -12,6 +12,7 @@
                             matInput
                             type="number"
                             name="reader_ticket"
+                            (change)="error = null"
                             formControlName="reader_ticket"
                             placeholder="123213"
                         />
@@ -40,6 +41,7 @@
                             matInput
                             type="email"
                             name="email"
+                            (change)="emailError = null"
                             formControlName="email"
                             placeholder="Ex. example@mail.com"
                         />

@@ -242,13 +242,15 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.paramsSubscription.add(this.booksSubscription);
-        this.paramsSubscription.add(this.booksFetchSubscription);
-        this.paramsSubscription.add(this.departmentsSubscription);
-        this.paramsSubscription.add(this.departmentsFetchSubscription);
-        this.paramsSubscription.add(this.authorsSubscription);
-        this.paramsSubscription.add(this.authorsFetchSubscription);
-        this.paramsSubscription.add(this.userSubscription);
-        this.paramsSubscription.unsubscribe();
+        this.helperService.unsubscribeHandle(this.paramsSubscription, [
+            this.booksSubscription,
+            this.booksFetchSubscription,
+            this.departmentsSubscription,
+            this.departmentsFetchSubscription,
+            this.departmentsFetchSubscription,
+            this.authorsSubscription,
+            this.authorsFetchSubscription,
+            this.userSubscription
+        ]);
     }
 }

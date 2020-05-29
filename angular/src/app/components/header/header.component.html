@@ -13,7 +13,9 @@
                 >
             </li>
             <li
-                *ngIf="role === userRoles.MANAGER"
+                *ngIf="
+                    role === userRoles.MANAGER || role === userRoles.LIBRARIAN
+                "
                 class="main-header-item"
                 routerLinkActive="active"
             >
@@ -164,6 +166,17 @@
                     >
                         Librarians
                     </a>
+                    <a
+                        *ngIf="
+                            role === userRoles.MANAGER ||
+                            role === userRoles.LIBRARIAN
+                        "
+                        routerLinkActive="menu-active"
+                        [routerLink]="'/' + links.LIBRARIAN_SCHEDULE"
+                        mat-menu-item
+                        class="mat-menu-item"
+                        >Schedule</a
+                    >
                     <a
                         routerLinkActive="menu-active"
                         [routerLink]="'/' + links.STUDENTS"

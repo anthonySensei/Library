@@ -12,9 +12,6 @@ const Book = sequelize.define('book_', {
     isbn: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'Please fill in isbn' }
-        }
     },
     quantity: {
         type: Sequelize.INTEGER,
@@ -23,23 +20,14 @@ const Book = sequelize.define('book_', {
     name: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'Please fill in book name' }
-        }
     },
     year: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'Please fill in book year' }
-        }
     },
     description: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'You should enter book description' }
-        }
     },
     image: {
         type: Sequelize.STRING,

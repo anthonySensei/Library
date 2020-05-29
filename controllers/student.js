@@ -169,7 +169,7 @@ exports.getStudent = async (req, res) => {
         const studentData = {
             name: studentValues.name,
             email: studentValues.email,
-            profileImage: studentValues.profile_image,
+            profileImage: imageHandler.convertToBase64(studentValues.profile_image),
             readerTicket: studentValues.reader_ticket,
             status: studentValues.status,
             loans: studentLoans,

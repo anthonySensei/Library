@@ -11,7 +11,6 @@
                 </p>
                 <p>Genre: {{ book.genre.name }}</p>
                 <p>Year: {{ book.year }}</p>
-                <p>Department: {{ book.department.address }}</p>
                 <p
                     *ngIf="
                         userRole === roles.LIBRARIAN ||
@@ -30,7 +29,7 @@
                     *ngIf="userRole === roles.LIBRARIAN"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     matTooltip="Loan book"
                     (click)="openLoanBookModal()"
                 >
@@ -43,7 +42,7 @@
                     "
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     matTooltip="Edit book"
                     [routerLink]="['/', links.ADD_BOOK]"
                     [queryParams]="{ id: book.id }"
@@ -54,7 +53,7 @@
                     *ngIf="userRole === roles.MANAGER"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     matTooltip="Move book to another department"
                     (click)="openMoveBookModal()"
                 >
@@ -64,7 +63,7 @@
                     *ngIf="userRole === roles.STUDENT"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     matTooltip="Order book"
                     (click)="orderBook()"
                 >

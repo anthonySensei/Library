@@ -9,12 +9,35 @@ const Department = require('../models/department');
 const Author = require('../models/author');
 
 const helper = require('../helper/responseHandle');
-const conditionGenerator = require('../helper/orderLoanCondition');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
 const filters = require('../constants/filters');
+
+const getCondition = (departmentId, loanDate, nextDay, isShowDebtors) => {
+    let departmentCondition = {};
+    let dateCondition = {};
+    let isShowDebtorsCondition = {};
+
+    if (departmentId) departmentCondition = { departmentId: departmentId };
+    if (loanDate)
+        dateCondition = {
+            loan_time: {
+                [Op.between]: [loanDate, nextDay]
+            }
+        };
+    if (isShowDebtors === 'true')
+        isShowDebtorsCondition = {
+            returned_time: null
+        };
+
+    return {
+        ...departmentCondition,
+        ...dateCondition,
+        ...isShowDebtorsCondition
+    };
+};
 
 exports.getAllLoans = async (req, res) => {
     const page = +req.query.pageNumber;
@@ -63,7 +86,7 @@ exports.getAllLoans = async (req, res) => {
     try {
         const quantity = await Loan.count({
             include: includeArr,
-            where: conditionGenerator.generateCondition(
+            where: getCondition(
                 departmentId,
                 loanDate,
                 nextDay,
@@ -72,7 +95,7 @@ exports.getAllLoans = async (req, res) => {
         });
         const loans = await Loan.findAll({
             include: includeArr,
-            where: conditionGenerator.generateCondition(
+            where: getCondition(
                 departmentId,
                 loanDate,
                 nextDay,

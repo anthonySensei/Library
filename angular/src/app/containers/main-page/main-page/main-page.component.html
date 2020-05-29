@@ -89,7 +89,7 @@
                 <button
                     mat-stroked-button
                     color="primary"
-                    class="btn filter-form-button"
+                    class="ml-5 filter-form-button"
                     (click)="paginate(1); drawer.toggle(); toggleFilterButton()"
                 >
                     <i class="material-icons">search</i>
@@ -97,7 +97,7 @@
                 <button
                     mat-stroked-button
                     color="primary"
-                    class="btn filter-form-button"
+                    class="ml-5 filter-form-button"
                     (click)="clearInputs()"
                 >
                     Clear
@@ -115,19 +115,19 @@
                 *ngIf="isHaveAccess()"
                 mat-stroked-button
                 color="primary"
-                class="btn"
+                class="ml-5"
                 style="float: right;"
                 matTooltip="Add book"
                 [routerLink]="'/' + links.ADD_BOOK"
             >
                 <i class="material-icons">add</i> Add book
             </a>
-            <section class="pagination-section" *ngIf="!isLoading">
+            <section class="pagination-section" *ngIf="!isLoading && books.length > 0">
                 <button
                     *ngIf="hasPreviousPage"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     (click)="paginate(previousPage)"
                 >
                     Previous page
@@ -136,30 +136,36 @@
                     *ngIf="hasNextPage || hasPreviousPage"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     [class.active]="currentPage === 1"
                     (click)="paginate(1)"
                 >
                     1
                 </button>
-                <span *ngIf="currentPage !== 1 && previousPage !== 1">...</span>
+                <span
+                    class="ml-5"
+                    *ngIf="currentPage !== 1 && previousPage !== 1"
+                    >...</span
+                >
                 <button
                     *ngIf="currentPage > 1"
                     mat-stroked-button
                     color="primary"
-                    class="btn active"
+                    class="ml-5 active"
                     (click)="paginate(currentPage)"
                 >
                     {{ currentPage }}
                 </button>
-                <span *ngIf="lastPage !== currentPage && nextPage !== lastPage"
+                <span
+                    *ngIf="lastPage !== currentPage && nextPage !== lastPage"
+                    class="ml-5"
                     >...</span
                 >
                 <button
                     *ngIf="lastPage !== currentPage"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     (click)="paginate(lastPage)"
                 >
                     {{ lastPage }}
@@ -168,7 +174,7 @@
                     *ngIf="hasNextPage"
                     mat-stroked-button
                     color="primary"
-                    class="btn"
+                    class="ml-5"
                     (click)="paginate(nextPage)"
                 >
                     Next page
