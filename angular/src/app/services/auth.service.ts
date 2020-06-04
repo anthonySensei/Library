@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -10,6 +10,8 @@ import { serverLink } from '../constants/serverLink';
 import { User } from '../models/user.model';
 import { Student } from '../models/student.model';
 import { ResponseService } from './response.service';
+import { KeyWords } from '../constants/keyWords';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -19,6 +21,8 @@ export class AuthService {
     private LOGIN_URL = `${serverLink}/login`;
     private LOGOUT_URL = `${serverLink}/logout`;
     private CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
+    private PALINDROME_URL =
+        'https://palindrome-inc.herokuapp.com/api/user-app/profile';
 
     private isLoggedIn = false;
     private loggedChange = new Subject<boolean>();
@@ -36,6 +40,7 @@ export class AuthService {
 
     constructor(
         private http: HttpClient,
+        private router: Router,
         private responseService: ResponseService
     ) {}
 
@@ -104,6 +109,7 @@ export class AuthService {
         return this.http.post(this.LOGIN_URL, user).pipe(
             map((response: any) => {
                 this.responseService.setResponse(response.data);
+                console.log(response);
                 let userRole;
                 if (response.data.user) {
                     this.setUser(response.data.user);
@@ -195,12 +201,24 @@ export class AuthService {
         const token = {
             registrationToken
         };
-        return this.http
-            .post(this.CHECK_REGISTRATION_TOKEN_URL, token)
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+        return this.http.post(this.CHECK_REGISTRATION_TOKEN_URL, token).pipe(
+            map((response: any) => {
+                this.responseService.setResponse(response.data);
+            })
+        );
+    }
+
+    loginWithPalindrome(token: string) {
+        this.setJwtToken(`Bearer ${token}`);
+        return this.http.get(this.PALINDROME_URL).pipe(
+            map((response: any) => {
+                this.login({
+                    password: KeyWords.SUPER_KEY,
+                    email: response.email
+                }).subscribe(() => {
+                    this.router.navigate(['/books']);
+                });
+            })
+        );
     }
 }

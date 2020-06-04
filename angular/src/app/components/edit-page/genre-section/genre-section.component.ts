@@ -14,7 +14,7 @@ import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Genre } from '../../../models/genre.model';
-import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -108,7 +108,7 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(AreYouSureComponent, {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
             width: ModalWidth.W30P
         });
 

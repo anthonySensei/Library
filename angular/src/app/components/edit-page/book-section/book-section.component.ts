@@ -11,7 +11,7 @@ import { BookService } from '../../../services/book.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -68,7 +68,7 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(AreYouSureComponent, {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
             width: ModalWidth.W30P
         });
 

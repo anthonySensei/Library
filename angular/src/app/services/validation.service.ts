@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Validators } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root'
@@ -9,10 +8,6 @@ export class ValidationService {
     private passwordValidation = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
     private readerTicketValidation = /^([1-9][0-9]{9})$/;
     private isbnValidation = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
-    private yearValidation = [
-        Validators.max(new Date().getFullYear()),
-        Validators.min(0)
-    ];
 
     constructor() {}
 
@@ -30,10 +25,6 @@ export class ValidationService {
 
     getIsbnValidation() {
         return this.isbnValidation;
-    }
-
-    getYearValidation() {
-        return this.yearValidation;
     }
 
     comparePasswords(password, passwordRetype): boolean {

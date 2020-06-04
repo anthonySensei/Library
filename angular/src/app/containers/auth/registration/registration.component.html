@@ -13,8 +13,6 @@
                             type="number"
                             name="reader_ticket"
                             (change)="error = null"
-                            matTooltip="Reader ticket must starts with 1-9 and
-                            contains 10 numbers"
                             formControlName="reader_ticket"
                             placeholder="123213"
                         />
@@ -106,10 +104,6 @@
                             name="password"
                             formControlName="password"
                             placeholder="Ex. Qwerty8_"
-                            matTooltip="Password must contain at least 8 characters, at
-                            least 1 number, at least 1 lowercase character
-                            (a-z), at least 1 uppercase character (A-Z). Ex.
-                            Qwerty8"
                             #password
                         />
                         <button
@@ -131,10 +125,7 @@
                         <mat-error
                             *ngIf="hasError('password', 'pattern') && !error"
                         >
-                            Password must contains at least 8 characters, at
-                            least 1 number, at least 1 lowercase character
-                            (a-z), at least 1 uppercase character (A-Z). Ex.
-                            Qwerty8
+                            Password is not valid. Ex. Qwerty8_
                         </mat-error>
                         <mat-error *ngIf="isPasswordError">
                             {{ error }}

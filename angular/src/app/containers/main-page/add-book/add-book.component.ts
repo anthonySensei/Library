@@ -163,10 +163,7 @@ export class AddBookComponent
         this.bookDetailsForm = new FormGroup({
             author: new FormControl(null, [Validators.required]),
             genre: new FormControl(null, [Validators.required]),
-            year: new FormControl(null, [
-                ...this.validationService.getYearValidation(),
-                Validators.required
-            ]),
+            year: new FormControl(null, [Validators.required]),
             description: new FormControl(null, [Validators.required])
         });
     }
@@ -298,6 +295,7 @@ export class AddBookComponent
             author,
             genre,
             null,
+            null,
             description,
             year,
             quantity,
@@ -308,6 +306,7 @@ export class AddBookComponent
                 book.image = this.book.image;
             }
             book.id = this.bookId;
+            book.status = this.book.status;
             this.editBook(book, this.imageToUploadBase64, stepper);
         } else {
             this.addBookToLibrary(book, this.imageToUploadBase64, stepper);

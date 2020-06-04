@@ -15,7 +15,7 @@ import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
 import { DiscardChangesModalComponent } from '../../../shared/discard-changes-modal/discard-changes-modal.component';
-import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
+import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -98,7 +98,7 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(AreYouSureComponent, {
+        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
             width: ModalWidth.W30P
         });
 

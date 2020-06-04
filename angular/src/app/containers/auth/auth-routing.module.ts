@@ -5,6 +5,7 @@ import { AuthComponent } from './login/auth.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { ActivationPageComponent } from './activation-page/activation-page.component';
 import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
+import { AuthPalindromeComponent } from './auth-palindrome/auth-palindrome.component';
 
 const routes: Routes = [
     { path: 'login', component: AuthComponent },
@@ -13,7 +14,8 @@ const routes: Routes = [
         canDeactivate: [CanDeactivateGuard],
         component: RegistrationComponent
     },
-    { path: 'activation-page', component: ActivationPageComponent }
+    { path: 'activation-page', component: ActivationPageComponent },
+    { path: 'auth/palindrome', component: AuthPalindromeComponent }
 ];
 @NgModule({
     imports: [RouterModule.forChild(routes)],
