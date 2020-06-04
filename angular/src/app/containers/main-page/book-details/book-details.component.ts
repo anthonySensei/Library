@@ -21,6 +21,7 @@ import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { ModalWidth } from '../../../constants/modalWidth';
+import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
 
 @Component({
     selector: 'app-book-details',
@@ -147,6 +148,18 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                     this.responseHandle();
                     this.handleBookSubscriptions();
                 });
+        });
+    }
+
+    openAreYouSureDialog(): void {
+        const dialogRef = this.dialog.open(AreYouSureComponent, {
+            width: ModalWidth.W30P
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.orderBook();
+            }
         });
     }
 

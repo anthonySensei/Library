@@ -23,6 +23,8 @@ import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { Role } from '../../../models/role.model';
 import { Pagination } from '../../../models/pagination.model';
+import { FormControl, Validators } from '@angular/forms';
+import { ValidationService } from '../../../services/validation.service';
 
 @Component({
     selector: 'app-main-page',
@@ -75,6 +77,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     nextPage: number;
     previousPage: number;
     lastPage: number;
+    toYearControl;
+    fromYearControl;
 
     constructor(
         private authService: AuthService,
@@ -82,6 +86,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         private authorService: AuthorService,
         private departmentService: DepartmentService,
         private helperService: HelperService,
+        private validationService: ValidationService,
         private genreService: GenreService,
         private router: Router,
         private route: ActivatedRoute
@@ -95,6 +100,13 @@ export class MainPageComponent implements OnInit, OnDestroy {
         document.title = PageTitles.CATALOG;
         this.isLoading = true;
         this.paramsHandle();
+        this.formControlHandler();
+    }
+
+    formControlHandler(): void {
+        const yearValidationArr = this.validationService.getYearValidation();
+        this.toYearControl = new FormControl('', yearValidationArr);
+        this.fromYearControl = new FormControl('', yearValidationArr);
     }
 
     paramsHandle(): void {

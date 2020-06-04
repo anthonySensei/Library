@@ -13,7 +13,7 @@ import { Department } from '../../../models/department.model';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { Subscription } from 'rxjs';
-import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
+import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -97,7 +97,7 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+        const dialogRef = this.dialog.open(AreYouSureComponent, {
             width: ModalWidth.W30P
         });
 

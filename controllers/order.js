@@ -177,26 +177,34 @@ exports.orderBook = async (req, res) => {
             where: { id: bookId },
             include: { model: Department }
         });
-        const bookOrder = new Order({
-            order_time: orderTime,
-            studentId: student.get().id,
-            bookId: bookId,
-            departmentId: book.get().department_.get().id
-        });
-        await bookOrder.save();
-        await book.update({ quantity: book.get().quantity - 1 });
-        await mailSender.sendMail(
-            studentEmail,
-            mailMessages.subjects.BOOK_ORDERED,
-            mailMessages.messages.BOOK_ORDERED
-        );
+        if (book.get().quantity <= 0) {
+            return helper.responseErrorHandle(
+                res,
+                400,
+                errorMessages.THERE_ARE_NO_AVAILABLE_BOOKS
+            );
+        } else {
+            const bookOrder = new Order({
+                order_time: orderTime,
+                studentId: student.get().id,
+                bookId: bookId,
+                departmentId: book.get().department_.get().id
+            });
+            await bookOrder.save();
+            await book.update({ quantity: book.get().quantity - 1 });
+            await mailSender.sendMail(
+                studentEmail,
+                mailMessages.subjects.BOOK_ORDERED,
+                mailMessages.messages.BOOK_ORDERED
+            );
 
-        const data = {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_ORDERED
-        };
+            const data = {
+                isSuccessful: true,
+                message: successMessages.SUCCESSFULLY_ORDERED
+            };
 
-        helper.responseHandle(res, 200, data);
+            helper.responseHandle(res, 200, data);
+        }
     } catch (err) {
         helper.responseErrorHandle(
             res,

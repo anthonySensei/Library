@@ -32,10 +32,6 @@ const Book = sequelize.define('book_', {
     image: {
         type: Sequelize.STRING,
         allowNull: false
-    },
-    status: {
-        type: Sequelize.STRING,
-        allowNull: false
     }
 });
 
