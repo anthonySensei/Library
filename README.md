@@ -13,4 +13,4 @@ Single-page application for managing student library. There are four type of use
 *Project Team Size*: 1 team member.
 
 *Tools and technologies*: JavaScript, Node.js (Express.js), PostgreSQL (Sequelize), Passport.js, Multer,
-Nodemailer, TypeScript, Angular 8, RxJS. Angular Material, ngx-image-cropper, Git.
+Nodemailer, TypeScript, Angular 8, RxJS. Angular Material, ngx-image-cropper, ngx-charts, Git.
