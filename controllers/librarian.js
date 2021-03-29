@@ -26,9 +26,7 @@ const mailMessages = require('../constants/mailMessages');
 
 const getLibrarianRole = async librarianId => {
     try {
-        const role = await Role.findOne({
-            where: { librarian_id: librarianId }
-        });
+        const role = await Role.findOne({ where: { librarian_id: librarianId } });
         return role.get().role;
     } catch (err) {
         return null;
@@ -37,21 +35,17 @@ const getLibrarianRole = async librarianId => {
 
 const getLibrarianSchedule = async librarianId => {
     try {
-        const schedules = await Schedule.findAll({
-            where: { librarianId: librarianId },
-            include: { model: Period }
-        });
+        const schedules = await Schedule.findAll({ where: { librarianId: librarianId }, include: { model: Period } });
         const scheduleArr = [];
+
         if (schedules.length > 0) {
             schedules.forEach(schedule => {
                 const scheduleValues = schedule.get();
-                scheduleArr.push({
-                    day: scheduleValues.day,
-                    period: scheduleValues.period_.get()
-                });
+                scheduleArr.push({ day: scheduleValues.day, period: scheduleValues.period_.get() });
             });
             return scheduleArr;
         }
+
         return [];
     } catch (err) {
         return [];
@@ -59,9 +53,7 @@ const getLibrarianSchedule = async librarianId => {
 };
 
 exports.getAllLibrarians = async (req, res) => {
-    const librarians = await Librarian.findAll({
-        include: { model: Department }
-    });
+    const librarians = await Librarian.findAll({ include: { model: Department } });
     const librariansArr = [];
     try {
         for (const librarian of librarians) {
@@ -82,17 +74,10 @@ exports.getAllLibrarians = async (req, res) => {
                 librariansArr.push(librarianData);
             }
         }
-        const data = {
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            librarians: librariansArr
-        };
+        const data = { message: successMessages.SUCCESSFULLY_FETCHED, librarians: librariansArr };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -107,19 +92,14 @@ exports.getLibrarians = async (req, res) => {
     let departmentCondition = {};
 
     const like = { [Op.iLike]: `%${filterValue}%` };
+
     if (filterName === filters.EMAIL) filterCondition = { email: like };
     else if (filterName === filters.NAME) filterCondition = { name: like };
     if (departmentId > 0) departmentCondition = { departmentId: departmentId };
 
     try {
-        const role = await Role.findOne({
-            where: { role: roles.MANAGER }
-        });
-        const checkIsNotManager = {
-            id: {
-                [Op.ne]: role.get().librarian_id
-            }
-        };
+        const role = await Role.findOne({ where: { role: roles.MANAGER } });
+        const checkIsNotManager = { id: { [Op.ne]: role.get().librarian_id }};
         const quantityOfLibrarians = await Librarian.count({
             where: {
                 ...checkIsNotManager,
@@ -141,6 +121,7 @@ exports.getLibrarians = async (req, res) => {
         const librariansArr = [];
         for (const librarian of librarians) {
             const librarianValues = librarian.get();
+
             if (librarianValues.profile_image) {
                 librarianValues.profile_image = imageHandler.convertToBase64(
                     librarianValues.profile_image
@@ -148,6 +129,7 @@ exports.getLibrarians = async (req, res) => {
             } else {
                 librarianValues.profile_image = '';
             }
+
             const librarianSchedule = await getLibrarianSchedule(
                 librarianValues.id
             );
@@ -168,11 +150,7 @@ exports.getLibrarians = async (req, res) => {
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -180,12 +158,11 @@ exports.getLibrarian = async (req, res) => {
     const librarianId = req.query.librarianId;
     try {
         const librarian = await Librarian.findOne({
-            where: {
-                id: librarianId
-            },
+            where: { id: librarianId },
             include: { model: Department }
         });
         const librarianValues = librarian.get();
+
         if (librarianValues.profile_image) {
             librarianValues.profile_image = imageHandler.convertToBase64(
                 librarianValues.profile_image
@@ -193,32 +170,24 @@ exports.getLibrarian = async (req, res) => {
         } else {
             librarianValues.profile_image = '';
         }
-        const librarianSchedule = await getLibrarianSchedule(
-            librarianValues.id
-        );
+
+        const librarianSchedule = await getLibrarianSchedule(librarianValues.id);
         const librarianLoans = await loanController.getLoans(
             librarianValues.id,
             models.LIBRARIAN
         );
-        const librarianStatistic = await loanController.getLoanStatistic(
-            librarianLoans
-        );
+        const librarianStatistic = await loanController.getLoanStatistic(librarianLoans);
         const librarianData = {
             id: librarianValues.id,
             name: librarianValues.name,
             email: librarianValues.email,
             profileImage: librarianValues.profile_image,
-            department: {
-                address: librarianValues.department_.get().address
-            },
+            department: { address: librarianValues.department_.get().address },
             schedule: librarianSchedule,
             loans: librarianLoans,
             statistic: librarianStatistic
         };
-        const data = {
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            librarian: librarianData
-        };
+        const data = { message: successMessages.SUCCESSFULLY_FETCHED, librarian: librarianData };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 400, err);
@@ -235,16 +204,10 @@ exports.addLibrarian = async (req, res) => {
 
     try {
         const isNotUnique = await checkUniqueness.checkEmail(email);
-        if (isNotUnique) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            );
-        }
+
+        if (isNotUnique) return helper.responseErrorHandle(res, 400, errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE);
 
         const passwordObj = passwordGenerator.generatePassword();
-
         const newLibrarian = await Librarian.create({
             name: name,
             email: email,
@@ -260,10 +223,7 @@ exports.addLibrarian = async (req, res) => {
             mailMessages.subjects.ACCOUNT_CREATED,
             mailMessages.generatePasswordMessage(email, passwordObj.password)
         );
-        const data = {
-            isSuccessful: true,
-            message: successMessages.LIBRARIAN_SUCCESSFULLY_CREATED
-        };
+        const data = { isSuccessful: true, message: successMessages.LIBRARIAN_SUCCESSFULLY_CREATED };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 400, err);
@@ -274,71 +234,43 @@ exports.editLibrarian = async (req, res) => {
     const librarianEmail = req.body.email;
     const librarianId = req.body.librarianId;
     const departmentId = req.body.departmentId;
+
     try {
         const isNotUniqueLibrarianEmail = await Librarian.findOne({
             where: { email: librarianEmail, id: { [Op.ne]: librarianId } }
         });
+
         if (isNotUniqueLibrarianEmail) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            );
+            return helper.responseErrorHandle(res, 400, errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE);
         } else {
-            const isNotUniqueStudentEmail = await Student.findOne({
-                where: { email: librarianEmail }
-            });
+            const isNotUniqueStudentEmail = await Student.findOne({ where: { email: librarianEmail }});
+
             if (isNotUniqueStudentEmail) {
-                return helper.responseErrorHandle(
-                    res,
-                    400,
-                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                );
+                return helper.responseErrorHandle(res, 400, errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE);
             } else {
-                const librarian = await Librarian.findOne({
-                    where: { id: librarianId }
-                });
-                await librarian.update({
-                    email: librarianEmail,
-                    departmentId: departmentId
-                });
-                const data = {
-                    isSuccessful: true,
-                    message: successMessages.LIBRARIAN_SUCCESSFULLY_UPDATED
-                };
+                const librarian = await Librarian.findOne({ where: { id: librarianId }});
+                await librarian.update({ email: librarianEmail, departmentId: departmentId });
+                const data = { isSuccessful: true, message: successMessages.LIBRARIAN_SUCCESSFULLY_UPDATED };
                 return helper.responseHandle(res, 200, data);
             }
         }
-    } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+
+    } catch (err) { 
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
 exports.deleteLibrarian = async (req, res) => {
     const librarianId = req.query.librarianId;
+
     try {
-        const role = await Role.findOne({
-            where: { librarian_id: librarianId }
-        });
+        const role = await Role.findOne({ where: { librarian_id: librarianId } });
         role.destroy();
-        const librarian = await Librarian.findOne({
-            where: { id: librarianId }
-        });
+        const librarian = await Librarian.findOne({ where: { id: librarianId } });
         await librarian.destroy();
-        const data = {
-            isSuccessful: true,
-            message: successMessages.LIBRARIAN_SUCCESSFULLY_DELETED
-        };
+        const data = { isSuccessful: true, message: successMessages.LIBRARIAN_SUCCESSFULLY_DELETED };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

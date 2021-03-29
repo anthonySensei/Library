@@ -20,37 +20,27 @@ const imageHandle = require('../helper/imageHandle');
 
 const studentController = require('./student');
 
-const sessionDuration = 3600 * 12;
+const expiresIn = 3600 * 12;
 
 exports.postLoginUser = (req, res, next) => {
     passport.authenticate('local', async (err, user) => {
-        if (err) {
-            return helper.responseErrorHandle(res, 401, err);
-        }
+        if (err) return helper.responseErrorHandle(res, 401, err);
+        
         if (!user) {
-            return helper.responseErrorHandle(
-                res,
-                401,
-                errorMessages.WRONG_PASSWORD_OR_EMAIL
-            );
+            return helper.responseErrorHandle(res,401,errorMessages.WRONG_PASSWORD_OR_EMAIL);
         } else {
             let profileImage;
+
             if (!user.role) {
+
                 try {
-                    const role = await Role.findOne({
-                        where: { librarian_id: user.id }
-                    });
-                    profileImage = imageHandle.convertToBase64(
-                        user.profile_image
-                    );
+                    const role = await Role.findOne({ where: { librarian_id: user.id }});
+                    profileImage = imageHandle.convertToBase64( user.profile_image);
                     handleAuth(profileImage, req, user, res, role.get().role);
                 } catch (err) {
-                    return helper.responseErrorHandle(
-                        res,
-                        401,
-                        errorMessages.SOMETHING_WENT_WRONG
-                    );
+                    return helper.responseErrorHandle(res,401,errorMessages.SOMETHING_WENT_WRONG);
                 }
+
             } else {
                 profileImage = imageHandle.convertToBase64(user.profile_image);
                 handleAuth(profileImage, req, user, res, user.role);
@@ -69,24 +59,17 @@ const handleAuth = (profileImage, req, user, res, role) => {
     };
 
     req.login(user, { session: false }, err => {
-        if (err) {
-            helper.responseErrorHandle(res, 401, err);
-        }
-        const userJWT = {
-            id: user.id,
-            email: user.email,
-            role: role
-        };
-        const token = jwt.sign(userJWT, secret_key, {
-            expiresIn: sessionDuration
-        });
+        if (err) return helper.responseErrorHandle(res, 401, err);
+        
+        const userJWT = { id: user.id, email: user.email, role };
+        const token = jwt.sign(userJWT, secret_key, { expiresIn });
         jwt.verify(token, secret_key);
         const data = {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOGGED_IN,
             user: userData,
             token: 'Bearer ' + token,
-            tokenExpiresIn: sessionDuration
+            tokenExpiresIn: expiresIn
         };
         return helper.responseHandle(res, 200, data);
     });
@@ -112,26 +95,16 @@ exports.postCreateUser = async (req, res, next) => {
         return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
 
     try {
-        const isNotUniqueReaderTicket = await checkUniqueness.checkReaderTicket(
-            readerTicket
-        );
+        const isNotUniqueReaderTicket = await checkUniqueness.checkReaderTicket(readerTicket);
         if (isNotUniqueReaderTicket) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.READER_TICKET_ALREADY_IN_USE
-            );
+            return helper.responseErrorHandle(res, 400, errorMessages.READER_TICKET_ALREADY_IN_USE);
         } else {
             const isNotUniqueEmail = await checkUniqueness.checkEmail(email);
 
             if (isNotUniqueEmail) {
-                return helper.responseErrorHandle(
-                    res,
-                    400,
-                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                );
+                return helper.responseErrorHandle(res, 400, errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE);
             } else {
-                let status = userStatus.NEW;
+                const status = userStatus.NEW;
                 const registrationToken = uuidv4();
                 await studentController.createStudent(
                     userRole,
@@ -153,32 +126,14 @@ exports.postCreateUser = async (req, res, next) => {
 exports.postCheckRegistrationToken = async (req, res, next) => {
     const token = req.body.registrationToken;
 
-    if (!token) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
+    if (!token) return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
 
     try {
-        const student = await Student.findOne({
-            where: { registration_token: token }
-        });
-        await student.update({
-            status: userStatus.ACTIVATED,
-            registration_token: ''
-        });
-        const data = {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_ACTIVATED
-        };
+        const student = await Student.findOne({ where: { registration_token: token }});
+        await student.update({ status: userStatus.ACTIVATED, registration_token: '' });
+        const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_ACTIVATED };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

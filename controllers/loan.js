@@ -21,16 +21,8 @@ const getCondition = (departmentId, loanDate, nextDay, isShowDebtors) => {
     let isShowDebtorsCondition = {};
 
     if (departmentId) departmentCondition = { departmentId: departmentId };
-    if (loanDate)
-        dateCondition = {
-            loan_time: {
-                [Op.between]: [loanDate, nextDay]
-            }
-        };
-    if (isShowDebtors === 'true')
-        isShowDebtorsCondition = {
-            returned_time: null
-        };
+    if (loanDate) dateCondition = { loan_time: { [Op.between]: [loanDate, nextDay] }};
+    if (isShowDebtors === 'true') isShowDebtorsCondition = {  returned_time: null };
 
     return {
         ...departmentCondition,
@@ -57,8 +49,7 @@ exports.getAllLoans = async (req, res) => {
 
     const like = { [Op.iLike]: `%${filterValue}%` };
     if (filterName === filters.EMAIL) librarianCondition = { email: like };
-    else if (filterName === filters.READER_TICKET)
-        studentCondition = { reader_ticket: like };
+    else if (filterName === filters.READER_TICKET) studentCondition = { reader_ticket: like };
     else if (filterName === filters.ISBN) bookCondition = { isbn: like };
 
     if (studentId) studentCondition = { id: studentId };
@@ -75,9 +66,7 @@ exports.getAllLoans = async (req, res) => {
         },
         {
             model: Book,
-            include: {
-                model: Author
-            },
+            include: { model: Author },
             where: bookCondition
         },
         { model: Department }
@@ -96,6 +85,7 @@ exports.getAllLoans = async (req, res) => {
             offset: (page - 1) * pageSize
         });
         const loansArr = [];
+
         for (const loan of loans) {
             const loanValues = loan.get();
             const studentData = loanValues.student_.get();
@@ -108,6 +98,7 @@ exports.getAllLoans = async (req, res) => {
                 returnedTime: loanValues.returned_time,
                 bookISBN: bookData.isbn
             };
+
             if (!librarianId && !studentId) {
                 loanObj = {
                     ...loanObj,
@@ -132,6 +123,7 @@ exports.getAllLoans = async (req, res) => {
                     }
                 };
             }
+
             if (librarianId) {
                 loanObj = {
                     ...loanObj,
@@ -139,11 +131,14 @@ exports.getAllLoans = async (req, res) => {
                     studentReaderTicket: studentData.reader_ticket
                 };
             }
+
             if (studentId) {
                 loanObj = { ...loanObj, librarianEmail: librarianData.email };
             }
+
             loansArr.push(loanObj);
         }
+
         const data = {
             loans: loansArr,
             message: successMessages.SUCCESSFULLY_FETCHED,
@@ -157,25 +152,19 @@ exports.getAllLoans = async (req, res) => {
 
 exports.getLoanStatistic = loans => {
     let last30;
+
     if (loans) last30 = [...loans].splice(0, 30);
     else last30 = [];
+
     const loansStatisticArr = [];
     for (const loan of last30) {
         loan.loanTime.setHours(0, 0, 0, 0);
-        const loanObj = {
-            books: 1,
-            loanTime: loan.loanTime.toLocaleDateString()
-        };
+        const loanObj = { books: 1, loanTime: loan.loanTime.toLocaleDateString() };
+
         if (loansStatisticArr.length > 0) {
             let index;
-            index = loansStatisticArr.findIndex(
-                statistic => statistic.loanTime === loanObj.loanTime
-            );
-            if (index !== -1) {
-                loansStatisticArr[index].books += 1;
-            } else {
-                loansStatisticArr.push(loanObj);
-            }
+            index = loansStatisticArr.findIndex(statistic => statistic.loanTime === loanObj.loanTime);
+            index !== -1 ? loansStatisticArr[index].books += 1 : loansStatisticArr.push(loanObj);
         } else {
             loansStatisticArr.push(loanObj);
         }
@@ -187,6 +176,7 @@ exports.getLoans = async (modelId, modelName) => {
     let model;
     let condition;
     let info;
+
     if (modelName === models.LIBRARIAN) {
         condition = { librarianId: modelId };
         model = Student;
@@ -194,13 +184,12 @@ exports.getLoans = async (modelId, modelName) => {
         condition = { studentId: modelId };
         model = Librarian;
     }
+
     try {
         const loans = await Loan.findAll({
             where: condition,
             include: [
-                {
-                    model: model
-                },
+                { model },
                 { model: Book },
                 { model: Department }
             ],
@@ -211,16 +200,8 @@ exports.getLoans = async (modelId, modelName) => {
             loans.forEach(loan => {
                 const loanValues = loan.get();
 
-                if (modelName === models.LIBRARIAN)
-                    info = {
-                        studentTicketReader: loanValues.student_.get()
-                            .reader_ticket
-                    };
-                else if (modelName === models.STUDENT)
-                    info = {
-                        librarianEmail: loanValues.librarian_.get().email,
-                        departmentAddress: loanValues.department_.get().address
-                    };
+                if (modelName === models.LIBRARIAN) info = { studentTicketReader: loanValues.student_.get().reader_ticket};
+                else if (modelName === models.STUDENT) info = { librarianEmail: loanValues.librarian_.get().email, departmentAddress: loanValues.department_.get().address };
 
                 loansArr.push({
                     ...info,
@@ -241,29 +222,20 @@ exports.returnBook = async (req, res) => {
     const loanId = req.body.loanId;
     const bookId = req.body.bookId;
     const returnedTime = req.body.returnedTime;
+
     if (!loanId || !bookId || !returnedTime) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
+
     try {
         const loan = await Loan.findOne({ where: { id: loanId } });
         await loan.update({ returned_time: returnedTime });
         const book = await Book.findOne({ where: { id: bookId } });
         await book.update({ quantity: book.get().quantity + 1 });
-        const data = {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_RETURNED_BOOK
-        };
+        const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_RETURNED_BOOK };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            200,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -275,25 +247,15 @@ exports.getLoansStatistic = (req, res) => {
     let librarianCondition = {};
     let departmentCondition = {};
     if (model === models.USER) {
-        userCondition = {
-            reader_ticket: value
-        };
+        userCondition = { reader_ticket: value };
     } else if (model === models.BOOK) {
-        bookCondition = {
-            isbn: value
-        };
+        bookCondition = { isbn: value };
     } else if (model === models.LIBRARIAN) {
-        librarianCondition = {
-            email: value
-        };
+        librarianCondition = { email: value };
     } else if (model === models.DEPARTMENT) {
-        departmentCondition = {
-            id: value
-        };
+        departmentCondition = { id: value };
     } else {
-        const data = {
-            statistic: []
-        };
+        const data = { statistic: [] };
         return helper.responseHandle(res, 200, data);
     }
 
@@ -310,15 +272,12 @@ exports.getLoansStatistic = (req, res) => {
             { model: Book, where: bookCondition },
             { model: Department, where: departmentCondition }
         ],
-        where: {
-            loan_time: {
-                [Op.gte]: new Date().setDate(new Date().getDate() - 30)
-            }
-        },
+        where: { loan_time: { [Op.gte]: new Date().setDate(new Date().getDate() - 30) } },
         order: [['loan_time', 'ASC']]
     })
         .then(loans => {
             const loansStatisticArr = [];
+
             for (const loan of loans) {
                 const loanValues = loan.get();
                 const studentData = loanValues.student_.get();
@@ -344,32 +303,20 @@ exports.getLoansStatistic = (req, res) => {
                         address: loanValues.department_.get().address
                     }
                 };
+
                 if (loansStatisticArr.length > 0) {
                     let index;
-                    index = loansStatisticArr.findIndex(
-                        statistic => statistic.loanTime === loanObj.loanTime
-                    );
-                    if (index !== -1) {
-                        loansStatisticArr[index].books += 1;
-                    } else {
-                        loansStatisticArr.push(loanObj);
-                    }
+                    index = loansStatisticArr.findIndex(statistic => statistic.loanTime === loanObj.loanTime);
+                    index !== -1 ? loansStatisticArr[index].books += 1 : loansStatisticArr.push(loanObj);
                 } else {
                     loansStatisticArr.push(loanObj);
                 }
             }
-            const data = {
-                statistic: loansStatisticArr,
-                message: successMessages.SUCCESSFULLY_FETCHED
-            };
+            const data = { statistic: loansStatisticArr, message: successMessages.SUCCESSFULLY_FETCHED };
             return helper.responseHandle(res, 200, data);
         })
         .catch(err => {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.CANNOT_FETCH
-            );
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
         });
 };
 
@@ -378,42 +325,30 @@ exports.loanBook = async (req, res) => {
     const librarianEmail = req.body.librarianEmail;
     const bookId = req.body.bookId;
     const loanTime = req.body.time;
+
     if (!req.body) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
+
     try {
         const student = await Student.findOne({
             where: {
                 reader_ticket: studentTReader
             }
         });
+
         if (!student) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
-            );
+            return helper.responseErrorHandle(res, 400, errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST);
         }
 
         const librarian = await Librarian.findOne({
-            where: {
-                email: librarianEmail
-            },
-            include: {
-                model: Department
-            }
+            where: { email: librarianEmail },
+            include: { model: Department }
         });
         const book = await Book.findOne({ where: { id: bookId } });
+
         if (book.get().quantity <= 0) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
-            );
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
         } else {
             const bookLoan = new Loan({
                 loan_time: loanTime,
@@ -425,18 +360,10 @@ exports.loanBook = async (req, res) => {
             await bookLoan.save();
             await book.update({ quantity: book.get().quantity - 1 });
 
-            const data = {
-                isSuccessful: true,
-                message: successMessages.SUCCESSFULLY_LOANED
-            };
-
+            const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_LOANED };
             helper.responseHandle(res, 200, data);
         }
     } catch (error) {
-        helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
