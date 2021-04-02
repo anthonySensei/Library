@@ -35,7 +35,6 @@ import { LibrariansDataSource } from '../../../datasources/librarians.datasource
 @Component({
     selector: 'app-librarians',
     templateUrl: './librarians.component.html',
-    styleUrls: ['../../../app.component.sass'],
     animations: [
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),

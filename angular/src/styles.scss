@@ -121,6 +121,7 @@ body {
 
 
 .btn-group {
+
   .expanded-btn {
     float: right;
   }
@@ -134,16 +135,16 @@ body {
   .form-btn {
     width: 38%;
 
+    &:first-of-type {
+      margin-right: 2%;
+    }
+
     &.move-btn {
       border: 1px solid $color-main;
     }
 
     &.add-form-btn {
       width: 29%;
-    }
-
-    &:first-of-type {
-      margin-right: 2%;
     }
   }
 
