@@ -14,15 +14,9 @@ exports.getDepartments = async (req, res) => {
         const departmentsArr = [];
 
         for (let department of departments) {
-            departmentsArr.push({
-                id: department.get().id,
-                address: department.get().address
-            });
+            departmentsArr.push({ id: department.get().id, address: department.get().address });
         }
-        const data = {
-            departments: departmentsArr,
-            message: successMessages.SUCCESSFULLY_FETCHED
-        };
+        const data = { departments: departmentsArr, message: successMessages.SUCCESSFULLY_FETCHED };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
@@ -32,29 +26,16 @@ exports.getDepartments = async (req, res) => {
 exports.addDepartment = async (req, res) => {
     const departmentAddress = req.body.department.address;
     try {
-        const isNotUnique = await Department.findOne({
-            where: { address: departmentAddress }
-        });
+        const isNotUnique = await Department.findOne({ where: { address: departmentAddress } });
         if (isNotUnique) {
-            return helper.responseErrorHandle(
-                res,
-                500,
-                errorMessages.DEPARTMENTS_EXIST
-            );
+            return helper.responseErrorHandle(res, 400, errorMessages.DEPARTMENTS_EXIST);
         } else {
             await Department.create({ address: departmentAddress });
-            const data = {
-                isSuccessful: true,
-                message: successMessages.DEPARTMENT_SUCCESSFULLY_CREATED
-            };
+            const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_CREATED };
             return helper.responseHandle(res, 200, data);
         }
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -63,54 +44,29 @@ exports.editDepartment = async (req, res) => {
     const departmentId = req.body.departmentId;
     try {
         const isNotUnique = await Department.findOne({
-            where: {
-                address: departmentAddress,
-                id: { [Op.ne]: departmentId }
-            }
+            where: { address: departmentAddress, id: { [Op.ne]: departmentId } }
         });
         if (isNotUnique) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.DEPARTMENTS_EXIST
-            );
+            return helper.responseErrorHandle(res, 400, errorMessages.DEPARTMENTS_EXIST);
         } else {
-            const department = await Department.findOne({
-                where: { id: departmentId }
-            });
+            const department = await Department.findOne({ where: { id: departmentId } });
             await department.update({ address: departmentAddress });
-            const data = {
-                isSuccessful: true,
-                message: successMessages.DEPARTMENT_SUCCESSFULLY_UPDATED
-            };
+            const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_UPDATED };
             return helper.responseHandle(res, 200, data);
         }
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
 exports.deleteDepartment = async (req, res) => {
     const departmentId = req.query.departmentId;
     try {
-        const department = await Department.findOne({
-            where: { id: departmentId }
-        });
+        const department = await Department.findOne({ where: { id: departmentId } });
         await department.destroy();
-        const data = {
-            isSuccessful: true,
-            message: successMessages.DEPARTMENT_SUCCESSFULLY_DELETED
-        };
+        const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_DELETED };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

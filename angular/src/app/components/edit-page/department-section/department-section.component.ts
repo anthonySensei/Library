@@ -13,7 +13,6 @@ import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Department } from '../../../models/department.model';
-import { AreYouSureComponent } from '../../../shared/confirm-delete-modal/are-you-sure.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -91,15 +90,15 @@ export class DepartmentSectionComponent implements OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(AreYouSureComponent, {
-            width: ModalWidth.W30P
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.deleteDepartment();
-            }
-        });
+        // const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+        //     width: ModalWidth.W30P
+        // });
+        //
+        // dialogRef.afterClosed().subscribe(result => {
+        //     if (result) {
+        //         this.deleteDepartment();
+        //     }
+        // });
     }
 
     departmentResponseHandler(): void {

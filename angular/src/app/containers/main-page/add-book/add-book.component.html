@@ -11,14 +11,13 @@
                             type="text"
                             matInput
                             formControlName="isbn"
-                            matTooltip="isbn must contains 10 or 13 numbers"
                             placeholder="Ex. 12321312321312"
                         />
                         <span matPrefix>ISBN </span>
                         <mat-error
                             *ngIf="hasError('isbn', 'pattern') && !error"
                         >
-                            ISBN is not valid. It must contains 10 or 13 numbers
+                            ISBN is not valid
                         </mat-error>
                         <mat-error
                             *ngIf="hasError('isbn', 'required') && !error"
@@ -173,12 +172,6 @@
                             *ngIf="hasError('year', 'required') && !error"
                         >
                             Year is required
-                        </mat-error>
-                        <mat-error *ngIf="hasError('year', 'min') && !error">
-                            You cannot set minus year
-                        </mat-error>
-                        <mat-error *ngIf="hasError('year', 'max') && !error">
-                            You cannot set higher year than present year
                         </mat-error>
                     </mat-form-field>
                     <div class="btn-group">
