@@ -12,76 +12,66 @@ import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 
 @Component({
-    selector: 'app-auth',
-    templateUrl: './auth.component.html'
+  selector: 'app-auth',
+  templateUrl: './auth.component.html'
 })
 export class AuthComponent implements OnInit, OnDestroy {
-    loginForm: FormGroup;
 
-    error: string;
+  emailValidation;
+  error: string;
+  loginForm: FormGroup;
+  authSubscription: Subscription;
+  links = AngularLinks;
 
-    authSubscription: Subscription;
+  constructor(
+    private validationService: ValidationService,
+    private authService: AuthService,
+    private responseService: ResponseService,
+    private router: Router
+  ) {
+  }
 
-    emailValidation;
+  ngOnInit(): void {
+    document.title = PageTitles.LOGIN;
+    this.emailValidation = this.validationService.getEmailValidation();
+    this.initializeForm();
+  }
 
-    links = AngularLinks;
+  initializeForm(): void {
+    this.loginForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email, Validators.pattern(this.emailValidation)]),
+      password: new FormControl('', [Validators.required])
+    });
+  }
 
-    constructor(
-        private validationService: ValidationService,
-        private authService: AuthService,
-        private responseService: ResponseService,
-        private router: Router
-    ) {}
-
-    ngOnInit(): void {
-        document.title = PageTitles.LOGIN;
-        this.emailValidation = this.validationService.getEmailValidation();
-        this.initializeForm();
+  onLoginUser(): void {
+    const email = this.loginForm.value.email;
+    const password = this.loginForm.value.password;
+    if (this.loginForm.invalid) {
+      return;
     }
-
-    initializeForm(): void {
-        this.loginForm = new FormGroup({
-            email: new FormControl('', [
-                Validators.required,
-                Validators.email,
-                Validators.pattern(this.emailValidation)
-            ]),
-            password: new FormControl('', [Validators.required])
+    const user = {
+      email,
+      password
+    };
+    this.authSubscription = this.authService.login(user).subscribe(() => {
+      if (this.responseService.responseHandle()) {
+        this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
+        this.router.navigate([AngularLinks.HOME]);
+        this.loginForm.reset();
+      } else {
+        this.loginForm.patchValue({
+          email,
+          password: ''
         });
-    }
+        this.error = this.responseService.getResponse().message;
+      }
+    });
+  }
 
-    hasError(controlName: string, errorName: string): boolean {
-        return this.loginForm.controls[controlName].hasError(errorName);
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
     }
-
-    onLoginUser(): void {
-        const email = this.loginForm.value.email;
-        const password = this.loginForm.value.password;
-        if (this.loginForm.invalid) {
-            return;
-        }
-        const user = {
-            email,
-            password
-        };
-        this.authSubscription = this.authService.login(user).subscribe(() => {
-            if (this.responseService.responseHandle()) {
-                this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
-                this.router.navigate([AngularLinks.HOME]);
-                this.loginForm.reset();
-            } else {
-                this.loginForm.patchValue({
-                    email,
-                    password: ''
-                });
-                this.error = this.responseService.getResponse().message;
-            }
-        });
-    }
-
-    ngOnDestroy(): void {
-        if (this.authSubscription) {
-            this.authSubscription.unsubscribe();
-        }
-    }
+  }
 }

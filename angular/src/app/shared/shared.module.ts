@@ -32,6 +32,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { ImageCropperModule } from 'ngx-image-cropper';
 
 import { DiscardChangesModalComponent } from './discard-changes-modal/discard-changes-modal.component';
@@ -52,7 +54,7 @@ import { SmallScreenComponent } from './small-screen/small-screen.component';
         ChartSectionComponent,
         SmallScreenComponent
     ],
-    imports: [CommonModule, LineChartModule],
+    imports: [CommonModule, LineChartModule, NgbModule],
     exports: [
         CommonModule,
         MatMenuModule,

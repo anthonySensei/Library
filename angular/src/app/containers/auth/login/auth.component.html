@@ -1,72 +1,52 @@
-<div class="login-body">
-    <div class="wrapper fadeInDown">
-        <div class="form-content">
-            <span class="page-title">Login</span>
-            <hr style="background-color: #0d0d0d;" />
-            <form (ngSubmit)="onLoginUser()" [formGroup]="loginForm">
-                <div class="input-group form-group">
-                    <mat-form-field class="fadeIn second form-input">
-                        <mat-label>Email</mat-label>
-                        <input
-                            matInput
-                            name="email"
-                            formControlName="email"
-                            placeholder="Ex. #hello"
-                        />
-                        <mat-error *ngIf="hasError('email', 'required')">
-                            Email is required
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="input-group form-group">
-                    <mat-form-field class="fadeIn third form-input">
-                        <mat-label>Password</mat-label>
-                        <input
-                            matInput
-                            type="password"
-                            name="password"
-                            formControlName="password"
-                            placeholder="Ex. hello"
-                        />
-                        <mat-error
-                            *ngIf="hasError('password', 'required') && !error"
-                        >
-                            Password is required
-                        </mat-error>
-                        <mat-error *ngIf="error">
-                            {{ error }}
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <div class="btn-group">
-                    <button
-                        mat-raised-button
-                        color="primary"
-                        type="submit"
-                        class="fadeIn fourth form-button"
-                    >
-                        Log In
-                    </button>
-                </div>
-            </form>
-            <div class="form-footer">
-                <a
-                    class="underline-link underline-hover"
-                    [routerLink]="'/' + links.REGISTRATION"
-                >
-                    Don't have account?
-                </a>
-            </div>
-        </div>
-        <a
-            matTooltip="Login with palindrome"
-            class="login-with-palindrome"
-            href="https://palindrome-inc.herokuapp.com/user-app/5ecfec527e0ebc0d05a66572/authenticate"
+<div class="wrapper fadeInDown">
+  <div class="form-content">
+    <span class="page-title">Login</span>
+    <hr style="background-color: #0d0d0d;"/>
+    <form (ngSubmit)="onLoginUser()" [formGroup]="loginForm">
+      <div class="input-group form-group">
+        <mat-form-field class="fadeIn second form-input">
+          <mat-label>Email*</mat-label>
+          <input
+            matInput
+            name="email"
+            formControlName="email"
+            placeholder="Ex. #hello"
+          />
+        </mat-form-field>
+      </div>
+      <div class="input-group form-group">
+        <mat-form-field class="fadeIn third form-input">
+          <mat-label>Password*</mat-label>
+          <input
+            matInput
+            type="password"
+            name="password"
+            formControlName="password"
+            placeholder="Ex. hello"
+          />
+          <mat-error *ngIf="error">
+            {{ error }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="btn-group">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="fadeIn fourth form-button"
         >
-            <img
-                src="https://palindrome-inc.herokuapp.com/favicon.ico"
-                alt="Palindrome"
-            />
-        </a>
+          Log In
+        </button>
+      </div>
+    </form>
+    <div class="form-footer">
+      <a
+        class="underline-link underline-hover"
+        [routerLink]="'/' + links.REGISTRATION"
+      >
+        Don't have account?
+      </a>
     </div>
+  </div>
 </div>
