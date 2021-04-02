@@ -44,14 +44,12 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
-import { AreYouSureComponent } from './confirm-delete-modal/are-you-sure.component';
 import { SmallScreenComponent } from './small-screen/small-screen.component';
 
 @NgModule({
     declarations: [
         DiscardChangesModalComponent,
         ChartSectionComponent,
-        AreYouSureComponent,
         SmallScreenComponent
     ],
     imports: [CommonModule, LineChartModule],
@@ -98,6 +96,6 @@ import { SmallScreenComponent } from './small-screen/small-screen.component';
         SmallScreenComponent
     ],
     providers: [CanDeactivateGuard],
-    entryComponents: [DiscardChangesModalComponent, AreYouSureComponent]
+    entryComponents: [DiscardChangesModalComponent]
 })
 export class SharedModule {}

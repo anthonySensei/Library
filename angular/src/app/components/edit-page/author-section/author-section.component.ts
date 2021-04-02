@@ -1,21 +1,19 @@
 import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
 } from '@angular/core';
 
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { Author } from '../../../models/author.model';
 
 import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
-import { DiscardChangesModalComponent } from '../../../shared/discard-changes-modal/discard-changes-modal.component';
-import { ConfirmDeleteModalComponent } from '../../../shared/confirm-delete-modal/confirm-delete-modal.component';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 
@@ -98,15 +96,15 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     openConfirmDeleteDialog(): void {
-        const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
-            width: ModalWidth.W30P
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.deleteAuthor();
-            }
-        });
+        // const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+        //     width: ModalWidth.W30P
+        // });
+        //
+        // dialogRef.afterClosed().subscribe(result => {
+        //     if (result) {
+        //         this.deleteAuthor();
+        //     }
+        // });
     }
 
     deleteAuthor(): void {
