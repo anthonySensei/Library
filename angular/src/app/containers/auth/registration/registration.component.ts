@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatHorizontalStepper } from '@angular/material';
 import { Router } from '@angular/router';
 
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
@@ -18,37 +18,35 @@ import { ErrorMessages } from '../../../constants/errorMessages';
 import { KeyWords } from '../../../constants/keyWords';
 import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-registration',
     templateUrl: './registration.component.html'
 })
 export class RegistrationComponent implements OnInit, OnDestroy {
-    mainInfoForm: FormGroup;
-    passwordForm: FormGroup;
-
-    error: string;
-    emailError: string;
-
-    authSubscription: Subscription;
-
-    emailValidation;
-    passwordValidation;
-    readerTicketValidation;
 
     hidePassword = true;
     hideRetypePassword = true;
 
-    isPasswordError: boolean;
-
-    links = AngularLinks;
-
-    response: Response;
-
-    discard: boolean;
-    discardChanged = new Subject<boolean>();
+    error: string;
+    emailError: string;
 
     done: boolean;
+    discard: boolean;
+    isPasswordError: boolean;
+
+    response: Response;
+    links = AngularLinks;
+    mainInfoForm: FormGroup;
+    passwordForm: FormGroup;
+
+    emailValidation: RegExp;
+    passwordValidation: RegExp;
+    readerTicketValidation: RegExp;
+
+    discardChanged = new Subject<boolean>();
+
 
     constructor(
         private validationService: ValidationService,
@@ -56,7 +54,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         private responseService: ResponseService,
         private materialService: MaterialService,
         private router: Router
-    ) {}
+    ) {
+    }
 
     ngOnInit() {
         document.title = PageTitles.REGISTRATION;
@@ -73,34 +72,23 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 Validators.email,
                 Validators.pattern(this.emailValidation)
             ]),
-            reader_ticket: new FormControl(null, [
-                Validators.required,
-                Validators.pattern(this.readerTicketValidation)
-            ]),
+            readerTicket: new FormControl(null, [Validators.required, Validators.pattern(this.readerTicketValidation)]),
             name: new FormControl(null, [Validators.required])
         });
         this.passwordForm = new FormGroup({
-            password: new FormControl(null, [
-                Validators.required,
-                Validators.pattern(this.passwordValidation)
-            ]),
-            password2: new FormControl(null, [
-                Validators.required,
-                Validators.pattern(this.passwordValidation)
-            ])
+            password: new FormControl(null, [Validators.required, Validators.pattern(this.passwordValidation)]),
+            password2: new FormControl(null, [Validators.required, Validators.pattern(this.passwordValidation)])
         });
     }
 
     hasError(controlName: string, errorName: string): boolean {
-        if (this.mainInfoForm.controls[controlName]) {
-            return this.mainInfoForm.controls[controlName].hasError(errorName);
-        } else if (this.passwordForm.controls[controlName]) {
-            return this.passwordForm.controls[controlName].hasError(errorName);
-        }
+        return this.mainInfoForm.controls[controlName] ?
+            this.mainInfoForm.controls[controlName].hasError(errorName) :
+            this.passwordForm.controls[controlName].hasError(errorName);
     }
 
     checkIcon(hide: boolean, password: string): string {
-        if (password == null || password === '') {
+        if (!password) {
             return '';
         } else if (hide) {
             return PasswordVisibility.VISIBLE;
@@ -121,34 +109,22 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const student = new Student(
-            null,
-            name,
-            email,
-            null,
-            readerTicket,
-            password
-        );
+        const student = new Student(null, name, email, null, readerTicket, password);
 
         if (!this.validationService.comparePasswords(password, password2)) {
             this.isPasswordError = true;
             this.error = ErrorMessages.DIFFERENT_PASSWORDS;
             stepper.selectedIndex = 1;
-            this.passwordForm.patchValue({
-                password: '',
-                password2: ''
-            });
+            this.passwordForm.patchValue({ password: '', password2: '' });
         } else {
-            this.authSubscription = this.authService
-                .registerStudentHttp(student)
-                .subscribe(() => {
-                    if (this.responseService.responseHandle()) {
-                        this.done = true;
-                        this.router.navigate(['/' + this.links.LOGIN]);
-                    } else {
-                        this.fieldsErrorHandle(stepper);
-                    }
-                });
+            this.authService.registerStudentHttp(student).pipe(untilDestroyed(this)).subscribe(() => {
+                if (this.responseService.responseHandle()) {
+                    this.done = true;
+                    this.router.navigate(['/' + this.links.LOGIN]);
+                } else {
+                    this.fieldsErrorHandle(stepper);
+                }
+            });
         }
     }
 
@@ -157,35 +133,24 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         if (this.response.message.toLowerCase().includes(KeyWords.EMAIL)) {
             stepper.selectedIndex = 0;
             this.emailError = this.response.message;
-            this.mainInfoForm.controls.email.setErrors({
-                incorrect: true
-            });
+            this.mainInfoForm.controls.email.setErrors({ incorrect: true });
         } else if (
             this.response.message.toLowerCase().includes(KeyWords.READER)
         ) {
             stepper.selectedIndex = 0;
-            this.mainInfoForm.controls.reader_ticket.setErrors({
-                incorrect: true
-            });
+            this.mainInfoForm.controls.reader_ticket.setErrors({ incorrect: true });
             this.error = this.response.message;
         }
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
         if (this.mainInfoForm.touched && !this.done) {
-            this.materialService.openDiscardChangesDialog(
-                this.discard,
-                this.discardChanged
-            );
+            this.materialService.openDiscardChangesDialog(this.discard, this.discardChanged);
             return this.discardChanged;
         } else {
             return true;
         }
     }
 
-    ngOnDestroy(): void {
-        if (this.authSubscription) {
-            this.authSubscription.unsubscribe();
-        }
-    }
+    ngOnDestroy(): void {}
 }

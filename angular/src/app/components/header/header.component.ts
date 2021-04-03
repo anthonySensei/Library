@@ -3,8 +3,6 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-import { Subscription } from 'rxjs';
-
 import { AuthService } from '../../services/auth.service';
 import { HelperService } from '../../services/helper.service';
 
@@ -16,24 +14,21 @@ import { User } from '../../models/user.model';
 
 import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.component';
 
+import { untilDestroyed } from 'ngx-take-until-destroy';
+
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    styleUrls: ['./header.component.sass']
+    styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+
+    role: string;
     isLoggedIn: boolean;
     isSmallScreen: boolean;
-
-    links = AngularLinks;
-
-    userSubscription: Subscription;
-    breakpointSubscription: Subscription;
-    authServiceSubscription: Subscription;
-
     user: User;
-    role: string;
     userRoles = UserRoles;
+    links = AngularLinks;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
@@ -42,57 +37,44 @@ export class HeaderComponent implements OnInit, OnDestroy {
         private router: Router,
         public dialog: MatDialog
     ) {
-        this.breakpointSubscription = breakpointObserver
-            .observe([Breakpoints.Small, Breakpoints.XSmall])
-            .subscribe(result => {
-                if (result.matches) {
-                    this.isSmallScreen = true;
-                } else if (!result.matches) {
-                    this.isSmallScreen = false;
-                }
-            });
+        breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(untilDestroyed(this)).subscribe(result => {
+            this.isSmallScreen = !!result.matches;
+        });
     }
 
     ngOnInit(): void {
         this.userSubscriptionHandle();
     }
 
+    isNotUser(): boolean {
+        return this.role === this.userRoles.MANAGER || this.role === this.userRoles.LIBRARIAN;
+    }
+
+    isManager(): boolean {
+        return this.role === this.userRoles.MANAGER;
+    }
+
     userSubscriptionHandle(): void {
-        this.userSubscription = this.authService.getUser().subscribe(user => {
+        this.authService.getUser().pipe(untilDestroyed(this)).subscribe(user => {
             this.user = user;
             this.isLoggedIn = !!user;
-            if (user) {
-                this.role = this.user.role.role;
-            } else {
-                this.role = null;
-            }
+            this.role = user ? user.role.role : null;
         });
     }
 
     openMyOrdersModal(): void {
-        const dialogRef = this.dialog.open(MyOrdersModalComponent, {
-            width: ModalWidth.W70P,
-            data: {
-                studentId: this.user.id
-            }
+        this.dialog.open(MyOrdersModalComponent, {
+            data: { studentId: this.user.id },
+            width: ModalWidth.W70P
         });
-
-        dialogRef.afterClosed().subscribe();
     }
 
     onLogoutUser(): void {
-        this.authServiceSubscription = this.authService
-            .logout()
-            .subscribe(() => {
-                this.authService.setIsLoggedIn(false);
-                this.router.navigate([AngularLinks.LOGIN]);
-            });
+        this.authService.logout().pipe(untilDestroyed(this)).subscribe(() => {
+            this.authService.setIsLoggedIn(false);
+            this.router.navigate([AngularLinks.LOGIN]);
+        });
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.userSubscription, [
-            this.authServiceSubscription,
-            this.breakpointSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }
