@@ -17,129 +17,45 @@
         <a class="navbar__item" [routerLink]="'/' + links.LOGIN" *ngIf="!isLoggedIn; else logout">Login</a>
         <ng-template #logout>
             <mat-menu #appMenu="matMenu">
-                <a
-                        mat-menu-item
-                        routerLinkActive="menu-active"
-                        [routerLink]="'/' + links.MY_ACCOUNT"
-                        class="mat-menu-item"
-                >
+                <a mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" [routerLink]="'/' + links.MY_ACCOUNT">
                     Profile
                 </a>
-                <button
-                        mat-menu-item
-                        routerLinkActive="menu-active"
-                        class="mat-menu-item"
-                        (click)="openMyOrdersModal()"
-                        *ngIf="role === userRoles.STUDENT"
-                >
+                <button mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" (click)="openMyOrdersModal()" *ngIf="isStudent()">
                     My orders
                 </button>
                 <div class="small-screen-container" *ngIf="isSmallScreen">
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.BOOKS"
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.BOOKS">
                         Books
                     </a>
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.LOANS"
-                            *ngIf="
-                            role === userRoles.LIBRARIAN ||
-                            role === userRoles.MANAGER
-                        "
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" [routerLink]="'/' + links.LOANS" *ngIf="isNotUser()">
                         Loans
                     </a>
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.ORDERS"
-                            *ngIf="role === userRoles.LIBRARIAN"
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.ORDERS" *ngIf="isNotUser()">
                         Orders
                     </a>
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.LOANS_CHART"
-                            *ngIf="
-                            role === userRoles.LIBRARIAN ||
-                            role === userRoles.MANAGER
-                        "
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.LOANS_CHART" *ngIf="isNotUser()">
                         Statistic
                     </a>
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.LIBRARIANS"
-                            *ngIf="role === userRoles.MANAGER"
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.LIBRARIANS" *ngIf="isManager()">
                         Librarians
                     </a>
-                    <a
-                            *ngIf="
-                            role === userRoles.MANAGER ||
-                            role === userRoles.LIBRARIAN
-                        "
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.LIBRARIAN_SCHEDULE"
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >Schedule</a
-                    >
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.STUDENTS"
-                            *ngIf="
-                            role === userRoles.LIBRARIAN ||
-                            role === userRoles.MANAGER
-                        "
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" *ngIf="isNotUser()" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE">Schedule</a>
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.STUDENTS" *ngIf="isNotUser()">
                         Students
                     </a>
-                    <a
-                            routerLinkActive="menu-active"
-                            [routerLink]="'/' + links.EDIT_PAGE"
-                            *ngIf="
-                            role === userRoles.LIBRARIAN ||
-                            role === userRoles.MANAGER
-                        "
-                            mat-menu-item
-                            class="mat-menu-item"
-                    >
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.EDIT_PAGE" *ngIf="isNotUser()">
                         Managing
                     </a>
                 </div>
-                <button
-                        mat-menu-item
-                        (click)="onLogoutUser()"
-                        class="mat-menu-item"
-                >
+                <button mat-menu-item class="mat-menu-item" (click)="onLogoutUser()">
                     Logout
                 </button>
             </mat-menu>
 
             <button mat-icon-button [matMenuTriggerFor]="appMenu">
                 <span class="image-cropper">
-                    <img
-                            class="navbar-profile-image"
-                            src="{{
-                            user.profileImage
-                                ? user.profileImage
-                                : 'https://www.w3schools.com/w3css/img_avatar3.png'
-                        }}"
-                            alt="profile_image"
+                    <img class="navbar-profile-image" alt="profile_image"
+                         src="{{user.profileImage ? user.profileImage : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                     />
                 </span>
             </button>

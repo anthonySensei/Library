@@ -37,6 +37,10 @@ body {
   background: linear-gradient(145deg, $color-background calc(100% - 87vh), $color-secondary 40vh);
 }
 
+body {
+  background: $color-background;
+}
+
 .mat-form-field-empty.mat-form-field-label {
   color: $color-main;
 }

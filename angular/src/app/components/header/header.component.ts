@@ -54,6 +54,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         return this.role === this.userRoles.MANAGER;
     }
 
+    isStudent(): boolean {
+        return this.role === this.userRoles.STUDENT;
+    }
+
     userSubscriptionHandle(): void {
         this.authService.getUser().pipe(untilDestroyed(this)).subscribe(user => {
             this.user = user;
