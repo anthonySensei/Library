@@ -47,12 +47,14 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
 import { SmallScreenComponent } from './small-screen/small-screen.component';
+import { LoaderComponent } from './loader/loader.component';
 
 @NgModule({
     declarations: [
         DiscardChangesModalComponent,
         ChartSectionComponent,
-        SmallScreenComponent
+        SmallScreenComponent,
+        LoaderComponent
     ],
     imports: [CommonModule, LineChartModule, NgbModule],
     exports: [
