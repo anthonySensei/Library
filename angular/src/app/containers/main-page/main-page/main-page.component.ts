@@ -27,7 +27,7 @@ import { Pagination } from '../../../models/pagination.model';
 @Component({
     selector: 'app-main-page',
     templateUrl: './main-page.component.html',
-    styleUrls: ['./main-page.component.sass']
+    styleUrls: ['./main-page.component.scss']
 })
 export class MainPageComponent implements OnInit, OnDestroy {
     books: Book[] = [];

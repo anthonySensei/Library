@@ -4,7 +4,7 @@ import { Book } from '../../../../models/book.model';
 @Component({
     selector: 'app-books-section',
     templateUrl: './books-section.component.html',
-    styleUrls: ['../main-page.component.sass']
+    styleUrls: ['./books.component.scss']
 })
 export class BooksSectionComponent implements OnInit {
     @Input() books: Book[];

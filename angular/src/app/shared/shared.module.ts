@@ -97,7 +97,8 @@ import { LoaderComponent } from './loader/loader.component';
         MatProgressSpinnerModule,
         MatSlideToggleModule,
         ChartSectionComponent,
-        SmallScreenComponent
+        SmallScreenComponent,
+        LoaderComponent
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]
