@@ -34,7 +34,7 @@ body {
   margin: 0;
   font-family: $font-main;
   color: $font-color-main;
-  background: linear-gradient(145deg, $color-background calc(100% - 87vh), $color-secondary 40vh);
+  background: linear-gradient(145deg, $color-background calc(100% - 88vh), $color-secondary 40vh);
 }
 
 .bg-main {
@@ -151,26 +151,11 @@ body {
   }
 }
 
-.button-group {
-  .filter-form-button {
-    width: 43%;
-    margin-right: 5%;
-    display: inline-block;
-  }
-
-  // cancel button in button
-}
 
 .no-button {
   width: 100px;
   display: inline-block;
   margin-right: 10px;
-}
-
-/*  */
-
-.d-block {
-  display: block;
 }
 
 /* Animation */
