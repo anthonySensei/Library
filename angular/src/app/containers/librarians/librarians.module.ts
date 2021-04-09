@@ -14,6 +14,13 @@ import { StudentsModule } from '../students/students.module';
 import { ScheduleSectionComponent } from './librarian-details/schedule-section/schedule-section.component';
 import { PersonalInfoSectionComponent } from './librarian-details/personal-info-section/personal-info-section.component';
 import { ScheduleFilterSectionComponent } from './librarian-schedule/schedule-filter-section/schedule-filter-section.component';
+import { adapterFactory } from 'angular-calendar/date-adapters/moment';
+import * as moment from 'moment';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+
+export function momentAdapterFactory() {
+    return adapterFactory(moment);
+}
 
 @NgModule({
     declarations: [
@@ -26,6 +33,10 @@ import { ScheduleFilterSectionComponent } from './librarian-schedule/schedule-fi
         PersonalInfoSectionComponent,
         ScheduleFilterSectionComponent
     ],
-    imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule, StudentsModule]
+    imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule, StudentsModule, CalendarModule.forRoot({
+        provide: DateAdapter,
+        useFactory: momentAdapterFactory
+    })]
 })
-export class LibrariansModule {}
+export class LibrariansModule {
+}

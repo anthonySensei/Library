@@ -93,7 +93,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
             .getUser()
             .subscribe((user: User) => {
                 this.user = user;
-                this.userRole = user.role.role;
+                this.userRole = user && user.role.role;
             });
     }
 

@@ -1,15 +1,19 @@
+/* Calendar */
+@import '~angular-calendar/scss/angular-calendar.scss';
+
 // Bootstrap
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
-@import "~bootstrap/scss/utilities";
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/utilities";
 
-@import "~bootstrap/scss/grid";
-@import "~bootstrap/scss/forms";
-@import "~bootstrap/scss/custom-forms";
-@import "~bootstrap/scss/buttons";
-@import "~bootstrap/scss/dropdown";
+@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules/bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/custom-forms";
+@import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/dropdown";
 
+/* Datepicker */
 @import "~ng-pick-datetime/assets/style/picker.min.css";
 
 $font-main: Robotom, "Helvetica Neue", sans-serif;
@@ -29,6 +33,17 @@ $color-warn: #F18000;
 $color-danger: #C30415;
 
 $font-title: 22px;
+
+@include cal-theme(
+                (
+                        bg-primary: $color-dark,
+                        bg-secondary: $color-background,
+                        weekend-color: $color-main,
+                        border-color: $color-background,
+                        today-bg: $font-color-secondary,
+                        bg-active: $font-color-secondary
+                )
+);
 
 body {
   margin: 0;
@@ -565,3 +580,5 @@ body {
   color: $color-main;
   letter-spacing: 0.2em;
 }
+
+//

@@ -12,9 +12,12 @@ import { Schedule } from '../../../models/schedule.model';
 @Component({
     selector: 'app-librarian-schedule',
     templateUrl: './librarian-schedule.component.html',
-    styleUrls: ['./librarian-schedule.component.sass']
+    styleUrls: ['./librarian-schedule.component.scss']
 })
 export class LibrarianScheduleComponent implements OnInit, OnDestroy {
+    viewDate: Date = new Date();
+    events = [];
+
     schedules: Schedule[];
     schedulesForDisplay: Schedule[];
 
@@ -36,23 +39,20 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
     constructor(
         private scheduleService: ScheduleService,
-        private helperService: HelperService
-    ) {}
+        public helperService: HelperService
+    ) {
+    }
 
     ngOnInit(): void {
         this.subscriptionHandle();
     }
 
     subscriptionHandle(): void {
-        this.schedulesFetchSubscription = this.scheduleService
-            .fetchAllSchedulesHttp()
-            .subscribe();
-        this.schedulesSubscription = this.scheduleService
-            .getSchedules()
-            .subscribe((schedules: Schedule[]) => {
-                this.schedules = schedules;
-                this.setSchedules();
-            });
+        this.schedulesFetchSubscription = this.scheduleService.fetchAllSchedulesHttp().subscribe();
+        this.schedulesSubscription = this.scheduleService.getSchedules().subscribe((schedules: Schedule[]) => {
+            this.schedules = schedules;
+            this.setSchedules();
+        });
     }
 
     getScheduleByDay(schedule: Schedule[], day: string): Schedule[] {
