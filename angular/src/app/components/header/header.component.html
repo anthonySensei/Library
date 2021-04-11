@@ -39,7 +39,7 @@
                     <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.LIBRARIANS" *ngIf="isManager()">
                         Librarians
                     </a>
-                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" *ngIf="isNotUser()" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE">Schedule</a>
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">Schedule</a>
                     <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.STUDENTS" *ngIf="isNotUser()">
                         Students
                     </a>

@@ -1,5 +1,6 @@
 /* Calendar */
 @import '~angular-calendar/scss/angular-calendar.scss';
+@import '~angular-calendar/scss/variables.scss';
 
 // Bootstrap
 @import "../node_modules/bootstrap/scss/functions";
@@ -49,7 +50,45 @@ body {
   margin: 0;
   font-family: $font-main;
   color: $font-color-main;
-  background: linear-gradient(145deg, $color-background calc(100% - 88vh), $color-secondary 40vh);
+  background: $color-background;
+  //background: background: linear-gradient(145deg, $color-background calc(100% - 88vh), $color-secondary 40vh);
+}
+
+a {
+  text-decoration: none;
+}
+
+table {
+  width: 100%;
+
+  @media screen and (width: 1280px) {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  tr {
+
+    &.detail-row {
+      height: 0;
+    }
+
+    &.element-row {
+
+      &:not(.expanded-row):hover {
+        cursor: pointer;
+        background: $color-secondary;
+      }
+
+      &:not(.expanded-row):active {
+        cursor: pointer;
+        background: $color-secondary;
+      }
+
+      td {
+        border-bottom-width: 0;
+      }
+    }
+  }
 }
 
 .bg-main {
@@ -62,6 +101,16 @@ body {
 
 .text-center {
   text-align: center;
+}
+
+.text-main {
+  color: $color-main;
+  text-transform: none;
+  text-decoration: none;
+}
+
+.text-secondary {
+  color: $font-color-secondary;
 }
 
 .w-78-center {
@@ -128,6 +177,10 @@ body {
 
 /* Form button */
 
+.outlined {
+  border: 1px solid $color-main;
+}
+
 
 .btn-group {
 
@@ -148,7 +201,7 @@ body {
       margin-right: 2%;
     }
 
-    &.move-btn {
+    &.outline {
       border: 1px solid $color-main;
     }
 
@@ -241,30 +294,6 @@ body {
     position: fixed;
     left: 40%;
     top: 40%;
-  }
-
-  table {
-    width: 100%;
-    @media screen and (width: 1280px) {
-      width: 90%;
-      margin: 0 auto;
-    }
-  }
-
-  tr.detail-row {
-    height: 0;
-  }
-
-  tr.element-row:not(.expanded-row):hover {
-    background: whitesmoke;
-  }
-
-  tr.element-row:not(.expanded-row):active {
-    background: #efefef;
-  }
-
-  .element-row td {
-    border-bottom-width: 0;
   }
 
   .loan-detail {

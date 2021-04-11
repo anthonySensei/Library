@@ -1,0 +1,88 @@
+<div class="d-flex align-items-center justify-content-between">
+    <div>
+        <button mwlCalendarPreviousView
+                mat-stroked-button
+                class="outlined"
+                color="primary"
+                [view]="view"
+                [(viewDate)]="viewDate"
+                (viewDateChange)="closeOpenMonthViewDay()"
+        >Previous</button>
+        <button mat-raised-button
+                mwlCalendarToday
+                color="primary"
+                class="mx-2"
+                [(viewDate)]="viewDate"
+        >Today</button>
+        <button mwlCalendarNextView
+                mat-stroked-button
+                class="outlined"
+                color="primary"
+                [view]="view"
+                [(viewDate)]="viewDate"
+                (viewDateChange)="closeOpenMonthViewDay()"
+        >Next</button>
+    </div>
+    <div>
+        <h4>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h4>
+    </div>
+    <div>
+        <button mat-button
+                color="primary"
+                [class.outlined]="view !== CalendarView.Month"
+                [class.mat-stroked-button]="view !== CalendarView.Month"
+                [class.mat-raised-button]="view === CalendarView.Month"
+                (click)="setView(CalendarView.Month)"
+        >Month</button>
+        <button mat-button
+                color="primary"
+                class="mx-2"
+                [class.outlined]="view !== CalendarView.Week"
+                [class.mat-stroked-button]="view !== CalendarView.Week"
+                [class.mat-raised-button]="view === CalendarView.Week"
+                (click)="setView(CalendarView.Week)"
+        >Week</button>
+        <button mat-button
+                color="primary"
+                [class.outlined]="view !== CalendarView.Day"
+                [class.mat-stroked-button]="view !== CalendarView.Day"
+                [class.mat-raised-button]="view === CalendarView.Day"
+                (click)="setView(CalendarView.Day)"
+        >Day</button>
+    </div>
+</div>
+<br>
+<div [ngSwitch]="view">
+    <mwl-calendar-month-view
+            [weekStartsOn]="1"
+            *ngSwitchCase="CalendarView.Month"
+            (dragend)="onEventDrag($event)"
+            [viewDate]="viewDate"
+            [events]="events"
+            [refresh]="refresh"
+            [activeDayIsOpen]="activeDayIsOpen"
+            (dayClicked)="onDayClick($event.day)"
+            (eventClicked)="onEventClick($event.event)"
+            (eventTimesChanged)="onTimeChanged($event)"
+    >
+    </mwl-calendar-month-view>
+    <mwl-calendar-week-view
+            [weekStartsOn]="1"
+            *ngSwitchCase="CalendarView.Week"
+            [viewDate]="viewDate"
+            [events]="events"
+            [refresh]="refresh"
+            (eventClicked)="onEventClick($event.event)"
+            (eventTimesChanged)="onTimeChanged($event)"
+    >
+    </mwl-calendar-week-view>
+    <mwl-calendar-day-view
+            *ngSwitchCase="CalendarView.Day"
+            [viewDate]="viewDate"
+            [events]="events"
+            [refresh]="refresh"
+            (eventClicked)="onEventClick($event.event)"
+            (eventTimesChanged)="onTimeChanged($event)"
+    >
+    </mwl-calendar-day-view>
+</div>

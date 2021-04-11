@@ -73,13 +73,13 @@
     </div>
     <table
         mat-table
-        [dataSource]="dataSource"
         multiTemplateDataRows
         class="mat-elevation-z8"
         matSort
         matSortActive="orderTime"
         matSortDirection="asc"
         matSortDisableClear
+        [dataSource]="dataSource"
     >
         <ng-container [matColumnDef]="tableColumns.ORDER_TIME">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>

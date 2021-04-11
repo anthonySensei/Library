@@ -31,7 +31,7 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private librarianService: LibrarianService,
-        private helperService: HelperService,
+        public helperService: HelperService,
         private route: ActivatedRoute
     ) {}
 

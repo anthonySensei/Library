@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
-
-import { Days } from '../../../constants/days';
-
-import { ScheduleService } from '../../../services/schedule.service';
+import { addDays, addHours, endOfMonth, startOfDay, subDays } from 'date-fns';
 import { HelperService } from '../../../services/helper.service';
+import { CalendarEvent, CalendarEventAction } from 'angular-calendar';
 
-import { Schedule } from '../../../models/schedule.model';
+const colors: any = {
+    yellow: {
+        primary: '#FFDF6C',
+        secondary: '#707070'
+    }
+};
 
 @Component({
     selector: 'app-librarian-schedule',
@@ -15,85 +17,81 @@ import { Schedule } from '../../../models/schedule.model';
     styleUrls: ['./librarian-schedule.component.scss']
 })
 export class LibrarianScheduleComponent implements OnInit, OnDestroy {
-    viewDate: Date = new Date();
-    events = [];
 
-    schedules: Schedule[];
-    schedulesForDisplay: Schedule[];
+    actions: CalendarEventAction[] = [
+        {
+            label: '<span class="ml-1 text-main">Edit</span>',
+            a11yLabel: 'Edit',
+            onClick: ({ event }: { event: CalendarEvent }): void => {
+                this.onEventEdit(event);
+            }
+        },
+        {
+            label: '<span class="ml-1 text-main">Delete</span>',
+            a11yLabel: 'Delete',
+            onClick: ({ event }: { event: CalendarEvent }): void => {
+                this.onEventDelete(event);
+            }
+        }
+    ];
 
-    schedulesSubscription: Subscription;
-    schedulesFetchSubscription: Subscription;
-
-    mnSchedules: Schedule[];
-    tsSchedules: Schedule[];
-    wnSchedules: Schedule[];
-    trSchedules: Schedule[];
-    frSchedules: Schedule[];
-    stSchedules: Schedule[];
-    snSchedules: Schedule[];
-
-    days = Object.values(Days);
+    events: CalendarEvent[] = [
+        {
+            start: subDays(startOfDay(new Date()), 1),
+            end: addDays(new Date(), 1),
+            title: 'Іван Васильович 10.00-18.00',
+            color: colors.yellow,
+            actions: this.actions,
+            allDay: true,
+            resizable: {
+                beforeStart: true,
+                afterEnd: true
+            },
+            draggable: true
+        },
+        {
+            start: startOfDay(new Date()),
+            title: 'Василь Васильович 12.00-18.00',
+            color: colors.yellow,
+            actions: this.actions
+        },
+        {
+            start: subDays(endOfMonth(new Date()), 3),
+            end: addDays(endOfMonth(new Date()), 3),
+            title: 'Іван Олександрович 14.00-18.00',
+            color: colors.blue,
+            allDay: true
+        },
+        {
+            start: addHours(startOfDay(new Date()), 2),
+            end: addHours(new Date(), 2),
+            title: 'Максим Олександрович 14.00-18.00',
+            color: colors.yellow,
+            actions: this.actions,
+            resizable: {
+                beforeStart: true,
+                afterEnd: true
+            },
+            draggable: true
+        }
+    ];
 
     departmentSelect: number;
     librarianSelect: number;
 
     constructor(
-        private scheduleService: ScheduleService,
-        public helperService: HelperService
-    ) {
+        public helperService: HelperService,
+    ) {}
+
+    ngOnInit(): void {}
+
+    onEventEdit(event: CalendarEvent): void {
+        console.log(event);
     }
 
-    ngOnInit(): void {
-        this.subscriptionHandle();
+    onEventDelete(event: CalendarEvent): void {
+        console.log(event);
     }
 
-    subscriptionHandle(): void {
-        this.schedulesFetchSubscription = this.scheduleService.fetchAllSchedulesHttp().subscribe();
-        this.schedulesSubscription = this.scheduleService.getSchedules().subscribe((schedules: Schedule[]) => {
-            this.schedules = schedules;
-            this.setSchedules();
-        });
-    }
-
-    getScheduleByDay(schedule: Schedule[], day: string): Schedule[] {
-        return this.schedulesForDisplay.filter(sch => sch.day === day);
-    }
-
-    getCondition(sch): boolean {
-        if (this.departmentSelect && this.librarianSelect) {
-            return (
-                sch.librarian.departmentId === this.departmentSelect &&
-                sch.librarian.id === this.librarianSelect
-            );
-        } else if (this.departmentSelect) {
-            return sch.librarian.departmentId === this.departmentSelect;
-        } else if (this.librarianSelect) {
-            return sch.librarian.id === this.librarianSelect;
-        } else {
-            return true;
-        }
-    }
-
-    setSchedules(): void {
-        this.schedulesForDisplay = this.schedules.filter(sch =>
-            this.getCondition(sch)
-        );
-        this.setSchedulesByDay(this.schedulesForDisplay);
-    }
-
-    setSchedulesByDay(schedules: Schedule[]): void {
-        this.mnSchedules = this.getScheduleByDay(schedules, this.days[0]);
-        this.tsSchedules = this.getScheduleByDay(schedules, this.days[1]);
-        this.wnSchedules = this.getScheduleByDay(schedules, this.days[2]);
-        this.trSchedules = this.getScheduleByDay(schedules, this.days[3]);
-        this.frSchedules = this.getScheduleByDay(schedules, this.days[4]);
-        this.stSchedules = this.getScheduleByDay(schedules, this.days[5]);
-        this.snSchedules = this.getScheduleByDay(schedules, this.days[6]);
-    }
-
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.schedulesSubscription, [
-            this.schedulesFetchSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }
