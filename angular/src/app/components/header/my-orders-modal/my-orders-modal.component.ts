@@ -1,15 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    Inject,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator, MatSort } from '@angular/material';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Department } from '../../../models/department.model';
@@ -20,6 +13,7 @@ import { HelperService } from '../../../services/helper.service';
 import { OrderService } from '../../../services/orders.service';
 import { DepartmentService } from '../../../services/department.service';
 import { SortOrder } from '../../../constants/sortOrder';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-add-option-dialog',
@@ -28,11 +22,6 @@ import { SortOrder } from '../../../constants/sortOrder';
 export class MyOrdersModalComponent
     implements OnInit, AfterViewInit, OnDestroy {
     departments: Department[];
-
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
 
     departmentSelect: number;
 
@@ -50,10 +39,11 @@ export class MyOrdersModalComponent
     constructor(
         private orderService: OrderService,
         private departmentService: DepartmentService,
-        private helperService: HelperService,
+        public helperService: HelperService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.dataSource = new OrdersDataSource(this.orderService);
@@ -72,26 +62,21 @@ export class MyOrdersModalComponent
     }
 
     subscriptionsHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+            this.departments = departments;
+        });
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
 
-        this.mergeSubscription = merge(
+        merge(
             this.sort.sortChange,
             this.paginator.page
         )
             .pipe(tap(() => this.loadOrdersPage()))
+            .pipe(untilDestroyed(this))
             .subscribe();
     }
 
@@ -109,11 +94,5 @@ export class MyOrdersModalComponent
         );
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.mergeSubscription,
-            this.sortSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

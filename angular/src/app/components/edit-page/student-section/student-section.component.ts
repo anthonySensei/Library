@@ -1,14 +1,5 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { Subscription } from 'rxjs';
 
 import { Student } from '../../../models/student.model';
 
@@ -17,8 +8,8 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-student-section',
@@ -33,11 +24,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     students: Student[];
 
-    studentsSubscription: Subscription;
-    studentsFetchSubscription: Subscription;
-    studentsEditSubscription: Subscription;
-    studentsDeleteSubscription: Subscription;
-
     studentSelect: number;
     studentReaderTicket: string;
     studentEmail: string;
@@ -50,27 +36,22 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         private studentService: StudentService,
         private router: Router,
         private dialog: MatDialog
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.setStudents();
     }
 
     setStudents(): void {
-        this.studentsFetchSubscription = this.studentService
-            .getAllStudentsHttp()
-            .subscribe();
-        this.studentsSubscription = this.studentService
-            .getStudents()
-            .subscribe((students: Student[]) => {
-                this.students = students;
-            });
+        this.studentService.getAllStudentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.studentService.getStudents().pipe(untilDestroyed(this)).subscribe((students: Student[]) => {
+            this.students = students;
+        });
     }
 
     getStudent(): Student {
-        return this.students.find(
-            (st: Student) => st.id === this.studentSelect
-        );
+        return this.students.find((st: Student) => st.id === this.studentSelect);
     }
 
     setStudentData(): void {
@@ -88,6 +69,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         if (!this.studentEmail || !this.studentReaderTicket) {
             return;
         }
+
         if (
             this.studentEmail === this.getStudent().email &&
             this.studentReaderTicket === this.getStudent().readerTicket
@@ -95,12 +77,14 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.studentsEditSubscription = this.studentService
+
+        this.studentService
             .ediStudentHttp(
                 this.studentSelect,
                 this.studentEmail,
                 this.studentReaderTicket
             )
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.studentResponseHandler();
             });
@@ -110,11 +94,10 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         if (!this.studentSelect) {
             return;
         }
-        this.studentsDeleteSubscription = this.studentService
-            .deleteStudentHttp(this.studentSelect)
-            .subscribe(() => {
-                this.studentResponseHandler();
-            });
+
+        this.studentService.deleteStudentHttp(this.studentSelect).pipe(untilDestroyed(this)).subscribe(() => {
+            this.studentResponseHandler();
+        });
     }
 
     openConfirmDeleteDialog(): void {
@@ -138,11 +121,5 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.studentsSubscription, [
-            this.studentsDeleteSubscription,
-            this.studentsEditSubscription,
-            this.studentsFetchSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

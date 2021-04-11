@@ -75,10 +75,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
     }
 
     nothingChangeHandle(): void {
-        this.materialService.openSnackbar(
-            this.nothingToChange,
-            SnackBarClasses.Warn
-        );
+        this.materialService.openSnackbar(this.nothingToChange, SnackBarClasses.Warn);
     }
 
     ngOnDestroy(): void {}

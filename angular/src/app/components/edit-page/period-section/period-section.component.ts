@@ -1,12 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { ResponseService } from '../../../services/response.service';
 import { PeriodService } from '../../../services/period.service';
@@ -14,7 +6,7 @@ import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
 import { MatDialog } from '@angular/material';
-import { ModalWidth } from '../../../constants/modalWidth';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-period-section',
@@ -28,12 +20,6 @@ export class PeriodSectionComponent implements OnDestroy {
     @Input() helperService: HelperService;
     @Input() periods: Period[];
 
-    periodsSubscription: Subscription;
-    periodsFetchSubscription: Subscription;
-    periodsAddSubscription: Subscription;
-    periodsEditSubscription: Subscription;
-    periodsDeleteSubscription: Subscription;
-
     periodSelect: number;
     periodStart: string;
     periodEnd: string;
@@ -46,7 +32,8 @@ export class PeriodSectionComponent implements OnDestroy {
     constructor(
         private periodService: PeriodService,
         private dialog: MatDialog
-    ) {}
+    ) {
+    }
 
     getPeriod(): Period {
         return this.periods.find((per: Period) => per.id === this.periodSelect);
@@ -60,12 +47,13 @@ export class PeriodSectionComponent implements OnDestroy {
     }
 
     addPeriod(): void {
-        this.periodsAddSubscription = this.periodService
+        this.periodService
             .addPeriodsHttp({
                 id: null,
                 start: this.newPeriodStart,
                 end: this.newPeriodEnd
             })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.periodResponseHandler();
             });
@@ -75,6 +63,7 @@ export class PeriodSectionComponent implements OnDestroy {
         if (!this.periodStart || !this.periodEnd) {
             return;
         }
+
         if (
             this.periodStart === this.getPeriod().start &&
             this.periodEnd === this.getPeriod().end
@@ -82,12 +71,14 @@ export class PeriodSectionComponent implements OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.periodsEditSubscription = this.periodService
+
+        this.periodService
             .ediPeriodsHttp({
                 id: this.periodSelect,
                 start: this.periodStart,
                 end: this.periodEnd
             })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.periodResponseHandler();
             });
@@ -97,11 +88,9 @@ export class PeriodSectionComponent implements OnDestroy {
         if (!this.periodSelect) {
             return;
         }
-        this.periodsDeleteSubscription = this.periodService
-            .deletePeriodsHttp(this.periodSelect)
-            .subscribe(() => {
-                this.periodResponseHandler();
-            });
+        this.periodService.deletePeriodsHttp(this.periodSelect).pipe(untilDestroyed(this)).subscribe(() => {
+            this.periodResponseHandler();
+        });
     }
 
     openConfirmDeleteDialog(): void {
@@ -118,14 +107,10 @@ export class PeriodSectionComponent implements OnDestroy {
 
     periodResponseHandler(): void {
         if (this.responseService.responseHandle()) {
-            this.periodsFetchSubscription = this.periodService
-                .fetchAllPeriodsHttp()
-                .subscribe();
-            this.periodsSubscription = this.periodService
-                .getPeriods()
-                .subscribe((periods: Period[]) => {
-                    this.periods = periods;
-                });
+            this.periodService.fetchAllPeriodsHttp().subscribe();
+            this.periodService.getPeriods().subscribe((periods: Period[]) => {
+                this.periods = periods;
+            });
             this.newPeriodEnd = null;
             this.newPeriodStart = null;
             this.periodStart = null;
@@ -134,14 +119,5 @@ export class PeriodSectionComponent implements OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        if (this.periodsSubscription) {
-            this.helperService.unsubscribeHandle(this.periodsSubscription, [
-                this.periodsFetchSubscription,
-                this.periodsAddSubscription,
-                this.periodsEditSubscription,
-                this.periodsDeleteSubscription
-            ]);
-        }
-    }
+    ngOnDestroy(): void {}
 }

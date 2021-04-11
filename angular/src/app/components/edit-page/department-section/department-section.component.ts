@@ -1,20 +1,12 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { ResponseService } from '../../../services/response.service';
 import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Department } from '../../../models/department.model';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-department-section',
@@ -35,13 +27,8 @@ export class DepartmentSectionComponent implements OnDestroy {
 
     showDepartmentAdding: boolean;
 
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    departmentsAddSubscription: Subscription;
-    departmentsEditSubscription: Subscription;
-    departmentsDeleteSubscription: Subscription;
-
-    constructor(private dialog: MatDialog) {}
+    constructor(private dialog: MatDialog) {
+    }
 
     getDepartment(): Department {
         return this.departments.find(dep => dep.id === this.departmentSelect);
@@ -54,8 +41,9 @@ export class DepartmentSectionComponent implements OnDestroy {
     }
 
     addDepartment(): void {
-        this.departmentsAddSubscription = this.departmentService
+        this.departmentService
             .addDepartmentHttp({ id: null, address: this.newDepartmentAddress })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.departmentResponseHandler();
             });
@@ -69,8 +57,9 @@ export class DepartmentSectionComponent implements OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.departmentsEditSubscription = this.departmentService
+        this.departmentService
             .editDepartmentHttp(this.departmentSelect, this.departmentAddress)
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.departmentResponseHandler();
             });
@@ -80,13 +69,11 @@ export class DepartmentSectionComponent implements OnDestroy {
         if (!this.departmentSelect) {
             return;
         }
-        this.departmentsDeleteSubscription = this.departmentService
-            .deleteDepartmentHttp(this.departmentSelect)
-            .subscribe(() => {
-                this.departmentResponseHandler();
-                this.departmentAddress = null;
-                this.departmentSelect = null;
-            });
+        this.departmentService.deleteDepartmentHttp(this.departmentSelect).pipe(untilDestroyed(this)).subscribe(() => {
+            this.departmentResponseHandler();
+            this.departmentAddress = null;
+            this.departmentSelect = null;
+        });
     }
 
     openConfirmDeleteDialog(): void {
@@ -103,26 +90,14 @@ export class DepartmentSectionComponent implements OnDestroy {
 
     departmentResponseHandler(): void {
         if (this.responseService.responseHandle()) {
-            this.departmentsFetchSubscription = this.departmentService
-                .fetchAllDepartmentsHttp()
-                .subscribe();
-            this.departmentsSubscription = this.departmentService
-                .getDepartments()
-                .subscribe((departments: Department[]) => {
-                    this.departments = departments;
-                });
+            this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+            this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+                this.departments = departments;
+            });
             this.newDepartmentAddress = null;
         }
     }
 
     ngOnDestroy(): void {
-        if (this.departmentsSubscription) {
-            this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-                this.departmentsFetchSubscription,
-                this.departmentsAddSubscription,
-                this.departmentsEditSubscription,
-                this.departmentsDeleteSubscription
-            ]);
-        }
     }
 }
