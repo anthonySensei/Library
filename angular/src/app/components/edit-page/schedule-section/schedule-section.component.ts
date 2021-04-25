@@ -9,7 +9,7 @@ import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
 
 import { Days } from '../../../constants/days';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({

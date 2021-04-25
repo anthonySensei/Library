@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
 const Department = sequelize.define('department_', {
     id: {
@@ -13,7 +13,7 @@ const Department = sequelize.define('department_', {
         type: Sequelize.STRING,
         allowNull: false,
         validate: {
-            notNull: { args: true, msg: 'You must enter department address' }
+            notNull: { msg: 'You must enter department address' }
         }
     }
 });

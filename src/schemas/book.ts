@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
 const Book = sequelize.define('book_', {
     id: {

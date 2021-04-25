@@ -5,7 +5,7 @@ import { LibrarianService } from '../../../services/librarian.service';
 import { Department } from '../../../models/department.model';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({

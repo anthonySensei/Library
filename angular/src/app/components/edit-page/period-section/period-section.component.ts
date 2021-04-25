@@ -5,7 +5,7 @@ import { PeriodService } from '../../../services/period.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({

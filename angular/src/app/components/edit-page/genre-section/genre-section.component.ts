@@ -5,7 +5,7 @@ import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Genre } from '../../../models/genre.model';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({

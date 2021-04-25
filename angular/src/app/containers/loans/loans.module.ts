@@ -8,7 +8,8 @@ import { LoansRoutingModule } from './loans-routing.module';
 
 import { LoansPageComponent } from './loans-page/loans-page.component';
 import { LoansChartComponent } from './loans-chart/loans-chart.component';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
     declarations: [LoansPageComponent, LoansChartComponent],

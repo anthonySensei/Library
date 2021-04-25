@@ -1,8 +1,8 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
-const Author = sequelize.define('author_', {
+const Genre = sequelize.define('genre_', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -15,4 +15,4 @@ const Author = sequelize.define('author_', {
     }
 });
 
-module.exports = Author;
+module.exports = Genre;

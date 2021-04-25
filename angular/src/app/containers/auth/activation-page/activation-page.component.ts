@@ -19,6 +19,9 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
     paramsSubscription: Subscription;
     authSubscription: Subscription;
 
+    message: string;
+    error: string;
+
     constructor(
         private route: ActivatedRoute,
         private authService: AuthService,
@@ -39,9 +42,9 @@ export class ActivationPageComponent implements OnInit, OnDestroy {
     subscriptionHandle() {
         this.authSubscription = this.authService
             .checkRegistrationToken(this.registrationToken)
-            .subscribe(() => {
+            .subscribe(async () => {
                 if (this.responseService.responseHandle()) {
-                    this.router.navigate(['/' + AngularLinks.LOGIN]);
+                    await this.router.navigate(['/' + AngularLinks.LOGIN]);
                 }
             });
     }

@@ -33,7 +33,7 @@ export class StudentDetailsComponent implements OnInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        private helperService: HelperService,
+        public helperService: HelperService,
         private departmentService: DepartmentService,
         private route: ActivatedRoute
     ) {}
