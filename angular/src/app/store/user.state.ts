@@ -6,7 +6,6 @@ import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../constants/angularLinks';
 import { MaterialService } from '../services/material.service';
-import { SnackBarClasses } from '../constants/snackBarClasses';
 
 
 /*********************************
