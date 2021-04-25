@@ -10,7 +10,7 @@
     "src/app/constants/animation.ts"
   ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.d.ts"
   ],
   "exclude": [
     "src/test.ts",
