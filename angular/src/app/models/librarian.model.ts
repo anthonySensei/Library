@@ -3,14 +3,14 @@ import { Department } from './department.model';
 import { User } from './user.model';
 
 export class Librarian extends User {
-    id: number;
+    id: string;
     department: Department;
     loans?;
     schedule?;
     statistic?;
 
     constructor(
-        id: number,
+        id: string,
         name: string,
         email: string,
         image: string,
@@ -18,7 +18,7 @@ export class Librarian extends User {
         role: Role,
         department: Department
     ) {
-        super(name, email, image, password, role);
+        super(name, email, image, password);
         this.id = id;
         this.department = department;
     }

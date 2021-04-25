@@ -1,8 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
-import { Subscription } from 'rxjs';
-
 import { AuthService } from '../../../services/auth.service';
 import { BookService } from '../../../services/book.service';
 import { DepartmentService } from '../../../services/department.service';
@@ -21,8 +19,11 @@ import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
 import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
-import { Role } from '../../../models/role.model';
 import { Pagination } from '../../../models/pagination.model';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../../store/user.state';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-main-page',
@@ -34,19 +35,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
     authors: Author[] = [];
     genres: Genre[] = [];
     departments: Department[] = [];
-    role: Role;
+    user: User;
     paginationData: Pagination;
-
-    paramsSubscription: Subscription;
-    booksSubscription: Subscription;
-    booksFetchSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    authorsSubscription: Subscription;
-    authorsFetchSubscription: Subscription;
-    genresSubscription: Subscription;
-    genresFetchSubscription: Subscription;
-    userSubscription: Subscription;
 
     isLoading: boolean;
     showFilterButton = true;
@@ -76,6 +66,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
     previousPage: number;
     lastPage: number;
 
+    @Select(UserState.User)
+    user$: Observable<User>;
+
     constructor(
         private authService: AuthService,
         private bookService: BookService,
@@ -97,8 +90,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.paramsHandle();
     }
 
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User );
+    }
+
     paramsHandle(): void {
-        this.paramsSubscription = this.route.queryParams.subscribe(
+        this.route.queryParams.pipe(untilDestroyed(this)).subscribe(
             (params: Params) => {
                 this.currentPage = +params.page || 1;
                 this.departmentSelect = +params.department || null;
@@ -114,42 +111,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     subscriptionsHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
                 this.departments = departments;
                 this.booksSubscriptionHandle();
-            });
-        this.authorsFetchSubscription = this.authorService
-            .fetchAllAuthorsHttp()
-            .subscribe();
-        this.authorsSubscription = this.authorService
-            .getAuthors()
-            .subscribe((authors: Author[]) => {
+        });
+        this.authorService.fetchAllAuthorsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe((authors: Author[]) => {
                 this.authors = authors;
-            });
-        this.genresFetchSubscription = this.genreService
-            .fetchAllGenresHttp()
-            .subscribe();
-        this.genresSubscription = this.genreService
-            .getGenres()
-            .subscribe((genres: Genre[]) => {
+        });
+        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
+        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) => {
                 this.genres = genres;
-            });
-        this.userSubscription = this.authService
-            .getUser()
-            .subscribe((user: User) => {
-                this.role = user
-                    ? user.role
-                    : new Role(null, this.roles.STUDENT);
-            });
+        });
+        this.getUser$();
     }
 
     booksSubscriptionHandle(): void {
-        this.booksFetchSubscription = this.bookService
+        this.bookService
             .fetchAllBooksHttp(
                 this.currentPage,
                 this.authorSelect,
@@ -160,6 +139,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.filterName,
                 this.filterValue
             )
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.paginationData = this.helperService.getPaginationData();
                 this.currentPage = this.paginationData.currentPage;
@@ -169,8 +149,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.previousPage = this.paginationData.previousPage;
                 this.lastPage = this.paginationData.lastPage;
             });
-        this.booksSubscription = this.bookService
+        this.bookService
             .getBooks()
+            .pipe(untilDestroyed(this))
             .subscribe((books: Book[]) => {
                 this.books = books || [];
                 this.isLoading = false;
@@ -216,10 +197,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     isHaveAccess(): boolean {
-        return (
-            this.role.role === this.roles.LIBRARIAN ||
-            this.role.role === this.roles.MANAGER
-        );
+        return (this.user.admin || this.user.librarian);
     }
 
     clearInputs(): void {
@@ -241,16 +219,5 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.paginate(1);
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.paramsSubscription, [
-            this.booksSubscription,
-            this.booksFetchSubscription,
-            this.departmentsSubscription,
-            this.departmentsFetchSubscription,
-            this.departmentsFetchSubscription,
-            this.authorsSubscription,
-            this.authorsFetchSubscription,
-            this.userSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

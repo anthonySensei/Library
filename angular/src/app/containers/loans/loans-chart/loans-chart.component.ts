@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
 import { HelperService } from '../../../services/helper.service';
@@ -16,6 +16,10 @@ import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AuthService } from '../../../services/auth.service';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../../store/user.state';
+import { User } from '../../../models/user.model';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-loans-chart',
@@ -25,11 +29,6 @@ import { AuthService } from '../../../services/auth.service';
 export class LoansChartComponent implements OnInit, OnDestroy {
     statistic: Statistic[];
     departments: Department[];
-
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    statisticSubscription: Subscription;
-    statisticChangedSubscription: Subscription;
 
     isManager: boolean;
 
@@ -54,6 +53,10 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     colorScheme = {
         domain: ['#ffaa00']
     };
+
+    @Select(UserState.User)
+    user$: Observable<User>;
+
     constructor(
         private loansService: LoansService,
         private helperService: HelperService,
@@ -66,18 +69,18 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         document.title = PageTitles.STATISTIC;
         this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
         this.subscriptionHandle();
-        this.authService.isManager().then((isManager: boolean) => {
-            this.isManager = isManager;
-        });
+        this.getUser$();
+    }
+
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => this.isManager = user && user.admin);
     }
 
     statisticHandler(): void {
-        this.statisticChangedSubscription = this.loansService
-            .getStatistic()
-            .subscribe((statistic: Statistic[]) => {
-                this.statistic = statistic;
-                this.setStatisticToChart();
-            });
+        this.loansService.getStatistic().pipe(untilDestroyed(this)).subscribe((statistic: Statistic[]) => {
+            this.statistic = statistic;
+            this.setStatisticToChart();
+        });
     }
 
     setStatisticToChart() {
@@ -97,9 +100,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
                 }
             ];
         } else {
-            this.multi = this.helperService.emptyChartHandle(
-                WarnMessages.EMPTY
-            );
+            this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
             this.materialService.openSnackbar(
                 WarnMessages.EMPTY_STATISTIC,
                 SnackBarClasses.Warn
@@ -144,28 +145,16 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     onDeactivate(data): void {}
 
     showStatistic(): void {
-        this.statisticSubscription = this.loansService
-            .fetchLoansStatisticHttp(this.model, this.modelValue)
-            .subscribe();
+        this.loansService.fetchLoansStatisticHttp(this.model, this.modelValue).pipe(untilDestroyed(this)).subscribe();
         this.statisticHandler();
     }
 
     subscriptionHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+            this.departments = departments;
+        });
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.statisticSubscription,
-            this.statisticChangedSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

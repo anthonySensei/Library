@@ -43,7 +43,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     emailValidation: RegExp;
     passwordValidation: RegExp;
-    readerTicketValidation: RegExp;
 
     discardChanged = new Subject<boolean>();
 
@@ -61,7 +60,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         document.title = PageTitles.REGISTRATION;
         this.emailValidation = this.validationService.getEmailValidation();
         this.passwordValidation = this.validationService.getPasswordValidation();
-        this.readerTicketValidation = this.validationService.getReaderTicketValidation();
         this.formControlInitialization();
     }
 
@@ -72,7 +70,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 Validators.email,
                 Validators.pattern(this.emailValidation)
             ]),
-            readerTicket: new FormControl(null, [Validators.required, Validators.pattern(this.readerTicketValidation)]),
             name: new FormControl(null, [Validators.required])
         });
         this.passwordForm = new FormGroup({
@@ -99,7 +96,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
     onRegisterUser(stepper: MatHorizontalStepper): void {
         const email = this.mainInfoForm.value.email;
-        const readerTicket = this.mainInfoForm.value.reader_ticket;
         const name = this.mainInfoForm.value.name;
         const password = this.passwordForm.value.password;
         const password2 = this.passwordForm.value.password2;
@@ -109,7 +105,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const student = new Student(null, name, email, null, readerTicket, password);
+        const student = new Student(null, name, email, null, password);
 
         if (!this.validationService.comparePasswords(password, password2)) {
             this.isPasswordError = true;

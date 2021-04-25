@@ -26,6 +26,8 @@ import { WarnMessages } from '../../../constants/warnMessages';
 import { ErrorMessages } from '../../../constants/errorMessages';
 import { KeyWords } from '../../../constants/keyWords';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../../store/user.state';
 
 @Component({
     selector: 'app-user',
@@ -51,6 +53,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     changePasswordModalWidth = ModalWidth.W35P;
     changePictureModal = ModalWidth.W40P;
+
+    @Select(UserState.User)
+    user$: Observable<User>;
 
     constructor(
         private authService: AuthService,
@@ -90,6 +95,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.initializeForm();
     }
 
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => {
+            this.user = user || {} as User;
+            this.isLoading = false;
+        });
+    }
+
     initializeForm(): void {
         this.profileForm = new FormGroup({
             email: new FormControl(this.user.email, [
@@ -102,10 +114,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     userHandle(): void {
-        this.authService.getUser().pipe(untilDestroyed(this)).subscribe((user: User) => {
-                this.user = user;
-            });
-        this.isLoading = false;
+        this.getUser$();
     }
 
     hasError(controlName: string, errorName: string): boolean {
@@ -115,23 +124,21 @@ export class ProfileComponent implements OnInit, OnDestroy {
     openChangeProfileImageDialog(): void {
         const dialogRef = this.dialog.open(ChangeProfileImageModalComponent, {
             width: this.changePictureModal,
-            data: {
-                imageBase64: ''
-            }
+            data: { imageBase64: '' }
         });
 
         dialogRef.afterClosed().pipe(untilDestroyed(this)).subscribe((profileImage: string) => {
                 if (profileImage) {
                     this.userService
                         .updateUserDataHttp(
-                            { ...this.user, profileImage },
+                            { ...this.user, image: profileImage },
                             ChangedDataProfile.IMAGE
                         )
                         .pipe(untilDestroyed(this))
                         .subscribe(() => {
                             if (this.responseService.responseHandle()) {
                                 this.done = true;
-                                this.user.profileImage = profileImage;
+                                this.user.image = profileImage;
                                 localStorage.setItem(
                                     'userData',
                                     JSON.stringify(this.user)

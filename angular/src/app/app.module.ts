@@ -29,6 +29,8 @@ import { ScheduleSectionComponent } from './components/edit-page/schedule-sectio
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 import { LibrarianSectionComponent } from './components/edit-page/librarian-section/librarian-section.component';
+import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
+import { UserState } from './store/user.state';
 
 @NgModule({
     declarations: [
@@ -58,7 +60,10 @@ import { LibrarianSectionComponent } from './components/edit-page/librarian-sect
         LoansModule,
         LibrariansModule,
         StudentsModule,
-        AppRoutingModule
+        AppRoutingModule,
+        NgxsModule.forRoot([UserState], {
+            executionStrategy: NoopNgxsExecutionStrategy
+        }),
     ],
     providers: [
         {

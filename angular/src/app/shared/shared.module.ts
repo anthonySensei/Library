@@ -48,6 +48,8 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
 import { SmallScreenComponent } from './small-screen/small-screen.component';
 import { LoaderComponent } from './loader/loader.component';
+import { NgxsModule } from '@ngxs/store';
+import { UserState } from '../store/user.state';
 
 @NgModule({
     declarations: [
@@ -56,7 +58,7 @@ import { LoaderComponent } from './loader/loader.component';
         SmallScreenComponent,
         LoaderComponent
     ],
-    imports: [CommonModule, LineChartModule, NgbModule],
+    imports: [CommonModule, LineChartModule, NgbModule, NgxsModule.forFeature([UserState])],
     exports: [
         CommonModule,
         MatMenuModule,

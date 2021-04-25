@@ -10,6 +10,9 @@ import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
+import { Store } from '@ngxs/store';
+import { Login } from '../../../store/user.state';
+import { StoreStateModel } from '../../../store/store.model';
 
 @Component({
     selector: 'app-auth',
@@ -17,7 +20,7 @@ import { PageTitles } from '../../../constants/pageTitles';
 })
 export class AuthComponent implements OnInit, OnDestroy {
 
-    error: string;
+    error: boolean;
     loginForm: FormGroup;
     links = AngularLinks;
     emailValidation: RegExp;
@@ -26,7 +29,8 @@ export class AuthComponent implements OnInit, OnDestroy {
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
-        private router: Router
+        private router: Router,
+        private store: Store
     ) {
     }
 
@@ -50,19 +54,18 @@ export class AuthComponent implements OnInit, OnDestroy {
     onLoginUser(): void {
         const email = this.loginForm.value.email;
         const password = this.loginForm.value.password;
+
         if (this.loginForm.invalid) {
             return;
         }
-        const user = { email, password };
-        this.authService.login(user).pipe(untilDestroyed(this)).subscribe(() => {
-            if (this.responseService.responseHandle()) {
-                this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
-                this.router.navigate([AngularLinks.HOME]);
-                this.loginForm.reset();
-            } else {
-                this.loginForm.patchValue({ email, password: '' });
-                this.error = this.responseService.getResponse().message;
+
+        this.store.dispatch(new Login(email, password)).pipe(untilDestroyed(this)).subscribe(async (state: StoreStateModel) => {
+            if (state.user.user) {
+                return;
             }
+
+            this.loginForm.patchValue({ email, password: '' });
+            this.error = true;
         });
     }
 

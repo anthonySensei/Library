@@ -105,7 +105,7 @@ export class LibrarianService {
             );
     }
 
-    ediLibrarianHttp(librarianId: number, email: string, departmentId: number) {
+    ediLibrarianHttp(librarianId: string, email: string, departmentId: number) {
         return this.http
             .put(this.LIBRARIANS_URL, {
                 librarianId,
@@ -119,7 +119,7 @@ export class LibrarianService {
             );
     }
 
-    deleteLibrarianHttp(librarianId: number) {
+    deleteLibrarianHttp(librarianId: string) {
         return this.http
             .delete(this.LIBRARIANS_URL, {
                 params: new HttpParams().set('librarianId', librarianId.toString())

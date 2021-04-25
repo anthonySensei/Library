@@ -29,10 +29,10 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     showedSchedules: Schedule[] = [];
 
     scheduleSelect: number;
-    librarianSelect: number;
+    librarianSelect: string;
     scheduleDay: string;
     schedulePeriodId: number;
-    scheduleLibrarianId: number;
+    scheduleLibrarianId: string;
 
     newScheduleDay: string;
     newSchedulePeriodId: number;

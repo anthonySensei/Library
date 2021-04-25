@@ -95,7 +95,7 @@ export class StudentService {
         );
     }
 
-    ediStudentHttp(studentId: number, email: string, readerTicket: string) {
+    ediStudentHttp(studentId: string, email: string, readerTicket: string) {
         return this.http
             .put(this.STUDENTS_URL, { studentId, email, readerTicket })
             .pipe(
@@ -105,7 +105,7 @@ export class StudentService {
             );
     }
 
-    deleteStudentHttp(studentId: number) {
+    deleteStudentHttp(studentId: string) {
         return this.http
             .delete(this.STUDENTS_URL, {
                 params: new HttpParams().set('studentId', studentId.toString())

@@ -500,19 +500,19 @@ table {
 .success-snackbar {
   background: $color-background;
   border: 2px solid $color-success;
-  color: $color-success;
+  color: #fff;
 }
 
 .warn-snackbar {
   background: $color-background;
   border: 2px solid $color-warn;
-  color: $color-warn;
+  color: #fff;
 }
 
 .danger-snackbar {
   background: $color-background;
-  border: 2px solid $color-danger;
-  color: $color-danger;
+  border: 3px solid $color-danger;
+  color: #fff;
 }
 
 /* Scrollbar */

@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { MatDialog } from '@angular/material/dialog';
 
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Book } from '../../../models/book.model';
 import { User } from '../../../models/user.model';
@@ -16,11 +16,12 @@ import { HelperService } from '../../../services/helper.service';
 
 import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
 import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
-
-import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { ModalWidth } from '../../../constants/modalWidth';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../../store/user.state';
 
 @Component({
     selector: 'app-book-details',
@@ -28,27 +29,17 @@ import { ModalWidth } from '../../../constants/modalWidth';
     styleUrls: ['./book-details.component.sass']
 })
 export class BookDetailsComponent implements OnInit, OnDestroy {
-    roles = UserRoles;
     book: Book;
     user: User;
 
     bookId: number;
-
     isLoading: boolean;
-
-    paramsSubscription: Subscription;
-    bookSubscription: Subscription;
-    bookFetchSubscription: Subscription;
-    bookMoveSubscription: Subscription;
-    bookOrderSubscription: Subscription;
-    bookLoanSubscription: Subscription;
-    userSubscription: Subscription;
-
-    userRole: string;
-
     readerTicket: string;
 
     links = AngularLinks;
+
+    @Select(UserState.User)
+    user$: Observable<User>;
 
     constructor(
         private route: ActivatedRoute,
@@ -64,36 +55,25 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         document.title = PageTitles.BOOK_DETAILS;
         this.isLoading = true;
-        this.paramsSubscription = this.route.params.subscribe(
-            (params: Params) => {
-                this.bookId = +params.id;
-            }
-        );
+        this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => this.bookId = +params.id);
         this.handleBookSubscriptions();
-        this.handleUserSubscription();
+        this.getUser$();
+    }
+
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User);
     }
 
     handleBookSubscriptions(): void {
-        this.bookFetchSubscription = this.bookService
-            .getBookHttp(this.bookId)
-            .subscribe();
-        this.bookSubscription = this.bookService
-            .getBook()
-            .subscribe((book: Book) => {
+        this.bookService.getBookHttp(this.bookId).pipe(untilDestroyed(this)).subscribe();
+        this.bookService.getBook().pipe(untilDestroyed(this)).subscribe(async (book: Book) => {
                 this.book = book;
-                if (!this.book) {
-                    this.router.navigate([AngularLinks.ERROR_PAGE]);
-                }
-                this.isLoading = false;
-            });
-    }
 
-    handleUserSubscription(): void {
-        this.userSubscription = this.authService
-            .getUser()
-            .subscribe((user: User) => {
-                this.user = user;
-                this.userRole = user && user.role.role;
+                if (!this.book) {
+                    await this.router.navigate([AngularLinks.ERROR_PAGE]);
+                }
+
+                this.isLoading = false;
             });
     }
 
@@ -115,12 +95,10 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 bookId: this.bookId,
                 time: new Date()
             };
-            this.bookLoanSubscription = this.bookService
-                .loanBookHttp(loanData)
-                .subscribe(() => {
-                    this.responseHandle();
-                    this.handleBookSubscriptions();
-                });
+            this.bookService.loanBookHttp(loanData).pipe(untilDestroyed(this)).subscribe(() => {
+                this.responseHandle();
+                this.handleBookSubscriptions();
+            });
         });
     }
 
@@ -137,12 +115,13 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
             if (!result) {
                 return;
             }
-            this.bookMoveSubscription = this.bookService
+            this.bookService
                 .moveBookHttp(
                     this.book,
                     result.departmentId,
                     result.booksToMove
                 )
+                .pipe(untilDestroyed(this))
                 .subscribe(() => {
                     this.responseHandle();
                     this.handleBookSubscriptions();
@@ -166,14 +145,5 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.responseService.responseHandle();
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.paramsSubscription, [
-            this.bookSubscription,
-            this.bookFetchSubscription,
-            this.bookLoanSubscription,
-            this.bookMoveSubscription,
-            this.bookOrderSubscription,
-            this.userSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

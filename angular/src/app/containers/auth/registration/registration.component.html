@@ -7,17 +7,6 @@
                 <form [formGroup]="mainInfoForm">
                     <ng-template matStepLabel>Main info</ng-template>
                     <mat-form-field class="form__input">
-                        <mat-label>Reader ticket</mat-label>
-                        <input matInput type="number" name="readerTicket" formControlName="readerTicket" placeholder="123213" (change)="error = null" />
-                        <mat-error *ngIf="error">{{ error }}</mat-error>
-                        <mat-error *ngIf="hasError('readerTicket', 'required') && !error">
-                            Reader ticket is required
-                        </mat-error>
-                        <mat-error *ngIf=" hasError('readerTicket', 'pattern') && !error">
-                            Reader ticket is not valid. Must starts with 1-9 and contains 10 numbers
-                        </mat-error>
-                    </mat-form-field>
-                    <mat-form-field class="form__input">
                         <mat-label>Email</mat-label>
                         <input matInput type="email" name="email" formControlName="email" placeholder="Ex. example@mail.com" (change)="emailError = null" />
                         <mat-error *ngIf="emailError">{{ emailError }}</mat-error>

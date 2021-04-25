@@ -8,6 +8,8 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { AuthComponent } from './login/auth.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { ActivationPageComponent } from './activation-page/activation-page.component';
+import { NgxsModule } from '@ngxs/store';
+import { UserState } from '../../store/user.state';
 
 @NgModule({
     declarations: [
@@ -15,6 +17,12 @@ import { ActivationPageComponent } from './activation-page/activation-page.compo
         RegistrationComponent,
         ActivationPageComponent,
     ],
-    imports: [SharedModule, RouterModule, AuthRoutingModule, FormsModule]
+    imports: [
+        SharedModule,
+        RouterModule,
+        AuthRoutingModule,
+        FormsModule,
+        NgxsModule.forFeature([UserState]),
+    ]
 })
 export class AuthModule {}

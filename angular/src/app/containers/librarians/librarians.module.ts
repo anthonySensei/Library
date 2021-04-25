@@ -35,5 +35,4 @@ import { ScheduleComponent } from './schedule/schedule.component';
         useFactory: adapterFactory
     })]
 })
-export class LibrariansModule {
-}
+export class LibrariansModule {}
