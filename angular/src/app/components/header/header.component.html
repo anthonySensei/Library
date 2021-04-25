@@ -20,7 +20,7 @@
                 <a mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" [routerLink]="'/' + links.MY_ACCOUNT">
                     Profile
                 </a>
-                <button mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" (click)="openMyOrdersModal()" *ngIf="isStudent()">
+                <button mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" (click)="openMyOrdersModal()" *ngIf="isUser()">
                     My orders
                 </button>
                 <div class="small-screen-container" *ngIf="isSmallScreen">
@@ -55,7 +55,7 @@
             <button mat-icon-button [matMenuTriggerFor]="appMenu">
                 <span class="image-cropper">
                     <img class="navbar-profile-image" alt="profile_image"
-                         src="{{user.profileImage ? user.profileImage : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
+                         src="{{user.image ? user.image : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                     />
                 </span>
             </button>

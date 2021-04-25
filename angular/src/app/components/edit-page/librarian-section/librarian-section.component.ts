@@ -1,18 +1,10 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ResponseService } from '../../../services/response.service';
 import { Librarian } from '../../../models/librarian.model';
 import { LibrarianService } from '../../../services/librarian.service';
 import { Department } from '../../../models/department.model';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
@@ -32,7 +24,7 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
 
     links = AngularLinks;
 
-    librarianSelect: number;
+    librarianSelect: string;
     librarianDepartment: number;
     librarianEmail: string;
 

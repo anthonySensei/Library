@@ -11,23 +11,27 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 import { AngularLinks } from '../constants/angularLinks';
+import { UserState } from '../store/user.state';
+import { Store } from '@ngxs/store';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LibrarianGuard implements CanActivate {
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private store: Store, private router: Router) {}
 
     canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
-        return this.authService.isLibrarian().then((librarian: boolean) => {
-            if (!librarian) {
-                this.router.navigate([AngularLinks.HOME]);
-                return false;
-            }
-            return librarian;
-        });
+        const user = this.store.selectSnapshot(UserState.User);
+        const isLibrarian = user.librarian;
+
+        if (!isLibrarian) {
+            this.router.navigate([AngularLinks.HOME]);
+            return isLibrarian;
+        }
+
+        return isLibrarian;
     }
 }

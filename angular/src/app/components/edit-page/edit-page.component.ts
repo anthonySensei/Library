@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Department } from '../../models/department.model';
 import { Student } from '../../models/student.model';
@@ -20,6 +20,9 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../store/user.state';
+import { User } from '../../models/user.model';
 
 @Component({
     selector: 'app-edit-page',
@@ -37,6 +40,9 @@ export class EditPageComponent implements OnInit, OnDestroy {
     nothingToChange = WarnMessages.NOTHING_TO_CHANGE;
     isManager: boolean;
 
+    @Select(UserState.User)
+    user$: Observable<User>;
+
     constructor(
         public departmentService: DepartmentService,
         private authService: AuthService,
@@ -50,9 +56,11 @@ export class EditPageComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         document.title = PageTitles.MANAGING;
         this.selectsValuesSubscriptionHandle();
-        this.authService.isManager().then((isManager: boolean) => {
-            this.isManager = isManager;
-        });
+        this.getUser$();
+    }
+
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => this.isManager = user && user.admin);
     }
 
     selectsValuesSubscriptionHandle(): void {

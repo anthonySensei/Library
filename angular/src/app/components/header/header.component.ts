@@ -15,6 +15,9 @@ import { User } from '../../models/user.model';
 import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.component';
 
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select, Store } from '@ngxs/store';
+import { Logout, UserState } from '../../store/user.state';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-header',
@@ -23,19 +26,21 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-    role: string;
     isLoggedIn: boolean;
     isSmallScreen: boolean;
     user: User;
-    userRoles = UserRoles;
     links = AngularLinks;
+
+    @Select(UserState.User)
+    user$: Observable<User>;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
         private authService: AuthService,
         private helperService: HelperService,
         private router: Router,
-        public dialog: MatDialog
+        public dialog: MatDialog,
+        private store: Store
     ) {
         breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(untilDestroyed(this)).subscribe(result => {
             this.isSmallScreen = !!result.matches;
@@ -43,26 +48,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.userSubscriptionHandle();
+        this.getUser$();
     }
 
     isNotUser(): boolean {
-        return this.role === this.userRoles.MANAGER || this.role === this.userRoles.LIBRARIAN;
+        return this.user.admin || this.user.librarian;
     }
 
     isManager(): boolean {
-        return this.role === this.userRoles.MANAGER;
+        return this.user.admin;
     }
 
-    isStudent(): boolean {
-        return this.role === this.userRoles.STUDENT;
+    isUser(): boolean {
+        return !this.user.admin && this.user.librarian;
     }
 
-    userSubscriptionHandle(): void {
-        this.authService.getUser().pipe(untilDestroyed(this)).subscribe(user => {
-            this.user = user;
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => {
+            this.user = user || {} as User;
             this.isLoggedIn = !!user;
-            this.role = user ? user.role.role : null;
         });
     }
 
@@ -74,10 +78,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     onLogoutUser(): void {
-        this.authService.logout().pipe(untilDestroyed(this)).subscribe(() => {
-            this.authService.setIsLoggedIn(false);
-            this.router.navigate([AngularLinks.LOGIN]);
-        });
+        this.store.dispatch(new Logout());
     }
 
     ngOnDestroy(): void {}

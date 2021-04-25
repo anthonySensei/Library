@@ -24,7 +24,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     students: Student[];
 
-    studentSelect: number;
+    studentSelect: string;
     studentReaderTicket: string;
     studentEmail: string;
 
@@ -56,7 +56,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     setStudentData(): void {
         if (this.studentSelect) {
-            this.studentReaderTicket = this.getStudent().readerTicket;
             this.studentEmail = this.getStudent().email;
         }
     }
@@ -71,8 +70,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
         }
 
         if (
-            this.studentEmail === this.getStudent().email &&
-            this.studentReaderTicket === this.getStudent().readerTicket
+            this.studentEmail === this.getStudent().email
         ) {
             this.nothingToChange.emit();
             return;

@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 
 import { DiscardChangesModalComponent } from '../shared/discard-changes-modal/discard-changes-modal.component';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 @Injectable({
     providedIn: 'root'
@@ -43,6 +44,15 @@ export class MaterialService {
         const config = new MatSnackBarConfig();
         config.panelClass = [snackBarClass];
         config.duration = this.snackbarDuration;
+        this.snackBar.open(message, null, config);
+    }
+
+    public openErrorSnackbar(
+        message: string
+    ): void {
+        const config = new MatSnackBarConfig();
+        config.panelClass = [SnackBarClasses.Danger];
+        config.duration = 4000;
         this.snackBar.open(message, null, config);
     }
 

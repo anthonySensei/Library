@@ -1,24 +1,21 @@
-import { Role } from './role.model';
-
 export class User {
-    id: number;
+    id: string;
     name: string;
     email: string;
-    profileImage: string;
+    image: string;
     password: string;
-    role: Role;
+    admin: boolean;
+    librarian: boolean;
 
     constructor(
         name: string,
         email: string,
         image: string,
         password: string,
-        role: Role
     ) {
         this.name = name;
         this.email = email;
-        this.profileImage = image;
+        this.image = image;
         this.password = password;
-        this.role = role;
     }
 }

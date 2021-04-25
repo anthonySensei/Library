@@ -14,7 +14,7 @@ import {
     trigger
 } from '@angular/animations';
 
-import { merge, Subscription } from 'rxjs';
+import { merge, Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Order } from '../../../models/order.model';
@@ -34,6 +34,8 @@ import { PageTitles } from '../../../constants/pageTitles';
 import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { TABLE_ANIMATION } from '../../../constants/animation';
+import { Select } from '@ngxs/store';
+import { UserState } from '../../../store/user.state';
 
 @Component({
     selector: 'app-orders',
@@ -67,6 +69,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isShowingNotLoaned: boolean;
 
+    @Select(UserState.User)
+    user$: Observable<User>;
+
     constructor(
         private orderService: OrderService,
         private authService: AuthService,
@@ -92,9 +97,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(
             this.sort.sortChange,
@@ -102,14 +105,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         ).pipe(tap(() => this.loadOrdersPage())).pipe(untilDestroyed(this)).subscribe();
     }
 
+    getUser$(): void {
+        this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User);
+    }
+
     subscriptionsHandle(): void {
         this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
         this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
             this.departments = departments;
         });
-        this.authService.getUser().subscribe((user: User) => {
-            this.user = user;
-        });
+        this.getUser$();
     }
 
     loanBook(orderId: number, bookId: number, studentId: number) {

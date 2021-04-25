@@ -10,25 +10,26 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 import { AngularLinks } from '../constants/angularLinks';
+import { Store } from '@ngxs/store';
+import { UserState } from '../store/user.state';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private store: Store, private router: Router) {}
 
     canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
-        return this.authService
-            .isAuthenticated()
-            .then((authenticated: boolean) => {
-                if (!authenticated) {
-                    this.router.navigate(['/' + AngularLinks.LOGIN]);
-                    return false;
-                }
-                return authenticated;
-            });
+        const isAuthenticated = !!this.store.selectSnapshot(UserState.User);
+
+        if (!isAuthenticated) {
+            this.router.navigate(['/' + AngularLinks.LOGIN]);
+            return isAuthenticated;
+        }
+
+        return isAuthenticated;
     }
 }

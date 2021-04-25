@@ -11,12 +11,7 @@
                 </p>
                 <p>Genre: {{ book.genre.name }}</p>
                 <p>Year: {{ book.year }}</p>
-                <p
-                    *ngIf="
-                        userRole === roles.LIBRARIAN ||
-                        userRole === roles.MANAGER
-                    "
-                >
+                <p *ngIf="user.admin || user.librarian">
                     Quantity: {{ book.quantity }}
                 </p>
                 <p class="book-location">
@@ -26,7 +21,7 @@
             </section>
             <div class="btn-group">
                 <button
-                    *ngIf="userRole === roles.LIBRARIAN"
+                    *ngIf="user.librarian"
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
@@ -36,10 +31,7 @@
                     Loan
                 </button>
                 <a
-                    *ngIf="
-                        userRole === roles.MANAGER ||
-                        userRole === roles.LIBRARIAN
-                    "
+                    *ngIf="user.admin || user.librarian"
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
@@ -50,7 +42,7 @@
                     Edit
                 </a>
                 <button
-                    *ngIf="userRole === roles.MANAGER"
+                    *ngIf="user.admin"
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
@@ -60,7 +52,7 @@
                     Move
                 </button>
                 <button
-                    *ngIf="userRole === roles.STUDENT"
+                    *ngIf="!user.admin && !user.librarian"
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
