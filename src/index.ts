@@ -199,6 +199,6 @@ sequelize
             .catch(err => {
                 logger.error('Cannot connect to MongoDB. Error:', err.message);
                 return;
-            })
+            });
     })
     .catch();

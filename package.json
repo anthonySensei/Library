@@ -36,7 +36,8 @@
     "sequelize": "^5.21.3",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "tslint": "~5.15.0"
   },
   "author": "Anthony",
   "license": "ISC",
