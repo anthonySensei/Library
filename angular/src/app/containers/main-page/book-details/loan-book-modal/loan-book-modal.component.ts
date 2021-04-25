@@ -6,7 +6,7 @@ import { LoanDialogDataModel } from './loan-book-modal-data.model';
 @Component({
     selector: 'app-loan-book-modal',
     templateUrl: './loan-book-modal.html',
-    styleUrls: ['../../main-page/main-page.component.sass']
+    styleUrls: ['../../main-page/main-page.component.scss']
 })
 export class LoanBookModalComponent {
     constructor(

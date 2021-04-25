@@ -12,9 +12,9 @@ import { LibrarianService } from '../../../services/librarian.service';
 import { Department } from '../../../models/department.model';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { Subscription } from 'rxjs';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-librarian-section',
@@ -31,9 +31,6 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
     @Input() departments: Department[];
 
     links = AngularLinks;
-
-    librarianEditSubscription: Subscription;
-    librarianDeleteSubscription: Subscription;
 
     librarianSelect: number;
     librarianDepartment: number;
@@ -73,12 +70,13 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.librarianEditSubscription = this.librarianService
+        this.librarianService
             .ediLibrarianHttp(
                 this.librarianSelect,
                 this.librarianEmail,
                 this.librarianDepartment
             )
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.librarianResponseHandler();
             });
@@ -88,8 +86,9 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
         if (!this.librarianSelect) {
             return;
         }
-        this.librarianDeleteSubscription = this.librarianService
+        this.librarianService
             .deleteLibrarianHttp(this.librarianSelect)
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.librarianResponseHandler();
             });
@@ -116,12 +115,5 @@ export class LibrarianSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        if (this.librarianDeleteSubscription) {
-            this.librarianDeleteSubscription.unsubscribe();
-        }
-        if (this.librarianEditSubscription) {
-            this.librarianEditSubscription.unsubscribe();
-        }
-    }
+    ngOnDestroy(): void {}
 }

@@ -30,29 +30,15 @@ import { LoansDataSource } from '../../../datasources/loans.datasource';
 import { TableColumns } from '../../../constants/tableColumns';
 import { PageTitles } from '../../../constants/pageTitles';
 import { SortOrder } from '../../../constants/sortOrder';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { TABLE_ANIMATION } from '../../../constants/animation';
 
 @Component({
     selector: 'app-loan-page',
     templateUrl: './loans-page.component.html',
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition(
-                'expanded <=> collapsed',
-                animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-            )
-        ])
-    ]
+    animations: TABLE_ANIMATION
 })
 export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
-    departments: Department[];
-
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    returnBookSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         TableColumns.LOAN_TIME,
@@ -63,11 +49,12 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     expandedElement: Loan | null;
     tableColumns = TableColumns;
+    departments: Department[];
 
     filterName: string;
     filterValue: string;
     departmentSelect: number;
-    date: Date = null;
+    date: Date;
 
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -78,7 +65,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private loansService: LoansService,
         private departmentService: DepartmentService,
-        private helperService: HelperService,
+        public helperService: HelperService,
         private responseService: ResponseService
     ) {}
 
@@ -99,37 +86,29 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(
             () => (this.paginator.pageIndex = 0)
         );
 
-        this.mergeSubscription = merge(
+        merge(
             this.sort.sortChange,
             this.paginator.page
-        )
-            .pipe(tap(() => this.loadLoansPage()))
-            .subscribe();
+        ).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLoansPage())).subscribe();
     }
 
     subscriptionsHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+            this.departments = departments;
+        });
     }
 
     returnBook(loanId: any, bookId: any): void {
-        this.returnBookSubscription = this.loansService
-            .returnBookHttp(loanId, bookId, new Date())
-            .subscribe(() => {
-                if (this.responseService.responseHandle()) {
-                    this.loadLoansPage();
-                }
-            });
+        this.loansService.returnBookHttp(loanId, bookId, new Date()).pipe(untilDestroyed(this)).subscribe(() => {
+            if (this.responseService.responseHandle()) {
+                this.loadLoansPage();
+            }
+        });
     }
 
     loadLoansPage(): void {
@@ -148,12 +127,5 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.mergeSubscription,
-            this.sortSubscription,
-            this.returnBookSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

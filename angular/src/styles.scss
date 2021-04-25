@@ -1,0 +1,613 @@
+/* Calendar */
+@import '~angular-calendar/scss/angular-calendar.scss';
+@import '~angular-calendar/scss/variables.scss';
+
+// Bootstrap
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/utilities";
+
+@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules/bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/custom-forms";
+@import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/dropdown";
+
+/* Datepicker */
+@import "~ng-pick-datetime/assets/style/picker.min.css";
+
+$font-main: Robotom, "Helvetica Neue", sans-serif;
+
+$color-main: #FFDF6C;
+$color-secondary: #202020;
+$color-white: #fff;
+$font-color-main: #fff;
+$font-color-secondary: #707070;
+$color-main-light: #fff8e1;
+$color-main-darker: #ff9400;
+$color-main-less-saturation: #b16400;
+$color-background: #3F3F3F;
+$color-dark: #000000;
+$color-success: #0AAC00;
+$color-warn: #F18000;
+$color-danger: #C30415;
+
+$font-title: 22px;
+
+@include cal-theme(
+                (
+                        bg-primary: $color-dark,
+                        bg-secondary: $color-background,
+                        weekend-color: $color-main,
+                        border-color: $color-background,
+                        today-bg: $font-color-secondary,
+                        bg-active: $font-color-secondary
+                )
+);
+
+body {
+  margin: 0;
+  font-family: $font-main;
+  color: $font-color-main;
+  background: $color-background;
+  //background: background: linear-gradient(145deg, $color-background calc(100% - 88vh), $color-secondary 40vh);
+}
+
+a {
+  text-decoration: none;
+}
+
+table {
+  width: 100%;
+
+  @media screen and (width: 1280px) {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  tr {
+
+    &.detail-row {
+      height: 0;
+    }
+
+    &.element-row {
+
+      &:not(.expanded-row):hover {
+        cursor: pointer;
+        background: $color-secondary;
+      }
+
+      &:not(.expanded-row):active {
+        cursor: pointer;
+        background: $color-secondary;
+      }
+
+      td {
+        border-bottom-width: 0;
+      }
+    }
+  }
+}
+
+.bg-main {
+  background: $color-background;
+}
+
+.mat-form-field-empty.mat-form-field-label {
+  color: $color-main;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-main {
+  color: $color-main;
+  text-transform: none;
+  text-decoration: none;
+}
+
+.text-secondary {
+  color: $font-color-secondary;
+}
+
+.w-78-center {
+  width: 78%;
+  margin: 10px auto;
+
+  &.image-section {
+    margin: 0 auto;
+  }
+}
+
+/* Form structure */
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 100%;
+}
+
+.form {
+  margin-top: 7%;
+  margin-bottom: 5%;
+  border-radius: 10px;
+  background: $color-background;
+  width: 40%;
+  position: relative;
+  padding: 0;
+  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
+
+  &__title {
+    color: $color-white;
+    font-size: $font-title;
+  }
+
+  &__input {
+    margin: 10px auto 0 auto;
+    width: 60%;
+  }
+
+  &__footer {
+    background-color: $color-secondary;
+    padding: 25px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+  }
+
+  .mat-tab-group {
+    @media screen and (max-width: 968px) {
+      display: none;
+    }
+  }
+}
+
+.modal-form {
+  text-align: center;
+
+  .modal-input {
+    width: 80%;
+  }
+}
+
+/* Form button */
+
+.outlined {
+  border: 1px solid $color-main;
+}
+
+
+.btn-group {
+
+  .expanded-btn {
+    float: right;
+  }
+
+  .form-button {
+    margin: 0 auto 15px;
+    width: 25%;
+    transition: all 0.7s ease-in-out;
+  }
+
+  .form-btn {
+    width: 38%;
+
+    &:first-of-type {
+      margin-right: 2%;
+    }
+
+    &.outline {
+      border: 1px solid $color-main;
+    }
+
+    &.add-form-btn {
+      width: 29%;
+    }
+  }
+
+  .choose-img-btn {
+    margin-bottom: 10px;
+  }
+
+  .ml-5 {
+    margin-left: 5px;
+  }
+}
+
+
+.no-button {
+  width: 100px;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Animation */
+
+/* Link animation */
+
+.underline-link {
+  color: $color-main;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 400;
+
+  &:after {
+    display: block;
+    left: 0;
+    bottom: -10px;
+    width: 0;
+    height: 2px;
+    background-color: $color-main;
+    content: "";
+    transition: width 0.2s;
+  }
+
+  &:hover {
+    color: $font-color-main;
+  }
+
+  &:hover:after {
+    width: 100%;
+  }
+}
+
+// table
+
+.table-section {
+  position: relative;
+  width: 80%;
+  margin: 20px auto;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+
+  &.user-details {
+    width: 90%;
+
+    table {
+      text-align: left;
+    }
+  }
+
+  .add-btn {
+    position: absolute;
+    right: 0;
+    top: 15px;
+  }
+
+  .mb-1 {
+    margin-bottom: 10px;
+  }
+
+  .d-block {
+    display: block;
+    width: 35%;
+    margin: 0 auto;
+  }
+
+  .spinner-container {
+    position: fixed;
+    left: 40%;
+    top: 40%;
+  }
+
+  .loan-detail {
+    overflow: hidden;
+    display: flex;
+  }
+
+  .loan-diagram {
+    display: flex;
+    min-width: 80px;
+    width: 100%;
+    border: 1px solid black;
+    padding: 8px;
+    margin: 8px 0;
+  }
+
+  .loan-info {
+    flex: 33.3%;
+  }
+}
+
+.user-loans-table {
+  width: 95%;
+  margin: 10px auto 10px;
+
+  table {
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  td,
+  th {
+    width: 20%;
+    text-align: left;
+  }
+
+  // user-table-expand
+}
+
+.user-table-expand-detail {
+  overflow: hidden;
+  display: flex;
+
+  .profile-image-container {
+    padding: 8px;
+    margin: 8px 0;
+  }
+
+  .info-section {
+    flex: 80%;
+    margin-left: 10px;
+  }
+
+  .no-schedule {
+    flex: 80%;
+    text-align: center;
+  }
+
+  .user-link {
+    display: flex;
+    flex: 10%;
+    align-items: center;
+    justify-content: center;
+
+    .user-link-button {
+      display: block;
+      color: $color-main;
+    }
+  }
+
+  .profile-image {
+    max-height: 112.5px;
+    min-height: 112.5px;
+    max-width: 112.5px;
+    min-width: 112.5px;
+  }
+
+  // userDetails
+}
+
+.user-info-section {
+  display: flex;
+  @media screen and (max-width: 968px) {
+    display: block;
+  }
+
+  .image-aside {
+    flex: 30%;
+    align-items: center;
+    justify-content: center;
+
+    .profile-image {
+      max-width: 200px;
+      max-height: 200px;
+      min-height: 200px;
+      min-width: 200px;
+    }
+  }
+
+  .info-section {
+    display: flex;
+    flex: 70%;
+    text-align: left;
+
+    .user-personal-info {
+      flex: 50%;
+      @media screen and (max-width: 968px) {
+        text-align: center;
+      }
+    }
+
+    .user-library-info {
+      flex: 50%;
+    }
+
+    //Statistic section
+  }
+}
+
+.statistic-section {
+  display: flex;
+  justify-content: center;
+
+  ngx-charts-line-chart {
+    margin-top: 5%;
+  }
+}
+
+/* Simple CSS3 Fade-in-down Animation */
+
+.fadeInDown {
+  animation-name: fadeInDown;
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+;
+
+
+/* Simple CSS3 Fade-in Animation */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  opacity: 0;
+  animation: fadeIn ease-in 1;
+  animation-fill-mode: forwards;
+
+  animation-duration: 1s;
+}
+
+.fadeIn.second {
+  animation-delay: 0.6s;
+}
+
+.fadeIn.third {
+  animation-delay: 0.8s;
+}
+
+.fadeIn.fourth {
+  animation-delay: 1s;
+}
+
+//  Spinner
+
+.spinner-container {
+  .spinner {
+    margin: 0 auto;
+  }
+}
+
+/* Snackbar */
+
+.success-snackbar {
+  background: $color-background;
+  border: 2px solid $color-success;
+  color: $color-success;
+}
+
+.warn-snackbar {
+  background: $color-background;
+  border: 2px solid $color-warn;
+  color: $color-warn;
+}
+
+.danger-snackbar {
+  background: $color-background;
+  border: 2px solid $color-danger;
+  color: $color-danger;
+}
+
+/* Scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(241, 241, 241);
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $color-main;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ff9400;
+}
+
+@media screen and (max-width: 576px) {
+  .no-button {
+    padding: 3px;
+    width: 50px;
+  }
+  .modal-form-submit {
+    padding: 15px 5px;
+  }
+  .form {
+    width: 90%;
+  }
+  .form-input {
+    width: 80%;
+  }
+  .form-button {
+    width: 40%;
+    padding: 10px 30px;
+  }
+}
+
+
+@media screen and (max-width: 768px) and (min-width: 577px) {
+  .form {
+    width: 80%;
+  }
+  .form-input {
+    width: 70%;
+  }
+  .form-button {
+    padding: 15px 60px;
+  }
+}
+
+
+@media screen and (max-width: 992px) and (min-width: 769px) {
+  .form {
+    width: 70%;
+  }
+  .form-input {
+    width: 70%;
+  }
+}
+
+
+@media screen and (max-width: 1200px) and (min-width: 993px) {
+  .form {
+    width: 50%;
+  }
+  .form-input {
+    width: 60%;
+  }
+};
+
+/* Loader */
+
+.start-loader {
+  width: 250px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-family: helvetica, arial, sans-serif;
+  text-transform: uppercase;
+  font-weight: 900;
+  color: $color-main;
+  letter-spacing: 0.2em;
+}
+
+//

@@ -1,93 +1,43 @@
 <div class="wrapper fadeInDown">
-    <div class="form-content">
-        <span class="page-title">Registration</span>
-        <hr style="background-color: #0d0d0d;" />
+    <div class="form">
+        <p class="form__title">Registration</p>
+        <hr />
         <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="mainInfoForm">
                 <form [formGroup]="mainInfoForm">
                     <ng-template matStepLabel>Main info</ng-template>
-                    <mat-form-field class="form-input">
+                    <mat-form-field class="form__input">
                         <mat-label>Reader ticket</mat-label>
-                        <input
-                            matInput
-                            type="number"
-                            name="reader_ticket"
-                            (change)="error = null"
-                            formControlName="reader_ticket"
-                            placeholder="123213"
-                        />
-                        <mat-error *ngIf="error">
-                            {{ error }}
-                        </mat-error>
-                        <mat-error
-                            *ngIf="
-                                hasError('reader_ticket', 'required') && !error
-                            "
-                        >
+                        <input matInput type="number" name="readerTicket" formControlName="readerTicket" placeholder="123213" (change)="error = null" />
+                        <mat-error *ngIf="error">{{ error }}</mat-error>
+                        <mat-error *ngIf="hasError('readerTicket', 'required') && !error">
                             Reader ticket is required
                         </mat-error>
-                        <mat-error
-                            *ngIf="
-                                hasError('reader_ticket', 'pattern') && !error
-                            "
-                        >
-                            Reader ticket is not valid. Must starts with 1-9 and
-                            contains 10 numbers
+                        <mat-error *ngIf=" hasError('readerTicket', 'pattern') && !error">
+                            Reader ticket is not valid. Must starts with 1-9 and contains 10 numbers
                         </mat-error>
                     </mat-form-field>
-                    <mat-form-field class="form-input">
+                    <mat-form-field class="form__input">
                         <mat-label>Email</mat-label>
-                        <input
-                            matInput
-                            type="email"
-                            name="email"
-                            (change)="emailError = null"
-                            formControlName="email"
-                            placeholder="Ex. example@mail.com"
-                        />
-                        <mat-error *ngIf="emailError">
-                            {{ emailError }}
-                        </mat-error>
-                        <mat-error
-                            *ngIf="hasError('email', 'required') && !error"
-                        >
+                        <input matInput type="email" name="email" formControlName="email" placeholder="Ex. example@mail.com" (change)="emailError = null" />
+                        <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
+                        <mat-error *ngIf="hasError('email', 'required') && !error">
                             Email is required
                         </mat-error>
-                        <mat-error
-                            *ngIf="
-                                (hasError('email', 'email') ||
-                                    hasError('email', 'pattern')) &&
-                                !error
-                            "
-                        >
+                        <mat-error *ngIf="(hasError('email', 'email') || hasError('email', 'pattern')) && !error">
                             Email is not valid. Ex. example@mail.com
                         </mat-error>
                     </mat-form-field>
-                    <mat-form-field class="form-input">
+                    <mat-form-field class="form__input">
                         <mat-label>Name</mat-label>
-                        <input
-                            matInput
-                            type="text"
-                            name="name"
-                            formControlName="name"
-                            placeholder="Ex. example@mail.com"
-                        />
-                        <mat-error *ngIf="emailError">
-                            {{ emailError }}
-                        </mat-error>
-                        <mat-error
-                            *ngIf="hasError('name', 'required') && !error"
-                        >
+                        <input matInput type="text" name="name" formControlName="name" placeholder="Ex. example@mail.com" />
+                        <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
+                        <mat-error *ngIf="hasError('name', 'required') && !error">
                             Name is required
                         </mat-error>
                     </mat-form-field>
                     <div class="btn-group">
-                        <button
-                            mat-stroked-button
-                            matStepperNext
-                            color="primary"
-                            class="form-btn add-form-btn move-btn fadeIn fourth"
-                        >
+                        <button mat-stroked-button matStepperNext color="primary" class="form-btn add-form-btn outline fadeIn fourth">
                             Next
                         </button>
                     </div>
@@ -96,87 +46,43 @@
             <mat-step [stepControl]="passwordForm">
                 <form [formGroup]="passwordForm">
                     <ng-template matStepLabel>Password</ng-template>
-                    <mat-form-field class="form-input">
+                    <mat-form-field class="form__input">
                         <mat-label>Password</mat-label>
-                        <input
-                            matInput
-                            [type]="hidePassword ? 'password' : 'text'"
-                            name="password"
-                            formControlName="password"
-                            placeholder="Ex. Qwerty8_"
-                            #password
-                        />
-                        <button
-                            mat-icon-button
-                            matSuffix
-                            (click)="hidePassword = !hidePassword"
-                            [attr.aria-label]="'Hide password'"
-                            [attr.aria-pressed]="hidePassword"
-                        >
-                            <mat-icon>{{
-                                checkIcon(hidePassword, password.value)
-                            }}</mat-icon>
+                        <input matInput name="password" formControlName="password" placeholder="Ex. Qwerty8_" [type]="hidePassword ? 'password' : 'text'" #password />
+                        <button mat-icon-button matSuffix [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" (click)="hidePassword = !hidePassword" >
+                            <mat-icon>{{checkIcon(hidePassword, password.value)}}</mat-icon>
                         </button>
-                        <mat-error
-                            *ngIf="hasError('password', 'required') && !error"
-                        >
+                        <mat-error *ngIf="hasError('password', 'required') && !error">
                             Password is required.
                         </mat-error>
-                        <mat-error
-                            *ngIf="hasError('password', 'pattern') && !error"
-                        >
+                        <mat-error *ngIf="hasError('password', 'pattern') && !error">
                             Password is not valid. Ex. Qwerty8_
                         </mat-error>
                         <mat-error *ngIf="isPasswordError">
                             {{ error }}
                         </mat-error>
                     </mat-form-field>
-                    <mat-form-field class="form-input">
+                    <mat-form-field class="form__input">
                         <mat-label>Input password again</mat-label>
-                        <input
-                            matInput
-                            [type]="hideRetypePassword ? 'password' : 'text'"
-                            name="password2"
-                            formControlName="password2"
-                            #password2
-                        />
-                        <button
-                            mat-icon-button
-                            matSuffix
-                            (click)="hideRetypePassword = !hideRetypePassword"
-                            [attr.aria-label]="'Hide password'"
-                            [attr.aria-pressed]="hideRetypePassword"
+                        <input matInput name="password2" formControlName="password2" [type]="hideRetypePassword ? 'password' : 'text'" #password2 />
+                        <button mat-icon-button matSuffix
+                                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideRetypePassword"
+                                (click)="hideRetypePassword = !hideRetypePassword"
                         >
-                            <mat-icon>{{
-                                checkIcon(hideRetypePassword, password2.value)
-                            }}</mat-icon>
+                            <mat-icon>{{checkIcon(hideRetypePassword, password2.value)}}</mat-icon>
                         </button>
-                        <mat-error
-                            *ngIf="hasError('password2', 'required') && !error"
-                        >
+                        <mat-error *ngIf="hasError('password2', 'required') && !error">
                             Please retype password
                         </mat-error>
-                        <mat-error
-                            *ngIf="hasError('password2', 'pattern') && !error"
-                        >
+                        <mat-error *ngIf="hasError('password2', 'pattern') && !error">
                             Please retype valid password. Ex. Qwerty8_
                         </mat-error>
                     </mat-form-field>
                     <div class="btn-group">
-                        <button
-                            mat-stroked-button
-                            color="primary"
-                            matStepperPrevious
-                            class="form-btn add-form-btn move-btn"
-                        >
+                        <button mat-stroked-button color="primary" matStepperPrevious class="form-btn add-form-btn outline">
                             Back
                         </button>
-                        <button
-                            mat-stroked-button
-                            matStepperNext
-                            color="primary"
-                            class="form-btn add-form-btn move-btn"
-                        >
+                        <button mat-stroked-button matStepperNext color="primary" class="form-btn add-form-btn outline">
                             Next
                         </button>
                     </div>
@@ -184,33 +90,23 @@
             </mat-step>
             <mat-step>
                 <ng-template matStepLabel>Done</ng-template>
-                <p>You are now done.</p>
+                <div class="d-flex flex-column px-5 py-2 text-left">
+                    <p>Reared Ticket: {{ mainInfoForm.value?.readerTicket }}</p>
+                    <p>Email: {{ mainInfoForm.value?.email }}</p>
+                    <p>Name: {{ mainInfoForm.value?.name }}</p>
+                </div>
                 <div class="btn-group">
-                    <button
-                        mat-raised-button
-                        class="form-btn add-form-btn"
-                        color="primary"
-                        (click)="onRegisterUser(stepper)"
-                    >
-                        Submit
-                    </button>
-
-                    <button
-                        matStepperPrevious
-                        mat-stroked-button
-                        color="primary"
-                        class="form-btn add-form-btn move-btn"
-                    >
+                    <button matStepperPrevious mat-stroked-button color="primary" class="form-btn add-form-btn outline">
                         Back
+                    </button>
+                    <button mat-raised-button class="form-btn add-form-btn" color="primary" (click)="onRegisterUser(stepper)">
+                        Submit
                     </button>
                 </div>
             </mat-step>
         </mat-horizontal-stepper>
-        <div class="form-footer">
-            <a
-                class="underline-link underline-hover"
-                [routerLink]="'/' + links.LOGIN"
-            >
+        <div class="form__footer">
+            <a class="underline-link underline-hover" [routerLink]="'/' + links.LOGIN">
                 Already have account?
             </a>
         </div>

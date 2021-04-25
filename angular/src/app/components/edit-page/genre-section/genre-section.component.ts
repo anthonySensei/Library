@@ -1,21 +1,12 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { ResponseService } from '../../../services/response.service';
 import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Genre } from '../../../models/genre.model';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-genre-section',
@@ -30,12 +21,6 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
 
     genres: Genre[];
 
-    genresSubscription: Subscription;
-    genresFetchSubscription: Subscription;
-    genresAddSubscription: Subscription;
-    genresEditSubscription: Subscription;
-    genresDeleteSubscription: Subscription;
-
     genreSelect: number = null;
     genreName: string = null;
     newGenreName: string = null;
@@ -45,21 +30,18 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     constructor(
         private genreService: GenreService,
         private dialog: MatDialog
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.setGenres();
     }
 
     setGenres() {
-        this.genresFetchSubscription = this.genreService
-            .fetchAllGenresHttp()
-            .subscribe();
-        this.genresSubscription = this.genreService
-            .getGenres()
-            .subscribe((genres: Genre[]) => {
-                this.genres = genres;
-            });
+        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
+        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) => {
+            this.genres = genres;
+        });
     }
 
     getGenre(): Genre {
@@ -73,11 +55,9 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     addGenre(): void {
-        this.genresAddSubscription = this.genreService
-            .addGenreHttp({ id: null, name: this.newGenreName })
-            .subscribe(() => {
-                this.genreResponseHandler();
-            });
+        this.genreService.addGenreHttp({ id: null, name: this.newGenreName }).pipe(untilDestroyed(this)).subscribe(() => {
+            this.genreResponseHandler();
+        });
     }
 
     editGenre(): void {
@@ -88,22 +68,19 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.genresEditSubscription = this.genreService
-            .ediGenreHttp(this.genreSelect, this.genreName)
-            .subscribe(() => {
-                this.genreResponseHandler();
-            });
+
+        this.genreService.ediGenreHttp(this.genreSelect, this.genreName).pipe(untilDestroyed(this)).subscribe(() => {
+            this.genreResponseHandler();
+        });
     }
 
     deleteGenre(): void {
         if (!this.genreSelect) {
             return;
         }
-        this.genresDeleteSubscription = this.genreService
-            .deleteGenreHttp(this.genreSelect)
-            .subscribe(() => {
-                this.genreResponseHandler();
-            });
+        this.genreService.deleteGenreHttp(this.genreSelect).pipe(untilDestroyed(this)).subscribe(() => {
+            this.genreResponseHandler();
+        });
     }
 
     openConfirmDeleteDialog(): void {
@@ -128,11 +105,5 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.genresSubscription, [
-            this.genresFetchSubscription,
-            this.genresAddSubscription,
-            this.genresEditSubscription,
-            this.genresDeleteSubscription
-        ]);
     }
 }

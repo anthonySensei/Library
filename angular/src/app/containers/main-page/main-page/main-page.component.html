@@ -1,208 +1,103 @@
-<button
-    mat-fab
-    color="primary"
-    class="filter-button"
-    (click)="drawer.toggle(); toggleFilterButton()"
-    [style.display]="showFilterButton ? 'block' : 'none'"
-    matTooltip="Open filter panel"
+<button mat-fab color="primary" class="filter-button" matTooltip="Open filter panel"
+        [style.display]="showFilterButton ? 'block' : 'none'"
+        (click)="drawer.toggle(); toggleFilterButton()"
 >
     <i class="material-icons">arrow_forward_ios</i>
 </button>
-<mat-drawer-container class="page-container" autosize>
-    <mat-drawer #drawer [disableClose]="true" class="sidenav" mode="over">
-        <button
-            mat-button
-            class="close-sidenav"
-            (click)="toggleFilterButton(); drawer.toggle()"
-        >
+<mat-drawer-container class="page-container bg-main" autosize>
+    <mat-drawer #drawer [disableClose]="true" class="sidenav w-25" mode="over">
+        <button mat-button class="close-sidenav" (click)="toggleFilterButton(); drawer.toggle()">
             <i class="material-icons">close</i>
         </button>
         <h2>Choose filter</h2>
-        <div class="d-block">
-            <mat-form-field class="d-block" style="margin: 0 1% 0 1%;">
-                <mat-label>Select an option</mat-label>
-                <mat-select [(value)]="filterName" required>
-                    <mat-option
-                        *ngFor="let filter of bookFilters"
-                        [value]="filter.value"
-                        >{{ filter.name }}</mat-option
-                    >
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="d-block">
-                <mat-label>Value</mat-label>
-                <input
-                    matInput
-                    name="value"
-                    [(ngModel)]="filterValue"
-                    [disabled]="isNothingFilter()"
-                />
-            </mat-form-field>
-            <mat-divider></mat-divider>
-            <mat-form-field class="d-block">
-                <mat-label>From</mat-label>
-                <input
-                    matInput
-                    type="number"
-                    name="yearFrom"
-                    placeholder="Ex. 1689"
-                    [(ngModel)]="fromYear"
-                    [disabled]="isIsbnFilter()"
-                />
-            </mat-form-field>
-            <mat-form-field class="d-block">
-                <mat-label>To</mat-label>
-                <input
-                    matInput
-                    name="yearTo"
-                    placeholder="Ex. 2010"
-                    [(ngModel)]="toYear"
-                    [disabled]="isIsbnFilter()"
-                />
-            </mat-form-field>
-            <mat-form-field class="d-block">
-                <mat-label>Author</mat-label>
-                <mat-select
-                    [(value)]="authorSelect"
-                    [disabled]="isIsbnFilter()"
-                >
-                    <mat-option>-</mat-option>
-                    <mat-option
-                        *ngFor="let author of authors"
-                        [value]="author.id"
-                        >{{ author.name }}</mat-option
-                    >
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="d-block">
-                <mat-label>Genre</mat-label>
-                <mat-select [(value)]="genreSelect" [disabled]="isIsbnFilter()">
-                    <mat-option>-</mat-option>
-                    <mat-option
-                        *ngFor="let genre of genres"
-                        [value]="genre.id"
-                        >{{ genre.name }}</mat-option
-                    >
-                </mat-select>
-            </mat-form-field>
-            <div class="button-group">
-                <button
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5 filter-form-button"
-                    (click)="paginate(1); drawer.toggle(); toggleFilterButton()"
-                >
-                    <i class="material-icons">search</i>
-                </button>
-                <button
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5 filter-form-button"
-                    (click)="clearInputs()"
-                >
-                    Clear
-                </button>
-            </div>
-        </div>
-    </mat-drawer>
-    <div class="header">
-        <h1>Books catalog</h1>
-    </div>
-
-    <div class="post-features-container">
-        <div style="overflow: hidden;">
-            <a
-                *ngIf="isHaveAccess()"
-                mat-stroked-button
-                color="primary"
-                class="ml-5"
-                style="float: right;"
-                matTooltip="Add book"
-                [routerLink]="'/' + links.ADD_BOOK"
-            >
-                <i class="material-icons">add</i> Add book
-            </a>
-            <section class="pagination-section" *ngIf="!isLoading && books.length > 0">
-                <button
-                    *ngIf="hasPreviousPage"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="paginate(previousPage)"
-                >
-                    Previous page
-                </button>
-                <button
-                    *ngIf="hasNextPage || hasPreviousPage"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    [class.active]="currentPage === 1"
-                    (click)="paginate(1)"
-                >
-                    1
-                </button>
-                <span
-                    class="ml-5"
-                    *ngIf="currentPage !== 1 && previousPage !== 1"
-                    >...</span
-                >
-                <button
-                    *ngIf="currentPage > 1"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5 active"
-                    (click)="paginate(currentPage)"
-                >
-                    {{ currentPage }}
-                </button>
-                <span
-                    *ngIf="lastPage !== currentPage && nextPage !== lastPage"
-                    class="ml-5"
-                    >...</span
-                >
-                <button
-                    *ngIf="lastPage !== currentPage"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="paginate(lastPage)"
-                >
-                    {{ lastPage }}
-                </button>
-                <button
-                    *ngIf="hasNextPage"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="paginate(nextPage)"
-                >
-                    Next page
-                </button>
-            </section>
-        </div>
-        <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
-        <mat-form-field class="department-select">
-            <mat-label>Department address</mat-label>
-            <mat-select
-                [(ngModel)]="departmentSelect"
-                (ngModelChange)="showBooksByDepartment()"
-            >
-                <mat-option value="''">All</mat-option>
-                <mat-option
-                    *ngFor="let department of departments"
-                    [value]="department.id"
-                    >{{ department.address }}</mat-option
-                >
+        <mat-form-field class="w-100">
+            <mat-label>Select an option</mat-label>
+            <mat-select [(value)]="filterName" required>
+                <mat-option [value]="filter.value" *ngFor="let filter of bookFilters" >{{ filter.name }}</mat-option>
             </mat-select>
         </mat-form-field>
-    </div>
-    <div *ngIf="isLoading" class="spinner-container">
-        <mat-spinner class="spinner"></mat-spinner>
-    </div>
-    <app-books-section
-        *ngIf="!isLoading"
-        [books]="books"
-        [links]="links"
-    ></app-books-section>
+        <mat-form-field class="w-100">
+            <mat-label>Value</mat-label>
+            <input matInput name="value" [disabled]="isNothingFilter()" [(ngModel)]="filterValue"/>
+        </mat-form-field>
+        <mat-divider></mat-divider>
+        <mat-form-field class="w-100">
+            <mat-label>From</mat-label>
+            <input matInput type="number" name="yearFrom" placeholder="Ex. 1689" [disabled]="isIsbnFilter()" [(ngModel)]="fromYear" />
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>To</mat-label>
+            <input matInput name="yearTo" placeholder="Ex. 2010" [disabled]="isIsbnFilter()" [(ngModel)]="toYear" />
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Author</mat-label>
+            <mat-select [disabled]="isIsbnFilter()" [(value)]="authorSelect" >
+                <mat-option>-</mat-option>
+                <mat-option [value]="author.id" *ngFor="let author of authors">{{ author.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Genre</mat-label>
+            <mat-select [(value)]="genreSelect" [disabled]="isIsbnFilter()">
+                <mat-option>-</mat-option>
+                <mat-option [value]="genre.id" *ngFor="let genre of genres">{{ genre.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Department address</mat-label>
+            <mat-select [(ngModel)]="departmentSelect" (ngModelChange)="showBooksByDepartment()">
+                <mat-option value="''">All</mat-option>
+                <mat-option [value]="department.id" *ngFor="let department of departments">{{ department.address }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="d-flex justify-content-between">
+            <button mat-stroked-button color="primary" class="w-50 mr-2" (click)="paginate(1); drawer.toggle(); toggleFilterButton()">
+                <i class="material-icons">search</i>
+            </button>
+            <button mat-stroked-button color="primary" class="w-50" (click)="clearInputs()">
+                Clear
+            </button>
+        </div>
+    </mat-drawer>
+    <main class="container">
+        <div class="header">
+            <h1>Books catalog</h1>
+        </div>
+
+        <div class="post-features-container">
+            <div style="overflow: hidden;">
+                <a mat-stroked-button color="primary" class="ml-5" style="float: right;" matTooltip="Add book" [routerLink]="'/' + links.ADD_BOOK" *ngIf="isHaveAccess()">
+                    <i class="material-icons">add</i> Add book
+                </a>
+            </div>
+            <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
+        </div>
+        <div *ngIf="isLoading" class="spinner-container">
+            <mat-spinner class="spinner"></mat-spinner>
+        </div>
+        <app-books-section
+            *ngIf="!isLoading"
+            [books]="books"
+            [links]="links"
+        ></app-books-section>
+        <section class="d-flex justify-content-center align-items-center my-2" *ngIf="!isLoading && books.length > 0">
+            <button mat-stroked-button class="mx-1" color="primary" (click)="paginate(previousPage)" *ngIf="hasPreviousPage">
+                Previous
+            </button>
+            <button mat-stroked-button class="mx-1" color="primary" [class.active]="currentPage === 1" (click)="paginate(1)" *ngIf="hasNextPage || hasPreviousPage">
+                1
+            </button>
+            <span class="more mx-3" *ngIf="currentPage !== 1 && previousPage !== 1">...</span>
+            <button mat-stroked-button class="mx-1" color="primary" class="active" (click)="paginate(currentPage)" *ngIf="currentPage > 1">
+                {{ currentPage }}
+            </button>
+            <span class="more mx-3" *ngIf="lastPage !== currentPage && nextPage !== lastPage">...</span>
+            <button mat-stroked-button class="mx-1" color="primary" *ngIf="lastPage !== currentPage">
+                {{ lastPage }}
+            </button>
+            <button mat-stroked-button class="mx-1" color="primary" (click)="paginate(nextPage)" *ngIf="hasNextPage">
+                Next
+            </button>
+        </section>
+    </main>
 </mat-drawer-container>

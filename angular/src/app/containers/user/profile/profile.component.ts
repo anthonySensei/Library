@@ -25,6 +25,7 @@ import { PageTitles } from '../../../constants/pageTitles';
 import { WarnMessages } from '../../../constants/warnMessages';
 import { ErrorMessages } from '../../../constants/errorMessages';
 import { KeyWords } from '../../../constants/keyWords';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-user',
@@ -41,17 +42,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     user: User;
 
-    updateProfileImage: Subscription;
-    updateUserDataSubscription: Subscription;
-    userSubscription: Subscription;
-    breakPointSmallSubscription: Subscription;
-    breakPointMediumSubscription: Subscription;
-    breakPointLargeSubscription: Subscription;
-    changeImageDialogSubscription: Subscription;
-    changePasswordDialogSubscription: Subscription;
-
     error: string;
-
     oldPassword: string;
     newPassword: string;
     retypeNewPassword: string;
@@ -71,25 +62,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
         private breakpointObserver: BreakpointObserver,
         public dialog: MatDialog
     ) {
-        this.breakPointSmallSubscription = breakpointObserver
-            .observe([Breakpoints.Small, Breakpoints.XSmall])
-            .subscribe(result => {
+        breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(untilDestroyed(this)).subscribe(result => {
                 if (result.matches) {
                     this.changePasswordModalWidth = ModalWidth.W95P;
                     this.changePictureModal = ModalWidth.W95P;
                 }
             });
-        this.breakPointMediumSubscription = breakpointObserver
-            .observe([Breakpoints.Medium, Breakpoints.Tablet])
-            .subscribe(result => {
+        breakpointObserver.observe([Breakpoints.Medium, Breakpoints.Tablet]).pipe(untilDestroyed(this)).subscribe(result => {
                 if (result.matches) {
                     this.changePasswordModalWidth = ModalWidth.W75P;
                     this.changePictureModal = ModalWidth.W85P;
                 }
             });
-        this.breakPointLargeSubscription = breakpointObserver
-            .observe([Breakpoints.Large, Breakpoints.XLarge])
-            .subscribe(result => {
+        breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).pipe(untilDestroyed(this)).subscribe(result => {
                 if (result.matches) {
                     this.changePasswordModalWidth = ModalWidth.W35P;
                     this.changePictureModal = ModalWidth.W40P;
@@ -117,9 +102,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     userHandle(): void {
-        this.userSubscription = this.authService
-            .getUser()
-            .subscribe((user: User) => {
+        this.authService.getUser().pipe(untilDestroyed(this)).subscribe((user: User) => {
                 this.user = user;
             });
         this.isLoading = false;
@@ -137,15 +120,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.changeImageDialogSubscription = dialogRef
-            .afterClosed()
-            .subscribe((profileImage: string) => {
+        dialogRef.afterClosed().pipe(untilDestroyed(this)).subscribe((profileImage: string) => {
                 if (profileImage) {
-                    this.updateUserDataSubscription = this.userService
+                    this.userService
                         .updateUserDataHttp(
                             { ...this.user, profileImage },
                             ChangedDataProfile.IMAGE
                         )
+                        .pipe(untilDestroyed(this))
                         .subscribe(() => {
                             if (this.responseService.responseHandle()) {
                                 this.done = true;
@@ -173,9 +155,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.changePasswordDialogSubscription = dialogRef
-            .afterClosed()
-            .subscribe();
+        dialogRef.afterClosed().pipe(untilDestroyed(this)).subscribe();
     }
 
     onChangeUserData(): void {
@@ -195,11 +175,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.updateUserDataSubscription = this.userService
+        this.userService
             .updateUserDataHttp(
                 { ...this.user, email, name },
                 ChangedDataProfile.INFO
             )
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 if (this.responseService.responseHandle()) {
                     this.done = true;
@@ -213,12 +194,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     fieldsErrorHandle() {
-        if (
-            this.responseService
-                .getResponse()
-                .message.toLowerCase()
-                .includes(KeyWords.EMAIL)
-        ) {
+        if (this.responseService.getResponse().message.toLowerCase().includes(KeyWords.EMAIL)) {
             this.error = this.responseService.getResponse().message;
             this.profileForm.controls.email.setErrors({
                 incorrect: true
@@ -238,14 +214,5 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.breakPointLargeSubscription, [
-            this.breakPointSmallSubscription,
-            this.breakPointMediumSubscription,
-            this.updateProfileImage,
-            this.changeImageDialogSubscription,
-            this.changePasswordDialogSubscription,
-            this.updateUserDataSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { Subscription } from 'rxjs';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
@@ -16,22 +16,19 @@ import { PageTitles } from '../../../constants/pageTitles';
     templateUrl: './auth.component.html'
 })
 export class AuthComponent implements OnInit, OnDestroy {
-    loginForm: FormGroup;
 
     error: string;
-
-    authSubscription: Subscription;
-
-    emailValidation;
-
+    loginForm: FormGroup;
     links = AngularLinks;
+    emailValidation: RegExp;
 
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
         private responseService: ResponseService,
         private router: Router
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         document.title = PageTitles.LOGIN;
@@ -41,11 +38,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
     initializeForm(): void {
         this.loginForm = new FormGroup({
-            email: new FormControl('', [
-                Validators.required,
-                Validators.email,
-                Validators.pattern(this.emailValidation)
-            ]),
+            email: new FormControl('', [Validators.required, Validators.email, Validators.pattern(this.emailValidation)]),
             password: new FormControl('', [Validators.required])
         });
     }
@@ -60,28 +53,18 @@ export class AuthComponent implements OnInit, OnDestroy {
         if (this.loginForm.invalid) {
             return;
         }
-        const user = {
-            email,
-            password
-        };
-        this.authSubscription = this.authService.login(user).subscribe(() => {
+        const user = { email, password };
+        this.authService.login(user).pipe(untilDestroyed(this)).subscribe(() => {
             if (this.responseService.responseHandle()) {
                 this.authService.setIsLoggedIn(this.responseService.getResponse().isSuccessful);
                 this.router.navigate([AngularLinks.HOME]);
                 this.loginForm.reset();
             } else {
-                this.loginForm.patchValue({
-                    email,
-                    password: ''
-                });
+                this.loginForm.patchValue({ email, password: '' });
                 this.error = this.responseService.getResponse().message;
             }
         });
     }
 
-    ngOnDestroy(): void {
-        if (this.authSubscription) {
-            this.authSubscription.unsubscribe();
-        }
-    }
+    ngOnDestroy(): void {}
 }

@@ -1,13 +1,7 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { LibrarianService } from '../../../services/librarian.service';
@@ -22,41 +16,20 @@ import { SortOrder } from '../../../constants/sortOrder';
 import { Librarian } from '../../../models/librarian.model';
 import { Department } from '../../../models/department.model';
 
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
-
 import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { TABLE_ANIMATION } from '../../../constants/animation';
 
 @Component({
     selector: 'app-librarians',
     templateUrl: './librarians.component.html',
-    styleUrls: ['../../../app.component.sass'],
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition(
-                'expanded <=> collapsed',
-                animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-            )
-        ])
-    ]
+    animations: TABLE_ANIMATION
 })
 export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     librarians: Librarian[];
     departments: Department[];
 
     links = AngularLinks;
-
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         TableColumns.NAME,
@@ -76,7 +49,7 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private librarianService: LibrarianService,
         private departmentService: DepartmentService,
-        private helperService: HelperService
+        public helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -87,27 +60,15 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     subscriptionHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+            this.departments = departments;
+        });
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
-
-        this.mergeSubscription = merge(
-            this.sort.sortChange,
-            this.paginator.page
-        )
-            .pipe(tap(() => this.loadLibrariansPage()))
-            .subscribe();
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
+        merge(this.sort.sortChange, this.paginator.page).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLibrariansPage())).subscribe();
     }
 
     loadLibrariansPage(): void {
@@ -124,11 +85,5 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.mergeSubscription,
-            this.sortSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

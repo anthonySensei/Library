@@ -1,21 +1,12 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Author } from '../../../models/author.model';
 
 import { AuthorService } from '../../../services/author.service';
 import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-author-section',
@@ -29,12 +20,6 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     @Input() helperService: HelperService;
 
     authors: Author[];
-
-    authorsSubscription: Subscription;
-    authorsFetchSubscription: Subscription;
-    authorsAddSubscription: Subscription;
-    authorsEditSubscription: Subscription;
-    authorsDeleteSubscription: Subscription;
 
     authorSelect: number;
     authorName: string;
@@ -52,11 +37,13 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     setAuthors(): void {
-        this.authorsFetchSubscription = this.authorService
+        this.authorService
             .fetchAllAuthorsHttp()
+            .pipe(untilDestroyed(this))
             .subscribe();
-        this.authorsSubscription = this.authorService
+        this.authorService
             .getAuthors()
+            .pipe(untilDestroyed(this))
             .subscribe((authors: Author[]) => {
                 this.authors = authors;
             });
@@ -73,8 +60,9 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     addAuthor(): void {
-        this.authorsAddSubscription = this.authorService
+        this.authorService
             .addAuthorHttp({ id: null, name: this.newAuthorName })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.authorResponseHandler();
             });
@@ -88,8 +76,9 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
             this.nothingToChange.emit();
             return;
         }
-        this.authorsEditSubscription = this.authorService
+        this.authorService
             .editAuthorHttp(this.authorSelect, this.authorName)
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.authorResponseHandler();
             });
@@ -112,8 +101,9 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
             return;
         }
         this.authorName = null;
-        this.authorsDeleteSubscription = this.authorService
+        this.authorService
             .deleteAuthorHttp(this.authorSelect)
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.authorResponseHandler();
             });
@@ -128,12 +118,5 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.authorsSubscription, [
-            this.authorsFetchSubscription,
-            this.authorsAddSubscription,
-            this.authorsEditSubscription,
-            this.authorsDeleteSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

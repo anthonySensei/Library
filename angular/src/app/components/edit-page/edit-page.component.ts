@@ -19,6 +19,7 @@ import { LibrarianService } from '../../services/librarian.service';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-edit-page',
@@ -31,26 +32,19 @@ export class EditPageComponent implements OnInit, OnDestroy {
     students: Student[];
     periods: Period[];
 
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    periodsSubscription: Subscription;
-    periodsFetchSubscription: Subscription;
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
-
     departmentSelect: number;
 
     nothingToChange = WarnMessages.NOTHING_TO_CHANGE;
     isManager: boolean;
 
     constructor(
-        private departmentService: DepartmentService,
+        public departmentService: DepartmentService,
         private authService: AuthService,
-        private responseService: ResponseService,
+        public responseService: ResponseService,
         private materialService: MaterialService,
         private periodService: PeriodService,
-        private helperService: HelperService,
-        private librarianService: LibrarianService,
+        public helperService: HelperService,
+        public librarianService: LibrarianService,
     ) {}
 
     ngOnInit(): void {
@@ -62,50 +56,27 @@ export class EditPageComponent implements OnInit, OnDestroy {
     }
 
     selectsValuesSubscriptionHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
-        this.periodsFetchSubscription = this.periodService
-            .fetchAllPeriodsHttp()
-            .subscribe();
-        this.periodsSubscription = this.periodService
-            .getPeriods()
-            .subscribe((periods: Period[]) => {
-                this.periods = periods;
-            });
+        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
+            this.departments = departments;
+        });
+        this.periodService.fetchAllPeriodsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
+            this.periods = periods;
+        });
         this.onSetLibrarians();
     }
 
     onSetLibrarians(): void {
-        this.librariansFetchSubscription = this.librarianService
-            .getAllLibrariansHttp()
-            .subscribe();
-        this.librariansSubscription = this.librarianService
-            .getLibrarians()
-            .subscribe((librarians: Librarian[]) => {
-                this.librarians = librarians;
-            });
+        this.librarianService.getAllLibrariansHttp().pipe(untilDestroyed(this)).subscribe();
+        this.librarianService.getLibrarians().pipe(untilDestroyed(this)).subscribe((librarians: Librarian[]) => {
+            this.librarians = librarians;
+        });
     }
 
     nothingChangeHandle(): void {
-        this.materialService.openSnackbar(
-            this.nothingToChange,
-            SnackBarClasses.Warn
-        );
+        this.materialService.openSnackbar(this.nothingToChange, SnackBarClasses.Warn);
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.periodsSubscription,
-            this.periodsFetchSubscription,
-            this.librariansSubscription,
-            this.librariansFetchSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

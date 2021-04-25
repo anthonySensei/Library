@@ -32,6 +32,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { ImageCropperModule } from 'ngx-image-cropper';
 
 import { DiscardChangesModalComponent } from './discard-changes-modal/discard-changes-modal.component';
@@ -45,14 +47,16 @@ import { LineChartModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
 import { SmallScreenComponent } from './small-screen/small-screen.component';
+import { LoaderComponent } from './loader/loader.component';
 
 @NgModule({
     declarations: [
         DiscardChangesModalComponent,
         ChartSectionComponent,
-        SmallScreenComponent
+        SmallScreenComponent,
+        LoaderComponent
     ],
-    imports: [CommonModule, LineChartModule],
+    imports: [CommonModule, LineChartModule, NgbModule],
     exports: [
         CommonModule,
         MatMenuModule,
@@ -93,7 +97,8 @@ import { SmallScreenComponent } from './small-screen/small-screen.component';
         MatProgressSpinnerModule,
         MatSlideToggleModule,
         ChartSectionComponent,
-        SmallScreenComponent
+        SmallScreenComponent,
+        LoaderComponent
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

@@ -12,7 +12,7 @@ import { FormControl, Validators } from '@angular/forms';
 @Component({
     selector: 'app-move-book-modal',
     templateUrl: './move-book-modal.html',
-    styleUrls: ['../../main-page/main-page.component.sass']
+    styleUrls: ['../../main-page/main-page.component.scss']
 })
 export class MoveBookModalComponent implements OnInit, OnDestroy {
     department = new FormControl('', [Validators.required]);

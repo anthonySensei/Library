@@ -1,0 +1,74 @@
+@import '../../../../styles';
+
+.active {
+  background-color: $color-main;
+  color: $color-background;
+}
+
+.more {
+  display: flex;
+  align-items: flex-end;
+  height: 36px;
+}
+
+.post-features-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.header {
+  text-align: center;
+  padding: 32px;
+}
+
+.sidenav {
+  padding: 20px;
+}
+
+.filter-button {
+  position: fixed;
+  display: block;
+  top: 50%;
+  z-index: 999;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.close-sidenav {
+  top: 5px;
+  right: 0;
+  position: absolute;
+  border-radius: 5px;
+}
+
+.page-container {
+  min-width: 100%;
+  min-height: 91%;
+}
+
+@media screen and (max-width: 576px) {
+  .flex-container > .card {
+    flex: 50%;
+    max-width: 100%;
+  }
+  .filter-button {
+    max-width: 40px;
+  }
+}
+
+
+@media screen and (max-width: 992px) and (min-width: 577px) {
+  .flex-container > .card {
+    flex: 40%;
+    max-width: 50%;
+  }
+}
+
+
+@media screen and (max-width: 1200px) and (min-width: 993px) {
+  .flex-container > .card {
+    flex: 25%;
+    max-width: 33%;
+  }
+}
+

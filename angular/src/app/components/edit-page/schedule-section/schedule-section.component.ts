@@ -1,13 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { ResponseService } from '../../../services/response.service';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -18,8 +9,8 @@ import { Period } from '../../../models/period.model';
 import { Librarian } from '../../../models/librarian.model';
 
 import { Days } from '../../../constants/days';
-import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-schedule-section',
@@ -36,12 +27,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
     schedules: Schedule[];
     showedSchedules: Schedule[] = [];
-
-    schedulesSubscription: Subscription;
-    schedulesFetchSubscription: Subscription;
-    schedulesAddSubscription: Subscription;
-    schedulesEditSubscription: Subscription;
-    schedulesDeleteSubscription: Subscription;
 
     scheduleSelect: number;
     librarianSelect: number;
@@ -60,27 +45,22 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     constructor(
         private scheduleService: ScheduleService,
         private dialog: MatDialog
-    ) {}
+    ) {
+    }
 
     ngOnInit() {
         this.setSchedules();
     }
 
     setSchedules(): void {
-        this.schedulesFetchSubscription = this.scheduleService
-            .fetchAllSchedulesHttp()
-            .subscribe();
-        this.schedulesSubscription = this.scheduleService
-            .getSchedules()
-            .subscribe(schedules => {
-                this.schedules = schedules;
-            });
+        this.scheduleService.fetchAllSchedulesHttp().pipe(untilDestroyed(this)).subscribe();
+        this.scheduleService.getSchedules().pipe(untilDestroyed(this)).subscribe(schedules => {
+            this.schedules = schedules;
+        });
     }
 
     getSchedule(): Schedule {
-        return this.schedules.find(
-            (sch: Schedule) => sch.id === this.scheduleSelect
-        );
+        return this.schedules.find((sch: Schedule) => sch.id === this.scheduleSelect);
     }
 
     getPeriod(periodId): Period {
@@ -92,9 +72,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     setShowedSchedule(): void {
-        this.showedSchedules = this.schedules.filter(
-            (sch: Schedule) => sch.librarian.id === this.librarianSelect
-        );
+        this.showedSchedules = this.schedules.filter((sch: Schedule) => sch.librarian.id === this.librarianSelect);
     }
 
     setSchedule(): void {
@@ -113,6 +91,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
                 period: this.getPeriod(this.newSchedulePeriodId),
                 librarian: this.getLibrarian(this.newScheduleLibrarianId)
             })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.scheduleResponseHandler();
             });
@@ -141,6 +120,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
                 period: this.getPeriod(this.schedulePeriodId),
                 librarian: this.getLibrarian(this.scheduleLibrarianId)
             })
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.scheduleResponseHandler();
             });
@@ -152,6 +132,7 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         }
         this.scheduleService
             .deleteScheduleHttp(this.scheduleSelect)
+            .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.scheduleResponseHandler();
                 this.scheduleDay = null;
@@ -183,12 +164,5 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.schedulesSubscription, [
-            this.schedulesFetchSubscription,
-            this.schedulesAddSubscription,
-            this.schedulesEditSubscription,
-            this.schedulesDeleteSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

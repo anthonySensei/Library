@@ -19,7 +19,7 @@ import { HelperService } from '../../../../services/helper.service';
 @Component({
     selector: 'app-schedule-filter-section',
     templateUrl: './schedule-filter-section.component.html',
-    styleUrls: ['../librarian-schedule.component.sass']
+    styleUrls: ['../librarian-schedule.component.scss']
 })
 export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     @Input() departmentSelect: number;

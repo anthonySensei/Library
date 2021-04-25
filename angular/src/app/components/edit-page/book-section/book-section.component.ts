@@ -1,8 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Subscription } from 'rxjs';
-
 import { Book } from '../../../models/book.model';
 import { Department } from '../../../models/department.model';
 
@@ -13,6 +11,7 @@ import { HelperService } from '../../../services/helper.service';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { MatDialog } from '@angular/material';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-book-section',
@@ -27,10 +26,6 @@ export class BookSectionComponent implements OnInit, OnDestroy {
 
     allBooks: Book[];
     booksForSelect: Book[];
-
-    booksSubscription: Subscription;
-    booksFetchSubscription: Subscription;
-    booksDeleteSubscription: Subscription;
 
     bookSelect: number = null;
 
@@ -47,14 +42,8 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     setBooks(): void {
-        this.booksFetchSubscription = this.bookService
-            .fetchBooksISBNsHttp()
-            .subscribe();
-        this.booksSubscription = this.bookService
-            .getBooks()
-            .subscribe((books: Book[]) => {
-                this.allBooks = books;
-            });
+        this.bookService.fetchBooksISBNsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.bookService.getBooks().pipe(untilDestroyed(this)).subscribe((books: Book[]) => { this.allBooks = books; });
     }
 
     editBook(): void {
@@ -82,11 +71,7 @@ export class BookSectionComponent implements OnInit, OnDestroy {
         if (!this.departmentSelect || !this.bookSelect) {
             return;
         }
-        this.booksDeleteSubscription = this.bookService
-            .deleteBookHttp(this.bookSelect)
-            .subscribe(() => {
-                this.bookResponseHandler();
-            });
+        this.bookService.deleteBookHttp(this.bookSelect).pipe(untilDestroyed(this)).subscribe(() => { this.bookResponseHandler(); });
     }
 
     bookResponseHandler(): void {
@@ -98,15 +83,8 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     setBooksForSelect(): void {
-        this.booksForSelect = this.allBooks.filter(
-            book => book.department.id === this.departmentSelect
-        );
+        this.booksForSelect = this.allBooks.filter(book => book.department.id === this.departmentSelect);
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.booksSubscription, [
-            this.booksFetchSubscription,
-            this.booksDeleteSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

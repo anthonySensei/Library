@@ -1,21 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 
 import { tap } from 'rxjs/operators';
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 
 import { Student } from '../../../models/student.model';
 
@@ -28,20 +15,13 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { StudentsDataSource } from '../../../datasources/students.datasource';
+import { TABLE_ANIMATION } from '../../../constants/animation';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-users',
     templateUrl: './students.component.html',
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition(
-                'expanded <=> collapsed',
-                animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-            )
-        ])
-    ]
+    animations: TABLE_ANIMATION
 })
 export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     students: Student[];
@@ -56,9 +36,6 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     expandedElement: Student | null;
 
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
-
     filterName: string;
     filterValue: string;
 
@@ -68,7 +45,7 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        private helperService: HelperService
+        public helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -78,16 +55,8 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
-
-        this.mergeSubscription = merge(
-            this.sort.sortChange,
-            this.paginator.page
-        )
-            .pipe(tap(() => this.loadStudentsPage()))
-            .subscribe();
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
+        merge(this.sort.sortChange, this.paginator.page).pipe(tap(() => this.loadStudentsPage())).pipe(untilDestroyed(this)).subscribe();
     }
 
     loadStudentsPage(): void {
@@ -103,8 +72,5 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    ngOnDestroy(): void {
-        this.sortSubscription.unsubscribe();
-        this.mergeSubscription.unsubscribe();
-    }
+    ngOnDestroy(): void {}
 }
