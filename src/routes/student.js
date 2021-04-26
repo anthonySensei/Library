@@ -15,12 +15,6 @@ router.get(
     studentController.getStudents
 );
 
-router.get(
-    studentAllUrl,
-    passport.authenticate('jwt', { session: false }),
-    studentController.getAllStudents
-);
-
 router.put(
     '',
     passport.authenticate('jwt', { session: false }),

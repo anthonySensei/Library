@@ -27,7 +27,6 @@ const loanController = require('./loan');
 const models = require('../constants/models');
 const roles = require('../constants/roles');
 const statuses = require('../constants/userStatuses');
-const filters = require('../constants/filters');
 
 const getStudentOrders = async (studentId: number) => {
     try {
@@ -60,56 +59,13 @@ const getStudentOrders = async (studentId: number) => {
     }
 };
 
-exports.getAllStudents = async (req: Request, res: Response) => {
-    try {
-        const students = await Student.findAll();
-        const studentsArr: any = [];
-        students.forEach((student: any) => {
-            const studentValues = student.get();
-            if (studentValues.profile_image) {
-                studentValues.profile_image = imageHandler.convertToBase64(
-                    studentValues.profile_image
-                );
-            } else {
-                studentValues.profile_image = '';
-            }
-            const studentData = {
-                id: studentValues.id,
-                name: studentValues.name,
-                email: studentValues.email,
-                readerTicket: studentValues.reader_ticket
-            };
-            studentsArr.push(studentData);
-        });
-        const data = {
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            students: studentsArr
-        };
-        return helper.responseHandle(res, 200, data);
-    } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
-};
-
 exports.getStudents = async (req: Request, res: Response) => {
     const { pageNumber: page, pageSize, sortOrder, filterName, filterValue } = req.query;
-    let filterCondition = {};
+    const filterCondition: any = { admin: false, librarian: false };
 
-    const like = { [Op.iLike]: `%${filterValue}%` };
-
-    if (filterName === filters.EMAIL) {
-        filterCondition = { email: like };
-    } else if (filterName === filters.NAME) {
-        filterCondition = { name: like };
-    } else if (filterName === filters.READER_TICKET) {
-        filterCondition = { reader_ticket: like };
+    if (filterName) {
+        filterCondition[String(filterName)] = { $regex: new RegExp(String(filterValue), 'i') };
     }
-
-    filterCondition = { ...filterCondition, admin: false, librarian: false };
 
     try {
         const studentQuantity = await User.countDocuments(filterCondition);

@@ -14,7 +14,7 @@ const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
 
-module.exports = (passport) => {
+module.exports = (passport: any) => {
 
     const LocalStrategy = require('passport-local').Strategy;
 
@@ -25,7 +25,7 @@ module.exports = (passport) => {
                 passwordField: fields.PASSWORD,
                 passReqToCallback: true
             },
-            async (req: Request, email: string, password: string, done) => {
+            async (req: Request, email: string, password: string, done: any) => {
 
                 try {
                     logger.info(`Login attempt ${email}`);
@@ -41,7 +41,7 @@ module.exports = (passport) => {
                         return done(null, false, { message: errorMessages.NOT_ACTIVE });
                     }
 
-                    if (!(await user.comparePassword(password))){
+                    if (!(await user.comparePassword(password))) {
                         logger.warn(`User ${email} incorrect data`);
                         return done(null, false, { message: errorMessages.INCORRECT_LOGIN_DATA });
                     }
@@ -72,9 +72,9 @@ module.exports = (passport) => {
         )
     );
 
-    passport.serializeUser((auth, done) => done(null, auth.id));
+    passport.serializeUser((auth: any, done: any) => done(null, auth.id));
 
-    passport.deserializeUser(async (id, done) => {
+    passport.deserializeUser(async (id: string, done: any) => {
         try {
             const user = await User.findById(id);
             done(null, user);
