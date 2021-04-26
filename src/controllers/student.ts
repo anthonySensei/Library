@@ -1,3 +1,8 @@
+import { Request, Response } from 'express';
+import User from '../schemas/user';
+import { UserModel } from '../models/user';
+import logger from '../config/logger';
+
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -24,11 +29,11 @@ const roles = require('../constants/roles');
 const statuses = require('../constants/userStatuses');
 const filters = require('../constants/filters');
 
-const getStudentOrders = async studentId => {
+const getStudentOrders = async (studentId: number) => {
     try {
         const orders = await Order.findAll({
             where: {
-                studentId: studentId
+                studentId
             },
             include: [
                 {
@@ -37,9 +42,9 @@ const getStudentOrders = async studentId => {
                 { model: Department }
             ]
         });
-        const ordersArr = [];
+        const ordersArr: any = [];
         if (orders.length > 0) {
-            orders.forEach(order => {
+            orders.forEach((order: any) => {
                 const orderValues = order.get();
                 ordersArr.push({
                     orderTime: orderValues.order_time,
@@ -55,11 +60,11 @@ const getStudentOrders = async studentId => {
     }
 };
 
-exports.getAllStudents = async (req, res) => {
+exports.getAllStudents = async (req: Request, res: Response) => {
     try {
         const students = await Student.findAll();
-        const studentsArr = [];
-        students.forEach(student => {
+        const studentsArr: any = [];
+        students.forEach((student: any) => {
             const studentValues = student.get();
             if (studentValues.profile_image) {
                 studentValues.profile_image = imageHandler.convertToBase64(
@@ -90,66 +95,50 @@ exports.getAllStudents = async (req, res) => {
     }
 };
 
-exports.getStudents = async (req, res) => {
-    const page = +req.query.pageNumber;
-    const pageSize = +req.query.pageSize;
-    const sortOrder = req.query.sortOrder.toUpperCase();
-    const filterName = req.query.filterName;
-    const filterValue = req.query.filterValue;
+exports.getStudents = async (req: Request, res: Response) => {
+    const { pageNumber: page, pageSize, sortOrder, filterName, filterValue } = req.query;
     let filterCondition = {};
 
     const like = { [Op.iLike]: `%${filterValue}%` };
-    if (filterName === filters.EMAIL) filterCondition = { email: like };
-    else if (filterName === filters.NAME) filterCondition = { name: like };
-    else if (filterName === filters.READER_TICKET)
+
+    if (filterName === filters.EMAIL) {
+        filterCondition = { email: like };
+    } else if (filterName === filters.NAME) {
+        filterCondition = { name: like };
+    } else if (filterName === filters.READER_TICKET) {
         filterCondition = { reader_ticket: like };
+    }
+
+    filterCondition = { ...filterCondition, admin: false, librarian: false };
 
     try {
-        const quantityOfLibrarians = await Student.count({
-            where: filterCondition
-        });
-        const students = await Student.findAll({
-            where: filterCondition,
-            limit: pageSize,
-            order: [['name', sortOrder]],
-            offset: (page - 1) * pageSize
-        });
-        const studentsArr = [];
-        students.forEach(student => {
-            const studentValues = student.get();
-            if (studentValues.profile_image) {
-                studentValues.profile_image = imageHandler.convertToBase64(
-                    studentValues.profile_image
-                );
-            } else {
-                studentValues.profile_image = '';
-            }
-            const studentData = {
-                id: studentValues.id,
-                name: studentValues.name,
-                email: studentValues.email,
-                profileImage: studentValues.profile_image,
-                readerTicket: studentValues.reader_ticket,
-                status: studentValues.status
-            };
-            studentsArr.push(studentData);
-        });
+        const studentQuantity = await User.countDocuments(filterCondition);
+        const studentsDb = await User.find(filterCondition, {}, {
+            limit: Number(pageSize),
+            sort: { name: String(sortOrder) === 'asc' ? -1 : 1 },
+            skip: (Number(page) - 1) * Number(pageSize)
+        }) as UserModel[];
+
+        const students: any = studentsDb.map(student => ({
+            id: student._id,
+            name: student.name,
+            email: student.email,
+            image: student.image
+        }));
         const data = {
+            students,
             message: successMessages.SUCCESSFULLY_FETCHED,
-            students: studentsArr,
-            quantity: quantityOfLibrarians
+            quantity: studentQuantity,
+            success: true
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        logger.error('Error fetching users', err.message);
+        return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
-exports.getStudent = async (req, res) => {
+exports.getStudent = async (req: Request, res: Response) => {
     const studentId = req.query.studentId;
     try {
         const student = await Student.findOne({
@@ -190,7 +179,7 @@ exports.getStudent = async (req, res) => {
     }
 };
 
-exports.editStudent = async (req, res) => {
+exports.editStudent = async (req: Request, res: Response) => {
     const studentEmail = req.body.email;
     const studentId = req.body.studentId;
     const studentReaderTicket = req.body.readerTicket;
@@ -252,7 +241,7 @@ exports.editStudent = async (req, res) => {
     }
 };
 
-exports.deleteStudent = async (req, res) => {
+exports.deleteStudent = async (req: Request, res: Response) => {
     const studentId = req.query.studentId;
     try {
         const student = await Student.findOne({ where: { id: studentId } });
@@ -271,12 +260,13 @@ exports.deleteStudent = async (req, res) => {
     }
 };
 
-exports.addStudent = async (req, res) => {
+exports.addStudent = async (req: Request, res: Response) => {
     const email = req.body.email;
     const readerTicket = req.body.readerTicket;
     const name = req.body.name;
-    if (!email || !readerTicket || !name)
+    if (!email || !readerTicket || !name) {
         return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
     try {
         const isNotUniqueReaderTicket = await checkUniqueness.checkReaderTicket(
             readerTicket
@@ -316,49 +306,50 @@ exports.addStudent = async (req, res) => {
 };
 
 const createStudent = async (
-    userRole,
-    email,
-    name,
-    readerTicket,
-    registrationToken,
-    password,
-    status,
-    res
+    userRole: string,
+    email: string,
+    name: string,
+    readerTicket: string,
+    registrationToken: string | null,
+    password: any,
+    status: string,
+    res: Response
 ) => {
     let newStudent;
     if (registrationToken) {
         newStudent = new Student({
-            email: email,
-            name: name,
+            email,
+            name,
             reader_ticket: readerTicket,
             registration_token: registrationToken,
-            status: status,
-            password: password
+            status,
+            password
         });
     } else {
         newStudent = new Student({
-            email: email,
-            name: name,
+            email,
+            name,
             reader_ticket: readerTicket,
-            status: status,
+            status,
             password: password.encrypted
         });
     }
 
     try {
         await newStudent.save();
-        if (registrationToken)
+        if (registrationToken) {
             await mailSender.sendMail(
                 email,
                 mailMessages.subjects.ACCOUNT_ACTIVATION,
                 mailMessages.generateActivationMessage(registrationToken)
             );
-        else
+        } else {
             await mailSender.sendMail(
                 email,
                 mailMessages.subjects.ACCOUNT_CREATED,
                 mailMessages.generatePasswordMessage(email, password.password)
             );
+        }
         const data = {
             isSuccessful: true,
             message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED

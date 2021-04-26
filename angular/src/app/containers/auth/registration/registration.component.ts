@@ -19,6 +19,8 @@ import { KeyWords } from '../../../constants/keyWords';
 import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Store } from '@ngxs/store';
+import { CreateUser } from '../../../store/user.state';
 
 @Component({
     selector: 'app-registration',
@@ -52,9 +54,9 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private responseService: ResponseService,
         private materialService: MaterialService,
-        private router: Router
-    ) {
-    }
+        private router: Router,
+        private store: Store
+    ) {}
 
     ngOnInit() {
         document.title = PageTitles.REGISTRATION;
@@ -105,47 +107,26 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const student = new Student(null, name, email, null, password);
-
         if (!this.validationService.comparePasswords(password, password2)) {
             this.isPasswordError = true;
             this.error = ErrorMessages.DIFFERENT_PASSWORDS;
             stepper.selectedIndex = 1;
             this.passwordForm.patchValue({ password: '', password2: '' });
-        } else {
-            this.authService.registerStudentHttp(student).pipe(untilDestroyed(this)).subscribe(() => {
-                if (this.responseService.responseHandle()) {
-                    this.done = true;
-                    this.router.navigate(['/' + this.links.LOGIN]);
-                } else {
-                    this.fieldsErrorHandle(stepper);
-                }
-            });
+            return;
         }
-    }
 
-    fieldsErrorHandle(stepper: MatHorizontalStepper): void {
-        this.response = this.responseService.getResponse();
-        if (this.response.message.toLowerCase().includes(KeyWords.EMAIL)) {
-            stepper.selectedIndex = 0;
-            this.emailError = this.response.message;
-            this.mainInfoForm.controls.email.setErrors({ incorrect: true });
-        } else if (
-            this.response.message.toLowerCase().includes(KeyWords.READER)
-        ) {
-            stepper.selectedIndex = 0;
-            this.mainInfoForm.controls.reader_ticket.setErrors({ incorrect: true });
-            this.error = this.response.message;
-        }
+        this.store.dispatch(new CreateUser(name, email, password)).subscribe(() => stepper.selectedIndex = 0);
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
-        if (this.mainInfoForm.touched && !this.done) {
-            this.materialService.openDiscardChangesDialog(this.discard, this.discardChanged);
-            return this.discardChanged;
-        } else {
-            return true;
-        }
+        // TODO fix canDeactivate
+        // if (this.mainInfoForm.touched && !this.done) {
+        //     this.materialService.openDiscardChangesDialog(this.discard, this.discardChanged);
+        //     return this.discardChanged;
+        // } else {
+        //     return true;
+        // }
+        return true;
     }
 
     ngOnDestroy(): void {}

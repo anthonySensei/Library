@@ -18,6 +18,7 @@ import { HelperService } from '../../../services/helper.service';
 import { StudentsDataSource } from '../../../datasources/students.datasource';
 import { TABLE_ANIMATION } from '../../../constants/animation';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Store } from '@ngxs/store';
 
 @Component({
     selector: 'app-users',
@@ -32,7 +33,6 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     columnsToDisplay: string[] = [
         TableColumns.NAME,
         TableColumns.EMAIL,
-        TableColumns.READER_TICKET,
         TableColumns.STATUS
     ];
     expandedElement: Student | null;
@@ -46,13 +46,14 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        public helperService: HelperService
+        public helperService: HelperService,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STUDENTS;
-        this.dataSource = new StudentsDataSource(this.studentService);
-        this.dataSource.loadStudents('', '', SortOrder.ASC, 0, 5);
+        this.dataSource = new StudentsDataSource(this.store);
+        this.dataSource.loadStudents('', '', SortOrder.DESC, 0, 5);
     }
 
     ngAfterViewInit(): void {
@@ -64,6 +65,7 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!this.filterName) {
             this.filterValue = '';
         }
+
         this.dataSource.loadStudents(
             this.filterName,
             this.filterValue,

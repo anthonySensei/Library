@@ -4,8 +4,9 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
 import { Student } from '../models/student.model';
-
-import { StudentService } from '../services/student.service';
+import { Store } from '@ngxs/store';
+import { LoadStudents } from '../store/student.state';
+import { StoreStateModel } from '../store/store.model';
 
 export class StudentsDataSource implements DataSource<Student> {
     private studentSubject = new BehaviorSubject<Student[]>([]);
@@ -14,7 +15,7 @@ export class StudentsDataSource implements DataSource<Student> {
 
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private studentService: StudentService) {}
+    constructor(private store: Store) {}
 
     loadStudents(
         filterName: string,
@@ -25,19 +26,19 @@ export class StudentsDataSource implements DataSource<Student> {
     ) {
         this.loadingSubject.next(true);
 
-        this.studentService
-            .getStudentsHttp(
+        this.store
+            .dispatch(new LoadStudents(
                 filterName,
                 filterValue,
                 sortOrder,
                 pageIndex,
                 pageSize
-            )
+             ))
             .pipe(
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe((students: Student[]) => this.studentSubject.next(students));
+            .subscribe((state: StoreStateModel) => this.studentSubject.next(state?.student?.students));
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Student[]> {

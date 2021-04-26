@@ -48,6 +48,7 @@ import { SmallScreenComponent } from './small-screen/small-screen.component';
 import { LoaderComponent } from './loader/loader.component';
 import { NgxsModule } from '@ngxs/store';
 import { UserState } from '../store/user.state';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
     declarations: [
@@ -98,7 +99,8 @@ import { UserState } from '../store/user.state';
         MatSlideToggleModule,
         ChartSectionComponent,
         SmallScreenComponent,
-        LoaderComponent
+        LoaderComponent,
+        MatAutocompleteModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent]

@@ -14,10 +14,8 @@ import { HelperService } from './helper.service';
 })
 export class StudentService {
     private STUDENTS_URL = `${serverLink}/students`;
-    private STUDENTS_ALL_URL = `${this.STUDENTS_URL}/all`;
     private STUDENTS_DETAILS_URL = `${this.STUDENTS_URL}/details`;
 
-    private students = new Subject<Student[]>();
     private student = new Subject<Student>();
 
     constructor(
@@ -25,14 +23,6 @@ export class StudentService {
         private responseService: ResponseService,
         private helperService: HelperService
     ) {}
-
-    setStudents(students: Student[]): void {
-        this.students.next(students);
-    }
-
-    getStudents(): Observable<Student[]> {
-        return this.students;
-    }
 
     setStudent(student: Student): void {
         this.student.next(student);
@@ -42,37 +32,17 @@ export class StudentService {
         return this.student;
     }
 
-    getAllStudentsHttp() {
-        return this.http.get(this.STUDENTS_ALL_URL).pipe(
-            map((response: any) => {
-                this.setStudents(response.data.students);
-            })
-        );
-    }
-
-    getStudentsHttp(
-        filterName: string = '',
-        filterValue: string = '',
-        sortOrder = 'asc',
-        pageNumber = 0,
-        pageSize = 5
-    ): Observable<Student[]> {
-        return this.http
-            .get(this.STUDENTS_URL, {
-                params: new HttpParams()
-                    .set('filterName', filterName ? filterName : '')
-                    .set('filterValue', filterValue)
-                    .set('sortOrder', sortOrder)
-                    .set('pageNumber', (pageNumber + 1).toString())
-                    .set('pageSize', pageSize.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.setStudents(response.data.students);
-                    this.helperService.setItemsPerPage(response.data.quantity);
-                    return response.data.students;
-                })
-            );
+    getStudents(filterName: string, filterValue: string, sortOrder: string, pageNumber: number, pageSize: number) {
+        const params = new HttpParams()
+            .set('filterName', filterName)
+            .set('filterValue', filterValue)
+            .set('sortOrder', sortOrder)
+            .set('pageNumber', (pageNumber + 1).toString())
+            .set('pageSize', pageSize.toString());
+        return this.http.get(this.STUDENTS_URL, { params }).pipe(map((response: any) => {
+            this.helperService.setItemsPerPage(response.data.quantity);
+            return response.data;
+        }));
     }
 
     getStudentHttp(studentId: number) {
@@ -95,9 +65,9 @@ export class StudentService {
         );
     }
 
-    ediStudentHttp(studentId: string, email: string, readerTicket: string) {
+    ediStudentHttp(studentId: string, email: string) {
         return this.http
-            .put(this.STUDENTS_URL, { studentId, email, readerTicket })
+            .put(this.STUDENTS_URL, { studentId, email })
             .pipe(
                 map((response: any) => {
                     this.responseService.setResponse(response.data);

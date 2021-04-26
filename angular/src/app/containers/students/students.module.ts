@@ -11,6 +11,8 @@ import { OrdersComponent } from './orders/orders.component';
 import { AddStudentComponent } from './add-student/add-student.component';
 import { LoanSectionComponent } from './student-details/loan-section/loan-section.component';
 import { OrdersSectionComponent } from './student-details/orders-section/orders-section.component';
+import { NgxsModule } from '@ngxs/store';
+import { StudentState } from '../../store/student.state';
 
 @NgModule({
     declarations: [
@@ -19,11 +21,11 @@ import { OrdersSectionComponent } from './student-details/orders-section/orders-
         OrdersComponent,
         AddStudentComponent,
         LoanSectionComponent,
-        OrdersSectionComponent
+        OrdersSectionComponent,
     ],
     exports: [
-        LoanSectionComponent
+        LoanSectionComponent,
     ],
-    imports: [CommonModule, FormsModule, SharedModule, StudentsRoutingModule]
+    imports: [CommonModule, FormsModule, SharedModule, StudentsRoutingModule, NgxsModule.forFeature([StudentState])]
 })
 export class StudentsModule {}

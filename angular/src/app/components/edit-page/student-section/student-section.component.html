@@ -1,86 +1,24 @@
 <section class="edit-section">
     <h3>
-        Please select student(left side) and change fields(right) to edit
-        student:
+        Please select student
     </h3>
-    <div class="input-groups flex">
-        <div class="left-side">
-            <mat-form-field class="edit-field">
-                <mat-label>Student</mat-label>
-                <mat-select
-                    name="genreName"
-                    [(ngModel)]="studentSelect"
-                    (ngModelChange)="setStudentData()"
-                    required
-                >
-                    <mat-option
-                        *ngFor="let student of students"
-                        [value]="student.id"
-                    >
-                        ({{student.name}})
-                    </mat-option>
-                    <mat-divider></mat-divider>
-                    <mat-option (click)="addStudent()">
-                        <b>Add Student</b>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <mat-divider
-            vertical="vertical"
-            style="margin-right: 10px;"
-        ></mat-divider>
-        <div class="right-side">
-            <mat-form-field class="edit-field">
-                <mat-label>Reader ticket</mat-label>
-                <input matInput type="text" [(ngModel)]="studentReaderTicket" />
-                <button
-                    mat-button
-                    *ngIf="studentReaderTicket"
-                    matSuffix
-                    mat-icon-button
-                    aria-label="Clear"
-                    (click)="studentReaderTicket = ''"
-                >
-                    <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>
-            <mat-form-field class="edit-field">
-                <mat-label>Email</mat-label>
-                <input matInput type="text" [(ngModel)]="studentEmail" />
-                <button
-                    mat-button
-                    *ngIf="studentEmail"
-                    matSuffix
-                    mat-icon-button
-                    aria-label="Clear"
-                    (click)="studentEmail = ''"
-                >
-                    <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>
-            <div class="btn-group">
-                <button
-                    mat-raised-button
-                    class="form-btn edit-btn"
-                    color="primary"
-                    type="submit"
-                    [disabled]="!studentSelect"
-                    (click)="editStudent()"
-                >
-                    Edit
-                </button>
-                <button
-                    mat-raised-button
-                    class="form-btn edit-btn"
-                    color="warn"
-                    type="button"
-                    [disabled]="!studentSelect"
-                    (click)="openConfirmDeleteDialog()"
-                >
-                    Delete
-                </button>
-            </div>
-        </div>
+    <div class="flex">
+        <!--  TODO fix styles   -->
+        <mat-form-field style="width: 250px">
+            <mat-label>Email</mat-label>
+            <input type="text"
+                   placeholder="Email"
+                   aria-label="Email"
+                   matInput
+                   [matAutocomplete]="auto"
+                   [(ngModel)]="studentSelect"
+                   (ngModelChange)="onChange()"
+            >
+            <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let student of students$ | async" [value]="student.email" (click)="onSetStudent(student)">
+                    {{student.email}}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
     </div>
 </section>

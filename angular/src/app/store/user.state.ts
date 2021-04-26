@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { AngularLinks } from '../constants/angularLinks';
 import { MaterialService } from '../services/material.service';
 import { Injectable } from '@angular/core';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 
 /*********************************
@@ -26,6 +27,12 @@ export class AutoLogin {
     static readonly type = '[User] AutoLogin';
 
     constructor() {}
+}
+
+export class CreateUser {
+    static readonly type = '[User] CreateUser';
+
+    constructor(public name: string, public email: string, public password: string) {}
 }
 
 export class Logout {
@@ -59,7 +66,6 @@ export const CONTRACT_STATE_NAME = 'user';
 @Injectable()
 export class UserState {
     constructor(
-        private store: Store,
         private authService: AuthService,
         private materialService: MaterialService,
         private router: Router,
@@ -101,7 +107,7 @@ export class UserState {
             this.authService.setJwtToken(token);
             const expirationDate = new Date(new Date().getTime() + tokenExpiresIn * 1000);
             const tokenData = { token, expirationDate };
-            this.store.dispatch(new AutoLogout(tokenExpiresIn * 1000));
+            ctx.dispatch(new AutoLogout(tokenExpiresIn * 1000));
             localStorage.setItem('tokenData', JSON.stringify(tokenData));
             localStorage.setItem('userData', JSON.stringify(user));
             ctx.dispatch(new SetUser(user));
@@ -132,10 +138,26 @@ export class UserState {
         return ctx.dispatch(new Logout());
     }
 
+    @Action(CreateUser)
+    createUser(ctx: StateContext<UserStateModel>, action: CreateUser) {
+        const { name, email, password } = action;
+        return this.authService.createUser(name, email, password).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            await this.router.navigate([AngularLinks.LOGIN]);
+        }));
+    }
+
     @Action(Logout)
     logout(ctx: StateContext<UserStateModel>) {
         return this.authService.logout().pipe(tap(async () => {
-            this.store.dispatch(new SetUser(null));
+            ctx.dispatch(new SetUser(null));
             this.authService.setJwtToken(null);
             localStorage.clear();
             await this.router.navigate([AngularLinks.LOGIN]);
@@ -148,13 +170,13 @@ export class UserState {
         const { expirationDuration } = action;
 
         if (expirationDuration < 0) {
-            this.store.dispatch(new Logout());
+            ctx.dispatch(new Logout());
             localStorage.clear();
             return;
         }
 
         setTimeout(() => {
-            this.store.dispatch(new Logout());
+            ctx.dispatch(new Logout());
         }, expirationDuration);
 
         return ctx;
