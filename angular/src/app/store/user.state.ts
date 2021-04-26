@@ -55,6 +55,7 @@ export const CONTRACT_STATE_NAME = 'user';
     name: CONTRACT_STATE_NAME,
     defaults: new UserStateModel()
 })
+
 @Injectable()
 export class UserState {
     constructor(

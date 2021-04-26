@@ -7,25 +7,17 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "es2020",
+    "emitDecoratorMetadata": false,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "importHelpers": true,
-    "allowSyntheticDefaultImports": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "module": "es2020",
     "lib": [
       "es2018",
       "dom"
     ],
     "paths": {
-      "tslib" : ["node_modules/tslib/tslib.d.ts"]
+      "@shared/*": ["src/app/shared/*"]
     }
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
   }
 }
