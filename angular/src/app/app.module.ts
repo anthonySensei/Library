@@ -31,6 +31,7 @@ import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-o
 import { LibrarianSectionComponent } from './components/edit-page/librarian-section/librarian-section.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
 import { UserState } from './store/user.state';
+import { environment } from '../environments/environment';
 
 @NgModule({
     declarations: [
@@ -62,7 +63,8 @@ import { UserState } from './store/user.state';
         StudentsModule,
         AppRoutingModule,
         NgxsModule.forRoot([UserState], {
-            executionStrategy: NoopNgxsExecutionStrategy
+            executionStrategy: NoopNgxsExecutionStrategy,
+            developmentMode: !environment.production
         }),
     ],
     providers: [

@@ -6,13 +6,14 @@ import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AngularLinks } from '../constants/angularLinks';
 import { MaterialService } from '../services/material.service';
+import { Injectable } from '@angular/core';
 
 
 /*********************************
  *** UserActions - Commands ***
  **********************************/
 export class InitUserState {
-    static readonly type = '[User] InitContractState';
+    static readonly type = '[User] InitUserState';
 }
 
 export class Login {
@@ -54,6 +55,7 @@ export const CONTRACT_STATE_NAME = 'user';
     name: CONTRACT_STATE_NAME,
     defaults: new UserStateModel()
 })
+@Injectable()
 export class UserState {
     constructor(
         private store: Store,

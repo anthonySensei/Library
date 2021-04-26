@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
 const Student = sequelize.define('student_', {
     id: {
@@ -18,7 +18,7 @@ const Student = sequelize.define('student_', {
         allowNull: false,
         validate: {
             isEmail: true,
-            notNull: { args: true, msg: 'Please fill in email' }
+            notNull: { msg: 'Please fill in email' }
         }
     },
     profile_image: {
@@ -32,17 +32,6 @@ const Student = sequelize.define('student_', {
     registration_token: {
         type: Sequelize.STRING,
         allowNull: true
-    },
-    reader_ticket: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notNull: { args: true, msg: 'Please fill in reader ticket' }
-        },
-        unique: {
-            args: true,
-            msg: 'Reader ticket already in use'
-        }
     },
     password: {
         type: Sequelize.STRING,

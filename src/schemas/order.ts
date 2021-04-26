@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
 const Order = sequelize.define('order_', {
     id: {

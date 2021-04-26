@@ -17,7 +17,7 @@
                         *ngFor="let student of students"
                         [value]="student.id"
                     >
-                        {{ student.readerTicket }}({{student.name}})
+                        ({{student.name}})
                     </mat-option>
                     <mat-divider></mat-divider>
                     <mat-option (click)="addStudent()">

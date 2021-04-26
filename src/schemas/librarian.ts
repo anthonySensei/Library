@@ -1,6 +1,6 @@
-const Sequelize = require('sequelize');
+import Sequelize from 'sequelize';
 
-const sequelize = require('../config/database');
+import sequelize from '../config/database';
 
 const Librarian = sequelize.define('librarian_', {
     id: {
@@ -18,12 +18,9 @@ const Librarian = sequelize.define('librarian_', {
         allowNull: false,
         validate: {
             isEmail: true,
-            notNull: { args: true, msg: 'Please fill in email' }
+            notNull: { msg: 'Please fill in email' }
         },
-        unique: {
-            args: true,
-            msg: 'Email already in use'
-        }
+        unique: true
     },
     profile_image: {
         type: Sequelize.STRING,
