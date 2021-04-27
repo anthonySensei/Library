@@ -13,9 +13,9 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { User } from '../../../models/user.model';
-import { LoadStudents, StudentState } from '../../../store/student.state';
+import { DeleteStudent, LoadStudents, SetStudent, StudentState } from '../../../store/student.state';
 import { SortOrder } from '../../../constants/sortOrder';
-import * as _ from 'lodash';
+import { UserState } from '../../../store/user.state';
 
 @Component({
     selector: 'app-student-section',
@@ -31,12 +31,14 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     students: Student[];
 
     studentSelect: string;
-    studentEmail: string;
     error: string;
     links = AngularLinks;
 
     @Select(StudentState.Students)
     students$: Observable<User[]>;
+
+    @Select(StudentState.Student)
+    student$: Observable<User>;
 
     constructor(
         private studentService: StudentService,
@@ -47,45 +49,14 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {}
 
-    getStudent(): Student {
-        return this.students.find((st: Student) => st.id === this.studentSelect);
-    }
-
-    addStudent(): void {
-        this.router.navigate(['/', this.links.STUDENTS, 'add']);
-    }
-
-    editStudent(): void {
-        if (!this.studentEmail) {
-            return;
-        }
-
-        if (
-            this.studentEmail === this.getStudent().email
-        ) {
-            this.nothingToChange.emit();
-            return;
-        }
-
-        this.studentService
-            .ediStudentHttp(
-                this.studentSelect,
-                this.studentEmail,
-            )
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.studentResponseHandler();
-            });
-    }
-
     deleteStudent(): void {
-        if (!this.studentSelect) {
+        const student = this.store.selectSnapshot(UserState.User);
+
+        if (!student) {
             return;
         }
 
-        this.studentService.deleteStudentHttp(this.studentSelect).pipe(untilDestroyed(this)).subscribe(() => {
-            this.studentResponseHandler();
-        });
+        this.store.dispatch(new DeleteStudent()).subscribe(() => this.studentSelect = null);
     }
 
     openConfirmDeleteDialog(): void {
@@ -103,7 +74,6 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     studentResponseHandler(): void {
         if (this.responseService.responseHandle()) {
             this.studentSelect = null;
-            this.studentEmail = null;
         }
     }
 
@@ -112,7 +82,7 @@ export class StudentSectionComponent implements OnInit, OnDestroy {
     }
 
     onSetStudent(student: User) {
-        this.studentEmail = student.email;
+        this.store.dispatch(new SetStudent(student));
     }
 
     ngOnDestroy(): void {}

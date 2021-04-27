@@ -60,7 +60,7 @@ const genresUrl = require('./constants/links').GENRES_URL;
 const ordersUrl = require('./constants/links').ORDERS_URL;
 const loansUrl = require('./constants/links').LOANS_URL;
 const studentsUrl = require('./constants/links').STUDENTS_URL;
-const myAccountUrl = require('./constants/links').MY_ACCOUNT_URL;
+const usersUrl = require('./constants/links').USERS_URL;
 const periodsUrl = require('./constants/links').PERIODS_URL;
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
@@ -119,8 +119,9 @@ app.use(librariansUrl, librarianRoutes);
 app.use(loansUrl, loanRoutes);
 app.use(ordersUrl, orderRoutes);
 app.use(studentsUrl, studentRoutes);
-app.use(myAccountUrl, userRoutes);
+app.use(usersUrl, userRoutes);
 app.use(periodsUrl, periodRoutes);
+app.use(schedulesUrl, scheduleRoutes);
 app.use(schedulesUrl, scheduleRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });

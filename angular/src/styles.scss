@@ -17,6 +17,8 @@
 /* Datepicker */
 @import "~ng-pick-datetime/assets/style/picker.min.css";
 
+
+
 $font-main: Robotom, "Helvetica Neue", sans-serif;
 
 $color-main: #FFDF6C;
@@ -93,6 +95,10 @@ table {
 
 .bg-main {
   background: $color-background;
+}
+
+.border-yellow {
+  border-color: $color-main !important;
 }
 
 .mat-form-field-empty.mat-form-field-label {

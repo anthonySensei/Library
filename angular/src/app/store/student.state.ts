@@ -5,6 +5,7 @@ import { StudentStateModel } from './student.model';
 import { StudentService } from '../services/student.service';
 import { tap } from 'rxjs/operators';
 import { MaterialService } from '../services/material.service';
+import { SnackBarClasses } from '../constants/snackBarClasses';
 
 
 /*********************************
@@ -32,6 +33,18 @@ export class SetStudents {
     constructor(public students: User[]) {}
 }
 
+export class SetStudent {
+    static readonly type = '[Student] SetStudent';
+
+    constructor(public student: User) {}
+}
+
+export class DeleteStudent {
+    static readonly type = '[Student] DeleteStudent';
+
+    constructor(public studentId?: string) {}
+}
+
 /*******************************
  *** UserState            ***
  ********************************/
@@ -55,6 +68,11 @@ export class StudentState {
     @Selector()
     static Students(state: StudentStateModel): User[] {
         return state.students;
+    }
+
+    @Selector()
+    static Student(state: StudentStateModel): User {
+        return state.student;
     }
 
     /****************
@@ -84,5 +102,29 @@ export class StudentState {
     setStudents(ctx: StateContext<StudentStateModel>, action: SetStudents) {
         const { students } = action;
         return ctx.patchState({ students });
+    }
+
+    @Action(SetStudent)
+    setStudent(ctx: StateContext<StudentStateModel>, action: SetStudent) {
+        const { student } = action;
+        return ctx.patchState({ student });
+    }
+
+    @Action(DeleteStudent)
+    deleteStudent(ctx: StateContext<StudentStateModel>, action: DeleteStudent) {
+        const { studentId } = action;
+        const { id: selectedStudentId } = ctx.getState().student;
+        const id = studentId || selectedStudentId;
+        return this.studentService.deleteStudent(id).pipe(tap((response: any) => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            ctx.patchState({ student: null});
+        }));
     }
 }

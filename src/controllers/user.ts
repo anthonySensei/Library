@@ -1,3 +1,8 @@
+import { Request, Response } from 'express';
+import logger from '../config/logger';
+import User from '../schemas/user';
+
+
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -15,22 +20,27 @@ const successMessages = require('../constants/successMessages');
 const changedProfileData = require('../constants/changedProfileData');
 const userRoles = require('../constants/roles');
 
-exports.postUpdateUserData = (req, res) => {
+exports.postUpdateUserData = (req: Request, res: Response) => {
     const user = JSON.parse(req.body.user);
     const changedField = req.body.changedField;
     let dbTable;
-    if (user.role.role === userRoles.STUDENT) dbTable = Student;
-    else dbTable = Librarian;
 
-    if (changedField === changedProfileData.INFO)
+    if (user.role.role === userRoles.STUDENT) {
+        dbTable = Student;
+    } else {
+        dbTable = Librarian;
+    }
+
+    if (changedField === changedProfileData.INFO) {
         updateInfo(res, dbTable, user);
-    else if (changedField === changedProfileData.PASSWORD)
+    } else if (changedField === changedProfileData.PASSWORD) {
         updatePassword(res, dbTable, user.id, JSON.parse(req.body.passwordObj));
-    else if (changedField === changedProfileData.IMAGE)
+    } else if (changedField === changedProfileData.IMAGE) {
         updateImage(res, dbTable, user);
+    }
 };
 
-const updateInfo = async (res, dbTable, user) => {
+const updateInfo = async (res: Response, dbTable: any, user: any) => {
     try {
         const userInDb = await dbTable.findOne({
             where: { id: user.id }
@@ -60,7 +70,7 @@ const updateInfo = async (res, dbTable, user) => {
     }
 };
 
-const updatePassword = async (res, dbTable, userId, passwordObj) => {
+const updatePassword = async (res: Response, dbTable: any, userId: string, passwordObj: any) => {
     if (
         !passwordObj.oldPassword ||
         !passwordObj.newPassword ||
@@ -112,7 +122,7 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
     }
 };
 
-const updateImage = async (res, dbTable, user) => {
+const updateImage = async (res: Response, dbTable: any, user: any) => {
     if (!user.profileImage) {
         return helper.responseErrorHandle(
             res,
@@ -135,5 +145,16 @@ const updateImage = async (res, dbTable, user) => {
             400,
             errorMessages.SOMETHING_WENT_WRONG
         );
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    try {
+        await User.findByIdAndDelete(id);
+        helper.responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_DELETED });
+    } catch (err) {
+        logger.error('Error deleting user', err.message);
     }
 };

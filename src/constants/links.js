@@ -28,7 +28,7 @@ exports.STUDENTS_URL = '/students';
 exports.STUDENTS_ALL_URL = '/all';
 exports.STUDENTS_STUDENT_URL = '/details';
 
-exports.MY_ACCOUNT_URL = '/my-account';
+exports.USERS_URL = '/users';
 
 exports.PERIODS_URL = '/periods';
 

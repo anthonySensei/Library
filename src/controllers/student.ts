@@ -197,25 +197,6 @@ exports.editStudent = async (req: Request, res: Response) => {
     }
 };
 
-exports.deleteStudent = async (req: Request, res: Response) => {
-    const studentId = req.query.studentId;
-    try {
-        const student = await Student.findOne({ where: { id: studentId } });
-        await student.destroy();
-        const data = {
-            isSuccessful: true,
-            message: successMessages.STUDENT_SUCCESSFULLY_DELETED
-        };
-        return helper.responseHandle(res, 200, data);
-    } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
-};
-
 exports.addStudent = async (req: Request, res: Response) => {
     const email = req.body.email;
     const readerTicket = req.body.readerTicket;

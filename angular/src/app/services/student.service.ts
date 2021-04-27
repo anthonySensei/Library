@@ -13,6 +13,7 @@ import { HelperService } from './helper.service';
     providedIn: 'root'
 })
 export class StudentService {
+    private USERS_URL = `${serverLink}/users`;
     private STUDENTS_URL = `${serverLink}/students`;
     private STUDENTS_DETAILS_URL = `${this.STUDENTS_URL}/details`;
 
@@ -75,15 +76,7 @@ export class StudentService {
             );
     }
 
-    deleteStudentHttp(studentId: string) {
-        return this.http
-            .delete(this.STUDENTS_URL, {
-                params: new HttpParams().set('studentId', studentId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+    deleteStudent(studentId: string) {
+        return this.http.delete(`${this.USERS_URL}/${studentId}`).pipe(map((response: any) => response.data));
     }
 }
