@@ -83,12 +83,12 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     onOpenEditPopup(user) {
         const data: UserPopupData = { user, isEdit: true };
         const dialog = this.dialog.open(UserPopupComponent, { data, width: '768px', disableClose: true });
-        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe(() => this.loadStudentsPage());
+        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe((res) => res && this.loadStudentsPage());
     }
 
     onOpenCreatePopup() {
         const dialog = this.dialog.open(UserPopupComponent, { data: {}, width: '768px', disableClose: true });
-        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe(() => this.loadStudentsPage());
+        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe((res) => res && this.loadStudentsPage());
     }
 
     onDeleteStudent(id: string): void {
