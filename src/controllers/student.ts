@@ -136,68 +136,6 @@ exports.getStudent = async (req: Request, res: Response) => {
     }
 };
 
-exports.editStudent = async (req: Request, res: Response) => {
-    const studentEmail = req.body.email;
-    const studentId = req.body.studentId;
-    const studentReaderTicket = req.body.readerTicket;
-    try {
-        const isNotUniqueLibrarianEmail = await Librarian.findOne({
-            where: { email: studentEmail }
-        });
-        if (isNotUniqueLibrarianEmail) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            );
-        } else {
-            const isNotUniqueStudentEmail = await Student.findOne({
-                where: { email: studentEmail, id: { [Op.ne]: studentId } }
-            });
-            if (isNotUniqueStudentEmail) {
-                return helper.responseErrorHandle(
-                    res,
-                    400,
-                    errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-                );
-            } else {
-                const isNotUniqueReaderTicket = await Student.findOne({
-                    where: {
-                        reader_ticket: studentReaderTicket,
-                        id: { [Op.ne]: studentId }
-                    }
-                });
-                if (isNotUniqueReaderTicket) {
-                    return helper.responseErrorHandle(
-                        res,
-                        400,
-                        errorMessages.READER_TICKET_ALREADY_IN_USE
-                    );
-                } else {
-                    const student = await Student.findOne({
-                        where: { id: studentId }
-                    });
-                    await student.update({
-                        email: studentEmail,
-                        reader_ticket: studentReaderTicket
-                    });
-                    const data = {
-                        isSuccessful: true,
-                        message: successMessages.STUDENT_SUCCESSFULLY_UPDATED
-                    };
-                    return helper.responseHandle(res, 200, data);
-                }
-            }
-        }
-    } catch (error) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
-};
-
 exports.addStudent = async (req: Request, res: Response) => {
     const email = req.body.email;
     const readerTicket = req.body.readerTicket;

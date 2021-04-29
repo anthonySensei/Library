@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 
-import { deleteUser, editUser } from '../controllers/user';
+import { deleteUser, editUser, createUser } from '../controllers/user';
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.put(
     userController.postUpdateUserData
 );
 
+router.post('', passport.authenticate('jwt', { session: false }), createUser);
 router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteUser);
 router.put('/:id', passport.authenticate('jwt', { session: false }), editUser);
 

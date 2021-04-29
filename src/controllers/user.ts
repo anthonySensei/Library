@@ -150,6 +150,21 @@ const updateImage = async (res: Response, dbTable: any, user: any) => {
     }
 };
 
+export const createUser = async (req: Request, res: Response) => {
+    const { name, email, phone, admin, librarian } = req.body;
+
+    if (!name || !email || !phone) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    try {
+        await User.create({ name, email, phone, admin: admin || false, librarian: librarian || false });
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_CREATED });
+    } catch (err) {
+        logger.error('Error creating user', err.message);
+    }
+};
+
 export const editUser = async (req: Request, res: Response) => {
     const id = req.params.id;
     const { name, email, phone } = req.body;
@@ -162,7 +177,7 @@ export const editUser = async (req: Request, res: Response) => {
         await User.findByIdAndUpdate(id, { name, email, phone });
         responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_UPDATED });
     } catch (err) {
-        logger.error('Error deleting user', err.message);
+        logger.error('Error updating user', err.message);
     }
 };
 
