@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 
-const PASSWORD_SALT: number = 8;
+const PASSWORD_SALT = 8;
 
 const userSchema: mongoose.Schema = new mongoose.Schema({
     name: {
@@ -9,6 +9,10 @@ const userSchema: mongoose.Schema = new mongoose.Schema({
         required: true
     },
     email: {
+        type: String,
+        required: true
+    },
+    phone: {
         type: String,
         required: true
     },

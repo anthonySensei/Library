@@ -1,7 +1,12 @@
 import { Request, Response } from 'express';
+
 import logger from '../config/logger';
+
 import User from '../schemas/user';
 
+import successMessages from '../constants/successMessages';
+
+import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -10,13 +15,10 @@ const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 
 const bcrypt = require('bcryptjs');
-
-const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/imageHandle');
 const passwordGenerator = require('../helper/generatePassword');
 
 const errorMessages = require('../constants/errorMessages');
-const successMessages = require('../constants/successMessages');
 const changedProfileData = require('../constants/changedProfileData');
 const userRoles = require('../constants/roles');
 
@@ -49,7 +51,7 @@ const updateInfo = async (res: Response, dbTable: any, user: any) => {
             where: { email: user.email, id: { [Op.ne]: user.id } }
         }));
         if (isNotUniqueEmail) {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
@@ -60,9 +62,9 @@ const updateInfo = async (res: Response, dbTable: any, user: any) => {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_INFO_UPDATED
         };
-        return helper.responseHandle(res, 200, data);
+        return responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -76,7 +78,7 @@ const updatePassword = async (res: Response, dbTable: any, userId: string, passw
         !passwordObj.newPassword ||
         !passwordObj.retypeNewPassword
     ) {
-        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
     try {
         const user = await dbTable.findOne({ where: { id: userId } });
@@ -98,23 +100,23 @@ const updatePassword = async (res: Response, dbTable: any, userId: string, passw
                     isSuccessful: true,
                     message: successMessages.PASSWORD_SUCCESSFULLY_CHANGED
                 };
-                return helper.responseHandle(res, 200, data);
+                return responseHandle(res, 200, data);
             } else {
-                return helper.responseErrorHandle(
+                return responseErrorHandle(
                     res,
                     400,
                     errorMessages.OLD_PASSWORD_EQUEL_NEW_PASSWORD
                 );
             }
         } else {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.WRONG_OLD_PASSWORD
             );
         }
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -124,7 +126,7 @@ const updatePassword = async (res: Response, dbTable: any, userId: string, passw
 
 const updateImage = async (res: Response, dbTable: any, user: any) => {
     if (!user.profileImage) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -138,13 +140,29 @@ const updateImage = async (res: Response, dbTable: any, user: any) => {
             isSuccessful: true,
             message: successMessages.PROFILE_IMAGE_SUCCESSFULLY_CHANGED
         };
-        return helper.responseHandle(res, 200, data);
+        return responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
         );
+    }
+};
+
+export const editUser = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const { name, email, phone } = req.body;
+
+    if (!name || !email || !phone) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    try {
+        await User.findByIdAndUpdate(id, { name, email, phone });
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_UPDATED });
+    } catch (err) {
+        logger.error('Error deleting user', err.message);
     }
 };
 
@@ -153,7 +171,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     try {
         await User.findByIdAndDelete(id);
-        helper.responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_DELETED });
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_DELETED });
     } catch (err) {
         logger.error('Error deleting user', err.message);
     }

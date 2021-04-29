@@ -44,7 +44,7 @@ export class MaterialService {
         const config = new MatSnackBarConfig();
         config.panelClass = [snackBarClass];
         config.duration = this.snackbarDuration;
-        this.snackBar.open(message, null, config);
+        this.snackBar.open(message || 'Completed', null, config);
     }
 
     public openErrorSnackbar(

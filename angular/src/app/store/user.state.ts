@@ -8,6 +8,8 @@ import { AngularLinks } from '../constants/angularLinks';
 import { MaterialService } from '../services/material.service';
 import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../constants/snackBarClasses';
+import { UpdateUserPayload } from '../models/request/user';
+import { UserService } from '../services/user.service';
 
 
 /*********************************
@@ -29,12 +31,6 @@ export class AutoLogin {
     constructor() {}
 }
 
-export class CreateUser {
-    static readonly type = '[User] CreateUser';
-
-    constructor(public name: string, public email: string, public password: string) {}
-}
-
 export class Logout {
     static readonly type = '[User] Logout';
 
@@ -47,10 +43,22 @@ export class AutoLogout {
     constructor(public expirationDuration: number) {}
 }
 
+export class RegisterUser {
+    static readonly type = '[User] RegisterUser';
+
+    constructor(public name: string, public email: string, public password: string) {}
+}
+
 export class SetUser {
     static readonly type = '[User] SetUser';
 
     constructor(public user: User) {}
+}
+
+export class EditUser {
+    static readonly type = '[User] EditUser';
+
+    constructor(public data: UpdateUserPayload, public userId?: string) {}
 }
 
 /*******************************
@@ -67,6 +75,7 @@ export const CONTRACT_STATE_NAME = 'user';
 export class UserState {
     constructor(
         private authService: AuthService,
+        private userService: UserService,
         private materialService: MaterialService,
         private router: Router,
     ) { }
@@ -138,8 +147,8 @@ export class UserState {
         return ctx.dispatch(new Logout());
     }
 
-    @Action(CreateUser)
-    createUser(ctx: StateContext<UserStateModel>, action: CreateUser) {
+    @Action(RegisterUser)
+    createUser(ctx: StateContext<UserStateModel>, action: RegisterUser) {
         const { name, email, password } = action;
         return this.authService.createUser(name, email, password).pipe(tap(async response => {
             const { success, message } = response;
@@ -151,6 +160,23 @@ export class UserState {
 
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
             await this.router.navigate([AngularLinks.LOGIN]);
+        }));
+    }
+
+    @Action(EditUser)
+    editUser(ctx: StateContext<UserStateModel>, action: EditUser) {
+        const { data, userId } = action;
+        const { id: currentUserId } = ctx.getState().user;
+        const id = userId || currentUserId;
+        return this.userService.editUser({ id, body: data }).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
         }));
     }
 

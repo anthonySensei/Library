@@ -71,7 +71,7 @@ exports.getStudents = async (req: Request, res: Response) => {
         const studentQuantity = await User.countDocuments(filterCondition);
         const studentsDb = await User.find(filterCondition, {}, {
             limit: Number(pageSize),
-            sort: { name: String(sortOrder) === 'asc' ? -1 : 1 },
+            sort: { name: String(sortOrder) },
             skip: (Number(page) - 1) * Number(pageSize)
         }) as UserModel[];
 
@@ -79,7 +79,8 @@ exports.getStudents = async (req: Request, res: Response) => {
             id: student._id,
             name: student.name,
             email: student.email,
-            image: student.image
+            image: student.image,
+            phone: student.phone
         }));
         const data = {
             students,

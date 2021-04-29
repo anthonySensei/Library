@@ -16,7 +16,6 @@ import { AuthorSectionComponent } from './components/edit-page/author-section/au
 import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
 import { DepartmentSectionComponent } from './components/edit-page/department-section/department-section.component';
 import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
-import { StudentSectionComponent } from './components/edit-page/student-section/student-section.component';
 
 import { AuthInterceptor } from './services/auth.interceptor.service';
 
@@ -50,7 +49,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         BookSectionComponent,
         DepartmentSectionComponent,
         GenreSectionComponent,
-        StudentSectionComponent,
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,

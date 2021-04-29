@@ -10,17 +10,13 @@ import { ValidationService } from '../../../services/validation.service';
 import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-
-import { Student } from '../../../models/student.model';
 import { Response } from '../../../models/response.model';
 import { PasswordVisibility } from '../../../constants/passwordVisibility';
 import { ErrorMessages } from '../../../constants/errorMessages';
-import { KeyWords } from '../../../constants/keyWords';
 import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
-import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Store } from '@ngxs/store';
-import { CreateUser } from '../../../store/user.state';
+import { RegisterUser } from '../../../store/user.state';
 
 @Component({
     selector: 'app-registration',
@@ -47,7 +43,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     passwordValidation: RegExp;
 
     discardChanged = new Subject<boolean>();
-
 
     constructor(
         private validationService: ValidationService,
@@ -115,7 +110,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(new CreateUser(name, email, password)).subscribe(() => stepper.selectedIndex = 0);
+        this.store.dispatch(new RegisterUser(name, email, password)).subscribe(() => stepper.selectedIndex = 0);
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {

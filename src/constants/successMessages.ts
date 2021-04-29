@@ -31,6 +31,7 @@ export default {
     STUDENT_SUCCESSFULLY_CREATED: 'Student has been successfully created',
     STUDENT_SUCCESSFULLY_UPDATED: 'Student has been successfully updated',
     USER_SUCCESSFULLY_DELETED: 'User has been successfully deleted',
+    USER_SUCCESSFULLY_UPDATED: 'User has been successfully updated',
     LIBRARIAN_SUCCESSFULLY_CREATED: 'Librarian has been successfully created',
     LIBRARIAN_SUCCESSFULLY_UPDATED: 'Librarian has been successfully updated',
     LIBRARIAN_SUCCESSFULLY_DELETED: 'Librarian has been successfully deleted',

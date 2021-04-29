@@ -1,1 +1,36 @@
-<p>user-popup works!</p>
+<h2 mat-dialog-title class="text-center">{{ getTitle() }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="d-flex justify-content-center align-items-center flex-column">
+        <mat-form-field class="w-75">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" name="email" formControlName="email" placeholder="Ex. example@mail.com" />
+            <mat-error *ngIf="hasError('email', 'required')">
+                Email is required
+            </mat-error>
+            <mat-error *ngIf="(hasError('email', 'email') || hasError('email', 'pattern'))">
+                Email is not valid. Ex. example@mail.com
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" name="name" formControlName="name" placeholder="Ex. example@mail.com" />
+            <mat-error *ngIf="hasError('name', 'required')">
+                Name is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>Phone</mat-label>
+            <input matInput type="text" name="phone" formControlName="phone" placeholder="Ex. example@mail.com" />
+            <mat-error *ngIf="hasError('phone', 'required')">
+                Phone is required
+            </mat-error>
+            <mat-error *ngIf="hasError('phone', 'pattern')">
+                Phone is not valid
+            </mat-error>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!isValid()" (click)="onDoAction()">{{ getActionTitle() }}</button>
+</mat-dialog-actions>

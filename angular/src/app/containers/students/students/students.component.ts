@@ -19,6 +19,10 @@ import { StudentsDataSource } from '../../../datasources/students.datasource';
 import { TABLE_ANIMATION } from '../../../constants/animation';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Store } from '@ngxs/store';
+import { UserPopupData } from '@shared/user-popup/user-popup.data';
+import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteStudent } from '../../../store/student.state';
 
 @Component({
     selector: 'app-users',
@@ -47,7 +51,8 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private studentService: StudentService,
         public helperService: HelperService,
-        private store: Store
+        private store: Store,
+        private dialog: MatDialog,
     ) {}
 
     ngOnInit(): void {
@@ -73,6 +78,21 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.paginator.pageIndex,
             this.paginator.pageSize
         );
+    }
+
+    onOpenEditPopup(user) {
+        const data: UserPopupData = { user, isEdit: true };
+        const dialog = this.dialog.open(UserPopupComponent, { data, width: '768px', disableClose: true });
+        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe(() => this.loadStudentsPage());
+    }
+
+    onOpenCreatePopup() {
+        const dialog = this.dialog.open(UserPopupComponent, { data: {}, width: '768px', disableClose: true });
+        dialog.afterClosed().pipe(untilDestroyed(this)).subscribe(() => this.loadStudentsPage());
+    }
+
+    onDeleteStudent(id: string): void {
+        this.store.dispatch(new DeleteStudent(id)).subscribe(() => this.loadStudentsPage());
     }
 
     ngOnDestroy(): void {}

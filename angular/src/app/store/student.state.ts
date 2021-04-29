@@ -33,12 +33,6 @@ export class SetStudents {
     constructor(public students: User[]) {}
 }
 
-export class SetStudent {
-    static readonly type = '[Student] SetStudent';
-
-    constructor(public student: User) {}
-}
-
 export class DeleteStudent {
     static readonly type = '[Student] DeleteStudent';
 
@@ -70,11 +64,6 @@ export class StudentState {
         return state.students;
     }
 
-    @Selector()
-    static Student(state: StudentStateModel): User {
-        return state.student;
-    }
-
     /****************
      *** Resolvers ***
      *****************/
@@ -104,18 +93,10 @@ export class StudentState {
         return ctx.patchState({ students });
     }
 
-    @Action(SetStudent)
-    setStudent(ctx: StateContext<StudentStateModel>, action: SetStudent) {
-        const { student } = action;
-        return ctx.patchState({ student });
-    }
-
     @Action(DeleteStudent)
     deleteStudent(ctx: StateContext<StudentStateModel>, action: DeleteStudent) {
         const { studentId } = action;
-        const { id: selectedStudentId } = ctx.getState().student;
-        const id = studentId || selectedStudentId;
-        return this.studentService.deleteStudent(id).pipe(tap((response: any) => {
+        return this.studentService.deleteStudent(studentId).pipe(tap((response: any) => {
             const { success, message } = response;
 
             if (!success) {
@@ -124,7 +105,6 @@ export class StudentState {
             }
 
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
-            ctx.patchState({ student: null});
         }));
     }
 }

@@ -1,13 +1,13 @@
 <div class="table-section">
-    <a
+    <button
         mat-stroked-button
         color="primary"
         class="mb-2"
         matTooltip="Add student"
-        [routerLink]="'/' + links.ADD_STUDENT"
+        (click)="onOpenCreatePopup()"
     >
         <i class="material-icons">add</i> Add student
-    </a>
+    </button>
     <section class="mb-1">
         <mat-accordion>
             <mat-expansion-panel>
@@ -92,36 +92,43 @@
                     <div class="profile-image-container">
                         <img
                             class="profile-image"
-                            src="{{
-                                element.profileImage
-                                    ? element.profileImage
-                                    : 'https://www.w3schools.com/w3css/img_avatar3.png'
-                            }}"
+                            src="{{element.profileImage ? element.profileImage : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                             alt="profile image"
                         />
                     </div>
                     <div class="info-section">
-                        <p>
-                            Name: <b>{{ element.name }}</b>
-                        </p>
-                        <p>
-                            Email: <b>{{ element.email }}</b>
-                        </p>
-                        <p>
-                            Status: <b>{{ element.active ? "Active" : "Not Active" }}</b>
-                        </p>
+                        <p>Name: <span class="text-main">{{ element.name }}</span></p>
+                        <p>Email: <span class="text-main">{{ element.email }}</span></p>
+                        <p>Phone: <span class="text-main">{{ element.phone }}</span></p>
+                        <p>Status: <span class="text-main">{{ element.active ? "Active" : "Not Active" }}</span></p>
                     </div>
-                    <div class="user-link">
+                    <div class="d-flex user-link">
+                        <button
+                                mat-stroked-button
+                                color="primary"
+                                class="user-link-button mr-2"
+                                matTooltip="Delete Student"
+                                (click)="onDeleteStudent(element.id)"
+                        >
+                            Delete
+                        </button>
+                        <button
+                                mat-stroked-button
+                                color="primary"
+                                class="user-link-button mr-2"
+                                matTooltip="Edit Student"
+                                (click)="onOpenEditPopup(element)"
+                        >
+                            Edit
+                        </button>
                         <a
-                            mat-icon-button
+                            mat-stroked-button
                             color="primary"
                             class="user-link-button"
-                            matTooltip="More"
-                            [routerLink]="
-                                '/' + links.STUDENTS + '/' + element.id
-                            "
+                            matTooltip="See More Information"
+                            [routerLink]="'/' + links.STUDENTS + '/' + element.id"
                         >
-                            <mat-icon>arrow_forward_ios</mat-icon>
+                            More
                         </a>
                     </div>
                 </div>

@@ -34,6 +34,7 @@ $color-dark: #000000;
 $color-success: #0AAC00;
 $color-warn: #F18000;
 $color-danger: #C30415;
+$color-disabled: #595959;
 
 $font-title: 22px;
 
@@ -99,6 +100,10 @@ table {
 
 .border-yellow {
   border-color: $color-main !important;
+
+  &:disabled {
+    border-color: $color-disabled !important;
+  }
 }
 
 .mat-form-field-empty.mat-form-field-label {
