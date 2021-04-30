@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../constants/snackBarClasses';
 import { UpdateUserPayload } from '../models/request/user';
 import { UserService } from '../services/user.service';
+import { StudentStateModel } from './student.model';
 
 
 /*********************************
@@ -55,10 +56,22 @@ export class SetUser {
     constructor(public user: User) {}
 }
 
+export class CreateUser {
+    static readonly type = '[User] CreateUser';
+
+    constructor(public data: UpdateUserPayload) {}
+}
+
 export class EditUser {
     static readonly type = '[User] EditUser';
 
     constructor(public data: UpdateUserPayload, public userId?: string) {}
+}
+
+export class DeleteUser {
+    static readonly type = '[Student] DeleteStudent';
+
+    constructor(public id?: string) {}
 }
 
 /*******************************
@@ -148,7 +161,7 @@ export class UserState {
     }
 
     @Action(RegisterUser)
-    createUser(ctx: StateContext<UserStateModel>, action: RegisterUser) {
+    registerUser(ctx: StateContext<UserStateModel>, action: RegisterUser) {
         const { name, email, password } = action;
         return this.authService.createUser(name, email, password).pipe(tap(async response => {
             const { success, message } = response;
@@ -163,6 +176,21 @@ export class UserState {
         }));
     }
 
+    @Action(CreateUser)
+    createUser(ctx: StateContext<UserStateModel>, action: CreateUser) {
+        const { data } = action;
+        return this.userService.createUser(data).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        }));
+    }
+
     @Action(EditUser)
     editUser(ctx: StateContext<UserStateModel>, action: EditUser) {
         const { data, userId } = action;
@@ -174,6 +202,21 @@ export class UserState {
             if (!success) {
                 this.materialService.openErrorSnackbar(message);
                 return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        }));
+    }
+
+    @Action(DeleteUser)
+    deleteStudent(ctx: StateContext<StudentStateModel>, action: DeleteUser) {
+        const { id } = action;
+        return this.userService.deleteUser(id).pipe(tap((response: any) => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return;
             }
 
             this.materialService.openSnackbar(message, SnackBarClasses.Success);

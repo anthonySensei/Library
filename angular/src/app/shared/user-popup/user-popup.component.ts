@@ -4,7 +4,7 @@ import { UserPopupData } from '@shared/user-popup/user-popup.data';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../../services/validation.service';
 import { Store } from '@ngxs/store';
-import { EditUser } from '../../store/user.state';
+import { CreateUser, EditUser } from '../../store/user.state';
 
 @Component({
   selector: 'app-user-popup',
@@ -57,14 +57,22 @@ export class UserPopupComponent implements OnInit {
 
   getTitle(): string {
     const { isEdit } = this.data;
-    return isEdit ? 'Edit' : 'Create';
+    return isEdit ? 'Edit User' : 'Create User';
   }
 
   getActionTitle(): string {
     return this.data.isEdit ? 'Edit' : 'Create';
   }
 
-  createUser() {}
+  createUser() {
+    const { email, name, phone } = this.form.value;
+
+    if (!this.isValid()) {
+      return;
+    }
+
+    this.store.dispatch(new CreateUser({email, name, phone})).subscribe(() => this.onClose(true));
+  }
 
   editUser() {
     const { user } = this.data;

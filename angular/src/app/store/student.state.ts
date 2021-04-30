@@ -5,7 +5,6 @@ import { StudentStateModel } from './student.model';
 import { StudentService } from '../services/student.service';
 import { tap } from 'rxjs/operators';
 import { MaterialService } from '../services/material.service';
-import { SnackBarClasses } from '../constants/snackBarClasses';
 
 
 /*********************************
@@ -15,11 +14,16 @@ export class InitStudentState {
     static readonly type = '[Student] InitStudentState';
 }
 
+export class LoadStudent {
+    static readonly type = '[Student] LoadStudent';
+
+    constructor(public id: string) {}
+}
+
 export class LoadStudents {
-    static readonly type = '[Student] GetStudents';
+    static readonly type = '[Student] LoadStudents';
 
     constructor(
-        public filterName: string = '',
         public filterValue: string = '',
         public sortOrder = 'asc',
         public pageNumber = 0,
@@ -27,16 +31,16 @@ export class LoadStudents {
     ) {}
 }
 
+export class SetStudent {
+    static readonly type = '[Student] SetStudent';
+
+    constructor(public student: User) {}
+}
+
 export class SetStudents {
     static readonly type = '[Student] SetStudents';
 
     constructor(public students: User[]) {}
-}
-
-export class DeleteStudent {
-    static readonly type = '[Student] DeleteStudent';
-
-    constructor(public studentId?: string) {}
 }
 
 /*******************************
@@ -60,6 +64,11 @@ export class StudentState {
      *** Selectors ***
      *****************/
     @Selector()
+    static Student(state: StudentStateModel): User {
+        return state.student;
+    }
+
+    @Selector()
     static Students(state: StudentStateModel): User[] {
         return state.students;
     }
@@ -73,10 +82,24 @@ export class StudentState {
         return ctx;
     }
 
+    @Action(LoadStudent)
+    loadStudent(ctx: StateContext<StudentStateModel>, action: LoadStudent) {
+        const { id } = action;
+        return this.studentService.getStudent(id).pipe(tap(res => {
+            const { success, student, message } = res;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+            }
+
+            ctx.dispatch(new SetStudent(student));
+        }));
+    }
+
     @Action(LoadStudents)
     loadStudents(ctx: StateContext<StudentStateModel>, action: LoadStudents) {
-        const { pageSize, pageNumber, filterName, filterValue, sortOrder } = action;
-        return this.studentService.getStudents(filterName, filterValue, sortOrder, pageNumber, pageSize).pipe(tap(res => {
+        const { pageSize, pageNumber, filterValue, sortOrder } = action;
+        return this.studentService.getStudents(filterValue, sortOrder, pageNumber, pageSize).pipe(tap(res => {
             const { success, students, message } = res;
 
             if (!success) {
@@ -87,24 +110,15 @@ export class StudentState {
         }));
     }
 
+    @Action(SetStudent)
+    setStudent(ctx: StateContext<StudentStateModel>, action: SetStudent) {
+        const { student } = action;
+        return ctx.patchState({ student });
+    }
+
     @Action(SetStudents)
     setStudents(ctx: StateContext<StudentStateModel>, action: SetStudents) {
         const { students } = action;
         return ctx.patchState({ students });
-    }
-
-    @Action(DeleteStudent)
-    deleteStudent(ctx: StateContext<StudentStateModel>, action: DeleteStudent) {
-        const { studentId } = action;
-        return this.studentService.deleteStudent(studentId).pipe(tap((response: any) => {
-            const { success, message } = response;
-
-            if (!success) {
-                this.materialService.openErrorSnackbar(message);
-                return;
-            }
-
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
-        }));
     }
 }

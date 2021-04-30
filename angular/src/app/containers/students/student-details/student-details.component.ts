@@ -1,16 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Select, Store } from '@ngxs/store';
 
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
-import { Student } from '../../../models/student.model';
 import { Department } from '../../../models/department.model';
-
 import { StudentService } from '../../../services/student.service';
-import { HelperService } from '../../../services/helper.service';
-import { DepartmentService } from '../../../services/department.service';
 
+import { HelperService } from '../../../services/helper.service';
 import { PageTitles } from '../../../constants/pageTitles';
+import { User } from '../../../models/user.model';
+import { LoadStudent, StudentState } from '../../../store/student.state';
 
 @Component({
     selector: 'app-user-details',
@@ -18,63 +19,28 @@ import { PageTitles } from '../../../constants/pageTitles';
     styleUrls: ['./student-details.component.sass']
 })
 export class StudentDetailsComponent implements OnInit, OnDestroy {
+    isLoading: boolean;
     departments: Department[];
 
-    student: Student;
-    studentId: number;
-
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-    studentFetchSubscription: Subscription;
-    studentSubscription: Subscription;
-    paramsSubscription: Subscription;
-
-    isLoading: boolean;
+    @Select(StudentState.Student)
+    student$: Observable<User>;
 
     constructor(
         private studentService: StudentService,
         public helperService: HelperService,
-        private departmentService: DepartmentService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STUDENT_DETAILS;
         this.isLoading = true;
-        this.paramsSubscription = this.route.params.subscribe(
+        this.route.params.pipe(untilDestroyed(this)).subscribe(
             (params: Params) => {
-                this.studentId = +params.id;
-                this.studentSubscriptionHandle();
+                this.store.dispatch(new LoadStudent(params.id)).pipe(untilDestroyed(this)).subscribe(() => this.isLoading = false);
             }
         );
     }
 
-    studentSubscriptionHandle(): void {
-        this.studentFetchSubscription = this.studentService
-            .getStudentHttp(this.studentId)
-            .subscribe();
-        this.studentSubscription = this.studentService
-            .getStudent()
-            .subscribe((student: Student) => {
-                this.student = student;
-                this.isLoading = false;
-            });
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
-    }
-
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.studentSubscription, [
-            this.studentFetchSubscription,
-            this.paramsSubscription,
-            this.departmentsFetchSubscription,
-            this.departmentsSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

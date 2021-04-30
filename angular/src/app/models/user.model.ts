@@ -5,6 +5,7 @@ export class User {
     image: string;
     password: string;
     phone: string;
+    active: boolean;
     admin: boolean;
     librarian: boolean;
 
