@@ -1,27 +1,11 @@
 import express from 'express';
 import passport from 'passport';
 
+import { getStudents, getStudent } from '../controllers/student';
+
 const router = express.Router();
 
-const studentController = require('../controllers/student');
-
-const studentStudentUrl = require('../constants/links').STUDENTS_STUDENT_URL;
-router.get(
-    '',
-    passport.authenticate('jwt', { session: false }),
-    studentController.getStudents
-);
-
-router.post(
-    '',
-    passport.authenticate('jwt', { session: false }),
-    studentController.addStudent
-);
-
-router.get(
-    studentStudentUrl,
-    passport.authenticate('jwt', { session: false }),
-    studentController.getStudent
-);
+router.get('', passport.authenticate('jwt', { session: false }), getStudents);
+router.get('/:id', passport.authenticate('jwt', { session: false }), getStudent);
 
 module.exports = router;

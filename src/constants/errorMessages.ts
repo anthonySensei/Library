@@ -7,10 +7,10 @@ export default {
     EMAIL_ADDRESS_ALREADY_IN_USE: 'Email address already in use',
     READER_TICKET_ALREADY_IN_USE: 'Reader ticket already in use',
     CANNOT_FETCH: 'Cannot fetch',
-    STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST:
-        "Student with this reader ticket doesn't exist",
+    USER_EMAIL_EXISTS: 'User with this has email already exists',
+    USER_PHONE_EXISTS: 'User with this has phone number already exists',
     INVALID_EMAIL: 'Invalid email',
-    PASSWORD_ERROR_CHANGED: "Password has'n changed",
+    PASSWORD_ERROR_CHANGED: 'Password has\'n changed',
     OLD_PASSWORD_EQUEL_NEW_PASSWORD:
         'Password has not been changed. Old password equels to new password',
     DIFFERENT_PASSWORDS: 'Passwords are different!',

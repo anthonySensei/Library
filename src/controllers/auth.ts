@@ -10,28 +10,20 @@ import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import { UserModel } from '../models/user';
+import { UserSchema } from '../models/user';
 
 const Student = require('../schemas/student');
-const Role = require('../schemas/role');
 
 const passport = require('passport');
 
 const userStatus = require('../constants/userStatuses');
-const roles = require('../constants/roles');
-
-const checkUniqueness = require('../helper/checkUniqueness');
-const generatePassword = require('../helper/generatePassword');
-const imageHandle = require('../helper/imageHandle');
-
-const studentController = require('./student');
 
 const expiresIn = 3600 * 12;
 
 require('dotenv').config();
 
 exports.login = (req: Request, res: Response, next: any) => {
-    passport.authenticate('local', async (err: any, user: UserModel) => {
+    passport.authenticate('local', async (err: any, user: UserSchema) => {
         if (err) {
             return responseErrorHandle(res, 401, err);
         }

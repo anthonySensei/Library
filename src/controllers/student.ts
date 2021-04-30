@@ -1,71 +1,21 @@
 import { Request, Response } from 'express';
 import User from '../schemas/user';
-import { UserModel } from '../models/user';
+import { UserModel, UserSchema } from '../models/user';
 import logger from '../config/logger';
 
-const { Sequelize } = require('sequelize');
-const Op = Sequelize.Op;
+import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
 
-const Student = require('../schemas/student');
-const Department = require('../schemas/department');
-const Order = require('../schemas/order');
-const Book = require('../schemas/book');
-const Librarian = require('../schemas/librarian');
+import errorMessages from '../constants/errorMessages';
+import successMessages from '../constants/successMessages';
 
-const helper = require('../helper/responseHandle');
-const imageHandler = require('../helper/imageHandle');
-const checkUniqueness = require('../helper/checkUniqueness');
-const passwordGenerator = require('../helper/generatePassword');
-const mailSender = require('../helper/mailSender');
-
-const errorMessages = require('../constants/errorMessages');
-const successMessages = require('../constants/successMessages');
-const mailMessages = require('../constants/mailMessages');
-
-const loanController = require('./loan');
-
-const models = require('../constants/models');
-const roles = require('../constants/roles');
-const statuses = require('../constants/userStatuses');
-
-const getStudentOrders = async (studentId: number) => {
-    try {
-        const orders = await Order.findAll({
-            where: {
-                studentId
-            },
-            include: [
-                {
-                    model: Book
-                },
-                { model: Department }
-            ]
-        });
-        const ordersArr: any = [];
-        if (orders.length > 0) {
-            orders.forEach((order: any) => {
-                const orderValues = order.get();
-                ordersArr.push({
-                    orderTime: orderValues.order_time,
-                    bookISBN: orderValues.book_.get().isbn,
-                    departmentAddress: orderValues.department_.get().address
-                });
-            });
-            return ordersArr;
-        }
-        return null;
-    } catch (error) {
-        return null;
-    }
-};
-
-exports.getStudents = async (req: Request, res: Response) => {
-    const { pageNumber: page, pageSize, sortOrder, filterName, filterValue } = req.query;
-    const filterCondition: any = { admin: false, librarian: false };
-
-    if (filterName) {
-        filterCondition[String(filterName)] = { $regex: new RegExp(String(filterValue), 'i') };
-    }
+export const getStudents = async (req: Request, res: Response) => {
+    const { pageNumber: page, pageSize, sortOrder, filterValue } = req.query;
+    const regex = new RegExp(filterValue as string, 'i');
+    const filterCondition = {
+        admin: false,
+        librarian: false,
+        $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
+    };
 
     try {
         const studentQuantity = await User.countDocuments(filterCondition);
@@ -73,14 +23,15 @@ exports.getStudents = async (req: Request, res: Response) => {
             limit: Number(pageSize),
             sort: { name: String(sortOrder) },
             skip: (Number(page) - 1) * Number(pageSize)
-        }) as UserModel[];
+        }) as UserSchema[];
 
-        const students: any = studentsDb.map(student => ({
+        const students: UserModel[] = studentsDb.map(student => ({
             id: student._id,
             name: student.name,
             email: student.email,
             image: student.image,
-            phone: student.phone
+            phone: student.phone,
+            active: student.active
         }));
         const data = {
             students,
@@ -88,156 +39,36 @@ exports.getStudents = async (req: Request, res: Response) => {
             quantity: studentQuantity,
             success: true
         };
-        return helper.responseHandle(res, 200, data);
+        return responseHandle(res, 200, data);
     } catch (err) {
         logger.error('Error fetching users', err.message);
-        return helper.responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+        return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
-exports.getStudent = async (req: Request, res: Response) => {
-    const studentId = req.query.studentId;
+export const getStudent = async (req: Request, res: Response) => {
+    const studentId = req.params.id;
+
     try {
-        const student = await Student.findOne({
-            where: {
-                id: studentId
-            }
-        });
-        const studentValues = student.get();
-        const studentLoans = await loanController.getLoans(
-            studentValues.id,
-            models.STUDENT
-        );
-        const studentStatistic = await loanController.getLoanStatistic(
-            studentLoans
-        );
-        const studentOrders = await getStudentOrders(studentValues.id);
+        const student = await User.findById(studentId) as UserSchema;
         const studentData = {
-            name: studentValues.name,
-            email: studentValues.email,
-            profileImage: imageHandler.convertToBase64(studentValues.profile_image),
-            readerTicket: studentValues.reader_ticket,
-            status: studentValues.status,
-            loans: studentLoans,
-            statistic: studentStatistic,
-            orders: studentOrders
+            name: student.name,
+            email: student.email,
+            phone: student.phone,
+            image: student.image,
+            active: student.active,
+            loans: [],
+            statistic: [],
+            orders: []
         };
         const data = {
+            success: true,
             message: successMessages.SUCCESSFULLY_FETCHED,
             student: studentData
         };
-        return helper.responseHandle(res, 200, data);
-    } catch (error) {
-        return helper.responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
-};
-
-exports.addStudent = async (req: Request, res: Response) => {
-    const email = req.body.email;
-    const readerTicket = req.body.readerTicket;
-    const name = req.body.name;
-    if (!email || !readerTicket || !name) {
-        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
-    }
-    try {
-        const isNotUniqueReaderTicket = await checkUniqueness.checkReaderTicket(
-            readerTicket
-        );
-        if (isNotUniqueReaderTicket) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.READER_TICKET_ALREADY_IN_USE
-            );
-        }
-        const isNotUniqueEmail = await checkUniqueness.checkEmail(email);
-        if (isNotUniqueEmail) {
-            return helper.responseErrorHandle(
-                res,
-                400,
-                errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
-            );
-        }
-        await createStudent(
-            roles.STUDENT,
-            email,
-            name,
-            readerTicket,
-            null,
-            passwordGenerator.generatePassword(),
-            statuses.ACTIVATED,
-            res
-        );
+        return responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            5000,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        logger.error('Cannot fetch student', err.message);
+        return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
-
-const createStudent = async (
-    userRole: string,
-    email: string,
-    name: string,
-    readerTicket: string,
-    registrationToken: string | null,
-    password: any,
-    status: string,
-    res: Response
-) => {
-    let newStudent;
-    if (registrationToken) {
-        newStudent = new Student({
-            email,
-            name,
-            reader_ticket: readerTicket,
-            registration_token: registrationToken,
-            status,
-            password
-        });
-    } else {
-        newStudent = new Student({
-            email,
-            name,
-            reader_ticket: readerTicket,
-            status,
-            password: password.encrypted
-        });
-    }
-
-    try {
-        await newStudent.save();
-        if (registrationToken) {
-            await mailSender.sendMail(
-                email,
-                mailMessages.subjects.ACCOUNT_ACTIVATION,
-                mailMessages.generateActivationMessage(registrationToken)
-            );
-        } else {
-            await mailSender.sendMail(
-                email,
-                mailMessages.subjects.ACCOUNT_CREATED,
-                mailMessages.generatePasswordMessage(email, password.password)
-            );
-        }
-        const data = {
-            isSuccessful: true,
-            message: successMessages.ACCOUNT_SUCCESSFULLY_CREATED
-        };
-        return helper.responseHandle(res, 200, data);
-    } catch (err) {
-        return helper.responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
-    }
-};
-
-exports.createStudent = createStudent;

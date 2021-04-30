@@ -12,7 +12,7 @@ import connectMongoDB from './config/db';
 import logger from './config/logger';
 
 import sequelize from './config/database';
-import { UserModel } from './models/user';
+import { UserSchema } from './models/user';
 
 
 import { v4 as uuidv4 } from 'uuid';
@@ -161,7 +161,7 @@ sequelize
     .then(() => {
         return Librarian.findOne({ where: { name: managerName } });
     })
-    .then((user: UserModel) => {
+    .then((user: UserSchema) => {
         if (!user) {
             Department.findOne({ where: { address: departmentAddress } })
                 .then((depart: any) => {

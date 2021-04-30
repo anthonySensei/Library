@@ -7,6 +7,7 @@ import User from '../schemas/user';
 import successMessages from '../constants/successMessages';
 
 import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
+import { generatePassword } from '../helper/generatePassword';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -152,13 +153,26 @@ const updateImage = async (res: Response, dbTable: any, user: any) => {
 
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, phone, admin, librarian } = req.body;
+    const password = generatePassword();
 
     if (!name || !email || !phone) {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
 
+    const isUserWithEmailExists = !!(await User.findOne({ email }));
+
+    if (isUserWithEmailExists) {
+        return responseErrorHandle(res, 400, errorMessages.USER_EMAIL_EXISTS);
+    }
+
+    const isUserWithPhoneExists = !!(await User.findOne({ phone }));
+
+    if (isUserWithPhoneExists) {
+        return responseErrorHandle(res, 400, errorMessages.USER_PHONE_EXISTS);
+    }
+
     try {
-        await User.create({ name, email, phone, admin: admin || false, librarian: librarian || false });
+        await User.create({ name, email, phone, password, admin: admin || false, librarian: librarian || false });
         responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error('Error creating user', err.message);

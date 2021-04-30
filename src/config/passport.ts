@@ -4,7 +4,7 @@ import { Request } from 'express';
 import logger from './logger';
 
 import User from '../schemas/user';
-import { UserModel } from '../models/user';
+import { UserSchema } from '../models/user';
 
 import fields from '../constants/fields';
 import errorMessages from '../constants/errorMessages';
@@ -29,7 +29,7 @@ module.exports = (passport: any) => {
 
                 try {
                     logger.info(`Login attempt ${email}`);
-                    const user = await User.findOne({ email }) as UserModel;
+                    const user = await User.findOne({ email }) as UserSchema;
 
                     if (!user) {
                         logger.warn(`User ${email} does not exist`);
