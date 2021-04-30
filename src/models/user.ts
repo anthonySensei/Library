@@ -22,4 +22,5 @@ export interface UserModel {
     active?: boolean;
     admin?: boolean;
     librarian?: boolean;
+    schedule?: any[];
 }

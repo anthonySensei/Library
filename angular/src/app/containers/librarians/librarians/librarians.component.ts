@@ -4,18 +4,12 @@ import { MatSort } from '@angular/material/sort';
 
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
-import { LibrarianService } from '../../../services/librarian.service';
 import { HelperService } from '../../../services/helper.service';
-import { DepartmentService } from '../../../services/department.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 import { TableColumns } from '../../../constants/tableColumns';
 import { PageTitles } from '../../../constants/pageTitles';
 import { SortOrder } from '../../../constants/sortOrder';
-
-import { Librarian } from '../../../models/librarian.model';
-import { Department } from '../../../models/department.model';
 
 import { LibrariansDataSource } from '../../../datasources/librarians.datasource';
 import { untilDestroyed } from 'ngx-take-until-destroy';
@@ -25,6 +19,7 @@ import { UserPopupData } from '@shared/user-popup/user-popup.data';
 import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
 import { DeleteUser } from '../../../store/user.state';
 import { MatDialog } from '@angular/material/dialog';
+import { User } from '../../../models/user.model';
 
 @Component({
     selector: 'app-librarians',
@@ -39,7 +34,7 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
         TableColumns.EMAIL,
         TableColumns.PHONE
     ];
-    expandedElement: Librarian | null;
+    expandedElement: User | null;
     tableColumns = TableColumns;
 
 

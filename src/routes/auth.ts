@@ -12,4 +12,4 @@ router.post(CHECK_ACTIVATION_TOKEN_URL, checkActivationToken);
 router.post(LOGIN_URL, login);
 router.get(LOGOUT_URL, logout);
 
-module.exports = router;
+export default router;

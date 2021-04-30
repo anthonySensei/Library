@@ -1,3 +1,7 @@
+import { Request, Response } from 'express';
+
+import logger from '../config/logger';
+
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -11,28 +15,33 @@ const Department = require('../schemas/department');
 
 const helper = require('../helper/responseHandle');
 const mailSender = require('../helper/mailSender');
-
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const filters = require('../constants/filters');
 const mailMessages = require('../constants/mailMessages');
 
-const getCondition = (departmentId, loanDate, nextDay, isShowNotLoaned) => {
+const getCondition = (departmentId: number, loanDate: any, nextDay: any, isShowNotLoaned: any) => {
     let departmentCondition = {};
     let dateCondition = {};
     let isShowNotLoanedCondition = {};
 
-    if (departmentId) departmentCondition = { departmentId: departmentId };
-    if (loanDate)
+    if (departmentId) {
+        departmentCondition = { departmentId };
+    }
+
+    if (loanDate) {
         dateCondition = {
             loan_time: {
                 [Op.between]: [loanDate, nextDay]
             }
         };
-    if (isShowNotLoaned === 'true')
+    }
+
+    if (isShowNotLoaned === 'true') {
         isShowNotLoanedCondition = {
             loan_time: null
         };
+    }
 
     return {
         ...departmentCondition,
@@ -41,26 +50,26 @@ const getCondition = (departmentId, loanDate, nextDay, isShowNotLoaned) => {
     };
 };
 
-exports.getAllOrders = async (req, res) => {
-    const page = +req.query.pageNumber;
-    const pageSize = +req.query.pageSize;
-    const sortOrder = req.query.sortOrder.toUpperCase();
+exports.getAllOrders = async (req: Request, res: Response) => {
+    const page = Number(req.query.pageNumber);
+    const pageSize = Number(req.query.pageSize);
+    const sortOrder = (req.query.sortOrder as string).toUpperCase();
     const filterName = req.query.filterName;
     const filterValue = req.query.filterValue;
-    const departmentId = +req.query.departmentId;
+    const departmentId = Number(req.query.departmentId);
     const orderDate = req.query.orderDate;
     const nextDay = req.query.nextDay;
     const isShowNotLoaned = req.query.isShowNotLoaned;
-    const studentId = +req.query.studentId;
+    const studentId = Number(req.query.studentId);
     let studentCondition = {};
     let bookCondition = {};
 
     const like = { [Op.iLike]: `%${filterValue}%` };
-    if (filterName === filters.READER_TICKET)
+    if (filterName === filters.READER_TICKET) {
         studentCondition = { reader_ticket: like };
-    else if (filterName === filters.ISBN) bookCondition = { isbn: like };
+    } else if (filterName === filters.ISBN) { bookCondition = { isbn: like }; }
 
-    if (studentId) studentCondition = { id: studentId };
+    if (studentId) { studentCondition = { id: studentId }; }
 
     const includeArr = [
         {
@@ -105,14 +114,14 @@ exports.getAllOrders = async (req, res) => {
             const studentData = ordersValues.student_.get();
             const departmentData = ordersValues.department_.get();
             const bookData = ordersValues.book_.get();
-            let ordersObj = {
+            let ordersObj: any = {
                 id: ordersValues.id,
                 orderTime: ordersValues.order_time,
                 loanTime: ordersValues.loan_time,
                 bookISBN: bookData.isbn,
                 departmentAddress: departmentData.address
             };
-            if (!studentId)
+            if (!studentId) {
                 ordersObj = {
                     ...ordersObj,
                     student: {
@@ -135,20 +144,22 @@ exports.getAllOrders = async (req, res) => {
                     },
                     studentReaderTicket: studentData.reader_ticket
                 };
+            }
             ordersArr.push(ordersObj);
         }
         const data = {
             orders: ordersArr,
             message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity: quantity
+            quantity
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
+        logger.error('Error getting orders', err.message);
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
 
-exports.orderBook = async (req, res) => {
+exports.orderBook = async (req: Request, res: Response) => {
     const studentEmail = req.body.studentEmail;
     const bookId = req.body.bookId;
     const orderTime = req.body.time;
@@ -187,7 +198,7 @@ exports.orderBook = async (req, res) => {
             const bookOrder = new Order({
                 order_time: orderTime,
                 studentId: student.get().id,
-                bookId: bookId,
+                bookId,
                 departmentId: book.get().department_.get().id
             });
             await bookOrder.save();
@@ -206,6 +217,7 @@ exports.orderBook = async (req, res) => {
             helper.responseHandle(res, 200, data);
         }
     } catch (err) {
+        logger.error('Cannot order book', err.message);
         helper.responseErrorHandle(
             res,
             500,
@@ -214,7 +226,7 @@ exports.orderBook = async (req, res) => {
     }
 };
 
-exports.loanBookFromOrder = async (req, res) => {
+exports.loanBookFromOrder = async (req: Request, res: Response) => {
     const orderId = req.body.orderId;
     const bookId = req.body.bookId;
     const studentId = req.body.studentId;
@@ -238,8 +250,8 @@ exports.loanBookFromOrder = async (req, res) => {
         const book = await Book.findOne({ where: { id: bookId } });
         await Loan.create({
             loan_time: loanTime,
-            bookId: bookId,
-            studentId: studentId,
+            bookId,
+            studentId,
             librarianId: librarian.get().id,
             departmentId: book.get().departmentId
         });
@@ -249,6 +261,7 @@ exports.loanBookFromOrder = async (req, res) => {
         };
         return helper.responseHandle(res, 200, data);
     } catch (err) {
+        logger.error('Cannot loan book from order', err.message);
         helper.responseErrorHandle(
             res,
             500,

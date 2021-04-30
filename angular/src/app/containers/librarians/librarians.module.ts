@@ -11,7 +11,6 @@ import { LibrarianDetailsComponent } from './librarian-details/librarian-details
 import { LoansSectionComponent } from './librarian-details/loans-section/loans-section.component';
 import { StudentsModule } from '../students/students.module';
 import { ScheduleSectionComponent } from './librarian-details/schedule-section/schedule-section.component';
-import { PersonalInfoSectionComponent } from './librarian-details/personal-info-section/personal-info-section.component';
 import { ScheduleFilterSectionComponent } from './librarian-schedule/schedule-filter-section/schedule-filter-section.component';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
@@ -26,7 +25,6 @@ import { LibrarianState } from '../../store/librarian.state';
         LibrarianDetailsComponent,
         LoansSectionComponent,
         ScheduleSectionComponent,
-        PersonalInfoSectionComponent,
         ScheduleFilterSectionComponent,
         ScheduleComponent
     ],

@@ -5,5 +5,5 @@ export const responseHandle = (res: Response, responseCode: number, data: any) =
 };
 
 export const responseErrorHandle = (res: Response, responseCode: number, message: string) => {
-    res.send({ responseCode, data: { message, responseCode, success: false } });
+    res.status(responseCode).send({ responseCode, data: { message, responseCode, success: false } });
 };

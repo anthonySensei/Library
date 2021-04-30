@@ -87,13 +87,13 @@ export class LibrarianState {
     loadStudent(ctx: StateContext<LibrarianStateModel>, action: LoadLibrarian) {
         const { id } = action;
         return this.librarianService.getLibrarian(id).pipe(tap(res => {
-            const { success, student, message } = res;
+            const { success, librarian, message } = res;
 
             if (!success) {
                 this.materialService.openErrorSnackbar(message);
             }
 
-            ctx.dispatch(new SetLibrarian(student));
+            ctx.dispatch(new SetLibrarian(librarian));
         }));
     }
 
@@ -101,13 +101,13 @@ export class LibrarianState {
     loadStudents(ctx: StateContext<LibrarianStateModel>, action: LoadLibrarians) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.librarianService.getLibrarians(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            const { success, students, message } = res;
+            const { success, librarians, message } = res;
 
             if (!success) {
                 this.materialService.openErrorSnackbar(message);
             }
 
-            ctx.dispatch(new SetLibrarians(students));
+            ctx.dispatch(new SetLibrarians(librarians));
         }));
     }
 

@@ -1,32 +1,44 @@
 <div class="wrapper">
-    <div class="form">
-        <span class="page-title">Librarian info</span>
+    <div class="form"  *ngVar="librarian$ | async as librarian">
+        <p class="form__title">Librarian info</p>
         <hr style="background-color: #0d0d0d;" />
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
-        <app-personal-info-section
-            *ngIf="!isLoading"
-            [librarian]="librarian"
-        ></app-personal-info-section>
+        <mat-spinner class="m-auto" *ngIf="isLoading"></mat-spinner>
+        <section class="user-info-section" *ngIf="!isLoading">
+            <aside class="image-aside">
+                <img
+                    class="profile-image"
+                    src="{{librarian?.image || 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
+                    alt="Avatar"
+                />
+            </aside>
+            <section class="info-section">
+                <section class="user-personal-info">
+                    <p>Name: <span class="text-main">{{ librarian?.name }}</span></p>
+                    <p>Email: <span class="text-main">{{ librarian?.email }}</span></p>
+                    <p>Phone: <span class="text-main">{{ librarian?.email }}</span></p>
+                </section>
+            </section>
+        </section>
         <mat-divider style="margin: 10px auto 0;"></mat-divider>
         <mat-tab-group>
             <mat-tab label="Loans">
-                <app-loans-section
-                    [librarianId]="librarianId"
-                    [helperService]="helperService"
-                ></app-loans-section>
+<!--                <app-loans-section-->
+<!--                    [librarianId]="librarianId"-->
+<!--                    [helperService]="helperService"-->
+<!--                ></app-loans-section>-->
             </mat-tab>
             <mat-tab label="Schedule">
-                <app-schedule-section
-                    *ngIf="!isLoading"
-                ></app-schedule-section>
+<!--                <app-schedule-section-->
+<!--                    *ngIf="!isLoading"-->
+<!--                ></app-schedule-section>-->
             </mat-tab>
             <mat-tab label="Statistic">
-                <app-chart-section
-                    *ngIf="!isLoading"
-                    [name]="librarian.name"
-                    [helperService]="helperService"
-                    [statistic]="librarian.statistic"
-                ></app-chart-section>
+<!--                <app-chart-section-->
+<!--                    *ngIf="!isLoading"-->
+<!--                    [name]="librarian.name"-->
+<!--                    [helperService]="helperService"-->
+<!--                    [statistic]="librarian.statistic"-->
+<!--                ></app-chart-section>-->
             </mat-tab>
         </mat-tab-group>
     </div>

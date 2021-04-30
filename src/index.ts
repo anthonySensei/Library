@@ -1,39 +1,27 @@
-import express, { Request } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import passport from 'passport';
-import multer from 'multer';
 import { config } from 'dotenv';
 import * as path from 'path';
 
 import cors from './config/cors';
-
 import connectMongoDB from './config/db';
-
 import logger from './config/logger';
-
 import sequelize from './config/database';
-import { UserSchema } from './models/user';
+import multer from './config/multer';
 
-
-import { v4 as uuidv4 } from 'uuid';
+import authRoutes from './routes/auth';
+import librarianRoutes from './routes/librarian';
+import studentRoutes from './routes/student';
+import userRoutes from './routes/user';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
 
-const managerName = 'admin';
-const managerEmail = 'admin@gmail.com';
-const managerPassword = 'Admin123_';
-
-const departmentAddress = 'Main address';
-
 const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
-const userRoutes = require('./routes/user');
-const studentRoutes = require('./routes/student');
-const librarianRoutes = require('./routes/librarian');
-const authRoutes = require('./routes/auth');
 const departmentRoutes = require('./routes/department');
 const authorRoutes = require('./routes/author');
 const genreRoutes = require('./routes/genre');
@@ -64,8 +52,6 @@ const usersUrl = require('./constants/links').USERS_URL;
 const periodsUrl = require('./constants/links').PERIODS_URL;
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
-const helper = require('./helper/createManager');
-
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -74,40 +60,11 @@ app.use(passport.session());
 
 require('./config/passport')(passport);
 
-const imageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'images');
-    },
-
-    filename(req, file, cb) {
-        const extension = file.originalname.split('.').pop();
-        cb(null, uuidv4() + '.' + extension);
-    }
-});
-
-const fileFilter = (req: Request, file: any, cb: any) => {
-    if (
-        file.mimetype === 'image/png' ||
-        file.mimetype === 'image/jpg' ||
-        file.mimetype === 'image/jpeg'
-    ) {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
-
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({
-        limits: { fieldSize: 5 * 1024 * 1024 },
-        storage: imageStorage,
-        fileFilter
-    }).single('image'));
-
+app.use(multer());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('images', express.static(path.join(__dirname, 'images')));
-
 app.use(cors);
 
 app.use(authRoutes);
@@ -159,40 +116,8 @@ Order.belongsTo(Department);
 sequelize
     .sync()
     .then(() => {
-        return Librarian.findOne({ where: { name: managerName } });
-    })
-    .then((user: UserSchema) => {
-        if (!user) {
-            Department.findOne({ where: { address: departmentAddress } })
-                .then((depart: any) => {
-                    if (!depart) {
-                        const department = new Department({
-                            address: departmentAddress
-                        });
-                        department
-                            .save()
-                            .then((dep: any) => {
-                                helper.createManager(
-                                    managerName,
-                                    managerEmail,
-                                    managerPassword,
-                                    dep.get().id
-                                );
-                            })
-                            .catch();
-                    } else {
-                        helper.createManager(
-                            managerName,
-                            managerEmail,
-                            managerPassword,
-                            depart.get().id
-                        );
-                    }
-                })
-                .catch();
-        }
         connectMongoDB()
-            .then((mongoClient) => {
+            .then(() => {
                 app.listen(port);
                 logger.info('Successfully connected to MongoDB');
                 logger.info('App is listening on', port);

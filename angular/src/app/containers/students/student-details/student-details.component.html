@@ -7,26 +7,18 @@
             <aside class="image-aside">
                 <img
                     class="profile-image"
-                    src="{{student.image ? student.image : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
+                    src="{{student.image || 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                     alt="Avatar"
                 />
             </aside>
             <section class="info-section">
                 <section class="user-personal-info">
-                    <p>
-                        Name: <span class="text-main">{{ student.name }}</span>
-                    </p>
-                    <p>
-                        Email: <span class="text-main">{{ student.email }}</span>
-                    </p>
-                    <p>
-                        Phone: <span class="text-main">{{ student.email }}</span>
-                    </p>
+                    <p>Name: <span class="text-main">{{ student.name }}</span></p>
+                    <p>Email: <span class="text-main">{{ student.email }}</span></p>
+                    <p>Phone: <span class="text-main">{{ student.email }}</span></p>
                 </section>
                 <section class="user-library-info">
-                    <p>
-                        Status: <span class="text-main">{{ student.active ? 'Active' : 'Not Active' }}</span>
-                    </p>
+                    <p>Status: <span class="text-main">{{ student.active ? 'Active' : 'Not Active' }}</span></p>
                 </section>
             </section>
         </section>
