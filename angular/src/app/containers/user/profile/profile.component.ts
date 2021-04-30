@@ -13,18 +13,12 @@ import { MaterialService } from '../../../services/material.service';
 import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
 
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { ChangedDataProfile } from '../../../constants/changedDataProfile';
-
 import { ChangePasswordModalComponent } from './change-password-modal/change-password-modal.component';
 import { ChangeProfileImageModalComponent } from './change-profile-image/change-profile-image-modal.component';
 
 import { User } from '../../../models/user.model';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { PageTitles } from '../../../constants/pageTitles';
-import { WarnMessages } from '../../../constants/warnMessages';
-import { ErrorMessages } from '../../../constants/errorMessages';
-import { KeyWords } from '../../../constants/keyWords';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
 import { EditUser, UserState } from '../../../store/user.state';
