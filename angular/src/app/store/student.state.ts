@@ -25,6 +25,7 @@ export class LoadStudents {
 
     constructor(
         public filterValue: string = '',
+        public sortName: string = 'name',
         public sortOrder = 'asc',
         public pageNumber = 0,
         public pageSize = 5
@@ -98,8 +99,8 @@ export class StudentState {
 
     @Action(LoadStudents)
     loadStudents(ctx: StateContext<StudentStateModel>, action: LoadStudents) {
-        const { pageSize, pageNumber, filterValue, sortOrder } = action;
-        return this.studentService.getStudents(filterValue, sortOrder, pageNumber, pageSize).pipe(tap(res => {
+        const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
+        return this.studentService.getStudents(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
             const { success, students, message } = res;
 
             if (!success) {

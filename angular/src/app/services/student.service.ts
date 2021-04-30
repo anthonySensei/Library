@@ -15,10 +15,11 @@ export class StudentService {
         private http: HttpClient,
     ) {}
 
-    getStudents(filterValue: string, sortOrder: string, pageNumber: number, pageSize: number) {
+    getStudents(filterValue: string, sortName: string, sortOrder: string, pageNumber: number, pageSize: number) {
         const params = new HttpParams()
             .set('filterValue', filterValue)
             .set('sortOrder', sortOrder)
+            .set('sortName', sortName)
             .set('pageNumber', (pageNumber + 1).toString())
             .set('pageSize', pageSize.toString());
         return this.http.get(this.STUDENTS_URL, { params }).pipe(map((response: any) => response.data));

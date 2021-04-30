@@ -39,6 +39,7 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     columnsToDisplay: string[] = [
         TableColumns.NAME,
         TableColumns.EMAIL,
+        TableColumns.PHONE,
         TableColumns.STATUS
     ];
     expandedElement: User | null;
@@ -58,7 +59,8 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         document.title = PageTitles.STUDENTS;
         this.dataSource = new StudentsDataSource(this.store);
-        this.dataSource.loadStudents('', SortOrder.DESC, 0, this.paginator.pageSize || 5);
+        this.dataSource
+            .loadStudents('', this.sort.active || 'name', SortOrder.DESC, 0, this.paginator.pageSize || 5);
     }
 
     ngAfterViewInit(): void {
@@ -67,7 +69,8 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     loadStudentsPage(): void {
-        this.dataSource.loadStudents(this.filterValue, this.sort.direction, this.paginator.pageIndex, this.paginator.pageSize);
+        this.dataSource
+            .loadStudents(this.filterValue, this.sort.active, this.sort.direction, this.paginator.pageIndex, this.paginator.pageSize);
     }
 
     onOpenEditPopup(user) {

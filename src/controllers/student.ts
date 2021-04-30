@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+
 import User from '../schemas/user';
+
 import { UserModel, UserSchema } from '../models/user';
+
 import logger from '../config/logger';
 
 import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
@@ -9,8 +12,10 @@ import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 
 export const getStudents = async (req: Request, res: Response) => {
-    const { pageNumber: page, pageSize, sortOrder, filterValue } = req.query;
+    const { pageNumber: page, pageSize, sortOrder, filterValue, sortName } = req.query;
     const regex = new RegExp(filterValue as string, 'i');
+    const sort: any = {};
+    sort[sortName as string] = sortOrder;
     const filterCondition = {
         admin: false,
         librarian: false,
@@ -21,8 +26,8 @@ export const getStudents = async (req: Request, res: Response) => {
         const studentQuantity = await User.countDocuments(filterCondition);
         const studentsDb = await User.find(filterCondition, {}, {
             limit: Number(pageSize),
-            sort: { name: String(sortOrder) },
-            skip: (Number(page) - 1) * Number(pageSize)
+            skip: (Number(page) - 1) * Number(pageSize),
+            sort
         }) as UserSchema[];
 
         const students: UserModel[] = studentsDb.map(student => ({

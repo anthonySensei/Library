@@ -31,14 +31,14 @@
         matSortDisableClear
     >
         <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>Name</th>
             <td mat-cell *matCellDef="let element">
                 {{ element.name ? element.name : 'Name is not provided' }}
             </td>
         </ng-container>
 
         <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef>
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>
                 Email
             </th>
             <td mat-cell *matCellDef="let element">
@@ -46,8 +46,17 @@
             </td>
         </ng-container>
 
-        <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>
+        <ng-container matColumnDef="phone">
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                Phone
+            </th>
+            <td mat-cell *matCellDef="let element">
+                {{ element.phone }}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="active">
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>
                 Status
             </th>
             <td mat-cell *matCellDef="let element">
