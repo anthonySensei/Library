@@ -169,7 +169,7 @@ exports.orderBook = async (req, res) => {
             return helper.responseErrorHandle(
                 res,
                 400,
-                errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST
+                errorMessages.USER_EMAIL_EXISTS
             );
         }
 

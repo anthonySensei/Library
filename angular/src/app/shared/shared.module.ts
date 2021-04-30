@@ -48,15 +48,65 @@ import { SmallScreenComponent } from './small-screen/small-screen.component';
 import { LoaderComponent } from './loader/loader.component';
 import { NgxsModule } from '@ngxs/store';
 import { UserState } from '../store/user.state';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { UserPopupComponent } from './user-popup/user-popup.component';
+import { VarDirective } from '@shared/directives/ng-var.directive';
 
 @NgModule({
     declarations: [
         DiscardChangesModalComponent,
         ChartSectionComponent,
         SmallScreenComponent,
-        LoaderComponent
+        LoaderComponent,
+        UserPopupComponent,
+        VarDirective,
     ],
-    imports: [CommonModule, LineChartModule, NgbModule, NgxsModule.forFeature([UserState])],
+    imports: [
+        CommonModule,
+        LineChartModule,
+        MatInputModule,
+        NgbModule,
+        CommonModule,
+        MatMenuModule,
+        MatToolbarModule,
+        MatDividerModule,
+        MatListModule,
+        MatIconModule,
+        MatButtonModule,
+        MatGridListModule,
+        MatInputModule,
+        MatDialogModule,
+        MatSelectModule,
+        MatTooltipModule,
+        MatSnackBarModule,
+        MatSidenavModule,
+        MatRadioModule,
+        ImageCropperModule,
+        ReactiveFormsModule,
+        OwlNativeDateTimeModule,
+        OwlDateTimeModule,
+        LayoutModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatListModule,
+        MatTableModule,
+        BrowserAnimationsModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatTabsModule,
+        LineChartModule,
+        MatStepperModule,
+        MatExpansionModule,
+        NgxMaterialTimepickerModule,
+        MatCardModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatProgressSpinnerModule,
+        MatSlideToggleModule,
+        MatAutocompleteModule,
+        NgxsModule.forFeature([UserState])
+    ],
     exports: [
         CommonModule,
         MatMenuModule,
@@ -98,9 +148,11 @@ import { UserState } from '../store/user.state';
         MatSlideToggleModule,
         ChartSectionComponent,
         SmallScreenComponent,
-        LoaderComponent
+        LoaderComponent,
+        MatAutocompleteModule,
+        VarDirective
     ],
     providers: [CanDeactivateGuard],
-    entryComponents: [DiscardChangesModalComponent]
+    entryComponents: [DiscardChangesModalComponent, UserPopupComponent]
 })
 export class SharedModule {}

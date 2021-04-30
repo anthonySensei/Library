@@ -1,32 +1,31 @@
 <div class="wrapper">
-    <div class="form">
-        <span class="page-title">User info</span>
+    <div class="form" *ngVar="student$ | async as student">
+        <p class="form__title">User info</p>
         <hr style="background-color: #0d0d0d;" />
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
+        <mat-spinner class="m-auto" *ngIf="isLoading"></mat-spinner>
         <section class="user-info-section" *ngIf="!isLoading">
             <aside class="image-aside">
                 <img
                     class="profile-image"
-                    src="{{
-                        student.image
-                            ? student.image
-                            : 'https://www.w3schools.com/w3css/img_avatar3.png'
-                    }}"
+                    src="{{student.image ? student.image : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                     alt="Avatar"
                 />
             </aside>
             <section class="info-section">
                 <section class="user-personal-info">
                     <p>
-                        Name: <b>{{ student.name }}</b>
+                        Name: <span class="text-main">{{ student.name }}</span>
                     </p>
                     <p>
-                        Email: <b>{{ student.email }}</b>
+                        Email: <span class="text-main">{{ student.email }}</span>
+                    </p>
+                    <p>
+                        Phone: <span class="text-main">{{ student.email }}</span>
                     </p>
                 </section>
                 <section class="user-library-info">
                     <p>
-                        Status: <b>{{ student.status }}</b>
+                        Status: <span class="text-main">{{ student.active ? 'Active' : 'Not Active' }}</span>
                     </p>
                 </section>
             </section>
@@ -34,26 +33,23 @@
         <mat-divider style="margin: 10px auto 0;"></mat-divider>
         <mat-tab-group>
             <mat-tab label="Loans">
-                <app-loan-section
-                    [studentId]="studentId"
-                    [departments]="departments"
-                    [helperService]="helperService"
-                ></app-loan-section>
+<!--                <app-loan-section-->
+<!--                    [departments]="departments"-->
+<!--                    [helperService]="helperService"-->
+<!--                ></app-loan-section>-->
             </mat-tab>
             <mat-tab label="Orders">
-                <app-orders-section
-                    [studentId]="studentId"
-                    [departments]="departments"
-                    [helperService]="helperService"
-                ></app-orders-section>
+<!--                <app-orders-section-->
+<!--                    [departments]="departments"-->
+<!--                    [helperService]="helperService"-->
+<!--                ></app-orders-section>-->
             </mat-tab>
             <mat-tab label="Statistic">
-                <app-chart-section
-                    *ngIf="!isLoading"
-                    [name]="student.name"
-                    [helperService]="helperService"
-                    [statistic]="student.statistic"
-                ></app-chart-section>
+<!--                <app-chart-section-->
+<!--                    *ngIf="!isLoading"-->
+<!--                    [name]="student.name"-->
+<!--                    [helperService]="helperService"-->
+<!--                ></app-chart-section>-->
             </mat-tab>
         </mat-tab-group>
     </div>

@@ -6,7 +6,6 @@ import { LibrarianGuard } from '../../guards/librarian.guard';
 
 import { StudentsComponent } from './students/students.component';
 import { StudentDetailsComponent } from './student-details/student-details.component';
-import { AddStudentComponent } from './add-student/add-student.component';
 import { OrdersComponent } from './orders/orders.component';
 
 import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
@@ -14,12 +13,6 @@ import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
 import { AngularLinks } from '../../constants/angularLinks';
 
 const routes: Routes = [
-    {
-        path: AngularLinks.ADD_STUDENT,
-        canDeactivate: [CanDeactivateGuard],
-        component: AddStudentComponent,
-        canActivate: [AuthGuard, LibrarianGuard]
-    },
     {
         path: AngularLinks.STUDENTS,
         component: StudentsComponent,

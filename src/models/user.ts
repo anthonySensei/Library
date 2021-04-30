@@ -1,12 +1,24 @@
 import { Document } from 'mongoose';
 
-export interface UserModel extends Document{
+export interface UserSchema extends Document {
     name: string;
     email: string;
+    phone: string;
     password: string;
     image: string;
     active: boolean;
     admin: boolean;
     librarian: boolean;
-    comparePassword: (password: string) => boolean
+    comparePassword: (password: string) => boolean;
+}
+
+export interface UserModel {
+    name: string;
+    email: string;
+    phone: string;
+    password?: string;
+    image: string;
+    active?: boolean;
+    admin?: boolean;
+    librarian?: boolean;
 }

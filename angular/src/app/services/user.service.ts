@@ -7,17 +7,31 @@ import { ResponseService } from './response.service';
 
 import { serverLink } from '../constants/serverLink';
 import { User } from '../models/user.model';
+import { UpdateUserPayload } from '../models/request/user';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
     private PROFILE_URL = `${serverLink}/my-account`;
+    private USERS_URL = `${serverLink}/users`;
 
     constructor(
         private http: HttpClient,
         private responseService: ResponseService
     ) {}
+
+    createUser(body: UpdateUserPayload) {
+        return this.http.post(`${this.USERS_URL}`, body).pipe(map((response: any) => response.data));
+    }
+
+    editUser(data: { id: string, body: UpdateUserPayload }) {
+        return this.http.put(`${this.USERS_URL}/${data.id}`, data.body).pipe(map((response: any) => response.data));
+    }
+
+    deleteUser(id: string) {
+        return this.http.delete(`${this.USERS_URL}/${id}`).pipe(map((response: any) => response.data));
+    }
 
     updateUserDataHttp(user: User, changed: string, passwordObject?) {
         const headers = new HttpHeaders();

@@ -1,13 +1,16 @@
-const { Sequelize } = require('sequelize');
+import { Sequelize, Dialect } from 'sequelize';
+
+const { DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD } = process.env;
+const { DATABASE_DIALECT, DATABASE_HOST, DATABASE_PORT } = process.env;
 
 export default new Sequelize(
-    process.env.DATABASE_NAME,
-    process.env.DATABASE_USER,
-    process.env.DATABASE_PASSWORD,
+    DATABASE_NAME as string,
+    DATABASE_USER as string,
+    DATABASE_PASSWORD as string,
     {
-        dialect: process.env.DATABASE_DIALECT,
-        host: process.env.DATABASE_HOST,
-        port: process.env.DATABASE_PORT
+        dialect: DATABASE_DIALECT as Dialect,
+        host: DATABASE_HOST as string,
+        port: Number(DATABASE_PORT)
     }
 );
 

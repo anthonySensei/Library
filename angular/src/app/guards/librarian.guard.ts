@@ -25,13 +25,13 @@ export class LibrarianGuard implements CanActivate {
         state: RouterStateSnapshot
     ): Observable<boolean> | Promise<boolean> | boolean {
         const user = this.store.selectSnapshot(UserState.User);
-        const isLibrarian = user.librarian;
+        const isHasAccess = user.librarian || user.admin;
 
-        if (!isLibrarian) {
+        if (!isHasAccess) {
             this.router.navigate([AngularLinks.HOME]);
-            return isLibrarian;
+            return isHasAccess;
         }
 
-        return isLibrarian;
+        return isHasAccess;
     }
 }

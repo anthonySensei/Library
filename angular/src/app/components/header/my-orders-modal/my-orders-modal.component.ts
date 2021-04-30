@@ -43,8 +43,7 @@ export class MyOrdersModalComponent
         public helperService: HelperService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
-    ) {
-    }
+    ) {}
 
     ngOnInit(): void {
         this.dataSource = new OrdersDataSource(this.orderService);

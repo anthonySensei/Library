@@ -1,9 +1,24 @@
+import express, { Request } from 'express';
+import bodyParser from 'body-parser';
+import passport from 'passport';
+import multer from 'multer';
+import { config } from 'dotenv';
+import * as path from 'path';
+
 import cors from './config/cors';
+
 import connectMongoDB from './config/db';
+
 import logger from './config/logger';
 
+import sequelize from './config/database';
+import { UserSchema } from './models/user';
+
+
+import { v4 as uuidv4 } from 'uuid';
+
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+    config();
 }
 
 const managerName = 'admin';
@@ -11,18 +26,6 @@ const managerEmail = 'admin@gmail.com';
 const managerPassword = 'Admin123_';
 
 const departmentAddress = 'Main address';
-
-const path = require('path');
-
-const express = require('express');
-
-const sequelize = require('./config/database');
-
-const bodyParser = require('body-parser');
-
-const passport = require('passport');
-
-const multer = require('multer');
 
 const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
@@ -57,7 +60,7 @@ const genresUrl = require('./constants/links').GENRES_URL;
 const ordersUrl = require('./constants/links').ORDERS_URL;
 const loansUrl = require('./constants/links').LOANS_URL;
 const studentsUrl = require('./constants/links').STUDENTS_URL;
-const myAccountUrl = require('./constants/links').MY_ACCOUNT_URL;
+const usersUrl = require('./constants/links').USERS_URL;
 const periodsUrl = require('./constants/links').PERIODS_URL;
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
@@ -66,26 +69,23 @@ const helper = require('./helper/createManager');
 const app = express();
 
 const port = process.env.PORT || 3000;
-
-const uuidv4 = require('uuid/v4');
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./config/passport')(passport, Student, Librarian);
+require('./config/passport')(passport);
 
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'images');
     },
 
-    filename: function (req, file, cb) {
-        let extension = file.originalname.split('.').pop();
+    filename(req, file, cb) {
+        const extension = file.originalname.split('.').pop();
         cb(null, uuidv4() + '.' + extension);
     }
 });
 
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req: Request, file: any, cb: any) => {
     if (
         file.mimetype === 'image/png' ||
         file.mimetype === 'image/jpg' ||
@@ -102,7 +102,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({
         limits: { fieldSize: 5 * 1024 * 1024 },
         storage: imageStorage,
-        fileFilter: fileFilter
+        fileFilter
     }).single('image'));
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -119,8 +119,9 @@ app.use(librariansUrl, librarianRoutes);
 app.use(loansUrl, loanRoutes);
 app.use(ordersUrl, orderRoutes);
 app.use(studentsUrl, studentRoutes);
-app.use(myAccountUrl, userRoutes);
+app.use(usersUrl, userRoutes);
 app.use(periodsUrl, periodRoutes);
+app.use(schedulesUrl, scheduleRoutes);
 app.use(schedulesUrl, scheduleRoutes);
 
 Book.belongsTo(Department, { foreignKey: { allowNull: false } });
@@ -157,20 +158,20 @@ Order.belongsTo(Department);
 
 sequelize
     .sync()
-    .then(result => {
+    .then(() => {
         return Librarian.findOne({ where: { name: managerName } });
     })
-    .then(user => {
+    .then((user: UserSchema) => {
         if (!user) {
             Department.findOne({ where: { address: departmentAddress } })
-                .then(depart => {
+                .then((depart: any) => {
                     if (!depart) {
                         const department = new Department({
                             address: departmentAddress
                         });
                         department
                             .save()
-                            .then(dep => {
+                            .then((dep: any) => {
                                 helper.createManager(
                                     managerName,
                                     managerEmail,
@@ -200,5 +201,4 @@ sequelize
                 logger.error('Cannot connect to MongoDB. Error:', err.message);
                 return;
             });
-    })
-    .catch();
+    });

@@ -6,6 +6,7 @@ export enum TableColumns {
     READER_TICKET = 'studentTicketReader',
     NAME = 'name',
     EMAIL = 'email',
-    STATUS = 'status',
+    PHONE = 'phone',
+    STATUS = 'active',
     DEPARTMENT_ADDRESS = 'departmentAddress'
 }

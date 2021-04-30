@@ -64,20 +64,8 @@
                 [departments]="departments"
                 [librarians]="librarians"
                 [librarianService]="librarianService"
-                (setLibrarian)="onSetLibrarians()"
+                (setLibrarians)="onSetLibrarians()"
             ></app-librarian-section>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Students
-                </mat-panel-title>
-            </mat-expansion-panel-header>
-            <app-student-section
-                (nothingToChange)="nothingChangeHandle()"
-                [responseService]="responseService"
-                [helperService]="helperService"
-            ></app-student-section>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>

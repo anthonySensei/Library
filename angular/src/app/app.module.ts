@@ -16,7 +16,6 @@ import { AuthorSectionComponent } from './components/edit-page/author-section/au
 import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
 import { DepartmentSectionComponent } from './components/edit-page/department-section/department-section.component';
 import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
-import { StudentSectionComponent } from './components/edit-page/student-section/student-section.component';
 
 import { AuthInterceptor } from './services/auth.interceptor.service';
 
@@ -32,6 +31,13 @@ import { LibrarianSectionComponent } from './components/edit-page/librarian-sect
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
 import { UserState } from './store/user.state';
 import { environment } from '../environments/environment';
+import { StudentState } from './store/student.state';
+import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
+import { CloseScrollStrategy, Overlay } from '@angular/cdk/overlay';
+
+export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
+    return () => overlay.scrollStrategies.close();
+}
 
 @NgModule({
     declarations: [
@@ -43,7 +49,6 @@ import { environment } from '../environments/environment';
         BookSectionComponent,
         DepartmentSectionComponent,
         GenreSectionComponent,
-        StudentSectionComponent,
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,
@@ -62,12 +67,17 @@ import { environment } from '../environments/environment';
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState], {
+        NgxsModule.forRoot([UserState, StudentState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),
     ],
     providers: [
+        {
+            provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+            useFactory: scrollFactory,
+            deps: [Overlay]
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { Department } from '../../models/department.model';
-import { Student } from '../../models/student.model';
 import { Period } from '../../models/period.model';
 import { Librarian } from '../../models/librarian.model';
 
@@ -32,7 +31,6 @@ import { User } from '../../models/user.model';
 export class EditPageComponent implements OnInit, OnDestroy {
     departments: Department[];
     librarians: Librarian[];
-    students: Student[];
     periods: Period[];
 
     departmentSelect: number;

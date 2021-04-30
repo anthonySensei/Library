@@ -8,11 +8,16 @@ export class ValidationService {
     private passwordValidation = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
     private readerTicketValidation = /^([1-9][0-9]{9})$/;
     private isbnValidation = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
+    private phoneValidation = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
 
     constructor() {}
 
     getEmailValidation() {
         return this.emailValidation;
+    }
+
+    getPhoneValidation() {
+        return this.phoneValidation;
     }
 
     getPasswordValidation() {

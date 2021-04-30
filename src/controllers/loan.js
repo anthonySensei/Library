@@ -338,7 +338,7 @@ exports.loanBook = async (req, res) => {
         });
 
         if (!student) {
-            return helper.responseErrorHandle(res, 400, errorMessages.STUDENT_WITH_THIS_READER_TICKET_DOESNT_EXIST);
+            return helper.responseErrorHandle(res, 400, errorMessages.USER_EMAIL_EXISTS);
         }
 
         const librarian = await Librarian.findOne({

@@ -9,6 +9,7 @@ export class HelperService {
     private allItems: number;
     private paginationData: Pagination;
 
+    // @TODO Fix this
     setItemsPerPage(itemsNumber: number) {
         this.allItems = itemsNumber;
     }

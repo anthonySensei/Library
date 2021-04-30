@@ -1,5 +1,4 @@
 export default {
-    USER_SUCCESSFULLY_CREATED: 'User has been successfully created',
     SUCCESSFULLY_LOGGED_IN: 'You have been successfully logged in!',
     SUCCESSFULLY_LOGGED_OUT: 'You have been successfully logged out!',
     SUCCESSFULLY_LOANED: 'Book has been successfully loaned!',
@@ -30,7 +29,9 @@ export default {
     SCHEDULE_SUCCESSFULLY_DELETED: 'Schedule has been successfully deleted',
     STUDENT_SUCCESSFULLY_CREATED: 'Student has been successfully created',
     STUDENT_SUCCESSFULLY_UPDATED: 'Student has been successfully updated',
-    STUDENT_SUCCESSFULLY_DELETED: 'Student has been successfully deleted',
+    USER_SUCCESSFULLY_CREATED: 'User has been successfully created',
+    USER_SUCCESSFULLY_UPDATED: 'User has been successfully updated',
+    USER_SUCCESSFULLY_DELETED: 'User has been successfully deleted',
     LIBRARIAN_SUCCESSFULLY_CREATED: 'Librarian has been successfully created',
     LIBRARIAN_SUCCESSFULLY_UPDATED: 'Librarian has been successfully updated',
     LIBRARIAN_SUCCESSFULLY_DELETED: 'Librarian has been successfully deleted',

@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { serverLink } from '../constants/serverLink';
-import { Student } from '../models/student.model';
 import { ResponseService } from './response.service';
 import { Router } from '@angular/router';
 
@@ -43,12 +42,9 @@ export class AuthService {
         return this.http.get(this.LOGOUT_URL).pipe(map((response: any) => response.data));
     }
 
-    registerStudentHttp(student: Student) {
-        return this.http.post(this.REGISTRATION_URL, student).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+    createUser(name: string, email: string, password: string) {
+        const user = { name, email, password };
+        return this.http.post(this.REGISTRATION_URL, user).pipe(map((response: any) => response.data));
     }
 
     checkRegistrationToken(registrationToken: string) {

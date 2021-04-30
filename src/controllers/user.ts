@@ -1,3 +1,14 @@
+import { Request, Response } from 'express';
+
+import logger from '../config/logger';
+
+import User from '../schemas/user';
+
+import successMessages from '../constants/successMessages';
+
+import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
+import { generatePassword } from '../helper/generatePassword';
+
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -5,32 +16,34 @@ const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 
 const bcrypt = require('bcryptjs');
-
-const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/imageHandle');
 const passwordGenerator = require('../helper/generatePassword');
 
 const errorMessages = require('../constants/errorMessages');
-const successMessages = require('../constants/successMessages');
 const changedProfileData = require('../constants/changedProfileData');
 const userRoles = require('../constants/roles');
 
-exports.postUpdateUserData = (req, res) => {
+exports.postUpdateUserData = (req: Request, res: Response) => {
     const user = JSON.parse(req.body.user);
     const changedField = req.body.changedField;
     let dbTable;
-    if (user.role.role === userRoles.STUDENT) dbTable = Student;
-    else dbTable = Librarian;
 
-    if (changedField === changedProfileData.INFO)
+    if (user.role.role === userRoles.STUDENT) {
+        dbTable = Student;
+    } else {
+        dbTable = Librarian;
+    }
+
+    if (changedField === changedProfileData.INFO) {
         updateInfo(res, dbTable, user);
-    else if (changedField === changedProfileData.PASSWORD)
+    } else if (changedField === changedProfileData.PASSWORD) {
         updatePassword(res, dbTable, user.id, JSON.parse(req.body.passwordObj));
-    else if (changedField === changedProfileData.IMAGE)
+    } else if (changedField === changedProfileData.IMAGE) {
         updateImage(res, dbTable, user);
+    }
 };
 
-const updateInfo = async (res, dbTable, user) => {
+const updateInfo = async (res: Response, dbTable: any, user: any) => {
     try {
         const userInDb = await dbTable.findOne({
             where: { id: user.id }
@@ -39,7 +52,7 @@ const updateInfo = async (res, dbTable, user) => {
             where: { email: user.email, id: { [Op.ne]: user.id } }
         }));
         if (isNotUniqueEmail) {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.EMAIL_ADDRESS_ALREADY_IN_USE
@@ -50,9 +63,9 @@ const updateInfo = async (res, dbTable, user) => {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_INFO_UPDATED
         };
-        return helper.responseHandle(res, 200, data);
+        return responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -60,13 +73,13 @@ const updateInfo = async (res, dbTable, user) => {
     }
 };
 
-const updatePassword = async (res, dbTable, userId, passwordObj) => {
+const updatePassword = async (res: Response, dbTable: any, userId: string, passwordObj: any) => {
     if (
         !passwordObj.oldPassword ||
         !passwordObj.newPassword ||
         !passwordObj.retypeNewPassword
     ) {
-        return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
     try {
         const user = await dbTable.findOne({ where: { id: userId } });
@@ -88,23 +101,23 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
                     isSuccessful: true,
                     message: successMessages.PASSWORD_SUCCESSFULLY_CHANGED
                 };
-                return helper.responseHandle(res, 200, data);
+                return responseHandle(res, 200, data);
             } else {
-                return helper.responseErrorHandle(
+                return responseErrorHandle(
                     res,
                     400,
                     errorMessages.OLD_PASSWORD_EQUEL_NEW_PASSWORD
                 );
             }
         } else {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.WRONG_OLD_PASSWORD
             );
         }
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -112,9 +125,9 @@ const updatePassword = async (res, dbTable, userId, passwordObj) => {
     }
 };
 
-const updateImage = async (res, dbTable, user) => {
+const updateImage = async (res: Response, dbTable: any, user: any) => {
     if (!user.profileImage) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -128,12 +141,67 @@ const updateImage = async (res, dbTable, user) => {
             isSuccessful: true,
             message: successMessages.PROFILE_IMAGE_SUCCESSFULLY_CHANGED
         };
-        return helper.responseHandle(res, 200, data);
+        return responseHandle(res, 200, data);
     } catch (err) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
         );
+    }
+};
+
+export const createUser = async (req: Request, res: Response) => {
+    const { name, email, phone, admin, librarian } = req.body;
+    const password = generatePassword();
+
+    if (!name || !email || !phone) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    const isUserWithEmailExists = !!(await User.findOne({ email }));
+
+    if (isUserWithEmailExists) {
+        return responseErrorHandle(res, 400, errorMessages.USER_EMAIL_EXISTS);
+    }
+
+    const isUserWithPhoneExists = !!(await User.findOne({ phone }));
+
+    if (isUserWithPhoneExists) {
+        return responseErrorHandle(res, 400, errorMessages.USER_PHONE_EXISTS);
+    }
+
+    try {
+        await User.create({ name, email, phone, password, admin: admin || false, librarian: librarian || false });
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_CREATED });
+    } catch (err) {
+        logger.error('Error creating user', err.message);
+    }
+};
+
+export const editUser = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const { name, email, phone } = req.body;
+
+    if (!name || !email || !phone) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
+
+    try {
+        await User.findByIdAndUpdate(id, { name, email, phone });
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_UPDATED });
+    } catch (err) {
+        logger.error('Error updating user', err.message);
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    try {
+        await User.findByIdAndDelete(id);
+        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_DELETED });
+    } catch (err) {
+        logger.error('Error deleting user', err.message);
     }
 };
