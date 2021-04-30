@@ -16,27 +16,26 @@
                     (imageCropped)="imageCropped($event)"
             ></image-cropper>
         </section>
-
-        <div class="btn-group text-center">
-            <button
-                mat-raised-button
-                class="form-btn"
-                color="primary"
-                type="submit"
-                [disabled]="imageForm.invalid"
-                [mat-dialog-close]="data.imageBase64"
-            >
-                Confirm
-            </button>
-            <button
-                mat-stroked-button
-                class="form-btn"
-                color="primary"
-                type="button"
-                (click)="dialogRef.close()"
-            >
-                Cancel
-            </button>
-        </div>
     </form>
+</div>
+<div mat-dialog-actions align="end">
+    <button
+            mat-stroked-button
+            class="form-btn"
+            color="primary"
+            type="button"
+            (click)="dialogRef.close()"
+    >
+        Cancel
+    </button>
+    <button
+            mat-raised-button
+            class="form-btn"
+            color="primary"
+            type="submit"
+            [disabled]="imageForm.invalid"
+            (click)="onChangeImage()"
+    >
+        Confirm
+    </button>
 </div>

@@ -5,8 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { serverLink } from '../constants/serverLink';
-import { ResponseService } from './response.service';
-import { Router } from '@angular/router';
+import { RegisterUserPayload } from '../models/request/user';
 
 @Injectable({
     providedIn: 'root'
@@ -15,14 +14,12 @@ export class AuthService {
     private REGISTRATION_URL = `${serverLink}/registration`;
     private LOGIN_URL = `${serverLink}/login`;
     private LOGOUT_URL = `${serverLink}/logout`;
-    private CHECK_REGISTRATION_TOKEN_URL = `${serverLink}/check-registration-token`;
+    private CHECK_ACTIVATION_TOKEN_URL = `${serverLink}/check-activation-token`;
 
     private jwtToken: string;
 
     constructor(
         private http: HttpClient,
-        private router: Router,
-        private responseService: ResponseService,
     ) {}
 
 
@@ -42,18 +39,11 @@ export class AuthService {
         return this.http.get(this.LOGOUT_URL).pipe(map((response: any) => response.data));
     }
 
-    createUser(name: string, email: string, password: string) {
-        const user = { name, email, password };
-        return this.http.post(this.REGISTRATION_URL, user).pipe(map((response: any) => response.data));
+    createUser(body: RegisterUserPayload) {
+        return this.http.post(this.REGISTRATION_URL, body).pipe(map((response: any) => response.data));
     }
 
-    checkRegistrationToken(registrationToken: string) {
-        const token = { registrationToken };
-
-        return this.http.post(this.CHECK_REGISTRATION_TOKEN_URL, token).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+    checkActivationToken(activationToken: string) {
+        return this.http.post(this.CHECK_ACTIVATION_TOKEN_URL, { activationToken }).pipe(map((response: any) =>  response.data));
     }
 }

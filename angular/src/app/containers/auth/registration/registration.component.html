@@ -25,6 +25,16 @@
                             Name is required
                         </mat-error>
                     </mat-form-field>
+                    <mat-form-field class="form__input">
+                        <mat-label>Phone</mat-label>
+                        <input matInput type="text" name="phone" formControlName="phone" placeholder="Ex. example@mail.com" />
+                        <mat-error *ngIf="hasError('phone', 'required')">
+                            Phone is required
+                        </mat-error>
+                        <mat-error *ngIf="hasError('phone', 'pattern')">
+                            Phone is not valid
+                        </mat-error>
+                    </mat-form-field>
                     <div class="btn-group">
                         <button mat-stroked-button matStepperNext color="primary" class="form-btn add-form-btn outline fadeIn fourth">
                             Next
@@ -83,6 +93,7 @@
                     <p>Reared Ticket: {{ mainInfoForm.value?.readerTicket }}</p>
                     <p>Email: {{ mainInfoForm.value?.email }}</p>
                     <p>Name: {{ mainInfoForm.value?.name }}</p>
+                    <p>Phone: {{ mainInfoForm.value?.phone }}</p>
                 </div>
                 <div class="btn-group">
                     <button matStepperPrevious mat-stroked-button color="primary" class="form-btn add-form-btn outline">

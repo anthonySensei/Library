@@ -13,8 +13,8 @@ const loanController = require('./loan');
 const roles = require('../constants/roles');
 
 const helper = require('../helper/responseHandle');
-const imageHandler = require('../helper/imageHandle');
-const passwordGenerator = require('../helper/generatePassword');
+const imageHandler = require('../helper/image');
+const passwordGenerator = require('../helper/password');
 const checkUniqueness = require('../helper/checkUniqueness');
 const mailSender = require('../helper/mailSender');
 

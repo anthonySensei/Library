@@ -7,6 +7,7 @@ import { UserModel, UserSchema } from '../models/user';
 import logger from '../config/logger';
 
 import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
+import { convertToBase64 } from '../helper/image';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
@@ -34,7 +35,7 @@ export const getStudents = async (req: Request, res: Response) => {
             id: student._id,
             name: student.name,
             email: student.email,
-            image: student.image,
+            image: convertToBase64(student.image),
             phone: student.phone,
             active: student.active
         }));

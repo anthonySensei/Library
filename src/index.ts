@@ -194,7 +194,7 @@ sequelize
         connectMongoDB()
             .then((mongoClient) => {
                 app.listen(port);
-                logger.info('Successfully connected to MongoDB:');
+                logger.info('Successfully connected to MongoDB');
                 logger.info('App is listening on', port);
              })
             .catch(err => {

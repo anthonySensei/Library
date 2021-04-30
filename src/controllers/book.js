@@ -13,7 +13,7 @@ const errorMessages = require('../constants/errorMessages');
 const ITEMS_PER_PAGE = 8;
 
 const helper = require('../helper/responseHandle');
-const imageHandler = require('../helper/imageHandle');
+const imageHandler = require('../helper/image');
 
 const getCondition = (
     filterName,
@@ -184,7 +184,7 @@ exports.addBook = async (req, res) => {
     if (!imageBase64) return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     if (!bookData) return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
 
-    const filepath = imageHandler.getPath(imageBase64);
+    const filepath = imageHandler.getImagePath(imageBase64);
 
     try {
         const isNotUnique = await Book.findOne({ where: {
@@ -225,8 +225,8 @@ exports.editBook = async (req, res) => {
     if (!bookData && !imageBase64) return helper.responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
 
     imageBase64.image ?
-        bookData.image = imageHandler.getPath(imageBase64.image) :
-        bookData.image = imageHandler.getPath(bookData.image);
+        bookData.image = imageHandler.getImagePath(imageBase64.image) :
+        bookData.image = imageHandler.getImagePath(bookData.image);
 
     try {
         const isNotUnique = await Book.findOne({
@@ -275,7 +275,7 @@ exports.moveBook = async (req, res) => {
         quantity: quantity
     };
     try {
-        newBook.image = imageHandler.getPath(newBook.image);
+        newBook.image = imageHandler.getImagePath(newBook.image);
         const isNotUnique = await Book.findOne({
             where: {
                 isbn: newBook.isbn,
