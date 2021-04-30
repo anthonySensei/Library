@@ -65,13 +65,14 @@ export class UserPopupComponent implements OnInit {
   }
 
   createUser() {
+    const { isLibrarian: librarian } = this.data;
     const { email, name, phone } = this.form.value;
 
     if (!this.isValid()) {
       return;
     }
 
-    this.store.dispatch(new CreateUser({email, name, phone})).subscribe(() => this.onClose(true));
+    this.store.dispatch(new CreateUser({email, name, phone, librarian: !!librarian})).subscribe(() => this.onClose(true));
   }
 
   editUser() {

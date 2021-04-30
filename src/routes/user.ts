@@ -12,4 +12,4 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), editUser);
 router.post('/:id', passport.authenticate('jwt', { session: false }), editPassword);
 router.patch('/:id', passport.authenticate('jwt', { session: false }), editImage);
 
-module.exports = router;
+export default router;

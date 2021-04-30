@@ -27,13 +27,13 @@ import { StudentsModule } from './containers/students/students.module';
 import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
-import { LibrarianSectionComponent } from './components/edit-page/librarian-section/librarian-section.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
 import { UserState } from './store/user.state';
 import { environment } from '../environments/environment';
 import { StudentState } from './store/student.state';
 import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
 import { CloseScrollStrategy, Overlay } from '@angular/cdk/overlay';
+import { LibrarianState } from './store/librarian.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -52,7 +52,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,
-        LibrarianSectionComponent
     ],
     imports: [
         BrowserModule,
@@ -67,7 +66,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),

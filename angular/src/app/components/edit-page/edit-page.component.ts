@@ -30,7 +30,6 @@ import { User } from '../../models/user.model';
 })
 export class EditPageComponent implements OnInit, OnDestroy {
     departments: Department[];
-    librarians: Librarian[];
     periods: Period[];
 
     departmentSelect: number;
@@ -69,14 +68,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
         this.periodService.fetchAllPeriodsHttp().pipe(untilDestroyed(this)).subscribe();
         this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
             this.periods = periods;
-        });
-        this.onSetLibrarians();
-    }
-
-    onSetLibrarians(): void {
-        this.librarianService.getAllLibrariansHttp().pipe(untilDestroyed(this)).subscribe();
-        this.librarianService.getLibrarians().pipe(untilDestroyed(this)).subscribe((librarians: Librarian[]) => {
-            this.librarians = librarians;
         });
     }
 

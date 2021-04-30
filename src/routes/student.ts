@@ -8,4 +8,4 @@ const router = express.Router();
 router.get('', passport.authenticate('jwt', { session: false }), getStudents);
 router.get('/:id', passport.authenticate('jwt', { session: false }), getStudent);
 
-module.exports = router;
+export default router;

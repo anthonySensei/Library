@@ -1,4 +1,4 @@
-import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/collections';
 
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
@@ -23,11 +23,11 @@ export class StudentsDataSource implements DataSource<User> {
             .subscribe((state: StoreStateModel) => this.studentSubject.next(state?.student?.students));
     }
 
-    connect(collectionViewer: CollectionViewer): Observable<User[]> {
+    connect(): Observable<User[]> {
         return this.studentSubject.asObservable();
     }
 
-    disconnect(collectionViewer: CollectionViewer): void {
+    disconnect(): void {
         this.studentSubject.complete();
         this.loadingSubject.complete();
     }

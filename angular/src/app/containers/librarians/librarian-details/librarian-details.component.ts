@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { LibrarianService } from '../../../services/librarian.service';
 import { HelperService } from '../../../services/helper.service';
@@ -10,6 +10,11 @@ import { Librarian } from '../../../models/librarian.model';
 import { Schedule } from '../../../models/schedule.model';
 
 import { PageTitles } from '../../../constants/pageTitles';
+import { Select, Store } from '@ngxs/store';
+import { LoadStudent, StudentState } from '../../../store/student.state';
+import { User } from '../../../models/user.model';
+import { LibrarianState, LoadLibrarian } from '../../../store/librarian.state';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-librarian-details',
@@ -17,52 +22,24 @@ import { PageTitles } from '../../../constants/pageTitles';
     styleUrls: ['./librarian-details.component.sass']
 })
 export class LibrarianDetailsComponent implements OnInit, OnDestroy {
-    schedule: Schedule[];
-
-    librarian: Librarian;
-    librarianId: number;
-
-    librarianSubscription: Subscription;
-    librarianChangedSubscription: Subscription;
-
-    paramsSubscription: Subscription;
-
     isLoading: boolean;
+
+    @Select(LibrarianState.Librarian)
+    librarian$: Observable<User>;
 
     constructor(
         private librarianService: LibrarianService,
-        public helperService: HelperService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.LIBRARIAN_DETAILS;
         this.isLoading = true;
-        this.paramsSubscription = this.route.params.subscribe(
-            (params: Params) => {
-                this.librarianId = +params.id;
-                this.librarianSubscriptionHandle();
-            }
-        );
+        this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
+            this.store.dispatch(new LoadLibrarian(params.id)).pipe(untilDestroyed(this)).subscribe(() => this.isLoading = false);
+        });
     }
 
-    librarianSubscriptionHandle(): void {
-        this.librarianSubscription = this.librarianService
-            .getLibrarianHttp(this.librarianId)
-            .subscribe();
-        this.librarianChangedSubscription = this.librarianService
-            .getLibrarian()
-            .subscribe((librarian: Librarian) => {
-                this.librarian = librarian;
-                this.schedule = this.librarian.schedule || [];
-                this.isLoading = false;
-            });
-    }
-
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.paramsSubscription, [
-            this.librarianChangedSubscription,
-            this.librarianSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }
