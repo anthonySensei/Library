@@ -41,22 +41,8 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         this.paramsSubscription = this.route.params.subscribe(
             (params: Params) => {
                 this.librarianId = +params.id;
-                this.librarianSubscriptionHandle();
             }
         );
-    }
-
-    librarianSubscriptionHandle(): void {
-        this.librarianSubscription = this.librarianService
-            .getLibrarianHttp(this.librarianId)
-            .subscribe();
-        this.librarianChangedSubscription = this.librarianService
-            .getLibrarian()
-            .subscribe((librarian: Librarian) => {
-                this.librarian = librarian;
-                this.schedule = this.librarian.schedule || [];
-                this.isLoading = false;
-            });
     }
 
     ngOnDestroy(): void {

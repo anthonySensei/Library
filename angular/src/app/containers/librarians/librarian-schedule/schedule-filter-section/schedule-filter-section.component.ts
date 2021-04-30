@@ -52,14 +52,6 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     }
 
     subscriptionHandle() {
-        this.librariansFetchSubscription = this.librarianService
-            .getAllLibrariansHttp()
-            .subscribe();
-        this.librariansSubscription = this.librarianService
-            .getLibrarians()
-            .subscribe((librarians: Librarian[]) => {
-                this.librarians = librarians;
-            });
         this.departmentsFetchSubscription = this.departmentService
             .fetchAllDepartmentsHttp()
             .subscribe();

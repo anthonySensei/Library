@@ -33,8 +33,6 @@ import { User } from '../../../models/user.model';
     animations: TABLE_ANIMATION
 })
 export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
-
-
     filterValue: string;
     columnsToDisplay: string[] = [
         TableColumns.NAME,

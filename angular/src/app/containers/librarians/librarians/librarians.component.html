@@ -1,56 +1,21 @@
 <section class="table-section">
-    <a mat-stroked-button
-        color="primary"
-        class="mb-2"
-        matTooltip="Add librarian"
-        [routerLink]="'/' + links.ADD_LIBRARIAN"
-    >
-        <i class="material-icons">add</i> Add librarian
-    </a>
-    <section class="mb-1">
-        <mat-accordion>
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Filters
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <mat-form-field class="d-block">
-                    <mat-label>Department address</mat-label>
-                    <mat-select
-                        [(ngModel)]="departmentSelect"
-                        (ngModelChange)="loadLibrariansPage()"
-                    >
-                        <mat-option value="''">All</mat-option>
-                        <mat-option
-                            *ngFor="let department of departments"
-                            [value]="department.id"
-                            >{{ department.address }}</mat-option
-                        >
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="d-block">
-                    <mat-label>Filter</mat-label>
-                    <mat-select
-                        [(ngModel)]="filterName"
-                        (ngModelChange)="loadLibrariansPage()"
-                    >
-                        <mat-option>-</mat-option>
-                        <mat-option value="name">Name</mat-option>
-                        <mat-option value="email">Email</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="d-block">
-                    <mat-label>Value</mat-label>
-                    <input
-                        matInput
-                        [(ngModel)]="filterValue"
-                        (ngModelChange)="loadLibrariansPage()"
-                        [disabled]="!filterName"
-                    />
-                </mat-form-field>
-            </mat-expansion-panel>
-        </mat-accordion>
+    <section class="d-flex justify-content-between align-items-center mb-1">
+        <button
+                mat-stroked-button
+                color="primary"
+                matTooltip="Add student"
+                (click)="onOpenCreatePopup()"
+        >
+            <i class="material-icons">add</i> Add Librarian
+        </button>
+        <mat-form-field>
+            <mat-label>Search</mat-label>
+            <input
+                    matInput
+                    [(ngModel)]="filterValue"
+                    (ngModelChange)="loadLibrariansPage()"
+            />
+        </mat-form-field>
     </section>
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
         <mat-spinner></mat-spinner>
@@ -66,26 +31,27 @@
         matSortDisableClear
     >
         <ng-container [matColumnDef]="tableColumns.NAME">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>Name</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.name ? element.name : 'No name' }}
+                {{ element.name ? element.name : 'Name is not provided' }}
             </td>
         </ng-container>
 
         <ng-container [matColumnDef]="tableColumns.EMAIL">
-            <th mat-header-cell *matHeaderCellDef>
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>
                 Email
             </th>
             <td mat-cell *matCellDef="let element">
                 {{ element.email }}
             </td>
         </ng-container>
-        <ng-container [matColumnDef]="tableColumns.DEPARTMENT_ADDRESS">
-            <th mat-header-cell *matHeaderCellDef>
-                Department address
+
+        <ng-container matColumnDef="phone">
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>
+                Phone
             </th>
             <td mat-cell *matCellDef="let element">
-                {{ element.departmentAddress }}
+                {{ element.phone }}
             </td>
         </ng-container>
 
@@ -97,57 +63,47 @@
             >
                 <div
                     class="user-table-expand-detail"
-                    [@detailExpand]="
-                        element == expandedElement ? 'expanded' : 'collapsed'
-                    "
+                    [@detailExpand]=" element == expandedElement ? 'expanded' : 'collapsed'"
                 >
                     <div class="profile-image-container">
                         <img
                             class="profile-image"
-                            src="{{
-                                element.profileImage
-                                    ? element.profileImage
-                                    : 'https://www.w3schools.com/w3css/img_avatar3.png'
-                            }}"
+                            src="{{ element.profileImage? element.profileImage : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                             alt="profile image"
                         />
                     </div>
-                    <section
-                        class="info-section"
-                        *ngIf="element.schedule.length > 0; else noSchedule"
-                    >
-                        <section
-                            class="librarian-schedule-day"
-                            *ngFor="let schedule of element.schedule"
+                    <div class="info-section">
+                        <p>Name: <span class="text-main">{{ element.name }}</span></p>
+                        <p>Email: <span class="text-main">{{ element.email }}</span></p>
+                        <p>Phone: <span class="text-main">{{ element.phone }}</span></p>
+                    </div>
+                    <div class="d-flex user-link">
+                        <button
+                                mat-stroked-button
+                                color="primary"
+                                class="user-link-button mr-2"
+                                matTooltip="Delete Student"
+                                (click)="onDeleteStudent(element.id)"
                         >
-                            <p>
-                                Day: <b>{{ schedule.day }}</b>
-                            </p>
-                            <p>
-                                start: <b>{{ schedule.period.start }}</b>
-                            </p>
-                            <p>
-                                end: <b>{{ schedule.period.end }}</b>
-                            </p>
-                            <mat-divider></mat-divider>
-                        </section>
-                    </section>
-                    <ng-template #noSchedule class="no-schedule">
-                        <section class="no-schedule">
-                            <h2>No schedule</h2>
-                        </section>
-                    </ng-template>
-                    <div class="user-link">
+                            Delete
+                        </button>
+                        <button
+                                mat-stroked-button
+                                color="primary"
+                                class="user-link-button mr-2"
+                                matTooltip="Edit Student"
+                                (click)="onOpenEditPopup(element)"
+                        >
+                            Edit
+                        </button>
                         <a
-                            mat-icon-button
+                            mat-stroked-button
                             color="primary"
                             class="user-link-button"
-                            matTooltip="More"
-                            [routerLink]="
-                                '/' + links.LIBRARIANS + '/' + element.id
-                            "
+                            matTooltip="See More Information"
+                            [routerLink]="'/' + links.STUDENTS + '/' + element.id"
                         >
-                            <mat-icon>arrow_forward_ios</mat-icon>
+                            More
                         </a>
                     </div>
                 </div>
@@ -171,7 +127,7 @@
         ></tr>
     </table>
     <mat-paginator
-        [length]="helperService.getItemsPerPage()"
+        [length]="paginator.pageSize || 5"
         [pageSize]="5"
         [pageSizeOptions]="[5, 10]"
     ></mat-paginator>

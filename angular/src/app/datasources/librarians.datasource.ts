@@ -1,47 +1,30 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
+import { Store } from '@ngxs/store';
+import { StoreStateModel } from '../store/store.model';
+import { LoadLibrarians } from '../store/librarian.state';
+import { User } from '../models/user.model';
 
-import { Librarian } from '../models/librarian.model';
-import { LibrarianService } from '../services/librarian.service';
-
-export class LibrariansDataSource implements DataSource<Librarian> {
-    private librariansSubject = new BehaviorSubject<Librarian[]>([]);
+export class LibrariansDataSource implements DataSource<User> {
+    private librariansSubject = new BehaviorSubject<User[]>([]);
 
     private loadingSubject = new BehaviorSubject<boolean>(false);
 
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private librarianService: LibrarianService) {}
+    constructor(private store: Store) {}
 
-    loadLibrarians(
-        filterName: string,
-        filterValue: string,
-        departmentId: number,
-        sortOrder: string,
-        pageIndex: number,
-        pageSize: number
-    ) {
+    loadLibrarians(filterValue: string, sortName: string, sortOrder: string, pageIndex: number, pageSize: number) {
         this.loadingSubject.next(true);
-
-        this.librarianService
-            .getLibrariansHttp(
-                filterName,
-                filterValue,
-                departmentId,
-                sortOrder,
-                pageIndex,
-                pageSize
-            )
-            .pipe(
-                catchError(() => of([])),
-                finalize(() => this.loadingSubject.next(false))
-            )
-            .subscribe((librarians: Librarian[]) => this.librariansSubject.next(librarians));
+        this.store
+            .dispatch(new LoadLibrarians(filterValue, sortName, sortOrder, pageIndex, pageSize))
+            .pipe(catchError(() => of([])), finalize(() => this.loadingSubject.next(false)))
+            .subscribe((state: StoreStateModel) => this.librariansSubject.next(state?.librarian?.librarians));
     }
 
-    connect(collectionViewer: CollectionViewer): Observable<Librarian[]> {
+    connect(collectionViewer: CollectionViewer): Observable<User[]> {
         return this.librariansSubject.asObservable();
     }
 

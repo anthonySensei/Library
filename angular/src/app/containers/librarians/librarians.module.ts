@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { SharedModule } from '../../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { LibrariansRoutingModule } from './librarians-routing.module';
 
-import { AddLibrarianComponent } from './add-librarian/add-librarian.component';
 import { LibrarianScheduleComponent } from './librarian-schedule/librarian-schedule.component';
 import { LibrariansComponent } from './librarians/librarians.component';
 import { LibrarianDetailsComponent } from './librarian-details/librarian-details.component';
@@ -17,10 +16,11 @@ import { ScheduleFilterSectionComponent } from './librarian-schedule/schedule-fi
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { ScheduleComponent } from './schedule/schedule.component';
+import { NgxsModule } from '@ngxs/store';
+import { LibrarianState } from '../../store/librarian.state';
 
 @NgModule({
     declarations: [
-        AddLibrarianComponent,
         LibrarianScheduleComponent,
         LibrariansComponent,
         LibrarianDetailsComponent,
@@ -30,9 +30,15 @@ import { ScheduleComponent } from './schedule/schedule.component';
         ScheduleFilterSectionComponent,
         ScheduleComponent
     ],
-    imports: [CommonModule, FormsModule, SharedModule, LibrariansRoutingModule, StudentsModule, CalendarModule.forRoot({
-        provide: DateAdapter,
-        useFactory: adapterFactory
-    })]
+    imports: [
+        CommonModule,
+        FormsModule,
+        SharedModule, LibrariansRoutingModule, StudentsModule, CalendarModule.forRoot({
+            provide: DateAdapter,
+            useFactory: adapterFactory
+        }),
+        NgxsModule.forFeature([LibrarianState])
+    ]
 })
-export class LibrariansModule {}
+export class LibrariansModule {
+}
