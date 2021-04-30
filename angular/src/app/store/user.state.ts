@@ -1,4 +1,4 @@
-import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { UserStateModel } from './user.model';
 import { User } from '../models/user.model';
 import { AuthService } from '../services/auth.service';
@@ -8,7 +8,7 @@ import { AngularLinks } from '../constants/angularLinks';
 import { MaterialService } from '../services/material.service';
 import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../constants/snackBarClasses';
-import { UpdateUserPayload } from '../models/request/user';
+import { RegisterUserPayload, UpdatePasswordPayload, UpdateUserPayload } from '../models/request/user';
 import { UserService } from '../services/user.service';
 import { StudentStateModel } from './student.model';
 
@@ -47,7 +47,13 @@ export class AutoLogout {
 export class RegisterUser {
     static readonly type = '[User] RegisterUser';
 
-    constructor(public name: string, public email: string, public password: string) {}
+    constructor(public data: RegisterUserPayload) {}
+}
+
+export class LoadUser {
+    static readonly type = '[User] LoadUser';
+
+    constructor() {}
 }
 
 export class SetUser {
@@ -62,10 +68,28 @@ export class CreateUser {
     constructor(public data: UpdateUserPayload) {}
 }
 
+export class CheckActivationToken {
+    static readonly type = '[User] CheckActivationToken';
+
+    constructor(public token: string) {}
+}
+
 export class EditUser {
     static readonly type = '[User] EditUser';
 
     constructor(public data: UpdateUserPayload, public userId?: string) {}
+}
+
+export class EditPassword {
+    static readonly type = '[User] EditPassword';
+
+    constructor(public data: UpdatePasswordPayload) {}
+}
+
+export class EditImage {
+    static readonly type = '[User] EditImage';
+
+    constructor(public image: string) {}
 }
 
 export class DeleteUser {
@@ -110,8 +134,24 @@ export class UserState {
         return ctx;
     }
 
+    @Action(LoadUser)
+    loadUser(ctx: StateContext<UserStateModel>) {
+        const { id } = ctx.getState().user;
+        return this.userService.getUser(id).pipe(tap(async response => {
+            const { success, user, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            ctx.dispatch(new SetUser(user));
+        }));
+    }
+
     @Action(SetUser)
     setUser(ctx: StateContext<UserStateModel>, action: SetUser) {
+        localStorage.setItem('userData', JSON.stringify(action.user));
         return ctx.patchState({ user: action.user });
     }
 
@@ -130,9 +170,8 @@ export class UserState {
             const expirationDate = new Date(new Date().getTime() + tokenExpiresIn * 1000);
             const tokenData = { token, expirationDate };
             ctx.dispatch(new AutoLogout(tokenExpiresIn * 1000));
-            localStorage.setItem('tokenData', JSON.stringify(tokenData));
-            localStorage.setItem('userData', JSON.stringify(user));
             ctx.dispatch(new SetUser(user));
+            localStorage.setItem('tokenData', JSON.stringify(tokenData));
             await this.router.navigate([AngularLinks.HOME]);
         }));
     }
@@ -162,8 +201,7 @@ export class UserState {
 
     @Action(RegisterUser)
     registerUser(ctx: StateContext<UserStateModel>, action: RegisterUser) {
-        const { name, email, password } = action;
-        return this.authService.createUser(name, email, password).pipe(tap(async response => {
+        return this.authService.createUser(action.data).pipe(tap(async response => {
             const { success, message } = response;
 
             if (!success) {
@@ -178,8 +216,7 @@ export class UserState {
 
     @Action(CreateUser)
     createUser(ctx: StateContext<UserStateModel>, action: CreateUser) {
-        const { data } = action;
-        return this.userService.createUser(data).pipe(tap(async response => {
+        return this.userService.createUser(action.data).pipe(tap(async response => {
             const { success, message } = response;
 
             if (!success) {
@@ -188,6 +225,21 @@ export class UserState {
             }
 
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        }));
+    }
+
+    @Action(CheckActivationToken)
+    checkActivationToken(ctx: StateContext<UserStateModel>, action: CheckActivationToken) {
+        return this.authService.checkActivationToken(action.token).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            await this.router.navigate([AngularLinks.LOGIN]);
         }));
     }
 
@@ -204,6 +256,41 @@ export class UserState {
                 return ctx;
             }
 
+            if (!userId && currentUserId) {
+                ctx.dispatch(new LoadUser());
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        }));
+    }
+
+    @Action(EditPassword)
+    editPassword(ctx: StateContext<UserStateModel>, action: EditPassword) {
+        const { id } = ctx.getState().user;
+        return this.userService.editPassword({ id, body: action.data }).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        }));
+    }
+
+    @Action(EditImage)
+    editImage(ctx: StateContext<UserStateModel>, action: EditImage) {
+        const { id } = ctx.getState().user;
+        return this.userService.editImage(id, action.image).pipe(tap(async response => {
+            const { success, message } = response;
+
+            if (!success) {
+                this.materialService.openErrorSnackbar(message);
+                return ctx;
+            }
+
+            ctx.dispatch(new LoadUser());
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
         }));
     }

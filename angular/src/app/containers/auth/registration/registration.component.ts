@@ -17,6 +17,7 @@ import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
 import { Store } from '@ngxs/store';
 import { RegisterUser } from '../../../store/user.state';
+import { RegisterUserPayload } from '../../../models/request/user';
 
 @Component({
     selector: 'app-registration',
@@ -40,6 +41,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     passwordForm: FormGroup;
 
     emailValidation: RegExp;
+    phoneValidation: RegExp;
     passwordValidation: RegExp;
 
     discardChanged = new Subject<boolean>();
@@ -56,6 +58,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     ngOnInit() {
         document.title = PageTitles.REGISTRATION;
         this.emailValidation = this.validationService.getEmailValidation();
+        this.phoneValidation = this.validationService.getPhoneValidation();
         this.passwordValidation = this.validationService.getPasswordValidation();
         this.formControlInitialization();
     }
@@ -67,7 +70,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
                 Validators.email,
                 Validators.pattern(this.emailValidation)
             ]),
-            name: new FormControl(null, [Validators.required])
+            name: new FormControl(null, [Validators.required]),
+            phone: new FormControl(null, [Validators.required, Validators.pattern(this.phoneValidation)]),
         });
         this.passwordForm = new FormGroup({
             password: new FormControl(null, [Validators.required, Validators.pattern(this.passwordValidation)]),
@@ -92,10 +96,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     }
 
     onRegisterUser(stepper: MatHorizontalStepper): void {
-        const email = this.mainInfoForm.value.email;
-        const name = this.mainInfoForm.value.name;
-        const password = this.passwordForm.value.password;
-        const password2 = this.passwordForm.value.password2;
+        const { email, name, phone } = this.mainInfoForm.value;
+        const { password, password2 } = this.passwordForm.value;
 
         if (this.passwordForm.invalid || this.mainInfoForm.invalid) {
             stepper.selectedIndex = 0;
@@ -110,7 +112,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(new RegisterUser(name, email, password)).subscribe(() => stepper.selectedIndex = 0);
+        const user: RegisterUserPayload = { name, email, password, phone };
+        this.store.dispatch(new RegisterUser(user)).subscribe(() => stepper.selectedIndex = 0);
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {

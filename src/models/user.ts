@@ -9,6 +9,7 @@ export interface UserSchema extends Document {
     active: boolean;
     admin: boolean;
     librarian: boolean;
+    activationToken: string;
     comparePassword: (password: string) => boolean;
 }
 

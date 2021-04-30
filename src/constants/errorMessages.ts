@@ -10,9 +10,9 @@ export default {
     USER_EMAIL_EXISTS: 'User with this has email already exists',
     USER_PHONE_EXISTS: 'User with this has phone number already exists',
     INVALID_EMAIL: 'Invalid email',
-    PASSWORD_ERROR_CHANGED: 'Password has\'n changed',
+    PASSWORD_ERROR_CHANGED: 'Password was not changed',
     OLD_PASSWORD_EQUEL_NEW_PASSWORD:
-        'Password has not been changed. Old password equels to new password',
+        'Password was not changed. Old password equals to new password',
     DIFFERENT_PASSWORDS: 'Passwords are different!',
     WRONG_OLD_PASSWORD: 'Wrong old password',
     AUTHOR_EXIST: 'Author with this name has already existed.',
@@ -22,5 +22,6 @@ export default {
     SCHEDULE_EXIST: 'Schedule has already existed.',
     THERE_ARE_NO_AVAILABLE_BOOKS:
         'There are no books available on the department.',
-    ISBN_EXIST: 'Book with this isbn exist in this department'
+    ISBN_EXIST: 'Book with this isbn exist in this department',
+    USER_DOES_NOT_EXIST: 'User does not exist'
 };

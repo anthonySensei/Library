@@ -9,20 +9,20 @@
                 src="{{user.image ? user.image : 'https://www.w3schools.com/w3css/img_avatar3.png'}}"
                 alt="Avatar"
             />
-            <form (ngSubmit)="onChangeUserData()" [formGroup]="profileForm">
+            <form [formGroup]="profileForm">
                 <div class="my-3 d-flex justify-content-center">
                     <button
                         type="button"
                         mat-raised-button
                         style="margin-right: 5px;"
-                        (click)="openChangeProfileImageDialog()"
+                        (click)="onOpenChangeProfileImagePopup()"
                     >
                         Change image
                     </button>
                     <button
                         type="button"
                         mat-raised-button
-                        (click)="openChangePasswordDialog()"
+                        (click)="onOpenChangePasswordPopup()"
                     >
                         Change password
                     </button>
@@ -36,7 +36,7 @@
                             formControlName="name"
                             placeholder="Ex. Anthony"
                         />
-                        <mat-error *ngIf="hasError('name', 'required') && !error">
+                        <mat-error *ngIf="hasError('name', 'required')">
                             Name is required
                         </mat-error>
                     </mat-form-field>
@@ -48,20 +48,21 @@
                             formControlName="email"
                             placeholder="Ex. example@mail.com"
                         />
-                        <mat-error *ngIf="error">
-                            {{ error }}
-                        </mat-error>
-                        <mat-error *ngIf="hasError('email', 'required') && !error">
+                        <mat-error *ngIf="hasError('email', 'required')">
                             Email is required
                         </mat-error>
-                        <mat-error
-                            *ngIf="
-                                (hasError('email', 'email') ||
-                                    hasError('email', 'pattern')) &&
-                                !error
-                            "
-                        >
+                        <mat-error *ngIf="(hasError('email', 'email') || hasError('email', 'pattern'))">
                             Email is not valid
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="form__input w-50">
+                        <mat-label>Phone</mat-label>
+                        <input matInput type="text" name="phone" formControlName="phone" placeholder="Ex. example@mail.com" />
+                        <mat-error *ngIf="hasError('phone', 'required')">
+                            Phone is required
+                        </mat-error>
+                        <mat-error *ngIf="hasError('phone', 'pattern')">
+                            Phone is not valid
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -70,8 +71,8 @@
                         mat-raised-button
                         color="primary"
                         class="form-button"
-                        type="submit"
                         [disabled]="profileForm.invalid || !profileForm.touched"
+                        (click)="onEditUser()"
                     >
                         Save
                     </button>

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './login/auth.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { ActivationPageComponent } from './activation-page/activation-page.component';
-import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
+import { CanDeactivateGuard } from '@shared/can-deactivate-guard.service';
 
 const routes: Routes = [
     { path: 'login', component: AuthComponent },
