@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 
 import logger from '../config/logger';
+import pool from '../config/postgres';
+import { Error } from 'mongoose';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -96,63 +98,67 @@ exports.getAllOrders = async (req: Request, res: Response) => {
                 isShowNotLoaned
             )
         });
-        const orders = await Order.findAll({
-            include: includeArr,
-            where: getCondition(
-                departmentId,
-                orderDate,
-                nextDay,
-                isShowNotLoaned
-            ),
-            limit: pageSize,
-            order: [['order_time', sortOrder]],
-            offset: (page - 1) * pageSize
-        });
-        const ordersArr = [];
-        for (const order of orders) {
-            const ordersValues = order.get();
-            const studentData = ordersValues.student_.get();
-            const departmentData = ordersValues.department_.get();
-            const bookData = ordersValues.book_.get();
-            let ordersObj: any = {
-                id: ordersValues.id,
-                orderTime: ordersValues.order_time,
-                loanTime: ordersValues.loan_time,
-                bookISBN: bookData.isbn,
-                departmentAddress: departmentData.address
-            };
-            if (!studentId) {
-                ordersObj = {
-                    ...ordersObj,
-                    student: {
-                        id: studentData.id,
-                        name: studentData.name,
-                        email: studentData.email,
-                        readerTicket: studentData.reader_ticket
-                    },
-                    department: {
-                        address: departmentData.address
-                    },
-                    book: {
-                        bookId: bookData.id,
-                        isbn: bookData.isbn,
-                        name: bookData.name,
-                        year: bookData.year,
-                        author: {
-                            name: bookData.author_.get().name
-                        }
-                    },
-                    studentReaderTicket: studentData.reader_ticket
-                };
+
+        pool.query(`
+            SELECT o.id, o.order_time, o.loan_time, s.id AS "studentId", s.name AS "studentName", s.email AS "studentEmail",
+            b.id AS "bookId", b.isbn AS "bookISBN", b.name AS "bookName", b.year AS "bookYear", b.description AS "bookDescription",
+            a.name AS "authorName", d.address as "departmentAddress"
+            FROM order_s AS o
+            INNER JOIN student_s AS s ON o."studentId" = s.id
+            INNER JOIN book_s AS b ON o."bookId" = b.id
+            LEFT OUTER JOIN author_s AS a ON b."authorId" = a.id
+            LEFT OUTER JOIN department_s AS d ON o."departmentId" = d.id
+            ORDER BY o.order_time ${sortOrder} LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize};
+        `, (err: Error, result: any) => {
+            if (err) {
+                logger.error('Error getting orders', err.message);
+                return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
             }
-            ordersArr.push(ordersObj);
-        }
-        const data = {
-            orders: ordersArr,
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity
-        };
-        return helper.responseHandle(res, 200, data);
+
+            const ordersArr = [];
+            for (const order of result.rows) {
+                let ordersObj: any = {
+                    id: order.id,
+                    orderTime: order.order_time,
+                    loanTime: order.loan_time,
+                    bookISBN: order.bookISBN,
+                    departmentAddress: order.departmentAddress
+                };
+
+                if (!studentId) {
+                    ordersObj = {
+                        ...ordersObj,
+                        student: {
+                            id: order.studentId,
+                            name: order.studentName,
+                            email: order.studentEmail,
+                        },
+                        department: {
+                            address: order.departmentAddress
+                        },
+                        book: {
+                            bookId: order.bookId,
+                            isbn: order.bookISBN,
+                            name: order.bookName,
+                            year: order.bookYear,
+                            author: {
+                                name: order.authorName
+                            }
+                        }
+                    };
+                }
+
+                ordersArr.push(ordersObj);
+            }
+            const data = {
+                orders: ordersArr,
+                message: successMessages.SUCCESSFULLY_FETCHED,
+                quantity
+            };
+            return helper.responseHandle(res, 200, data);
+        });
+
+
     } catch (err) {
         logger.error('Error getting orders', err.message);
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);

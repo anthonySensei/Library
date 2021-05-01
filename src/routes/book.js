@@ -15,6 +15,14 @@ router.get(booksISBNsUrl, bookController.getAllBooksISBN);
 
 router.get(booksDetailsUrl, bookController.getBook);
 
+router.get('/grouping', bookController.grouping);
+router.get('/count', bookController.count);
+router.get('/condition', bookController.condition);
+router.post('/change-name', bookController.changeName);
+router.post('/new-genre', bookController.newGenre);
+router.delete('/delete-genre', bookController.deleteGenre);
+
+
 router.post(
     '',
     passport.authenticate('jwt', { session: false }),

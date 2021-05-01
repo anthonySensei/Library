@@ -9,11 +9,13 @@ import connectMongoDB from './config/db';
 import logger from './config/logger';
 import sequelize from './config/database';
 import multer from './config/multer';
+import mongoClient from './config/mongodb';
 
 import authRoutes from './routes/auth';
 import librarianRoutes from './routes/librarian';
 import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
+import { MongoClient, MongoError } from 'mongodb';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
@@ -113,17 +115,29 @@ Order.belongsTo(Student);
 Order.belongsTo(Book);
 Order.belongsTo(Department);
 
-sequelize
-    .sync()
-    .then(() => {
+export let mongoDBClient: MongoClient;
+
+mongoClient.connect((error: MongoError, client: MongoClient) => {
+
+    if (error) {
+        logger.error(`Cannot connect to MonoDB`, error.message);
+    }
+
+    logger.info('Successfully connected to MongoDB');
+
+    mongoDBClient = client;
+
+    sequelize.sync().then(() => {
         connectMongoDB()
             .then(() => {
                 app.listen(port);
-                logger.info('Successfully connected to MongoDB');
+                logger.info('Successfully connected to Mongoose');
                 logger.info('App is listening on', port);
-             })
+            })
             .catch(err => {
                 logger.error('Cannot connect to MongoDB. Error:', err.message);
                 return;
             });
     });
+});
+

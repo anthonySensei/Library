@@ -13,6 +13,8 @@ import { responseErrorHandle, responseHandle } from '../helper/responseHandle';
 import { generatePassword } from '../helper/password';
 import { getImagePath, convertToBase64 } from '../helper/image';
 
+import { mongoDBClient } from '../index';
+
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, phone, admin, librarian } = req.body;
     const password = generatePassword();
@@ -21,7 +23,7 @@ export const createUser = async (req: Request, res: Response) => {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
 
-    const isUserWithEmailExists = !!(await User.findOne({ email }));
+    const isUserWithEmailExists = !!(await mongoDBClient.db('Library').collection('users').findOne({ email }));
 
     if (isUserWithEmailExists) {
         return responseErrorHandle(res, 400, errorMessages.USER_EMAIL_EXISTS);

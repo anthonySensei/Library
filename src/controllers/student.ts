@@ -5,6 +5,7 @@ import User from '../schemas/user';
 import { UserModel, UserSchema } from '../models/user';
 
 import logger from '../config/logger';
+import { mongoDBClient } from '../index';
 
 import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
 import { convertToBase64 } from '../helper/image';
@@ -15,8 +16,6 @@ import successMessages from '../constants/successMessages';
 export const getStudents = async (req: Request, res: Response) => {
     const { pageNumber: page, pageSize, sortOrder, filterValue, sortName } = req.query;
     const regex = new RegExp(filterValue as string, 'i');
-    const sort: any = {};
-    sort[sortName as string] = sortOrder;
     const filterCondition = {
         admin: false,
         librarian: false,
@@ -25,11 +24,11 @@ export const getStudents = async (req: Request, res: Response) => {
 
     try {
         const studentQuantity = await User.countDocuments(filterCondition);
-        const studentsDb = await User.find(filterCondition, {}, {
-            limit: Number(pageSize),
-            skip: (Number(page) - 1) * Number(pageSize),
-            sort
-        }) as UserSchema[];
+        const sort: any = {};
+        sort[sortName as string] = sortOrder === 'desc' ? -1 : 1;
+        const query = { admin: false, librarian: false, $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ] };
+        const options =  { limit: Number(pageSize),  skip: (Number(page) - 1) * Number(pageSize), sort };
+        const studentsDb = await mongoDBClient.db('Library').collection('users').find(query, options).toArray();
 
         const students: UserModel[] = studentsDb.map(student => ({
             id: student._id,

@@ -15,6 +15,9 @@ const ITEMS_PER_PAGE = 8;
 const helper = require('../helper/responseHandle');
 const imageHandler = require('../helper/image');
 
+const pool = require('../config/postgres');
+const logger = require('../config/logger');
+
 const getCondition = (
     filterName,
     filterValue,
@@ -80,51 +83,127 @@ exports.getBooks = async (req, res) => {
         }
     };
 
-    try {
-        const totalBooks = await Book.count({ where: condition });
-        const books = await Book.findAll({
-            include: [
-                { model: Department },
-                { model: Author },
-                { model: Genre }
-            ],
-            order: [['year', 'DESC']],
-            where: condition,
-            limit: ITEMS_PER_PAGE,
-            offset: (page - 1) * ITEMS_PER_PAGE
-        });
-        const booksArr = [];
-        books.forEach(book => {
-            const bookValues = book.get();
-            bookValues.image = imageHandler.convertToBase64(bookValues.image);
-            booksArr.push({
-                id: bookValues.id,
-                name: bookValues.name,
-                year: bookValues.year,
-                author: bookValues.author_.get(),
-                genre: bookValues.genre_.get(),
-                image: bookValues.image,
-                description: bookValues.description,
-                department: bookValues.department_.get()
-            });
-        });
-        const data = {
-            books: booksArr,
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            paginationData: {
-                currentPage: page,
-                hasNextPage: ITEMS_PER_PAGE * page < totalBooks,
-                hasPreviousPage: page > 1,
-                nextPage: page + 1,
-                previousPage: page - 1,
-                lastPage: Math.ceil(totalBooks / ITEMS_PER_PAGE)
+    pool.query(`
+        SELECT count(*) AS "count" FROM book_s WHERE book_s.quantity >= 0
+    `, (err, cResult) => {
+        if (err) {
+            logger.error('Error getting books', err.message);
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        }
+
+        const totalBooks = cResult.rows[0].count;
+
+        pool.query(`
+            SELECT b.id, b.name, b.year, b.image, d.address, a.name AS "author", g.name AS "genre"
+            FROM book_s AS b
+            LEFT OUTER JOIN department_s AS d ON b."departmentId" = d.id
+            LEFT OUTER JOIN author_s AS a ON b."authorId" = a.id
+            LEFT OUTER JOIN genre_s AS g ON b."genreId" = g.id 
+            WHERE b.quantity >= 0 ORDER BY b.year DESC LIMIT ${ITEMS_PER_PAGE} OFFSET ${(page - 1) * ITEMS_PER_PAGE}
+        `, (err, result) => {
+            if (err) {
+                logger.error('Error getting books', err.message);
+                return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
             }
-        };
-        return helper.responseHandle(res, 200, data);
+
+            let books = result.rows;
+            books = books.map(book => ({
+                ...book,
+                image: imageHandler.convertToBase64(book.image),
+                department: { address: book.address },
+                author: { name: book.name },
+                genre: { name: book.name },
+            }))
+
+            const data = {
+                books,
+                message: successMessages.SUCCESSFULLY_FETCHED,
+                paginationData: {
+                    currentPage: page,
+                    hasNextPage: ITEMS_PER_PAGE * page < totalBooks,
+                    hasPreviousPage: page > 1,
+                    nextPage: page + 1,
+                    previousPage: page - 1,
+                    lastPage: Math.ceil(totalBooks / ITEMS_PER_PAGE)
+                }
+            };
+            return helper.responseHandle(res, 200, data);
+        });
+    });
+};
+
+exports.grouping = async (req, res) => {
+    pool.query(`
+         SELECT COUNT(isbn), name FROM book_s group by name;
+    `, (err, result) => {
+        if (err) {
+            logger.error('Error Grouping', err.message);
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        }
+
+        return helper.responseHandle(res, 200, { result: result.rows });
+    });
+}
+
+exports.count = async (req, res) => {
+    pool.query(`
+          SELECT COUNT(isbn) FROM book_s WHERE id=1;
+    `, (err, result) => {
+        if (err) {
+            logger.error('Error Counting', err.message);
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        }
+
+        return helper.responseHandle(res, 200, { result: result.rows });
+    });
+}
+
+exports.condition = async (req, res) => {
+    pool.query(`
+          SELECT * FROM book_s WHERE "departmentId" = (Select id from department_s where address = 'Main');
+    `, (err, result) => {
+        if (err) {
+            logger.error('Error Counting', err.message);
+            return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        }
+
+        return helper.responseHandle(res, 200, { result: result.rows });
+    });
+}
+
+exports.changeName = async (req, res) => {
+    try {
+        const { name } = req.body;
+        const book = await Book.findOne({ where: { id: 1 } });
+        await book.update({ name });
+        return helper.responseHandle(res, 200, { result: `Updated` });
     } catch (err) {
+        logger.error('Error changing name', err.message);
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
-};
+}
+
+exports.newGenre = async (req, res) => {
+    try {
+        const { name } = req.body;
+        await Genre.create({ name });
+        return helper.responseHandle(res, 200, { result: `Created` });
+    } catch (err) {
+        logger.error('Error changing name', err.message);
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+}
+
+exports.deleteGenre = async (req, res) => {
+    try {
+        const genre = await Genre.create({ name: `Super hard name` });
+        genre.destroy();
+        return helper.responseHandle(res, 200, { result: `Deleted` });
+    } catch (err) {
+        logger.error('Error changing name', err.message);
+        return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+}
 
 exports.getBook = async (req, res) => {
     const bookId = req.query.bookId;

@@ -12,6 +12,7 @@ import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import { convertToBase64 } from '../helper/image';
 
 const expiresIn = 3600 * 12;
 
@@ -37,7 +38,7 @@ export const login = (req: Request, res: Response, next: any) => {
             const userJWT = { id: user.id, email: user.email };
             const token = jwt.sign(userJWT, secretKey, { expiresIn });
             const { _id: id, name, email, image, admin, librarian } = user;
-            const userData = { id, name, email, image, admin, librarian };
+            const userData = { id, name, email, image: convertToBase64(image), admin, librarian };
             jwt.verify(token, secretKey);
             const data = {
                 success: true,
