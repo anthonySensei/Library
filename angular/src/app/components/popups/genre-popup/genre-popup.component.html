@@ -1,0 +1,13 @@
+<h2 mat-dialog-title class="text-center">{{ getTitle() }}</h2>
+<mat-dialog-content>
+    <form class="d-flex justify-content-center align-items-center flex-column">
+        <mat-form-field class="w-75">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" name="name" placeholder="Ex. Fantasy" [formControl]="name" />
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="isInvalid()" (click)="onDoAction()">Save</button>
+</mat-dialog-actions>

@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 
 import { Author } from '../models/author.model';
-
-import { ResponseService } from './response.service';
+import { UpdateAuthorPayload } from '../models/request/author';
 
 import { serverLink } from '../constants/serverLink';
-import { UpdateAuthorPayload } from '../models/request/author';
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +15,7 @@ export class AuthorService {
     private AUTHORS_URL = `${serverLink}/authors`;
 
     constructor(
-        private http: HttpClient,
-        private responseService: ResponseService
+        private http: HttpClient
     ) {}
 
     getAuthors() {

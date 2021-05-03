@@ -23,6 +23,7 @@ import { Select, Store } from '@ngxs/store';
 import { UserState } from '../../store/state/user.state';
 import { User } from '../../models/user.model';
 import { LoadAuthors } from '../../store/state/author.state';
+import { LoadGenres } from '../../store/state/genre.state';
 
 @Component({
     selector: 'app-edit-page',
@@ -79,6 +80,10 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     onLoadAuthors() {
         this.store.dispatch(new LoadAuthors());
+    }
+
+    onLoadGenres() {
+        this.store.dispatch(new LoadGenres());
     }
 
     ngOnDestroy(): void {}

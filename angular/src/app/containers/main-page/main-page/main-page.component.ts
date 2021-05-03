@@ -120,10 +120,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe((authors: Author[]) => {
                 this.authors = authors;
         });
-        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
-        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) => {
-                this.genres = genres;
-        });
+        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe();
         this.getUser$();
     }
 

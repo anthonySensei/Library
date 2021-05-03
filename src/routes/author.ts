@@ -10,4 +10,4 @@ router.post('', passport.authenticate('jwt', { session: false }), addAuthor);
 router.put('/:id', passport.authenticate('jwt', { session: false }), editAuthor);
 router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteAuthor);
 
-module.exports = router;
+export default router;

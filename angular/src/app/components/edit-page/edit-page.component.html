@@ -34,17 +34,11 @@
                 [helperService]="helperService"
             ></app-department-section>
         </mat-expansion-panel>
-        <mat-expansion-panel>
+        <mat-expansion-panel #genres (click)="genres.expanded && onLoadGenres()">
             <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Genres
-                </mat-panel-title>
+                <mat-panel-title>Genres</mat-panel-title>
             </mat-expansion-panel-header>
-            <app-genre-section
-                (nothingToChange)="nothingChangeHandle()"
-                [responseService]="responseService"
-                [helperService]="helperService"
-            ></app-genre-section>
+            <app-genre-section></app-genre-section>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>

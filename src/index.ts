@@ -10,7 +10,9 @@ import logger from './config/logger';
 import sequelize from './config/database';
 import multer from './config/multer';
 
+import authorRoutes from './routes/author';
 import authRoutes from './routes/auth';
+import genreRoutes from './routes/genre';
 import librarianRoutes from './routes/librarian';
 import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
@@ -23,8 +25,6 @@ const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
 const departmentRoutes = require('./routes/department');
-const authorRoutes = require('./routes/author');
-const genreRoutes = require('./routes/genre');
 const periodRoutes = require('./routes/period');
 const scheduleRoutes = require('./routes/schedule');
 

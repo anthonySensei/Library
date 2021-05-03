@@ -38,6 +38,7 @@ import { HttpErrorInterceptor } from './interceptors/error.interceptor';
 import { GenreState } from './store/state/genre.state';
 import { AuthorState } from './store/state/author.state';
 import { AuthorPopupComponent } from './components/popups/author-popup/author-popup.component';
+import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup.component';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -57,6 +58,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         PeriodSectionComponent,
         MyOrdersModalComponent,
         AuthorPopupComponent,
+        GenrePopupComponent,
     ],
     imports: [
         BrowserModule,

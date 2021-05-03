@@ -1,11 +1,8 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { User } from '../../models/user.model';
-import { AuthService } from '../../services/auth.service';
 import { tap } from 'rxjs/operators';
 import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
-import { UserService } from '../../services/user.service';
 import { StudentStateModel } from '../models/student.model';
 import { Author } from '../../models/author.model';
 import { AuthorStateModel } from '../models/author.model';

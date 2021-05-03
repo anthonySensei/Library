@@ -120,8 +120,7 @@ export class AddBookComponent
     }
 
     setGenres(): void {
-        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
-        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) =>  this.genres = genres);
+        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe();
     }
 
     initializeForm(): void {
@@ -223,7 +222,7 @@ export class AddBookComponent
                     });
             } else {
                 this.genreService
-                    .addGenreHttp({ id: null, name: result.name })
+                    .createGenre({ id: null, name: result.name })
                     .subscribe(() => {
                         if (this.responseService.responseHandle()) {
                             this.setGenres();

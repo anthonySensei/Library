@@ -6,6 +6,8 @@ import { UpdateAuthorPayload } from '../../models/request/author';
 import { GenreStateModel } from '../models/genre.model';
 import { GenreService } from '../../services/genre.service';
 import { Genre } from '../../models/genre.model';
+import { tap } from 'rxjs/operators';
+import { SnackBarClasses } from '../../constants/snackBarClasses';
 
 
 /*********************************
@@ -30,19 +32,19 @@ export class SetGenres {
 export class CreateGenre {
     static readonly type = '[Genre] CreateGenre';
 
-    constructor(public data: UpdateAuthorPayload) {}
+    constructor(public name: string) {}
 }
 
 export class EditGenre {
     static readonly type = '[Genre] EditGenre';
 
-    constructor(public data: UpdateAuthorPayload, public authorId?: string) {}
+    constructor(public id: string, public name: string) {}
 }
 
 export class DeleteGenre {
     static readonly type = '[Genre] DeleteGenre';
 
-    constructor(public id?: string) {}
+    constructor(public id: string) {}
 }
 
 /*******************************
@@ -81,47 +83,42 @@ export class GenreState {
 
     @Action(LoadGenres)
     loadAuthors(ctx: StateContext<GenreStateModel>) {
-        // return this.userService.getUser(id).pipe(tap(async response => {
-        //     const { user } = response;
-        //     ctx.dispatch(new SetUser(user));
-        // }));
+        return this.genreService.getGenres().pipe(tap(response => {
+            ctx.dispatch(new SetGenres(response.genres));
+        }));
     }
 
     @Action(SetGenres)
-    setAuthor(ctx: StateContext<GenreStateModel>, action: SetGenres) {
+    setGenres(ctx: StateContext<GenreStateModel>, action: SetGenres) {
         return ctx.patchState({ genres: action.genres });
     }
 
     @Action(CreateGenre)
-    createAuthor(ctx: StateContext<GenreStateModel>, action: CreateGenre) {
-        // return this.userService.createUser(action.data).pipe(tap(async response => {
-        //     const { message } = response;
-        //     this.materialService.openSnackbar(message, SnackBarClasses.Success);
-        // }));
+    createGenre(ctx: StateContext<GenreStateModel>, action: CreateGenre) {
+        return this.genreService.createGenre({ name: action.name }).pipe(tap(response => {
+            const { message } = response;
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadGenres());
+        }));
     }
 
     @Action(EditGenre)
     editAuthor(ctx: StateContext<GenreStateModel>, action: EditGenre) {
-        // const { data, userId } = action;
-        // const { id: currentUserId } = ctx.getState().user;
-        // const id = userId || currentUserId;
-        // return this.userService.editUser({ id, body: data }).pipe(tap(async response => {
-        //     const { message } = response;
-        //
-        //     if (!userId && currentUserId) {
-        //         ctx.dispatch(new LoadUser());
-        //     }
-        //
-        //     this.materialService.openSnackbar(message, SnackBarClasses.Success);
-        // }));
+        const { id, name } = action;
+        return this.genreService.ediGenre(id, name).pipe(tap(response => {
+            const { message } = response;
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadGenres());
+        }));
     }
 
     @Action(DeleteGenre)
-    deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteGenre) {
-        // const { id } = action;
-        // return this.userService.deleteUser(id).pipe(tap((response: any) => {
-        //     const { success, message } = response;
-        //     this.materialService.openSnackbar(message, SnackBarClasses.Success);
-        // }));
+    deleteGenre(ctx: StateContext<StudentStateModel>, action: DeleteGenre) {
+        const { id } = action;
+        return this.genreService.deleteGenre(id).pipe(tap((response: any) => {
+            const { message } = response;
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadGenres());
+        }));
     }
 }
