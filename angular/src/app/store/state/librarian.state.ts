@@ -1,10 +1,10 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { User } from '../models/user.model';
+import { User } from '../../models/user.model';
 import { Injectable } from '@angular/core';
 import { tap } from 'rxjs/operators';
-import { MaterialService } from '../services/material.service';
-import { LibrarianStateModel } from './librarian.model';
-import { LibrarianService } from '../services/librarian.service';
+import { MaterialService } from '../../services/material.service';
+import { LibrarianStateModel } from '../models/librarian.model';
+import { LibrarianService } from '../../services/librarian.service';
 
 
 /*********************************
@@ -47,10 +47,10 @@ export class SetLibrarians {
 /*******************************
  *** UserState            ***
  ********************************/
-export const CONTRACT_STATE_NAME = 'librarian';
+export const STATE_NAME = 'librarian';
 
 @State<LibrarianStateModel>({
-    name: CONTRACT_STATE_NAME,
+    name: STATE_NAME,
     defaults: new LibrarianStateModel()
 })
 

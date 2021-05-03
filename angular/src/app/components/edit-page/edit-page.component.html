@@ -1,16 +1,10 @@
 <div class="container my-5">
     <mat-accordion>
-        <mat-expansion-panel>
+        <mat-expansion-panel #authors (click)="authors.expanded && onLoadAuthors()">
             <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Authors
-                </mat-panel-title>
+                <mat-panel-title>Authors</mat-panel-title>
             </mat-expansion-panel-header>
-            <app-author-section
-                (nothingToChange)="nothingChangeHandle()"
-                [responseService]="responseService"
-                [helperService]="helperService"
-            ></app-author-section>
+            <app-author-section></app-author-section>
         </mat-expansion-panel>
         <mat-expansion-panel>
             <mat-expansion-panel-header>

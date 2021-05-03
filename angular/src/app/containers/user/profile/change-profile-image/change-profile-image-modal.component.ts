@@ -3,7 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { Store } from '@ngxs/store';
-import { EditImage } from '../../../../store/user.state';
+import { EditImage } from '../../../../store/state/user.state';
 
 @Component({
     selector: 'app-change-profile-image-dialog',

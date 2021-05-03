@@ -11,7 +11,7 @@ import { StudentService } from '../../../services/student.service';
 import { HelperService } from '../../../services/helper.service';
 import { PageTitles } from '../../../constants/pageTitles';
 import { User } from '../../../models/user.model';
-import { LoadStudent, StudentState } from '../../../store/student.state';
+import { LoadStudent, StudentState } from '../../../store/state/student.state';
 
 @Component({
     selector: 'app-user-details',

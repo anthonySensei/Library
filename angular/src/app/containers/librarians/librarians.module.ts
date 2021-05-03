@@ -16,7 +16,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { NgxsModule } from '@ngxs/store';
-import { LibrarianState } from '../../store/librarian.state';
+import { LibrarianState } from '../../store/state/librarian.state';
 
 @NgModule({
     declarations: [

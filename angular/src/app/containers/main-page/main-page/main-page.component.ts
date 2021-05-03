@@ -22,7 +22,7 @@ import { User } from '../../../models/user.model';
 import { Pagination } from '../../../models/pagination.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { UserState } from '../../../store/state/user.state';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -116,7 +116,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.departments = departments;
                 this.booksSubscriptionHandle();
         });
-        this.authorService.fetchAllAuthorsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe();
         this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe((authors: Author[]) => {
                 this.authors = authors;
         });

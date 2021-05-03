@@ -1,18 +1,11 @@
-import Sequelize from 'sequelize';
+import { Schema } from 'mongoose';
+import * as mongoose from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Genre = sequelize.define('genre_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
+const genreSchema: Schema = new Schema({
     name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: String,
+        required: true
     }
 });
 
-module.exports = Genre;
+export default mongoose.model('Genre', genreSchema);

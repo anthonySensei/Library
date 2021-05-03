@@ -1,18 +1,15 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Author = sequelize.define('author_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
+const authorSchema: Schema = new Schema({
     name: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: String,
+        required: true
+    },
+    country: {
+        type: String,
+        required: true
     }
 });
 
-module.exports = Author;
+export default mongoose.model('Author', authorSchema);

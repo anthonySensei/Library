@@ -11,7 +11,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { LoanSectionComponent } from './student-details/loan-section/loan-section.component';
 import { OrdersSectionComponent } from './student-details/orders-section/orders-section.component';
 import { NgxsModule } from '@ngxs/store';
-import { StudentState } from '../../store/student.state';
+import { StudentState } from '../../store/state/student.state';
 
 @NgModule({
     declarations: [

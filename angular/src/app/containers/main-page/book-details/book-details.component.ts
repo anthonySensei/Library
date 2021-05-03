@@ -21,7 +21,7 @@ import { PageTitles } from '../../../constants/pageTitles';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { UserState } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-book-details',

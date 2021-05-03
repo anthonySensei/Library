@@ -16,7 +16,7 @@ import { ErrorMessages } from '../../../constants/errorMessages';
 import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
 import { Store } from '@ngxs/store';
-import { RegisterUser } from '../../../store/user.state';
+import { RegisterUser } from '../../../store/state/user.state';
 import { RegisterUserPayload } from '../../../models/request/user';
 
 @Component({

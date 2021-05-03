@@ -6,7 +6,7 @@ import { UserModel, UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
 import { convertToBase64 } from '../helper/image';
 
 import errorMessages from '../constants/errorMessages';
@@ -42,10 +42,9 @@ export const getStudents = async (req: Request, res: Response) => {
         const data = {
             students,
             message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity: studentQuantity,
-            success: true
+            quantity: studentQuantity
         };
-        return responseHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error fetching users', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
@@ -68,11 +67,10 @@ export const getStudent = async (req: Request, res: Response) => {
             orders: []
         };
         const data = {
-            success: true,
             message: successMessages.SUCCESSFULLY_FETCHED,
             student: studentData
         };
-        return responseHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Cannot fetch student', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);

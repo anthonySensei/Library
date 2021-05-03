@@ -10,7 +10,7 @@ import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Store } from '@ngxs/store';
-import { CheckActivationToken } from '../../../store/user.state';
+import { CheckActivationToken } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-activation-page',

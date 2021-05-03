@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 import { AngularLinks } from '../constants/angularLinks';
-import { UserState } from '../store/user.state';
+import { UserState } from '../store/state/user.state';
 import { Store } from '@ngxs/store';
 
 @Injectable({

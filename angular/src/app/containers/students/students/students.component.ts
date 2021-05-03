@@ -23,7 +23,7 @@ import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
 
 import { StudentsDataSource } from '../../../datasources/students.datasource';
 
-import { DeleteUser } from '../../../store/user.state';
+import { DeleteUser } from '../../../store/state/user.state';
 
 import { User } from '../../../models/user.model';
 

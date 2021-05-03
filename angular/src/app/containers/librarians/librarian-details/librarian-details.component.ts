@@ -11,9 +11,9 @@ import { Schedule } from '../../../models/schedule.model';
 
 import { PageTitles } from '../../../constants/pageTitles';
 import { Select, Store } from '@ngxs/store';
-import { LoadStudent, StudentState } from '../../../store/student.state';
+import { LoadStudent, StudentState } from '../../../store/state/student.state';
 import { User } from '../../../models/user.model';
-import { LibrarianState, LoadLibrarian } from '../../../store/librarian.state';
+import { LibrarianState, LoadLibrarian } from '../../../store/state/librarian.state';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({

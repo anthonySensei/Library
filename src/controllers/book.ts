@@ -1,18 +1,22 @@
 import { Request, Response } from 'express';
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 
+import Book from '../schemas/book';
+
+import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 import { convertToBase64, getImagePath } from '../helper/image';
+
+import logger from '../config/logger';
+
+import errorMessages from '../constants/errorMessages';
+import successMessages from '../constants/successMessages';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
-const Book = require('../schemas/book');
-const Genre = require('../schemas/genre');
-const Author = require('../schemas/author');
+const SequliezeBook = require('../schemas/sbook');
+const Genre = require('../schemas/sgenre');
+const Author = require('../schemas/sauthor');
 const Department = require('../schemas/department');
-
-const successMessages = require('../constants/successMessages');
-const errorMessages = require('../constants/errorMessages');
 
 exports.getBooks = async (req: Request, res: Response) => {
     // const page = +req.query.page || 1;
@@ -25,6 +29,8 @@ exports.getBooks = async (req: Request, res: Response) => {
     // const filterValue = req.query.filterValue;
 
     try {
+        const totalBooks = await Book.countDocuments();
+        const books = await Book.find();
         // const totalBooks = await Book.count({ where: condition });
         // const books = await Book.findAll({
         //     include: [
@@ -55,19 +61,20 @@ exports.getBooks = async (req: Request, res: Response) => {
         const totalPages = 12;
         const page = 1;
         const data = {
-            books: [],
+            books,
             message: successMessages.SUCCESSFULLY_FETCHED,
             paginationData: {
                 currentPage: page,
-                hasNextPage: totalPages * page < 0,
+                hasNextPage: totalPages * page < totalBooks,
                 hasPreviousPage: page > 1,
                 nextPage: page + 1,
                 previousPage: page - 1,
-                lastPage: Math.ceil(0 / totalPages)
+                lastPage: Math.ceil(totalBooks / totalPages)
             }
         };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
+        logger.error(`Error fetching books: ${err.message}`);
         return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
@@ -81,7 +88,7 @@ exports.getBook = async (req: Request, res: Response) => {
     }
 
     try {
-        const book = await Book.findOne({ where: condition, include: [{ model: Author }, { model: Genre }] });
+        const book = await SequliezeBook.findOne({ where: condition, include: [{ model: Author }, { model: Genre }] });
         const bookValues = book.get();
         const department = await Department.findOne({ where: { id: book.get().departmentId } });
         bookValues.image = convertToBase64(bookValues.image);
@@ -106,7 +113,7 @@ exports.getBook = async (req: Request, res: Response) => {
 
 exports.getAllBooksISBN = async (req: Request, res: Response) => {
     try {
-        const books = await Book.findAll();
+        const books = await SequliezeBook.findAll();
         const booksArr: any = [];
         books.forEach((book: any) => {
             const bookData = book.get();
@@ -133,7 +140,7 @@ exports.addBook = async (req: Request, res: Response) => {
     const filepath = getImagePath(imageBase64);
 
     try {
-        const isNotUnique = await Book.findOne({ where: {
+        const isNotUnique = await SequliezeBook.findOne({ where: {
                 isbn: bookData.isbn,
                 departmentId: bookData.department.id
             }
@@ -142,7 +149,7 @@ exports.addBook = async (req: Request, res: Response) => {
         if (isNotUnique) {
             return responseErrorHandle(res, 400, errorMessages.ISBN_EXIST);
         } else {
-            const newBook = new Book({
+            const newBook = new SequliezeBook({
                 isbn: bookData.isbn,
                 name: bookData.name,
                 authorId: bookData.author.id,
@@ -175,7 +182,7 @@ exports.editBook = async (req: Request, res: Response) => {
         bookData.image = getImagePath(bookData.image);
 
     try {
-        const isNotUnique = await Book.findOne({
+        const isNotUnique = await SequliezeBook.findOne({
             where: {
                 isbn: bookData.isbn,
                 departmentId: bookData.department.id,
@@ -186,7 +193,7 @@ exports.editBook = async (req: Request, res: Response) => {
         if (isNotUnique) {
             return responseErrorHandle(res, 400, errorMessages.ISBN_EXIST);
         } else {
-            const book = await Book.findOne({ where: { id: bookData.id } });
+            const book = await SequliezeBook.findOne({ where: { id: bookData.id } });
             await book.update(bookData);
             const data = { isSuccessful: true, message: successMessages.BOOK_SUCCESSFULLY_UPDATED };
             return responseSuccessHandle(res, 200, data);
@@ -199,7 +206,7 @@ exports.editBook = async (req: Request, res: Response) => {
 exports.deleteBook = async (req: Request, res: Response) => {
     const bookId = req.query.bookId;
     try {
-        const book = await Book.findOne({ where: { id: bookId } });
+        const book = await SequliezeBook.findOne({ where: { id: bookId } });
         await book.destroy();
         const data = { isSuccessful: true, message: successMessages.BOOK_SUCCESSFULLY_DELETED };
         return responseSuccessHandle(res, 200, data);
@@ -222,7 +229,7 @@ exports.moveBook = async (req: Request, res: Response) => {
     };
     try {
         newBook.image = getImagePath(newBook.image);
-        const isNotUnique = await Book.findOne({
+        const isNotUnique = await SequliezeBook.findOne({
             where: {
                 isbn: newBook.isbn,
                 departmentId: newBook.departmentId
@@ -232,15 +239,15 @@ exports.moveBook = async (req: Request, res: Response) => {
         if (isNotUnique) {
             await isNotUnique.update({ quantity: isNotUnique.get().quantity + quantity });
             // tslint:disable-next-line:no-shadowed-variable
-            const bookInDb: any = await Book.findOne({ where: { id: book.id } });
+            const bookInDb: any = await SequliezeBook.findOne({ where: { id: book.id } });
             await bookInDb.update({ quantity: bookInDb.get().quantity - quantity });
             // tslint:disable-next-line:no-shadowed-variable
             const data: any = { isSuccessful: true, message: successMessages.BOOK_SUCCESSFULLY_MOVED };
             return responseSuccessHandle(res, 200, data);
         }
 
-        await Book.create(newBook);
-        const bookInDb = await Book.findOne({ where: { id: book.id } });
+        await SequliezeBook.create(newBook);
+        const bookInDb = await SequliezeBook.findOne({ where: { id: book.id } });
         await bookInDb.update({ quantity: bookInDb.get().quantity - quantity });
         const data = { isSuccessful: true, message: successMessages.BOOK_SUCCESSFULLY_MOVED };
         return responseSuccessHandle(res, 200, data);

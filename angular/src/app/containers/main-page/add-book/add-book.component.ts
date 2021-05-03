@@ -33,7 +33,7 @@ import { DbModels } from '../../../constants/dbModels';
 import { WarnMessages } from '../../../constants/warnMessages';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { Select, Store } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { UserState } from '../../../store/state/user.state';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 export interface DialogData {
@@ -111,8 +111,7 @@ export class AddBookComponent
     }
 
     setAuthors(): void {
-        this.authorService.fetchAllAuthorsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe(authors => this.authors = authors);
+        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe();
     }
 
     setDepartments(): void {
@@ -216,7 +215,7 @@ export class AddBookComponent
             }
             if (result.option === DbModels.AUTHOR) {
                 this.authorService
-                    .addAuthorHttp({ id: null, name: result.name })
+                    .createAuthor({ id: null, name: result.name, country: null })
                     .subscribe(() => {
                         if (this.responseService.responseHandle()) {
                             this.setAuthors();

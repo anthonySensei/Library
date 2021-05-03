@@ -4,7 +4,7 @@ import { UserPopupData } from '@shared/user-popup/user-popup.data';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../../services/validation.service';
 import { Store } from '@ngxs/store';
-import { CreateUser, EditUser } from '../../store/user.state';
+import { CreateUser, EditUser } from '../../store/state/user.state';
 
 @Component({
   selector: 'app-user-popup',

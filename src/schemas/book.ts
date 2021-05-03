@@ -1,38 +1,51 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Book = sequelize.define('book_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
+const bookSchema: Schema = new Schema({
     isbn: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: String,
+        required: true
     },
-    quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-    },
-    name: {
-        type: Sequelize.STRING,
-        allowNull: false,
+    title: {
+        type: String,
+        required: true
     },
     year: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: Number,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
     },
     description: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: String,
+        required: true
     },
     image: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
+        type: String,
+        required: true
+    },
+    language: {
+        type: String,
+        required: true
+    },
+    department: {
+        type: Schema.Types.ObjectId,
+        ref: 'Department',
+        required: true
+    },
+    authors: [
+        {
+            author: { type: Schema.Types.ObjectId, ref: 'Author', required: true }
+        }
+    ],
+    genres: [
+        {
+            genre: { type: Schema.Types.ObjectId, ref: 'Genre', required: true }
+        }
+    ]
 });
 
-module.exports = Book;
+export default mongoose.model('Book', bookSchema);
+

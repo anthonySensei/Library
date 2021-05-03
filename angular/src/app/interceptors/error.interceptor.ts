@@ -10,7 +10,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError((err: HttpErrorResponse) => {
-            const message = err.error.message;
+            const message = err.error.message || `Something went wrong`;
             this.materialService.openErrorSnackbar(message);
             return throwError(message);
         }));

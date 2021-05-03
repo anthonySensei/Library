@@ -10,7 +10,7 @@ import { ResponseService } from '../../../../services/response.service';
 import { ErrorMessages } from '../../../../constants/errorMessages';
 import { PasswordVisibility } from '../../../../constants/passwordVisibility';
 import { Store } from '@ngxs/store';
-import { EditPassword } from '../../../../store/user.state';
+import { EditPassword } from '../../../../store/state/user.state';
 
 @Component({
     selector: 'app-dialog',

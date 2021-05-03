@@ -17,7 +17,7 @@ import { TABLE_ANIMATION } from '../../../constants/animation';
 import { Store } from '@ngxs/store';
 import { UserPopupData } from '@shared/user-popup/user-popup.data';
 import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
-import { DeleteUser } from '../../../store/user.state';
+import { DeleteUser } from '../../../store/state/user.state';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../models/user.model';
 

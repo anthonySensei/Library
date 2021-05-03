@@ -28,13 +28,16 @@ import { ScheduleSectionComponent } from './components/edit-page/schedule-sectio
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
-import { UserState } from './store/user.state';
+import { UserState } from './store/state/user.state';
 import { environment } from '../environments/environment';
-import { StudentState } from './store/student.state';
+import { StudentState } from './store/state/student.state';
 import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
 import { CloseScrollStrategy, Overlay } from '@angular/cdk/overlay';
-import { LibrarianState } from './store/librarian.state';
+import { LibrarianState } from './store/state/librarian.state';
 import { HttpErrorInterceptor } from './interceptors/error.interceptor';
+import { GenreState } from './store/state/genre.state';
+import { AuthorState } from './store/state/author.state';
+import { AuthorPopupComponent } from './components/popups/author-popup/author-popup.component';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -53,6 +56,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,
+        AuthorPopupComponent,
     ],
     imports: [
         BrowserModule,
@@ -67,7 +71,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),
@@ -89,7 +93,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
             multi: true
         }
     ],
-    entryComponents: [MyOrdersModalComponent],
+    entryComponents: [MyOrdersModalComponent, AuthorPopupComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

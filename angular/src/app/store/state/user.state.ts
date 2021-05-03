@@ -1,16 +1,16 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { UserStateModel } from './user.model';
-import { User } from '../models/user.model';
-import { AuthService } from '../services/auth.service';
+import { UserStateModel } from '../models/user.model';
+import { User } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AngularLinks } from '../constants/angularLinks';
-import { MaterialService } from '../services/material.service';
+import { AngularLinks } from '../../constants/angularLinks';
+import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
-import { SnackBarClasses } from '../constants/snackBarClasses';
-import { RegisterUserPayload, UpdatePasswordPayload, UpdateUserPayload } from '../models/request/user';
-import { UserService } from '../services/user.service';
-import { StudentStateModel } from './student.model';
+import { SnackBarClasses } from '../../constants/snackBarClasses';
+import { RegisterUserPayload, UpdatePasswordPayload, UpdateUserPayload } from '../../models/request/user';
+import { UserService } from '../../services/user.service';
+import { StudentStateModel } from '../models/student.model';
 
 
 /*********************************
@@ -93,7 +93,7 @@ export class EditImage {
 }
 
 export class DeleteUser {
-    static readonly type = '[Student] DeleteStudent';
+    static readonly type = '[User] DeleteUser';
 
     constructor(public id?: string) {}
 }
@@ -101,10 +101,10 @@ export class DeleteUser {
 /*******************************
  *** UserState            ***
  ********************************/
-export const CONTRACT_STATE_NAME = 'user';
+export const STATE_NAME = 'user';
 
 @State<UserStateModel>({
-    name: CONTRACT_STATE_NAME,
+    name: STATE_NAME,
     defaults: new UserStateModel()
 })
 

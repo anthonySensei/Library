@@ -19,9 +19,10 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { Select } from '@ngxs/store';
-import { UserState } from '../../store/user.state';
+import { Select, Store } from '@ngxs/store';
+import { UserState } from '../../store/state/user.state';
 import { User } from '../../models/user.model';
+import { LoadAuthors } from '../../store/state/author.state';
 
 @Component({
     selector: 'app-edit-page',
@@ -48,6 +49,7 @@ export class EditPageComponent implements OnInit, OnDestroy {
         private periodService: PeriodService,
         public helperService: HelperService,
         public librarianService: LibrarianService,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
@@ -73,6 +75,10 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     nothingChangeHandle(): void {
         this.materialService.openSnackbar(this.nothingToChange, SnackBarClasses.Warn);
+    }
+
+    onLoadAuthors() {
+        this.store.dispatch(new LoadAuthors());
     }
 
     ngOnDestroy(): void {}

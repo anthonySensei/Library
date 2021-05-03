@@ -7,10 +7,10 @@ const Op = Sequelize.Op;
 
 const Order = require('../schemas/order');
 const Loan = require('../schemas/loan');
-const Author = require('../schemas/author');
+const Author = require('../schemas/sauthor');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
-const Book = require('../schemas/book');
+const Book = require('../schemas/sbook');
 const Department = require('../schemas/department');
 
 const helper = require('../helper/responseHandle');
@@ -152,7 +152,7 @@ exports.getAllOrders = async (req: Request, res: Response) => {
             message: successMessages.SUCCESSFULLY_FETCHED,
             quantity
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting orders', err.message);
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
@@ -214,10 +214,10 @@ exports.orderBook = async (req: Request, res: Response) => {
                 message: successMessages.SUCCESSFULLY_ORDERED
             };
 
-            helper.responseHandle(res, 200, data);
+            helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
-        logger.error('Cannot order book', err.message);
+        logger.error('Cannot order sbook', err.message);
         helper.responseErrorHandle(
             res,
             500,
@@ -259,7 +259,7 @@ exports.loanBookFromOrder = async (req: Request, res: Response) => {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOANED
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Cannot loan book from order', err.message);
         helper.responseErrorHandle(

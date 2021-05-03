@@ -21,7 +21,7 @@ import { ModalWidth } from '../../../constants/modalWidth';
 import { PageTitles } from '../../../constants/pageTitles';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
-import { EditUser, UserState } from '../../../store/user.state';
+import { EditUser, UserState } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-user',

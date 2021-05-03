@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
-const Genre = require('../schemas/genre');
+const Genre = require('../schemas/sgenre');
 
 const helper = require('../helper/responseHandle');
 
@@ -14,7 +14,7 @@ exports.getGenres = async (req, res) => {
         let genresArr = [];
         genres.forEach(genre => genresArr.push({ id: genre.get().id, name: genre.get().name }));
         const data = { genres: genresArr, message: successMessages.SUCCESSFULLY_FETCHED };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (error) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
@@ -29,7 +29,7 @@ exports.addGenre = async (req, res) => {
         } else {
             await Genre.create({ name: genreName });
             const data = { isSuccessful: true, message: successMessages.GENRE_SUCCESSFULLY_CREATED};
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -47,7 +47,7 @@ exports.editGenre = async (req, res) => {
             const genre = await Genre.findOne({ where: { id: genreId } });
             await genre.update({ name: genreName });
             const data = { isSuccessful: true,message: successMessages.GENRE_SUCCESSFULLY_UPDATED};
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -60,7 +60,7 @@ exports.deleteGenre = async (req, res) => {
         const genre = await Genre.findOne({ where: { id: genreId } });
         await genre.destroy();
         const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_DELETED };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }

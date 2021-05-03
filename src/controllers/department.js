@@ -17,7 +17,7 @@ exports.getDepartments = async (req, res) => {
             departmentsArr.push({ id: department.get().id, address: department.get().address });
         }
         const data = { departments: departmentsArr, message: successMessages.SUCCESSFULLY_FETCHED };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
@@ -32,7 +32,7 @@ exports.addDepartment = async (req, res) => {
         } else {
             await Department.create({ address: departmentAddress });
             const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_CREATED };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -52,7 +52,7 @@ exports.editDepartment = async (req, res) => {
             const department = await Department.findOne({ where: { id: departmentId } });
             await department.update({ address: departmentAddress });
             const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_UPDATED };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -65,7 +65,7 @@ exports.deleteDepartment = async (req, res) => {
         const department = await Department.findOne({ where: { id: departmentId } });
         await department.destroy();
         const data = { isSuccessful: true, message: successMessages.DEPARTMENT_SUCCESSFULLY_DELETED };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }

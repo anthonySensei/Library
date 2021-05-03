@@ -17,7 +17,7 @@ import { MaterialService } from '../../../services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { AuthService } from '../../../services/auth.service';
 import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { UserState } from '../../../store/state/user.state';
 import { User } from '../../../models/user.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 

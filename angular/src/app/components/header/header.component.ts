@@ -16,7 +16,7 @@ import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.compon
 
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
-import { Logout, UserState } from '../../store/user.state';
+import { Logout, UserState } from '../../store/state/user.state';
 import { Observable } from 'rxjs';
 
 @Component({

@@ -1,10 +1,10 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { User } from '../models/user.model';
+import { User } from '../../models/user.model';
 import { Injectable } from '@angular/core';
-import { StudentStateModel } from './student.model';
-import { StudentService } from '../services/student.service';
+import { StudentStateModel } from '../models/student.model';
+import { StudentService } from '../../services/student.service';
 import { tap } from 'rxjs/operators';
-import { MaterialService } from '../services/material.service';
+import { MaterialService } from '../../services/material.service';
 
 
 /*********************************
@@ -47,10 +47,10 @@ export class SetStudents {
 /*******************************
  *** UserState            ***
  ********************************/
-export const CONTRACT_STATE_NAME = 'student';
+export const STATE_NAME = 'student';
 
 @State<StudentStateModel>({
-    name: CONTRACT_STATE_NAME,
+    name: STATE_NAME,
     defaults: new StudentStateModel()
 })
 
