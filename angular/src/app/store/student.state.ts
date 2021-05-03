@@ -87,12 +87,7 @@ export class StudentState {
     loadStudent(ctx: StateContext<StudentStateModel>, action: LoadStudent) {
         const { id } = action;
         return this.studentService.getStudent(id).pipe(tap(res => {
-            const { success, student, message } = res;
-
-            if (!success) {
-                this.materialService.openErrorSnackbar(message);
-            }
-
+            const { student } = res;
             ctx.dispatch(new SetStudent(student));
         }));
     }
@@ -101,12 +96,7 @@ export class StudentState {
     loadStudents(ctx: StateContext<StudentStateModel>, action: LoadStudents) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.studentService.getStudents(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            const { success, students, message } = res;
-
-            if (!success) {
-                this.materialService.openErrorSnackbar(message);
-            }
-
+            const { students } = res;
             ctx.dispatch(new SetStudents(students));
         }));
     }

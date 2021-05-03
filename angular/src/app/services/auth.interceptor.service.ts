@@ -15,15 +15,8 @@ import { AuthService } from './auth.service';
 export class AuthInterceptor implements HttpInterceptor {
     constructor(private authService: AuthService) {}
 
-    intercept(
-        req: HttpRequest<any>,
-        next: HttpHandler
-    ): Observable<HttpEvent<any>> {
-        req = req.clone({
-            setHeaders: {
-                Authorization: `${this.authService.getJwtToken()}`
-            }
-        });
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        req = req.clone({ setHeaders: { Authorization: `${this.authService.getJwtToken()}` } });
 
         return next.handle(req);
     }

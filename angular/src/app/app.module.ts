@@ -34,6 +34,7 @@ import { StudentState } from './store/student.state';
 import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
 import { CloseScrollStrategy, Overlay } from '@angular/cdk/overlay';
 import { LibrarianState } from './store/librarian.state';
+import { HttpErrorInterceptor } from './interceptors/error.interceptor';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -80,6 +81,11 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorInterceptor,
             multi: true
         }
     ],
