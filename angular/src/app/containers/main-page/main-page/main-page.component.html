@@ -33,14 +33,14 @@
             <mat-label>Author</mat-label>
             <mat-select [disabled]="isIsbnFilter()" [(value)]="authorSelect" >
                 <mat-option>-</mat-option>
-                <mat-option [value]="author.id" *ngFor="let author of authors">{{ author.name }}</mat-option>
+                <mat-option [value]="author.id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="w-100">
             <mat-label>Genre</mat-label>
             <mat-select [(value)]="genreSelect" [disabled]="isIsbnFilter()">
                 <mat-option>-</mat-option>
-                <mat-option [value]="genre.id" *ngFor="let genre of genres">{{ genre.name }}</mat-option>
+                <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name }}</mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field class="w-100">

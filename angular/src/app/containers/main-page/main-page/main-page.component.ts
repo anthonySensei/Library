@@ -21,9 +21,11 @@ import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { Pagination } from '../../../models/pagination.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { Select } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { UserState } from '../../../store/state/user.state';
 import { Observable } from 'rxjs';
+import { AuthorState, LoadAuthors } from '../../../store/state/author.state';
+import { GenreState, LoadGenres } from '../../../store/state/genre.state';
 
 @Component({
     selector: 'app-main-page',
@@ -32,8 +34,6 @@ import { Observable } from 'rxjs';
 })
 export class MainPageComponent implements OnInit, OnDestroy {
     books: Book[] = [];
-    authors: Author[] = [];
-    genres: Genre[] = [];
     departments: Department[] = [];
     user: User;
     paginationData: Pagination;
@@ -69,15 +69,20 @@ export class MainPageComponent implements OnInit, OnDestroy {
     @Select(UserState.User)
     user$: Observable<User>;
 
+    @Select(AuthorState.Authors)
+    authors$: Observable<Author[]>;
+
+    @Select(GenreState.Genres)
+    genres$: Observable<Genre[]>;
+
     constructor(
         private authService: AuthService,
         private bookService: BookService,
-        private authorService: AuthorService,
         private departmentService: DepartmentService,
         private helperService: HelperService,
-        private genreService: GenreService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private store: Store
     ) {
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
             return false;
@@ -116,11 +121,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.departments = departments;
                 this.booksSubscriptionHandle();
         });
-        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe();
-        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe((authors: Author[]) => {
-                this.authors = authors;
-        });
-        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe();
         this.getUser$();
     }
 
@@ -146,13 +146,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
                 this.previousPage = this.paginationData.previousPage;
                 this.lastPage = this.paginationData.lastPage;
             });
-        this.bookService
-            .getBooks()
-            .pipe(untilDestroyed(this))
-            .subscribe((books: Book[]) => {
-                this.books = books || [];
-                this.isLoading = false;
-            });
+        this.bookService.getBooks().pipe(untilDestroyed(this)).subscribe((books: Book[]) => {
+            this.books = books || [];
+            this.isLoading = false;
+        });
+        this.store.dispatch(new LoadAuthors());
+        this.store.dispatch(new LoadGenres());
     }
 
     paginate(page: number) {
