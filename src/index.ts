@@ -128,6 +128,7 @@ mongoClient.connect((error: MongoError, client: MongoClient) => {
     mongoDBClient = client;
 
     sequelize.sync().then(() => {
+        logger.info('Successfully connected to Sequelize');
         connectMongoDB()
             .then(() => {
                 app.listen(port);

@@ -10,7 +10,8 @@ export default new Sequelize(
     {
         dialect: DATABASE_DIALECT as Dialect,
         host: DATABASE_HOST as string,
-        port: Number(DATABASE_PORT)
+        port: Number(DATABASE_PORT),
+        logging: false
     }
 );
 
