@@ -42,8 +42,6 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     setBooks(): void {
-        this.bookService.fetchBooksISBNsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.bookService.getBooks().pipe(untilDestroyed(this)).subscribe((books: Book[]) => { this.allBooks = books; });
     }
 
     editBook(): void {
@@ -80,10 +78,6 @@ export class BookSectionComponent implements OnInit, OnDestroy {
             this.departmentSelect = null;
             this.setBooks();
         }
-    }
-
-    setBooksForSelect(): void {
-        this.booksForSelect = this.allBooks.filter(book => book.department.id === this.departmentSelect);
     }
 
     ngOnDestroy(): void {}

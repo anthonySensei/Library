@@ -6,12 +6,9 @@ const passport = require('passport');
 const bookController = require('../controllers/book');
 
 const booksDetailsUrl = require('../constants/links').BOOKS_DETAILS_URL;
-const booksISBNsUrl = require('../constants/links').BOOKS_ISBN_URL;
 const booksMoveUrl = require('../constants/links').BOOKS_MOVE_URL;
 
 router.get('', bookController.getBooks);
-
-router.get(booksISBNsUrl, bookController.getAllBooksISBN);
 
 router.get(booksDetailsUrl, bookController.getBook);
 

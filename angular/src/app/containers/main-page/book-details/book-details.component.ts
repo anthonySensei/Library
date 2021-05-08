@@ -66,15 +66,6 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
 
     handleBookSubscriptions(): void {
         this.bookService.getBookHttp(this.bookId).pipe(untilDestroyed(this)).subscribe();
-        this.bookService.getBook().pipe(untilDestroyed(this)).subscribe(async (book: Book) => {
-                this.book = book;
-
-                if (!this.book) {
-                    await this.router.navigate([AngularLinks.ERROR_PAGE]);
-                }
-
-                this.isLoading = false;
-            });
     }
 
     openLoanBookModal(): void {

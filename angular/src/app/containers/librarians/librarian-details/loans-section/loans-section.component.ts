@@ -91,7 +91,7 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     subscriptionHandle(): void {
         this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
+            .getDepartments()
             .subscribe();
         this.departmentsSubscription = this.departmentService
             .getDepartments()

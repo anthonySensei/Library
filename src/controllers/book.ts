@@ -9,6 +9,7 @@ import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import { BookSchema } from '../models/book';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -16,7 +17,7 @@ const Op = Sequelize.Op;
 const SequliezeBook = require('../schemas/sbook');
 const Genre = require('../schemas/sgenre');
 const Author = require('../schemas/sauthor');
-const Department = require('../schemas/department');
+const Department = require('../schemas/sdepartment');
 
 exports.getBooks = async (req: Request, res: Response) => {
     // const page = +req.query.page || 1;
@@ -30,7 +31,7 @@ exports.getBooks = async (req: Request, res: Response) => {
 
     try {
         const totalBooks = await Book.countDocuments();
-        const books = await Book.find();
+        const books = await Book.find() as BookSchema[];
         // const totalBooks = await Book.count({ where: condition });
         // const books = await Book.findAll({
         //     include: [
@@ -61,7 +62,7 @@ exports.getBooks = async (req: Request, res: Response) => {
         const totalPages = 12;
         const page = 1;
         const data = {
-            books,
+            books: books.map(book => ({ ...book, image: convertToBase64(book.image) })),
             message: successMessages.SUCCESSFULLY_FETCHED,
             paginationData: {
                 currentPage: page,
@@ -72,10 +73,10 @@ exports.getBooks = async (req: Request, res: Response) => {
                 lastPage: Math.ceil(totalBooks / totalPages)
             }
         };
-        return responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error(`Error fetching books: ${err.message}`);
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -111,63 +112,30 @@ exports.getBook = async (req: Request, res: Response) => {
     }
 };
 
-exports.getAllBooksISBN = async (req: Request, res: Response) => {
-    try {
-        const books = await SequliezeBook.findAll();
-        const booksArr: any = [];
-        books.forEach((book: any) => {
-            const bookData = book.get();
-            booksArr.push({
-                id: bookData.id,
-                isbn: bookData.isbn,
-                department: { id: bookData.departmentId }
-            });
-        });
-        const data = { books: booksArr, message: successMessages.SUCCESSFULLY_FETCHED };
-        responseSuccessHandle(res, 200, data);
-    } catch (err) {
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
-    }
-};
-
 exports.addBook = async (req: Request, res: Response) => {
-    const imageBase64 = req.body.base64;
-    const bookData = JSON.parse(req.body.book_data);
+    const book = JSON.parse(req.body.book);
 
-    if (!imageBase64) { return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS); }
-    if (!bookData) { return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS); }
+    if (!book) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
 
-    const filepath = getImagePath(imageBase64);
+    book.image = getImagePath(book.image);
 
     try {
-        const isNotUnique = await SequliezeBook.findOne({ where: {
-                isbn: bookData.isbn,
-                departmentId: bookData.department.id
-            }
-        });
+        const isExists = await Book.findOne({ isbn: book.isbn });
 
-        if (isNotUnique) {
+        if (isExists) {
             return responseErrorHandle(res, 400, errorMessages.ISBN_EXIST);
-        } else {
-            const newBook = new SequliezeBook({
-                isbn: bookData.isbn,
-                name: bookData.name,
-                authorId: bookData.author.id,
-                genreId: bookData.genre.id,
-                year: bookData.year,
-                quantity: bookData.quantity,
-                description: bookData.description,
-                image: filepath,
-                departmentId: bookData.department.id
-            });
-
-            await newBook.save();
-
-            const data = { isSuccessful: true, message: successMessages.BOOK_SUCCESSFULLY_CREATED };
-            return responseSuccessHandle(res, 200, data);
         }
+
+        book.department = book.department.id;
+        book.genres = book.genres.map((genre: any) => ({ genre: genre.id }));
+        book.authors = book.authors.map((author: any) => ({ author: author.id }));
+        await Book.create(book);
+        responseSuccessHandle(res, 200, { message: successMessages.BOOK_SUCCESSFULLY_CREATED });
     } catch (err) {
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        logger.error('Error creating book', err.message);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 

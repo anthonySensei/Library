@@ -53,7 +53,7 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
 
     subscriptionHandle() {
         this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
+            .getDepartments()
             .subscribe();
         this.departmentsSubscription = this.departmentService
             .getDepartments()

@@ -11,7 +11,7 @@ const Author = require('../schemas/sauthor');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 const Book = require('../schemas/sbook');
-const Department = require('../schemas/department');
+const Department = require('../schemas/sdepartment');
 
 const helper = require('../helper/responseHandle');
 const mailSender = require('../helper/mailSender');

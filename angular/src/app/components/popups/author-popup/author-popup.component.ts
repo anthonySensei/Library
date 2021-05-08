@@ -20,8 +20,7 @@ export class AuthorPopupComponent implements OnInit {
         private store: Store,
         public dialogRef: MatDialogRef<AuthorPopupComponent>,
         @Inject(MAT_DIALOG_DATA) public data: Author
-    ) {
-    }
+    ) {}
 
     ngOnInit(): void {
         this.isEdit = !!this.data.id;

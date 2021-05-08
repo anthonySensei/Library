@@ -130,7 +130,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
             case DbModels.LIBRARIAN:
                 return this.statistic[0].librarian.name;
             case DbModels.BOOK:
-                return this.statistic[0].book.name;
+                return this.statistic[0].book.title;
             case DbModels.DEPARTMENT:
                 return this.statistic[0].department.address;
             default:
@@ -150,7 +150,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     }
 
     subscriptionHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
         this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
             this.departments = departments;
         });

@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
 
 import { Department } from '../models/department.model';
 
-import { ResponseService } from './response.service';
-
 import { serverLink } from '../constants/serverLink';
+import { UpdateDepartmentPayload } from '../models/request/department';
 
 @Injectable({
     providedIn: 'root'
@@ -16,57 +14,25 @@ import { serverLink } from '../constants/serverLink';
 export class DepartmentService {
     private DEPARTMENTS_URL = `${serverLink}/departments`;
 
-    private departments = new Subject<Department[]>();
-
     constructor(
-        private http: HttpClient,
-        private responseService: ResponseService
+        private http: HttpClient
     ) {}
 
-    setDepartments(departments: Department[]): void {
-        this.departments.next(departments);
+    getDepartments() {
+        return this.http.get(this.DEPARTMENTS_URL).pipe(map((response: any) => response.data));
     }
 
-    getDepartments(): Observable<Department[]> {
-        return this.departments;
+    createDepartment(department: Department) {
+        return this.http.post(this.DEPARTMENTS_URL, { department }).pipe(map((response: any) => response.data));
     }
 
-    fetchAllDepartmentsHttp() {
-        return this.http.get(this.DEPARTMENTS_URL).pipe(
-            map((response: any) => {
-                this.setDepartments(response.data.departments);
-            })
-        );
-    }
-
-    addDepartmentHttp(department: Department) {
-        return this.http.post(this.DEPARTMENTS_URL, { department }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
-    }
-    editDepartmentHttp(departmentId: number, address: string) {
+    editDepartment(data: { id: string, department: UpdateDepartmentPayload }) {
         return this.http
-            .put(this.DEPARTMENTS_URL, { departmentId, address })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+            .put(`${this.DEPARTMENTS_URL}/${data.id}`, { department: data.department })
+            .pipe(map((response: any) => response.data));
     }
-    deleteDepartmentHttp(departmentId: number) {
-        return this.http
-            .delete(this.DEPARTMENTS_URL, {
-                params: new HttpParams().set(
-                    'departmentId',
-                    departmentId.toString()
-                )
-            })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+
+    deleteDepartment(id: string) {
+        return this.http.delete(`${this.DEPARTMENTS_URL}/${id}`).pipe(map((response: any) => response.data));
     }
 }

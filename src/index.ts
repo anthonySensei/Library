@@ -11,6 +11,7 @@ import sequelize from './config/database';
 import multer from './config/multer';
 
 import authorRoutes from './routes/author';
+import departmentRoutes from './routes/department';
 import authRoutes from './routes/auth';
 import genreRoutes from './routes/genre';
 import librarianRoutes from './routes/librarian';
@@ -24,14 +25,13 @@ if (process.env.NODE_ENV !== 'production') {
 const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
-const departmentRoutes = require('./routes/department');
 const periodRoutes = require('./routes/period');
 const scheduleRoutes = require('./routes/schedule');
 
 const Student = require('./schemas/student');
 const Librarian = require('./schemas/librarian');
 const Role = require('./schemas/role');
-const Department = require('./schemas/department');
+const Department = require('./schemas/sdepartment');
 const Book = require('./schemas/sbook');
 const Genre = require('./schemas/sgenre');
 const Author = require('./schemas/sauthor');

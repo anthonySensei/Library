@@ -1,9 +1,9 @@
-<section class="position-relative overflow-hidden" *ngIf="books.length > 0; else noBooks">
+<section class="position-relative overflow-hidden" *ngIf="books?.length > 0; else noBooks">
     <div class="d-flex flex-wrap justify-content-center">
         <div class="card" *ngFor="let book of books">
             <div class="image-container">
                 <img
-                    src="{{ book.image? book.image: 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png' }}"
+                    src="{{ book.image ? book.image : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png' }}"
                     alt="Book image"
                     class="image"
                 />
@@ -14,24 +14,24 @@
             <div class="p-2">
                 <div class="mt-2">
                     <span class="card__label">Title:</span>
-                    {{ book.name }}
+                    {{ book.title }}
                 </div>
-                <div class="mt-2">
-                    <span class="card__label">Author:</span>
-                    {{ book.author.name }}
-                </div>
-                <div class="mt-2">
-                    <span class="card__label">Genre:</span>
-                    {{ book.genre.name }}
-                </div>
+<!--                <div class="mt-2">-->
+<!--                    <span class="card__label">Author:</span>-->
+<!--                    {{ book.authors }}-->
+<!--                </div>-->
+<!--                <div class="mt-2">-->
+<!--                    <span class="card__label">Genre:</span>-->
+<!--                    {{ book.genre.name }}-->
+<!--                </div>-->
                 <div class="mt-2">
                     <span class="card__label">Year:</span>
                     {{ book.year }}
                 </div>
-                <div class="mt-2">
-                    <span class="card__label">Book location:</span>
-                    {{ book.department.address }}
-                </div>
+<!--                <div class="mt-2">-->
+<!--                    <span class="card__label">Book location:</span>-->
+<!--                    {{ book.department.address }}-->
+<!--                </div>-->
             </div>
         </div>
     </div>

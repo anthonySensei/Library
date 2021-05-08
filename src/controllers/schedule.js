@@ -4,7 +4,7 @@ const Op = Sequelize.Op;
 const Schedule = require('../schemas/schedule');
 const Period = require('../schemas/period');
 const Librarian = require('../schemas/librarian');
-const Department = require('../schemas/department');
+const Department = require('../schemas/sdepartment');
 
 const helper = require('../helper/responseHandle');
 

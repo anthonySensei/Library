@@ -3,11 +3,15 @@ import { StudentStateModel } from './student.model';
 import { LibrarianStateModel } from './librarian.model';
 import { AuthorStateModel } from './author.model';
 import { GenreStateModel } from './genre.model';
+import { DepartmentStateModel } from './department.model';
+import { BookStateModel } from './book.model';
 
 export class StoreStateModel {
-    user: UserStateModel;
+    author: AuthorStateModel;
+    book: BookStateModel;
     student: StudentStateModel;
     librarian: LibrarianStateModel;
-    author: AuthorStateModel;
+    department: DepartmentStateModel;
     genre: GenreStateModel;
+    user: UserStateModel;
 }

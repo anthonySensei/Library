@@ -39,6 +39,10 @@ import { GenreState } from './store/state/genre.state';
 import { AuthorState } from './store/state/author.state';
 import { AuthorPopupComponent } from './components/popups/author-popup/author-popup.component';
 import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup.component';
+import { DepartmentPopupComponent } from './components/popups/department-popup/department-popup.component';
+import { DepartmentState } from './store/state/department.state';
+import { BookPopupComponent } from './components/popups/book-popup/book-popup.component';
+import { BookState } from './store/state/book.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -59,6 +63,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         MyOrdersModalComponent,
         AuthorPopupComponent,
         GenrePopupComponent,
+        DepartmentPopupComponent,
+        BookPopupComponent,
     ],
     imports: [
         BrowserModule,
@@ -73,7 +79,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, DepartmentState, BookState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),

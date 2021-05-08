@@ -47,7 +47,7 @@
             <mat-label>Department address</mat-label>
             <mat-select [(ngModel)]="departmentSelect" (ngModelChange)="showBooksByDepartment()">
                 <mat-option value="''">All</mat-option>
-                <mat-option [value]="department.id" *ngFor="let department of departments">{{ department.address }}</mat-option>
+                <mat-option [value]="department.id" *ngFor="let department of departments$ | async">{{ department.address }}</mat-option>
             </mat-select>
         </mat-form-field>
         <div class="d-flex justify-content-between">
@@ -63,24 +63,22 @@
         <div class="header">
             <h1>Books catalog</h1>
         </div>
-
-        <div class="post-features-container">
-            <div style="overflow: hidden;">
-                <a mat-stroked-button color="primary" class="ml-5" style="float: right;" matTooltip="Add book" [routerLink]="'/' + links.ADD_BOOK" *ngIf="isHaveAccess()">
-                    <i class="material-icons">add</i> Add book
-                </a>
-            </div>
-            <mat-divider style="margin: 1% 0 1% 0;"></mat-divider>
+        <div class="d-flex justify-content-end align-items-center">
+            <a mat-stroked-button color="primary" (click)="onAddBook()" *ngIf="isHasAccess()">
+                <mat-icon>add</mat-icon>
+                <span>Add Book</span>
+            </a>
         </div>
+        <mat-divider class="my-2"></mat-divider>
         <div *ngIf="isLoading" class="spinner-container">
             <mat-spinner class="spinner"></mat-spinner>
         </div>
         <app-books-section
             *ngIf="!isLoading"
-            [books]="books"
+            [books]="books$ | async"
             [links]="links"
         ></app-books-section>
-        <section class="d-flex justify-content-center align-items-center my-2" *ngIf="!isLoading && books.length > 0">
+        <section class="d-flex justify-content-center align-items-center my-2" *ngIf="!isLoading && (books$ | async)?.length > 0">
             <button mat-stroked-button class="mx-1" color="primary" (click)="paginate(previousPage)" *ngIf="hasPreviousPage">
                 Previous
             </button>

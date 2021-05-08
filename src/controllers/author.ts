@@ -35,8 +35,7 @@ export const addAuthor = async (req: Request, res: Response) => {
         }
 
         await Author.create(author);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_CREATED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.AUTHOR_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error(`Error creating author`, err.message);
         responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );

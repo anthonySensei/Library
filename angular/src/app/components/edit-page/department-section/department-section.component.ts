@@ -1,79 +1,39 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-
-import { ResponseService } from '../../../services/response.service';
-import { DepartmentService } from '../../../services/department.service';
-import { HelperService } from '../../../services/helper.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Department } from '../../../models/department.model';
 import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select, Store } from '@ngxs/store';
+import { MatTableDataSource } from '@angular/material/table';
+import { DeleteDepartment, DepartmentState, LoadDepartments } from '../../../store/state/department.state';
+import { Observable } from 'rxjs';
+import { DepartmentPopupComponent } from '../../popups/department-popup/department-popup.component';
 
 @Component({
     selector: 'app-department-section',
     templateUrl: './department-section.component.html',
     styleUrls: ['../edit-page.component.sass']
 })
-export class DepartmentSectionComponent implements OnDestroy {
-    @Output() nothingToChange = new EventEmitter();
+export class DepartmentSectionComponent implements OnInit, OnDestroy {
 
-    @Input() responseService: ResponseService;
-    @Input() helperService: HelperService;
-    @Input() departmentService: DepartmentService;
-    @Input() departmentSelect: number;
-    @Input() departments: Department[];
+    dataSource = new MatTableDataSource([]);
+    displayedColumns: string[] = ['name', 'address', 'actions'];
 
-    departmentAddress: string = null;
-    newDepartmentAddress: string = null;
+    @Select(DepartmentState.Departments)
+    departments$: Observable<Department[]>;
 
-    showDepartmentAdding: boolean;
+    constructor(
+        private store: Store,
+        private dialog: MatDialog
+    ) {}
 
-    constructor(private dialog: MatDialog) {
+    ngOnInit(): void {
+        this.getDepartments$();
     }
 
-    getDepartment(): Department {
-        return this.departments.find(dep => dep.id === this.departmentSelect);
-    }
-
-    setDepartmentAddress(): void {
-        if (this.departmentSelect) {
-            this.departmentAddress = this.getDepartment().address;
-        }
-    }
-
-    addDepartment(): void {
-        this.departmentService
-            .addDepartmentHttp({ id: null, address: this.newDepartmentAddress })
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.departmentResponseHandler();
-            });
-    }
-
-    editDepartment(): void {
-        if (!this.departmentAddress) {
-            return;
-        }
-        if (this.departmentAddress === this.getDepartment().address) {
-            this.nothingToChange.emit();
-            return;
-        }
-        this.departmentService
-            .editDepartmentHttp(this.departmentSelect, this.departmentAddress)
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.departmentResponseHandler();
-            });
-    }
-
-    deleteDepartment(): void {
-        if (!this.departmentSelect) {
-            return;
-        }
-        this.departmentService.deleteDepartmentHttp(this.departmentSelect).pipe(untilDestroyed(this)).subscribe(() => {
-            this.departmentResponseHandler();
-            this.departmentAddress = null;
-            this.departmentSelect = null;
-        });
+    getDepartments$() {
+        this.store.dispatch(new LoadDepartments());
+        this.departments$.pipe(untilDestroyed(this)).subscribe(departments => this.dataSource = new MatTableDataSource(departments));
     }
 
     openConfirmDeleteDialog(): void {
@@ -88,16 +48,26 @@ export class DepartmentSectionComponent implements OnDestroy {
         // });
     }
 
-    departmentResponseHandler(): void {
-        if (this.responseService.responseHandle()) {
-            this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-            this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
-            this.newDepartmentAddress = null;
-        }
+    openDepartmentPopup(data: Department) {
+        this.dialog.open(DepartmentPopupComponent, {data, disableClose: true, width: `569px`});
     }
 
-    ngOnDestroy(): void {
+    onApplyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
     }
+
+    onAddDepartment(): void {
+        this.openDepartmentPopup({} as Department);
+    }
+
+    onEditDepartment(author: Department): void {
+        this.openDepartmentPopup(author);
+    }
+
+    onDeleteDepartment(id: string): void {
+        this.store.dispatch(new DeleteDepartment(id));
+    }
+
+    ngOnDestroy(): void {}
 }

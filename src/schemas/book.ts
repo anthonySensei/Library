@@ -33,7 +33,7 @@ const bookSchema: Schema = new Schema({
     department: {
         type: Schema.Types.ObjectId,
         ref: 'Department',
-        required: true
+        required: false
     },
     authors: [
         {

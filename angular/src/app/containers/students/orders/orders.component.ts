@@ -111,7 +111,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     subscriptionsHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
+        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
         this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
             this.departments = departments;
         });

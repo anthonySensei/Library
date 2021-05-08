@@ -10,7 +10,7 @@ import { EditImage } from '../../../../store/state/user.state';
     templateUrl: './change-profile-image-modal.html'
 })
 export class ChangeProfileImageModalComponent {
-    imageChangedEvent: any = '';
+    imageChangedEvent: Event;
     image: string;
 
     constructor(
@@ -18,7 +18,7 @@ export class ChangeProfileImageModalComponent {
         private store: Store
     ) {}
 
-    fileChangeEvent(event: any): void {
+    fileChangeEvent(event: Event): void {
         this.imageChangedEvent = event;
     }
 

@@ -35,15 +35,8 @@ export class MoveBookModalComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsChangeSubscription = this.departmentService
             .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments.filter(
-                    (dep: Department) => dep.id !== this.data.bookDepartmentId
-                );
-            });
+            .subscribe();
     }
 
     ngOnDestroy(): void {}

@@ -5,7 +5,7 @@ const Loan = require('../schemas/loan');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 const Book = require('../schemas/sbook');
-const Department = require('../schemas/department');
+const Department = require('../schemas/sdepartment');
 const Author = require('../schemas/sauthor');
 
 const helper = require('../helper/responseHandle');
