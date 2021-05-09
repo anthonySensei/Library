@@ -20,18 +20,33 @@ const Author = require('../schemas/sauthor');
 const Department = require('../schemas/sdepartment');
 
 exports.getBooks = async (req: Request, res: Response) => {
+    const { department, filterValue, yFrom, yTo, pageSize } = req.query;
+    const page = Number(req.query.page) + 1;
+    const authors = String(req.query.authors).split(',');
+    const genres = String(req.query.authors).split(',');
     // const page = +req.query.page || 1;
     // const fromYear = +req.query.yFrom;
     // const toYear = +req.query.yTo;
     // const author = +req.query.author;
     // const genre = +req.query.genre;
     // const department = +req.query.department;
-    // const filterName = req.query.filterName;
     // const filterValue = req.query.filterValue;
 
+    const regex = new RegExp(filterValue as string, 'i');
+    const filterCondition = {
+        $and: [ { $or: [{title: regex }, { isbn: regex }, { description: regex } ] } ]
+    };
+
     try {
-        const totalBooks = await Book.countDocuments();
-        const books = await Book.find() as BookSchema[];
+        const length = await Book.countDocuments(filterCondition);
+        const books = await Book
+            .find(filterCondition, {}, {
+                limit: Number(pageSize),
+                skip: (Number(page) - 1) * Number(pageSize),
+            })
+            .populate('department')
+            .populate('authors.author')
+            .populate('genres.genre') as BookSchema[];
         // const totalBooks = await Book.count({ where: condition });
         // const books = await Book.findAll({
         //     include: [
@@ -59,19 +74,18 @@ exports.getBooks = async (req: Request, res: Response) => {
         //         department: bookValues.department_.get()
         //     });
         // });
-        const totalPages = 12;
-        const page = 1;
+        const booksData = books.map(book => ({
+            title: book.title,
+            authors: book.authors.map(author => author.author),
+            genres: book.genres.map(genre => genre.genre),
+            department: book.department,
+            year: book.year,
+            image: convertToBase64(book.image)
+        }));
         const data = {
-            books: books.map(book => ({ ...book, image: convertToBase64(book.image) })),
+            books: booksData,
             message: successMessages.SUCCESSFULLY_FETCHED,
-            paginationData: {
-                currentPage: page,
-                hasNextPage: totalPages * page < totalBooks,
-                hasPreviousPage: page > 1,
-                nextPage: page + 1,
-                previousPage: page - 1,
-                lastPage: Math.ceil(totalBooks / totalPages)
-            }
+            pagination: { page, length }
         };
         responseSuccessHandle(res, 200, data);
     } catch (err) {
@@ -143,7 +157,9 @@ exports.editBook = async (req: Request, res: Response) => {
     const imageBase64 = JSON.parse(req.body.base64);
     const bookData = JSON.parse(req.body.book_data);
 
-    if (!bookData && !imageBase64) { return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS); }
+    if (!bookData && !imageBase64) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
+    }
 
     imageBase64.image ?
         bookData.image = getImagePath(imageBase64.image) :
