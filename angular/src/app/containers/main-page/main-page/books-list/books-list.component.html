@@ -1,6 +1,6 @@
-<section class="position-relative overflow-hidden" *ngIf="books?.length > 0; else noBooks">
+<section class="position-relative overflow-hidden" *ngIf="(books$ | async)?.length > 0; else noBooks">
     <div class="d-flex flex-wrap justify-content-center">
-        <div class="card" *ngFor="let book of books">
+        <div class="card" *ngFor="let book of books$ | async">
             <div class="image-container">
                 <img
                     src="{{ book.image ? book.image : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png' }}"
@@ -16,22 +16,22 @@
                     <span class="card__label">Title:</span>
                     {{ book.title }}
                 </div>
-<!--                <div class="mt-2">-->
-<!--                    <span class="card__label">Author:</span>-->
-<!--                    {{ book.authors }}-->
-<!--                </div>-->
-<!--                <div class="mt-2">-->
-<!--                    <span class="card__label">Genre:</span>-->
-<!--                    {{ book.genre.name }}-->
-<!--                </div>-->
+                <div class="mt-2">
+                    <span class="card__label">Author:</span>
+                    {{ getAuthors(book.authors) }}
+                </div>
+                <div class="mt-2">
+                    <span class="card__label">Genre:</span>
+                    {{ getGenres(book.genres) }}
+                </div>
                 <div class="mt-2">
                     <span class="card__label">Year:</span>
                     {{ book.year }}
                 </div>
-<!--                <div class="mt-2">-->
-<!--                    <span class="card__label">Book location:</span>-->
-<!--                    {{ book.department.address }}-->
-<!--                </div>-->
+                <div class="mt-2">
+                    <span class="card__label">Department:</span>
+                    {{book.department.name}} ({{ book.department.address }})
+                </div>
             </div>
         </div>
     </div>

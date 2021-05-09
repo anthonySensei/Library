@@ -11,6 +11,7 @@ import { Book } from '../../models/book.model';
 import { BookStateModel } from '../models/book.model';
 import { BookService } from '../../services/book.service';
 import { GetBooks } from '../../models/request/book';
+import { Pagination } from '../../models/pagination.model';
 
 
 /*********************************
@@ -35,7 +36,7 @@ export class SetBook {
 export class SetBooks {
     static readonly type = '[Book] SetBooks';
 
-    constructor(public books: Book[]) {}
+    constructor(public books: Book[], public pagination?: Pagination) {}
 }
 
 export class CreateBook {
@@ -86,6 +87,11 @@ export class BookState {
         return state.books;
     }
 
+    @Selector()
+    static Pagination(state: BookStateModel): Pagination {
+        return state.pagination;
+    }
+
     /****************
      *** Resolvers ***
      *****************/
@@ -98,7 +104,7 @@ export class BookState {
     @Action(LoadBooks)
     loadBooks(ctx: StateContext<BookStateModel>, action: LoadBooks) {
         return this.bookService.getBooks(action.filters).pipe(tap(response => {
-            ctx.dispatch(new SetBooks(response.books));
+            ctx.dispatch(new SetBooks(response.books, response.pagination));
         }));
     }
 
@@ -109,7 +115,7 @@ export class BookState {
 
     @Action(SetBooks)
     setABooks(ctx: StateContext<BookStateModel>, action: SetBooks) {
-        return ctx.patchState({ books: action.books });
+        return ctx.patchState({ books: action.books, pagination: action.pagination });
     }
 
     @Action(CreateBook)
@@ -117,7 +123,7 @@ export class BookState {
         return this.bookService.addBook(action.data).pipe(tap(response => {
             const { message } = response;
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
-            ctx.dispatch(new LoadBooks({ page: 0 }));
+            ctx.dispatch(new LoadBooks({ page: 0, pageSize: 16 }));
         }));
     }
     //

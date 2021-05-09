@@ -10,7 +10,7 @@ import { BookDetailsComponent } from './book-details/book-details.component';
 
 import { LoanBookModalComponent } from './book-details/loan-book-modal/loan-book-modal.component';
 import { MoveBookModalComponent } from './book-details/move-book-modal/move-book-modal.component';
-import { BooksSectionComponent } from './main-page/books-section/books-section.component';
+import { BooksListComponent } from './main-page/books-list/books-list.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +18,7 @@ import { BooksSectionComponent } from './main-page/books-section/books-section.c
         BookDetailsComponent,
         LoanBookModalComponent,
         MoveBookModalComponent,
-        BooksSectionComponent
+        BooksListComponent
     ],
     imports: [RouterModule, MainPageRoutingModule, SharedModule, FormsModule],
     entryComponents: [

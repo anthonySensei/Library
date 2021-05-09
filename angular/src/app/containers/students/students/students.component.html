@@ -132,9 +132,10 @@
         ></tr>
     </table>
     <mat-paginator
-        [length]="paginator.pageSize || 5"
-        [pageSize]="5"
+        [length]="1"
+        [pageSize]="paginator.pageSize || 5"
         [pageSizeOptions]="[5, 10]"
+        #paginator
     ></mat-paginator>
 </div>
 <app-small-screen></app-small-screen>

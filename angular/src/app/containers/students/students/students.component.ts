@@ -34,12 +34,7 @@ import { User } from '../../../models/user.model';
 })
 export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     filterValue: string;
-    columnsToDisplay: string[] = [
-        TableColumns.NAME,
-        TableColumns.EMAIL,
-        TableColumns.PHONE,
-        TableColumns.STATUS
-    ];
+    columnsToDisplay: string[] = [TableColumns.NAME, TableColumns.EMAIL, TableColumns.PHONE, TableColumns.STATUS];
     expandedElement: User | null;
     links = AngularLinks;
     dataSource: StudentsDataSource;

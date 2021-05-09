@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth.service';
 import { HelperService } from '../../services/helper.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
-import { UserRoles } from '../../constants/userRoles';
 import { ModalWidth } from '../../constants/modalWidth';
 
 import { User } from '../../models/user.model';

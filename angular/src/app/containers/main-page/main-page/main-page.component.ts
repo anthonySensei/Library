@@ -1,14 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../services/auth.service';
 import { BookService } from '../../../services/book.service';
 import { HelperService } from '../../../services/helper.service';
-
-import { Filters } from '../../../constants/filters';
-import { UserRoles } from '../../../constants/userRoles';
 import { AngularLinks } from '../../../constants/angularLinks';
-import { FiltersName } from '../../../constants/filtersName';
 import { PageTitles } from '../../../constants/pageTitles';
 
 import { Book } from '../../../models/book.model';
@@ -27,6 +23,8 @@ import { DepartmentState, LoadDepartments } from '../../../store/state/departmen
 import { MatDialog } from '@angular/material/dialog';
 import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
 import { BookState, LoadBooks } from '../../../store/state/book.state';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
     selector: 'app-main-page',
@@ -39,36 +37,18 @@ export class MainPageComponent implements OnInit, OnDestroy {
     isLoading: boolean;
     showFilterButton = true;
 
-    filterName = Filters.NOTHING;
-    authorSelect: number;
-    genreSelect: number;
-    departmentSelect: number;
+    authors: string[];
+    genres: string[];
+    department: string;
     filterValue: string;
-    fromYear: number;
-    toYear: number;
+    fromYear: string;
+    toYear: string;
 
-    roles = UserRoles;
-    links = AngularLinks;
-
-    bookFilters = [
-        { name: FiltersName.NOTHING, value: Filters.NOTHING },
-        { name: FiltersName.TITLE, value: Filters.TITLE },
-        { name: FiltersName.ISBN, value: Filters.ISBN }
-    ];
-
-    currentPage: number;
-
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    nextPage: number;
-    previousPage: number;
-    lastPage: number;
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild('drawer') drawer: MatDrawer;
 
     @Select(UserState.User)
     user$: Observable<User>;
-
-    @Select(BookState.Books)
-    books$: Observable<Book[]>;
 
     @Select(AuthorState.Authors)
     authors$: Observable<Author[]>;
@@ -78,6 +58,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     @Select(GenreState.Genres)
     genres$: Observable<Genre[]>;
+
+    @Select(BookState.Pagination)
+    pagination$: Observable<Pagination>;
+
 
     constructor(
         private authService: AuthService,
@@ -98,34 +82,29 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.store.dispatch([new LoadAuthors(), new LoadGenres(), new LoadDepartments()]);
         this.getUser$();
-        this.getBooks();
+        this.loadBooks();
     }
 
     getUser$(): void {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User );
     }
 
-    getBooks(): void {
+    loadBooks(): void {
         this.store
             .dispatch(new LoadBooks({
-                page: 0, author: null, department: null, filterName: null, filterValue: null,
-                genre: null, yearFrom: null, yearTo: null
+                page: this.paginator?.pageIndex || 0, authors: this.authors, department: this.department, filterValue: this.filterValue || '',
+                genres: this.genres, yearFrom: this.fromYear, yearTo: this.toYear, pageSize: this.paginator?.pageSize || 16
             }))
             .subscribe(() => this.isLoading = false);
     }
 
-    paginate(page: number) {}
+    getAllOption(total: number): number {
+        return total > 64 ? total : 8;
+    }
 
     toggleFilterButton(): void {
         this.showFilterButton = !this.showFilterButton;
-    }
-
-    isNothingFilter(): boolean {
-        return this.filterName === Filters.NOTHING;
-    }
-
-    isIsbnFilter(): boolean {
-        return this.filterName === Filters.ISBN;
+        this.drawer.toggle();
     }
 
     isHasAccess(): boolean {
@@ -133,26 +112,28 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     clearInputs(): void {
-        this.filterName = Filters.NOTHING;
         this.filterValue = '';
-        this.genreSelect = null;
-        this.authorSelect = null;
+        this.genres = null;
+        this.authors = null;
         this.fromYear = null;
         this.toYear = null;
     }
 
     showBooksByDepartment(): void {
-        this.filterName = Filters.NOTHING;
-        this.authorSelect = null;
-        this.genreSelect = null;
-        this.filterValue = null;
-        this.fromYear = null;
-        this.toYear = null;
-        this.paginate(1);
+        this.loadBooks();
     }
 
     onAddBook() {
         this.dialog.open(BookPopupComponent, { data: {} as Book, disableClose: true, width: '768px' });
+    }
+
+    onPaginate(event: PageEvent) {
+        console.log(event);
+    }
+
+    onSearch() {
+        this.toggleFilterButton();
+        this.loadBooks();
     }
 
     ngOnDestroy(): void {}

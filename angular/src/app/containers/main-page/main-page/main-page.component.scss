@@ -1,5 +1,24 @@
 @import '../../../../styles';
 
+
+::ng-deep {
+  .pagination {
+    mat-option:last-child:before{
+      content: 'All';
+      float: left;
+      text-transform: none;
+      top: 4px;
+      position: relative;
+    }
+
+    mat-option:last-child .mat-option-text{
+      display: none;
+      position: relative;
+    }
+  }
+}
+
+
 .active {
   background-color: $color-main;
   color: $color-background;

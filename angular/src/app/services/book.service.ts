@@ -33,12 +33,12 @@ export class BookService {
             .get(this.BOOKS_URL, {
                 params: new HttpParams()
                     .set('page', data.page.toString())
+                    .set('pageSize', data.pageSize.toString())
                     .set('yFrom', data.yearFrom ? data.yearFrom.toString() : '')
                     .set('yTo', data.yearTo ? data.yearTo.toString() : '')
-                    .set('author', data.author ? data.author.toString() : '')
-                    .set('genre', data.genre ? data.genre.toString() : '')
+                    .set('authors', data.authors?.length ? data.authors.join(',') : '')
+                    .set('genres', data.genres?.length ? data.genres.join(',') : '')
                     .set('department', data.department ? data.department.toString() : '')
-                    .set('filterName', data.filterName)
                     .set('filterValue', data.filterValue)
             })
             .pipe(map((response: any) => response.data));
