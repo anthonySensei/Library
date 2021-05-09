@@ -1,56 +1,58 @@
 <button mat-fab color="primary" class="filter-button" matTooltip="Open filter panel"
         [style.display]="showFilterButton ? 'block' : 'none'"
-        (click)="toggleFilterButton()"
+        (click)="onToggleFilterButton()"
 >
     <i class="material-icons">arrow_forward_ios</i>
 </button>
 <mat-drawer-container class="page-container bg-main" autosize>
     <mat-drawer #drawer [disableClose]="true" class="sidenav w-25" mode="over">
-        <button mat-button class="close-sidenav" (click)="toggleFilterButton()">
-            <i class="material-icons">close</i>
-        </button>
-        <h2>Choose filter</h2>
-        <mat-form-field class="w-100">
-            <mat-label>Search</mat-label>
-            <input matInput name="search" placeholder="Search" [(ngModel)]="filterValue" />
-        </mat-form-field>
-        <mat-divider></mat-divider>
-        <mat-form-field class="w-100">
-            <mat-label>From</mat-label>
-            <input matInput type="number" name="yearFrom" placeholder="Ex. 1689"[(ngModel)]="fromYear" />
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>To</mat-label>
-            <input matInput name="yearTo" placeholder="Ex. 2010" [(ngModel)]="toYear" />
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>Author</mat-label>
-            <mat-select [(ngModel)]="authors" multiple>
-                <mat-option>-</mat-option>
-                <mat-option [value]="author.id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>Genre</mat-label>
-            <mat-select [(ngModel)]="genres" multiple>
-                <mat-option>-</mat-option>
-                <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>Department address</mat-label>
-            <mat-select [(ngModel)]="department" (ngModelChange)="showBooksByDepartment()">
-                <mat-option>All</mat-option>
-                <mat-option [value]="department.id" *ngFor="let department of departments$ | async">{{ department.address }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <div class="d-flex justify-content-between">
-            <button mat-stroked-button color="primary" class="w-50 mr-2" (click)="onSearch()">
-                <i class="material-icons">search</i>
+        <div>
+            <button mat-button class="close-sidenav" (click)="onToggleFilterButton()">
+                <i class="material-icons">close</i>
             </button>
-            <button mat-stroked-button color="primary" class="w-50" (click)="clearInputs()">
-                Clear
-            </button>
+            <h2>Choose filter</h2>
+            <mat-form-field class="w-100">
+                <mat-label>Search</mat-label>
+                <input matInput name="search" placeholder="Search" [(ngModel)]="filterValue" />
+            </mat-form-field>
+            <mat-divider></mat-divider>
+            <mat-form-field class="w-100">
+                <mat-label>From</mat-label>
+                <input matInput type="number" name="yearFrom" placeholder="Ex. 1689"[(ngModel)]="fromYear" />
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <mat-label>To</mat-label>
+                <input matInput name="yearTo" placeholder="Ex. 2010" [(ngModel)]="toYear" />
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <mat-label>Author</mat-label>
+                <mat-select [(ngModel)]="authors" multiple>
+                    <mat-option>-</mat-option>
+                    <mat-option [value]="author.id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <mat-label>Genre</mat-label>
+                <mat-select [(ngModel)]="genres" multiple>
+                    <mat-option>-</mat-option>
+                    <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <mat-label>Department address</mat-label>
+                <mat-select [(ngModel)]="department" (ngModelChange)="showBooksByDepartment()">
+                    <mat-option>All</mat-option>
+                    <mat-option [value]="department.id" *ngFor="let department of departments$ | async">{{ department.address }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div class="d-flex justify-content-between">
+                <button mat-stroked-button color="primary" class="w-50 mr-2" (click)="onSearch()">
+                    <i class="material-icons">search</i>
+                </button>
+                <button mat-stroked-button color="primary" class="w-50" (click)="clearInputs()">
+                    Clear
+                </button>
+            </div>
         </div>
     </mat-drawer>
     <main class="container">
@@ -68,7 +70,7 @@
             <mat-spinner class="spinner"></mat-spinner>
         </div>
         <app-books-list *ngIf="!isLoading"></app-books-list>
-        <section class="d-flex justify-content-center align-items-center my-2 pagination" *ngIf="!isLoading && (pagination$ | async).length > 0">
+        <section class="d-flex justify-content-center align-items-center my-2" *ngIf="!isLoading && (pagination$ | async).length > 0">
             <mat-paginator
                     [length]="(pagination$ | async).length"
                     [pageSize]="paginator.pageSize || 8"

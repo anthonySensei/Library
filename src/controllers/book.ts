@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
 
 import Book from '../schemas/book';
+import { BookSchema } from '../models/book';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 import { convertToBase64, getImagePath } from '../helper/image';
+import { removedEmptyFields } from '../helper/object';
 
 import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import { BookSchema } from '../models/book';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -21,59 +22,37 @@ const Department = require('../schemas/sdepartment');
 
 exports.getBooks = async (req: Request, res: Response) => {
     const { department, filterValue, yFrom, yTo, pageSize } = req.query;
-    const page = Number(req.query.page) + 1;
+    const page = Number(req.query.page);
     const authors = String(req.query.authors).split(',');
     const genres = String(req.query.authors).split(',');
-    // const page = +req.query.page || 1;
-    // const fromYear = +req.query.yFrom;
-    // const toYear = +req.query.yTo;
-    // const author = +req.query.author;
-    // const genre = +req.query.genre;
-    // const department = +req.query.department;
-    // const filterValue = req.query.filterValue;
 
     const regex = new RegExp(filterValue as string, 'i');
-    const filterCondition = {
+    const filterCondition: any = {
+        department, quantity: { $gt: 0 },
         $and: [ { $or: [{title: regex }, { isbn: regex }, { description: regex } ] } ]
     };
+    const filter: any = removedEmptyFields(filterCondition);
+    authors.forEach(author => filter.$and = filter.$and.concat(removedEmptyFields({ 'authors.author': author })));
+    genres.forEach(genre => filter.$and = filter.$and.concat(removedEmptyFields({ 'genres.genre': genre })));
+
+    if (yFrom || yTo) {
+        filter.year = {
+            $gt: Number(yFrom) - 1 || 0,
+            $lt: Number(yTo) + 1 || new Date().getFullYear() + 1,
+        };
+    }
 
     try {
-        const length = await Book.countDocuments(filterCondition);
+        const length = await Book.countDocuments(filter);
         const books = await Book
-            .find(filterCondition, {}, {
+            .find(filter, {}, {
                 limit: Number(pageSize),
-                skip: (Number(page) - 1) * Number(pageSize),
+                skip: Number(page) * Number(pageSize),
+                sort: { year: -1 }
             })
             .populate('department')
             .populate('authors.author')
             .populate('genres.genre') as BookSchema[];
-        // const totalBooks = await Book.count({ where: condition });
-        // const books = await Book.findAll({
-        //     include: [
-        //         { model: Department },
-        //         { model: Author },
-        //         { model: Genre }
-        //     ],
-        //     order: [['year', 'DESC']],
-        //     where: condition,
-        //     limit: ITEMS_PER_PAGE,
-        //     offset: (page - 1) * ITEMS_PER_PAGE
-        // });
-        // const booksArr = [];
-        // books.forEach(book => {
-        //     const bookValues = book.get();
-        //     bookValues.image = convertToBase64(bookValues.image);
-        //     booksArr.push({
-        //         id: bookValues.id,
-        //         name: bookValues.name,
-        //         year: bookValues.year,
-        //         author: bookValues.author_.get(),
-        //         genre: bookValues.genre_.get(),
-        //         image: bookValues.image,
-        //         description: bookValues.description,
-        //         department: bookValues.department_.get()
-        //     });
-        // });
         const booksData = books.map(book => ({
             title: book.title,
             authors: book.authors.map(author => author.author),

@@ -18,7 +18,7 @@ import { BooksListComponent } from './main-page/books-list/books-list.component'
         BookDetailsComponent,
         LoanBookModalComponent,
         MoveBookModalComponent,
-        BooksListComponent
+        BooksListComponent,
     ],
     imports: [RouterModule, MainPageRoutingModule, SharedModule, FormsModule],
     entryComponents: [

@@ -79,7 +79,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         document.title = PageTitles.CATALOG;
-        this.isLoading = true;
         this.store.dispatch([new LoadAuthors(), new LoadGenres(), new LoadDepartments()]);
         this.getUser$();
         this.loadBooks();
@@ -90,6 +89,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     loadBooks(): void {
+        this.isLoading = true;
         this.store
             .dispatch(new LoadBooks({
                 page: this.paginator?.pageIndex || 0, authors: this.authors, department: this.department, filterValue: this.filterValue || '',
@@ -102,7 +102,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         return total > 64 ? total : 8;
     }
 
-    toggleFilterButton(): void {
+    onToggleFilterButton(): void {
         this.showFilterButton = !this.showFilterButton;
         this.drawer.toggle();
     }
@@ -132,7 +132,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     onSearch() {
-        this.toggleFilterButton();
+        this.onToggleFilterButton();
         this.loadBooks();
     }
 
