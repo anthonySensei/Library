@@ -54,10 +54,5 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.librariansSubscription,
-            this.librariansFetchSubscription
-        ]);
     }
 }

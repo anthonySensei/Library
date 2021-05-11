@@ -102,10 +102,5 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.mergeSubscription, [
-            this.sortSubscription,
-            this.departmentsFetchSubscription,
-            this.departmentsSubscription
-        ]);
     }
 }

@@ -28,16 +28,6 @@ export class HelperService {
 
     constructor() {}
 
-    unsubscribeHandle(
-        mainSubscription: Subscription,
-        arrSubscription: Subscription[]
-    ) {
-        arrSubscription.forEach((subscription: Subscription) => {
-            mainSubscription.add(subscription);
-        });
-        mainSubscription.unsubscribe();
-    }
-
     emptyChartHandle(name: string): any[] {
         return [
             {
