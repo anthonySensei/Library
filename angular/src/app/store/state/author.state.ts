@@ -6,7 +6,6 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { StudentStateModel } from '../models/student.model';
 import { Author } from '../../models/author.model';
 import { AuthorStateModel } from '../models/author.model';
-import { UpdateAuthorPayload } from '../../models/request/author';
 import { AuthorService } from '../../services/author.service';
 
 
@@ -32,13 +31,13 @@ export class SetAuthors {
 export class CreateAuthor {
     static readonly type = '[Author] CreateAuthor';
 
-    constructor(public data: UpdateAuthorPayload) {}
+    constructor(public data: Author) {}
 }
 
 export class EditAuthor {
     static readonly type = '[Author] EditAuthor';
 
-    constructor(public authorId: string, public data: UpdateAuthorPayload) {}
+    constructor(public authorId: string, public data: Author) {}
 }
 
 export class DeleteAuthor {

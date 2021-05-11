@@ -16,7 +16,7 @@ import { LanguagePopupComponent } from '../../popups/language-popup/language-pop
 export class LanguageSectionComponent implements OnInit, OnDestroy {
 
   dataSource = new MatTableDataSource([]);
-  displayedColumns: string[] = ['englishTitle', 'code', 'actions'];
+  displayedColumns: string[] = ['englishTitle', 'englishCountry', 'code', 'actions'];
 
   @Select(LanguageState.Languages)
   languages$: Observable<Language[]>;

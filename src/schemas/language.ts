@@ -6,6 +6,10 @@ const languageSchema: Schema = new Schema({
         type: String,
         required: true
     },
+    englishCountry: {
+        type: String,
+        required: true
+    },
     code: {
         type: String,
         required: true,

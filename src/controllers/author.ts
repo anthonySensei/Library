@@ -14,7 +14,7 @@ export const getAuthors = async (req: Request, res: Response) => {
     try {
         const authors = await Author.find() as AuthorSchema[];
         const data = {
-            authors: authors.map(author => ({id: author._id, name: author.name, country: author.country})),
+            authors: authors.map(author => ({id: author._id, name: author.name, country: author.country, language: author.language})),
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         return responseSuccessHandle(res, 200, data);

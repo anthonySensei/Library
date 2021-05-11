@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { Author } from '../models/author.model';
-import { UpdateAuthorPayload } from '../models/request/author';
 
 import { serverLink } from '../constants/serverLink';
 
@@ -26,7 +25,7 @@ export class AuthorService {
         return this.http.post(this.AUTHORS_URL, { author }).pipe(map((response: any) => response.data));
     }
 
-    editAuthor(id: string, author: UpdateAuthorPayload) {
+    editAuthor(id: string, author: Author) {
         return this.http.put(`${this.AUTHORS_URL}/${id}`, { author }).pipe(map((response: any) => response.data));
     }
 

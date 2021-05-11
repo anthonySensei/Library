@@ -28,10 +28,11 @@ export class AuthorPopupComponent implements OnInit {
     }
 
     initForm() {
-        const { name, country } = this.data;
+        const { name, country, language } = this.data;
         this.form = new FormGroup({
             name: new FormControl(name || '', [Validators.required]),
-            country: new FormControl(country || '', [Validators.required])
+            country: new FormControl(country || '', [Validators.required]),
+            language: new FormControl(language || '', [Validators.required]),
         });
     }
 
@@ -44,13 +45,13 @@ export class AuthorPopupComponent implements OnInit {
     }
 
     addAuthor(): Observable<StoreStateModel> {
-        const { name, country } = this.form.value;
-        return this.store.dispatch(new CreateAuthor({ name, country }));
+        const { name, country, language } = this.form.value;
+        return this.store.dispatch(new CreateAuthor({ name, country, language }));
     }
 
     editAuthor(): Observable<StoreStateModel> {
-        const { name, country } = this.form.value;
-        return this.store.dispatch(new EditAuthor(this.data.id, { name, country }));
+        const { name, country, language } = this.form.value;
+        return this.store.dispatch(new EditAuthor(this.data.id, { name, country, language }));
     }
 
     onDoAction() {

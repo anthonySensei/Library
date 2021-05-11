@@ -2,7 +2,6 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
 import { StudentStateModel } from '../models/student.model';
-import { UpdateAuthorPayload } from '../../models/request/author';
 import { GenreStateModel } from '../models/genre.model';
 import { GenreService } from '../../services/genre.service';
 import { Genre } from '../../models/genre.model';

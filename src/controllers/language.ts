@@ -15,7 +15,7 @@ export const getLanguages = async (req: Request, res: Response) => {
         const languages = await Language.find() as LanguageSchema[];
         const data = {
             languages: languages.map(language => ({
-                id: language._id, englishTitle: language.englishTitle, code: language.code
+                id: language._id, englishTitle: language.englishTitle, englishCountry: language.englishCountry, code: language.code
             })),
             message: successMessages.SUCCESSFULLY_FETCHED
         };

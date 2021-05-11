@@ -3,9 +3,6 @@ import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
 
-import { Author } from '../models/author.model';
-import { UpdateAuthorPayload } from '../models/request/author';
-
 import { serverLink } from '../constants/serverLink';
 import { Language } from '../models/language.model';
 

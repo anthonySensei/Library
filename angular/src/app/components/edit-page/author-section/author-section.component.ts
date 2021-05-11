@@ -19,7 +19,7 @@ import { AuthorPopupComponent } from '../../popups/author-popup/author-popup.com
 export class AuthorSectionComponent implements OnInit, OnDestroy {
 
     dataSource = new MatTableDataSource([]);
-    displayedColumns: string[] = ['name', 'country', 'actions'];
+    displayedColumns: string[] = ['name', 'country', 'language', 'actions'];
 
     @Select(AuthorState.Authors)
     authors$: Observable<Author[]>;

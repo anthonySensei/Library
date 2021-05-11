@@ -28,9 +28,10 @@ export class LanguagePopupComponent implements OnInit {
   }
 
   initForm() {
-    const { code, englishTitle } = this.data;
+    const { code, englishTitle, englishCountry } = this.data;
     this.form = new FormGroup({
       englishTitle: new FormControl(englishTitle || '', [Validators.required]),
+      englishCountry: new FormControl(englishCountry || '', [Validators.required]),
       code: new FormControl(code || '', [Validators.required])
     });
   }
@@ -44,13 +45,13 @@ export class LanguagePopupComponent implements OnInit {
   }
 
   addLanguage(): Observable<StoreStateModel> {
-    const { englishTitle, code } = this.form.value;
-    return this.store.dispatch(new CreateLanguage({ englishTitle, code }));
+    const { englishTitle, code, englishCountry } = this.form.value;
+    return this.store.dispatch(new CreateLanguage({ englishTitle, code, englishCountry }));
   }
 
   editLanguage(): Observable<StoreStateModel> {
-    const { englishTitle, code } = this.form.value;
-    return this.store.dispatch(new EditLanguage(this.data.id, { englishTitle, code }));
+    const { englishTitle, code, englishCountry } = this.form.value;
+    return this.store.dispatch(new EditLanguage(this.data.id, { englishTitle, code, englishCountry }));
   }
 
   onDoAction() {
