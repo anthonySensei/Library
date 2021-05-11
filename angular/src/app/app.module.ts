@@ -14,7 +14,6 @@ import { HeaderComponent } from './components/header/header.component';
 import { EditPageComponent } from './components/edit-page/edit-page.component';
 import { AuthorSectionComponent } from './components/edit-page/author-section/author-section.component';
 import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
-import { DepartmentSectionComponent } from './components/edit-page/department-section/department-section.component';
 import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
 
 import { AuthInterceptor } from './services/auth.interceptor.service';
@@ -39,8 +38,6 @@ import { GenreState } from './store/state/genre.state';
 import { AuthorState } from './store/state/author.state';
 import { AuthorPopupComponent } from './components/popups/author-popup/author-popup.component';
 import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup.component';
-import { DepartmentPopupComponent } from './components/popups/department-popup/department-popup.component';
-import { DepartmentState } from './store/state/department.state';
 import { BookPopupComponent } from './components/popups/book-popup/book-popup.component';
 import { BookState } from './store/state/book.state';
 
@@ -56,14 +53,12 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         EditPageComponent,
         AuthorSectionComponent,
         BookSectionComponent,
-        DepartmentSectionComponent,
         GenreSectionComponent,
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,
         AuthorPopupComponent,
         GenrePopupComponent,
-        DepartmentPopupComponent,
         BookPopupComponent,
     ],
     imports: [
@@ -79,7 +74,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, DepartmentState, BookState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),

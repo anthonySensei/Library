@@ -26,7 +26,6 @@ import { OrderService } from '../../../services/orders.service';
 import { ResponseService } from '../../../services/response.service';
 import { AuthService } from '../../../services/auth.service';
 import { HelperService } from '../../../services/helper.service';
-import { DepartmentService } from '../../../services/department.service';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
@@ -76,7 +75,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private orderService: OrderService,
         private authService: AuthService,
-        private departmentService: DepartmentService,
         public helperService: HelperService,
         private responseService: ResponseService
     ) {}
@@ -111,10 +109,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     subscriptionsHandle(): void {
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
         this.getUser$();
     }
 

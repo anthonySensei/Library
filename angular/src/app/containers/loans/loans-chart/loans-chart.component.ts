@@ -10,7 +10,6 @@ import { Statistic } from '../../../models/statistic.model';
 import { WarnMessages } from '../../../constants/warnMessages';
 import { PageTitles } from '../../../constants/pageTitles';
 import { DbModels } from '../../../constants/dbModels';
-import { DepartmentService } from '../../../services/department.service';
 import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
@@ -62,13 +61,11 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         private helperService: HelperService,
         private materialService: MaterialService,
         private authService: AuthService,
-        private departmentService: DepartmentService
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STATISTIC;
         this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
-        this.subscriptionHandle();
         this.getUser$();
     }
 
@@ -147,13 +144,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     showStatistic(): void {
         this.loansService.fetchLoansStatisticHttp(this.model, this.modelValue).pipe(untilDestroyed(this)).subscribe();
         this.statisticHandler();
-    }
-
-    subscriptionHandle(): void {
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
     }
 
     ngOnDestroy(): void {}

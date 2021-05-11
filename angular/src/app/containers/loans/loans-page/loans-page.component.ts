@@ -20,7 +20,6 @@ import { tap } from 'rxjs/operators';
 
 import { LoansService } from '../../../services/loans.service';
 import { ResponseService } from '../../../services/response.service';
-import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
@@ -65,7 +64,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private loansService: LoansService,
-        private departmentService: DepartmentService,
         public helperService: HelperService,
         private responseService: ResponseService
     ) {}
@@ -83,7 +81,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
             null,
             false
         );
-        this.subscriptionsHandle();
     }
 
     ngAfterViewInit(): void {
@@ -95,13 +92,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
             this.sort.sortChange,
             this.paginator.page
         ).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLoansPage())).subscribe();
-    }
-
-    subscriptionsHandle(): void {
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
     }
 
     returnBook(loanId: any, bookId: any): void {

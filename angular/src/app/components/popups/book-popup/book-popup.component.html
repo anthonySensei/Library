@@ -21,17 +21,6 @@
                     <mat-error *ngIf="hasError('quantity', 'required')">Quantity is required</mat-error>
                     <mat-error *ngIf="hasError('quantity', 'max')">You cannot add so much books</mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-50">
-                    <mat-label>Department</mat-label>
-                    <mat-select name="department" formControlName="department">
-                        <mat-option *ngFor="let department of departments$ | async" [value]="department.id">
-                            {{ department.name }} ({{ department.address }})
-                        </mat-option>
-                        <mat-divider></mat-divider>
-                        <mat-option (click)="onAddDepartment()">Add Department</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="hasError('department', 'required')">Quantity is required</mat-error>
-                </mat-form-field>
             </form>
         </mat-step>
         <mat-step [stepControl]="detailsForm">
@@ -116,11 +105,6 @@
             <p>ISBN: <span class="text-main">{{ mainForm?.value?.isbn }}</span></p>
             <p>Title: <span class="text-main">{{ mainForm?.value?.title }}</span></p>
             <p>Quantity: <span class="text-main">{{ mainForm?.value?.quantity }}</span></p>
-            <p>Department:
-                <span class="text-main" *ngVar="getDepartment(mainForm?.value?.department) as department">
-                    {{ department?.name }} ({{ department?.address }})
-                </span>
-            </p>
             <p>Description: <span class="text-main">{{ detailsForm?.value?.description }}</span></p>
             <p>Authors: <span class="text-main">{{ getAuthors(detailsForm?.value?.authors) }}</span></p>
             <p>Genres: <span class="text-main">{{ getGenres(detailsForm?.value?.genres) }}</span></p>

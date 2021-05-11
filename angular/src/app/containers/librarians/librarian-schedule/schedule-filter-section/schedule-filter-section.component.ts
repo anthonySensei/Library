@@ -13,7 +13,6 @@ import { Department } from '../../../../models/department.model';
 import { Librarian } from '../../../../models/librarian.model';
 
 import { LibrarianService } from '../../../../services/librarian.service';
-import { DepartmentService } from '../../../../services/department.service';
 import { HelperService } from '../../../../services/helper.service';
 
 @Component({
@@ -44,23 +43,9 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
 
     constructor(
         private librarianService: LibrarianService,
-        private departmentService: DepartmentService
     ) {}
 
-    ngOnInit() {
-        this.subscriptionHandle();
-    }
-
-    subscriptionHandle() {
-        this.departmentsFetchSubscription = this.departmentService
-            .getDepartments()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
-    }
+    ngOnInit() {}
 
     onSetSchedules() {
         this.departmentSelectChange.emit(this.departmentSelect);

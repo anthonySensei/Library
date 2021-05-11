@@ -5,10 +5,7 @@ import { Select, Store } from '@ngxs/store';
 import { MatStepper } from '@angular/material/stepper';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../../../services/validation.service';
-import { DepartmentState } from '../../../store/state/department.state';
 import { Observable } from 'rxjs';
-import { Department } from '../../../models/department.model';
-import { DepartmentPopupComponent } from '../department-popup/department-popup.component';
 import { AuthorState } from '../../../store/state/author.state';
 import { Author } from '../../../models/author.model';
 import { AuthorPopupComponent } from '../author-popup/author-popup.component';
@@ -25,10 +22,10 @@ import { CreateBook } from '../../../store/state/book.state';
 export class BookPopupComponent implements OnInit {
 
     image: string;
-    file: Event;
     isEdit: boolean;
     mainForm: FormGroup;
     detailsForm: FormGroup;
+    file: Event;
     isbnValidation: RegExp;
     @ViewChild('stepper') stepper: MatStepper;
 
@@ -37,9 +34,6 @@ export class BookPopupComponent implements OnInit {
 
     @Select(GenreState.Genres)
     genres$: Observable<Genre[]>;
-
-    @Select(DepartmentState.Departments)
-    departments$: Observable<Department[]>;
 
     constructor(
         private store: Store,
@@ -61,7 +55,6 @@ export class BookPopupComponent implements OnInit {
             isbn: new FormControl(null, [Validators.required, Validators.pattern(this.isbnValidation)]),
             title: new FormControl(null, [Validators.required]),
             quantity: new FormControl(null, [Validators.required, Validators.max(420)]),
-            department: new FormControl(null, [Validators.required])
         });
         this.detailsForm = new FormGroup({
             description: new FormControl(null, [Validators.required]),
@@ -104,11 +97,6 @@ export class BookPopupComponent implements OnInit {
         return this.stepper?.selectedIndex;
     }
 
-    getDepartment(id: string): Department {
-        const departments = this.store.selectSnapshot(DepartmentState.Departments);
-        return departments.find(department => department.id === id);
-    }
-
     getAuthors(ids: string[]): string {
         const authors = this.store.selectSnapshot(AuthorState.Authors);
         return authors.filter(author => ids?.includes(author.id)).map(author => author.name).join(', ');
@@ -140,10 +128,10 @@ export class BookPopupComponent implements OnInit {
     }
 
     createBook() {
-        const { isbn, title, quantity, department: DepartmentId } = this.mainForm.value;
+        const { isbn, title, quantity } = this.mainForm.value;
         const { description, authors: authorsIds, genres: genresIds, year, language } = this.detailsForm.value;
         const book: Book = {
-            isbn, title, quantity, department: { id: DepartmentId } as Department, description, image: this.image,
+            isbn, title, quantity, description, image: this.image,
             authors: authorsIds.map(id => ({ id })), genres: genresIds.map(id => ({ id })), year, language
         };
         this.store.dispatch(new CreateBook(book)).subscribe(() => this.onClose());
@@ -178,9 +166,5 @@ export class BookPopupComponent implements OnInit {
 
     onAddAuthors() {
         this.dialog.open(AuthorPopupComponent, { data: {}, disableClose: true, width: '568px' });
-    }
-
-    onAddDepartment() {
-        this.dialog.open(DepartmentPopupComponent, { data: {}, disableClose: true, width: '568px' });
     }
 }

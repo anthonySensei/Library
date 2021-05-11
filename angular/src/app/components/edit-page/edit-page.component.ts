@@ -6,7 +6,6 @@ import { Department } from '../../models/department.model';
 import { Period } from '../../models/period.model';
 import { Librarian } from '../../models/librarian.model';
 
-import { DepartmentService } from '../../services/department.service';
 import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
@@ -43,7 +42,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
     user$: Observable<User>;
 
     constructor(
-        public departmentService: DepartmentService,
         private authService: AuthService,
         public responseService: ResponseService,
         private materialService: MaterialService,
@@ -64,10 +62,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
     }
 
     selectsValuesSubscriptionHandle(): void {
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
         this.periodService.fetchAllPeriodsHttp().pipe(untilDestroyed(this)).subscribe();
         this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
             this.periods = periods;

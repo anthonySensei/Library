@@ -11,7 +11,6 @@ import sequelize from './config/database';
 import multer from './config/multer';
 
 import authorRoutes from './routes/author';
-import departmentRoutes from './routes/department';
 import authRoutes from './routes/auth';
 import genreRoutes from './routes/genre';
 import librarianRoutes from './routes/librarian';
@@ -41,7 +40,6 @@ const Schedule = require('./schemas/schedule');
 const Period = require('./schemas/period');
 
 const authorsUrl = require('./constants/links').AUTHORS_URL;
-const departmentsUrl = require('./constants/links').DEPARTMENTS_URL;
 const booksUrl = require('./constants/links').BOOKS_URL;
 const librariansUrl = require('./constants/links').LIBRARIANS_URL;
 const genresUrl = require('./constants/links').GENRES_URL;
@@ -70,7 +68,6 @@ app.use(cors);
 app.use(authRoutes);
 app.use(authorsUrl, authorRoutes);
 app.use(booksUrl, bookRoutes);
-app.use(departmentsUrl, departmentRoutes);
 app.use(genresUrl, genreRoutes);
 app.use(librariansUrl, librarianRoutes);
 app.use(loansUrl, loanRoutes);

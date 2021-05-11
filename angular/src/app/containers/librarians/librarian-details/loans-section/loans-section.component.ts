@@ -14,7 +14,6 @@ import { tap } from 'rxjs/operators';
 
 import { HelperService } from '../../../../services/helper.service';
 import { LoansService } from '../../../../services/loans.service';
-import { DepartmentService } from '../../../../services/department.service';
 
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
@@ -56,7 +55,6 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private loansService: LoansService,
-        private departmentService: DepartmentService
     ) {}
 
     ngOnInit(): void {
@@ -73,7 +71,6 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.librarianId,
             null
         );
-        this.subscriptionHandle();
     }
 
     ngAfterViewInit(): void {
@@ -87,17 +84,6 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         )
             .pipe(tap(() => this.loadLoansPage()))
             .subscribe();
-    }
-
-    subscriptionHandle(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .getDepartments()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
     }
 
     loadLoansPage(): void {

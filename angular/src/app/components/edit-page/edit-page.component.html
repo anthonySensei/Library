@@ -19,12 +19,6 @@
                 [helperService]="helperService"
             ></app-book-section>
         </mat-expansion-panel>
-        <mat-expansion-panel *ngIf="isManager">
-            <mat-expansion-panel-header>
-                <mat-panel-title>Departments</mat-panel-title>
-            </mat-expansion-panel-header>
-            <app-department-section></app-department-section>
-        </mat-expansion-panel>
         <mat-expansion-panel #genres (click)="genres.expanded && onLoadGenres()">
             <mat-expansion-panel-header>
                 <mat-panel-title>Genres</mat-panel-title>

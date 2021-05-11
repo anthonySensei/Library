@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { MoveBookModalData } from './move-book-modal-data';
 import { Department } from '../../../../models/department.model';
 
-import { DepartmentService } from '../../../../services/department.service';
 import { FormControl, Validators } from '@angular/forms';
 
 @Component({
@@ -28,15 +27,11 @@ export class MoveBookModalComponent implements OnInit, OnDestroy {
     constructor(
         public dialogRef: MatDialogRef<MoveBookModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: MoveBookModalData,
-        private departmentService: DepartmentService
     ) {
         dialogRef.disableClose = true;
     }
 
     ngOnInit(): void {
-        this.departmentsFetchSubscription = this.departmentService
-            .getDepartments()
-            .subscribe();
     }
 
     ngOnDestroy(): void {}

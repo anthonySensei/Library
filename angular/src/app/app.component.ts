@@ -6,7 +6,6 @@ import { InitStudentState } from './store/state/student.state';
 import { InitLibrarianState } from './store/state/librarian.state';
 import { InitAuthorState } from './store/state/author.state';
 import { InitGenreState } from './store/state/genre.state';
-import { InitDepartmentState } from './store/state/department.state';
 import { InitBookState } from './store/state/book.state';
 
 @Component({
@@ -23,7 +22,6 @@ export class AppComponent implements OnInit {
             new InitLibrarianState(),
             new InitAuthorState(),
             new InitGenreState(),
-            new InitDepartmentState(),
             new InitBookState(),
             new AutoLogin()
         ]);

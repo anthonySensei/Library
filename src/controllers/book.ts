@@ -21,14 +21,14 @@ const Author = require('../schemas/sauthor');
 const Department = require('../schemas/sdepartment');
 
 exports.getBooks = async (req: Request, res: Response) => {
-    const { department, filterValue, yFrom, yTo, pageSize } = req.query;
+    const { filterValue, yFrom, yTo, pageSize } = req.query;
     const page = Number(req.query.page);
     const authors = String(req.query.authors).split(',');
     const genres = String(req.query.authors).split(',');
 
     const regex = new RegExp(filterValue as string, 'i');
     const filterCondition: any = {
-        department, quantity: { $gt: 0 },
+        quantity: { $gt: 0 },
         $and: [ { $or: [{title: regex }, { isbn: regex }, { description: regex } ] } ]
     };
     const filter: any = removedEmptyFields(filterCondition);
@@ -50,14 +50,12 @@ exports.getBooks = async (req: Request, res: Response) => {
                 skip: Number(page) * Number(pageSize),
                 sort: { year: -1 }
             })
-            .populate('department')
             .populate('authors.author')
             .populate('genres.genre') as BookSchema[];
         const booksData = books.map(book => ({
             title: book.title,
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
-            department: book.department,
             year: book.year,
             image: convertToBase64(book.image)
         }));

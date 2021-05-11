@@ -4,13 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { BookService } from '../../../services/book.service';
 import { HelperService } from '../../../services/helper.service';
-import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 
 import { Book } from '../../../models/book.model';
 import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
-import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { Pagination } from '../../../models/pagination.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
@@ -19,7 +17,6 @@ import { UserState } from '../../../store/state/user.state';
 import { Observable } from 'rxjs';
 import { AuthorState, LoadAuthors } from '../../../store/state/author.state';
 import { GenreState, LoadGenres } from '../../../store/state/genre.state';
-import { DepartmentState, LoadDepartments } from '../../../store/state/department.state';
 import { MatDialog } from '@angular/material/dialog';
 import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
 import { BookState, LoadBooks } from '../../../store/state/book.state';
@@ -39,7 +36,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     authors: string[];
     genres: string[];
-    department: string;
     filterValue: string;
     fromYear: string;
     toYear: string;
@@ -52,9 +48,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     @Select(AuthorState.Authors)
     authors$: Observable<Author[]>;
-
-    @Select(DepartmentState.Departments)
-    departments$: Observable<Department[]>;
 
     @Select(GenreState.Genres)
     genres$: Observable<Genre[]>;
@@ -79,7 +72,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         document.title = PageTitles.CATALOG;
-        this.store.dispatch([new LoadAuthors(), new LoadGenres(), new LoadDepartments()]);
+        this.store.dispatch([new LoadAuthors(), new LoadGenres()]);
         this.getUser$();
         this.loadBooks();
     }
@@ -92,7 +85,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.store
             .dispatch(new LoadBooks({
-                page: this.paginator?.pageIndex || 0, authors: this.authors, department: this.department, filterValue: this.filterValue || '',
+                page: this.paginator?.pageIndex || 0, authors: this.authors, filterValue: this.filterValue || '',
                 genres: this.genres, yearFrom: this.fromYear, yearTo: this.toYear, pageSize: this.paginator?.pageSize || 16
             }))
             .subscribe(() => this.isLoading = false);
@@ -117,10 +110,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
         this.authors = null;
         this.fromYear = null;
         this.toYear = null;
-    }
-
-    showBooksByDepartment(): void {
-        this.loadBooks();
     }
 
     onAddBook() {
