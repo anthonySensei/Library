@@ -7,6 +7,7 @@ import { InitLibrarianState } from './store/state/librarian.state';
 import { InitAuthorState } from './store/state/author.state';
 import { InitGenreState } from './store/state/genre.state';
 import { InitBookState } from './store/state/book.state';
+import { InitLanguageState } from './store/state/language.state';
 
 @Component({
     selector: 'app-root',
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
             new InitAuthorState(),
             new InitGenreState(),
             new InitBookState(),
+            new InitLanguageState(),
             new AutoLogin()
         ]);
     }

@@ -23,6 +23,7 @@ import { UserState } from '../../store/state/user.state';
 import { User } from '../../models/user.model';
 import { LoadAuthors } from '../../store/state/author.state';
 import { LoadGenres } from '../../store/state/genre.state';
+import { LoadLanguages } from '../../store/state/language.state';
 
 @Component({
     selector: 'app-edit-page',
@@ -78,6 +79,10 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     onLoadGenres() {
         this.store.dispatch(new LoadGenres());
+    }
+
+    onLoadLanguages() {
+        this.store.dispatch(new LoadLanguages());
     }
 
     ngOnDestroy(): void {}

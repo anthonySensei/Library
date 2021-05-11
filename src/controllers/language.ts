@@ -5,71 +5,74 @@ import logger from '../config/logger';
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 
-import { AuthorSchema } from '../models/author';
-import Author from '../schemas/author';
+import { LanguageSchema } from '../models/language';
+import Language from '../schemas/language';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 
-export const getAuthors = async (req: Request, res: Response) => {
+export const getLanguages = async (req: Request, res: Response) => {
     try {
-        const authors = await Author.find() as AuthorSchema[];
+        const languages = await Language.find() as LanguageSchema[];
         const data = {
-            authors: authors.map(author => ({id: author._id, name: author.name, country: author.country})),
+            languages: languages.map(language => ({
+                id: language._id, englishTitle: language.englishTitle, code: language.code
+            })),
             message: successMessages.SUCCESSFULLY_FETCHED
         };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
-        console.error(`Error fetching authors`, err.message);
+        console.error(`Error fetching languages`, err.message);
         return responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
 
-export const addAuthor = async (req: Request, res: Response) => {
-    const { author } = req.body;
+export const addALanguage = async (req: Request, res: Response) => {
+    const { language } = req.body;
 
     try {
-        const isNotUnique = !!(await Author.findOne({ name: author.name }));
+        const isNotUnique = !!(await Language.findOne({ code: language.code }));
 
         if (isNotUnique) {
-            return responseErrorHandle(res, 400, errorMessages.AUTHOR_EXIST);
+            return responseErrorHandle(res, 400, errorMessages.LANGUAGE_EXIST);
         }
 
-        await Author.create(author);
-        responseSuccessHandle(res, 200, { message: successMessages.AUTHOR_SUCCESSFULLY_CREATED });
+        await Language.create(language);
+        responseSuccessHandle(res, 200, { message: successMessages.LANGUAGE_SUCCESSFULLY_CREATED });
     } catch (err) {
-        logger.error(`Error creating author`, err.message);
+        logger.error(`Error creating language`, err.message);
         responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
     }
 };
 
-export const editAuthor = async (req: Request, res: Response) => {
+export const editLanguage = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { author } = req.body;
+    const { language } = req.body;
 
     try {
-        const isExist = !!(await Author.findOne({ name: author.name }));
+        const isExist = !!(await Language.findOne({ code: language.code, _id: { $ne: id } }));
 
         if (isExist) {
-            return responseErrorHandle(res, 400, errorMessages.AUTHOR_EXIST);
+            return responseErrorHandle(res, 400, errorMessages.LANGUAGE_EXIST);
         }
 
-        await Author.findByIdAndUpdate(id, author);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_UPDATED };
+        await Language.findByIdAndUpdate(id, language);
+        const data = { message: successMessages.LANGUAGE_SUCCESSFULLY_UPDATED };
         responseSuccessHandle(res, 200, data);
     } catch (err) {
-        logger.error(`Error creating author`, err.message);
+        logger.error(`Error updating language`, err.message);
         responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
     }
 };
 
-export const deleteAuthor = async (req: Request, res: Response) => {
+export const deleteLanguage = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        await Author.findByIdAndDelete(id);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED };
+        await Language.findByIdAndDelete(id);
+        const data = { message: successMessages.LANGUAGE_SUCCESSFULLY_DELETED };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
+        logger.error(`Error deleting language`, err.message);
         return responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
     }
 };

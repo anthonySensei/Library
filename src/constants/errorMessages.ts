@@ -15,6 +15,7 @@ export default {
         'Password was not changed. Old password equals to new password',
     DIFFERENT_PASSWORDS: 'Passwords are different!',
     WRONG_OLD_PASSWORD: 'Wrong old password',
+    LANGUAGE_EXIST: 'Language with this code has already existed.',
     AUTHOR_EXIST: 'Author with this name has already existed.',
     DEPARTMENTS_EXIST: 'Department with this address has already existed.',
     GENRE_EXIST: 'Genre has already existed.',

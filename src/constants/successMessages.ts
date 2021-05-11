@@ -12,6 +12,9 @@ export default {
     BOOK_SUCCESSFULLY_DELETED: 'Book has been successfully deleted',
     BOOK_SUCCESSFULLY_MOVED:
         'Book has been successfully moved to another department',
+    LANGUAGE_SUCCESSFULLY_CREATED: 'Language has been successfully created',
+    LANGUAGE_SUCCESSFULLY_UPDATED: 'Language has been successfully updated',
+    LANGUAGE_SUCCESSFULLY_DELETED: 'Language has been successfully deleted',
     AUTHOR_SUCCESSFULLY_CREATED: 'Author has been successfully created',
     AUTHOR_SUCCESSFULLY_UPDATED: 'Author has been successfully updated',
     AUTHOR_SUCCESSFULLY_DELETED: 'Author has been successfully deleted',

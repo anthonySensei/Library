@@ -1,13 +1,13 @@
 import express from 'express';
 import passport from 'passport';
 
-import { addAuthor, editAuthor, getAuthors, deleteAuthor } from '../controllers/author';
+import { addALanguage, deleteLanguage, editLanguage, getLanguages } from '../controllers/language';
 
 const router = express.Router();
 
-router.get('', getAuthors);
-router.post('', passport.authenticate('jwt', { session: false }), addAuthor);
-router.put('/:id', passport.authenticate('jwt', { session: false }), editAuthor);
-router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteAuthor);
+router.get('', getLanguages);
+router.post('', passport.authenticate('jwt', { session: false }), addALanguage);
+router.put('/:id', passport.authenticate('jwt', { session: false }), editLanguage);
+router.delete('/:id', passport.authenticate('jwt', { session: false }), deleteLanguage);
 
 export default router;

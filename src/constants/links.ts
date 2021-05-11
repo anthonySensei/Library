@@ -11,6 +11,8 @@ exports.DEPARTMENTS_URL = '/departments';
 
 exports.GENRES_URL = '/genres';
 
+exports.LANGUAGES_URL = '/languages';
+
 exports.LIBRARIANS_URL = '/librarians';
 exports.LIBRARIANS_ALL_URL = '/all';
 exports.LIBRARIANS_LIBRARIAN_URL = '/details';

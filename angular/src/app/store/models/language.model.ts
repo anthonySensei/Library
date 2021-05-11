@@ -1,5 +1,5 @@
-import { Author } from '../../models/author.model';
+import { Language } from '../../models/language.model';
 
-export class AuthorStateModel {
-    authors: Author[] = [];
+export class LanguageStateModel {
+    languages: Language[] = [];
 }

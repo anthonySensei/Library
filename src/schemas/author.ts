@@ -9,6 +9,10 @@ const authorSchema: Schema = new Schema({
     country: {
         type: String,
         required: true
+    },
+    language: {
+        type: String,
+        required: true
     }
 });
 

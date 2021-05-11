@@ -1,1 +1,17 @@
-<p>language-popup works!</p>
+<h2 mat-dialog-title class="text-center">{{ getTitle() }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="d-flex justify-content-center align-items-center flex-column">
+        <mat-form-field class="w-75">
+            <mat-label>On English</mat-label>
+            <input matInput type="text" name="englishTitle" formControlName="englishTitle" placeholder="On English" />
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>Language Code</mat-label>
+            <input matInput type="text" name="code" formControlName="code" placeholder="Language Code" />
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="isInvalid()" (click)="onDoAction()">Save</button>
+</mat-dialog-actions>

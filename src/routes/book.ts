@@ -1,12 +1,11 @@
-const express = require('express');
-const router = express.Router();
+import passport from 'passport';
+import express from 'express';
 
-const passport = require('passport');
+const router = express.Router();
 
 const bookController = require('../controllers/book');
 
 const booksDetailsUrl = require('../constants/links').BOOKS_DETAILS_URL;
-const booksMoveUrl = require('../constants/links').BOOKS_MOVE_URL;
 
 router.get('', bookController.getBooks);
 
@@ -16,12 +15,6 @@ router.post(
     '',
     passport.authenticate('jwt', { session: false }),
     bookController.addBook
-);
-
-router.post(
-    booksMoveUrl,
-    passport.authenticate('jwt', { session: false }),
-    bookController.moveBook
 );
 
 router.put(

@@ -5,7 +5,3 @@ export interface AuthorSchema extends Document {
     country: string;
 }
 
-export interface AuthorModel {
-    name: string;
-    country: string;
-}

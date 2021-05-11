@@ -4,45 +4,44 @@ import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { StudentStateModel } from '../models/student.model';
-import { Author } from '../../models/author.model';
-import { AuthorStateModel } from '../models/author.model';
-import { UpdateAuthorPayload } from '../../models/request/author';
-import { AuthorService } from '../../services/author.service';
+import { LanguageStateModel } from '../models/language.model';
+import { LanguageService } from '../../services/language.service';
+import { Language } from '../../models/language.model';
 
 
 /*********************************
  *** AuthorActions - Commands ***
  **********************************/
-export class InitAuthorState {
-    static readonly type = '[Author] InitAuthorState';
+export class InitLanguageState {
+    static readonly type = '[Language] InitLanguageState';
 }
 
-export class LoadAuthors {
-    static readonly type = '[Author] LoadAuthors';
+export class LoadLanguages {
+    static readonly type = '[Language] LoadLanguages';
 
     constructor() {}
 }
 
-export class SetAuthors {
-    static readonly type = '[Author] SetAuthor';
+export class SetLanguages {
+    static readonly type = '[Language] SetLanguages';
 
-    constructor(public authors: Author[]) {}
+    constructor(public languages: Language[]) {}
 }
 
-export class CreateAuthor {
-    static readonly type = '[Author] CreateAuthor';
+export class CreateLanguage {
+    static readonly type = '[Language] CreateLanguage';
 
-    constructor(public data: UpdateAuthorPayload) {}
+    constructor(public data: Language) {}
 }
 
-export class EditAuthor {
-    static readonly type = '[Author] EditAuthor';
+export class EditLanguage {
+    static readonly type = '[Language] EditLanguage';
 
-    constructor(public authorId: string, public data: UpdateAuthorPayload) {}
+    constructor(public authorId: string, public data: Language) {}
 }
 
-export class DeleteAuthor {
-    static readonly type = '[Author] DeleteAuthor';
+export class DeleteLanguage {
+    static readonly type = '[Language] DeleteLanguage';
 
     constructor(public id: string) {}
 }
@@ -50,17 +49,17 @@ export class DeleteAuthor {
 /*******************************
  *** AuthorState            ***
  ********************************/
-export const STATE_NAME = 'author';
+export const STATE_NAME = 'language';
 
-@State<AuthorStateModel>({
+@State<LanguageStateModel>({
     name: STATE_NAME,
-    defaults: new AuthorStateModel()
+    defaults: new LanguageStateModel()
 })
 
 @Injectable()
-export class AuthorState {
+export class LanguageState {
     constructor(
-        private authorService: AuthorService,
+        private languageService: LanguageService,
         private materialService: MaterialService
     ) { }
 
@@ -68,57 +67,57 @@ export class AuthorState {
      *** Selectors ***
      *****************/
     @Selector()
-    static Authors(state: AuthorStateModel): Author[] {
-        return state.authors;
+    static Languages(state: LanguageStateModel): Language[] {
+        return state.languages;
     }
 
     /****************
      *** Resolvers ***
      *****************/
-    @Action(InitAuthorState)
-    initAuthorState(ctx: StateContext<AuthorStateModel>) {
-        ctx.setState(new AuthorStateModel());
+    @Action(InitLanguageState)
+    initAuthorState(ctx: StateContext<LanguageStateModel>) {
+        ctx.setState(new LanguageStateModel());
         return ctx;
     }
 
-    @Action(LoadAuthors)
-    loadAuthors(ctx: StateContext<AuthorStateModel>) {
-        return this.authorService.getAuthors().pipe(tap(response => {
-            ctx.dispatch(new SetAuthors(response.authors));
+    @Action(LoadLanguages)
+    loadLanguages(ctx: StateContext<LanguageStateModel>) {
+        return this.languageService.getLanguages().pipe(tap(response => {
+            ctx.dispatch(new SetLanguages(response.languages));
         }));
     }
 
-    @Action(SetAuthors)
-    setAuthor(ctx: StateContext<AuthorStateModel>, action: SetAuthors) {
-        return ctx.patchState({ authors: action.authors });
+    @Action(SetLanguages)
+    setLanguages(ctx: StateContext<LanguageStateModel>, action: SetLanguages) {
+        return ctx.patchState({ languages: action.languages });
     }
 
-    @Action(CreateAuthor)
-    createAuthor(ctx: StateContext<AuthorStateModel>, action: CreateAuthor) {
-        return this.authorService.createAuthor(action.data).pipe(tap(response => {
+    @Action(CreateLanguage)
+    createLanguage(ctx: StateContext<LanguageStateModel>, action: CreateLanguage) {
+        return this.languageService.createLanguage(action.data).pipe(tap(response => {
             const { message } = response;
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
-            ctx.dispatch(new LoadAuthors());
+            ctx.dispatch(new LoadLanguages());
         }));
     }
 
-    @Action(EditAuthor)
-    editAuthor(ctx: StateContext<AuthorStateModel>, action: EditAuthor) {
+    @Action(EditLanguage)
+    editLanguage(ctx: StateContext<LanguageStateModel>, action: EditLanguage) {
         const { authorId, data } = action;
-        return this.authorService.editAuthor(authorId, data).pipe(tap(response => {
+        return this.languageService.editLanguage(authorId, data).pipe(tap(response => {
             const { message } = response;
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
-            ctx.dispatch(new LoadAuthors());
+            ctx.dispatch(new LoadLanguages());
         }));
     }
 
-    @Action(DeleteAuthor)
-    deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteAuthor) {
+    @Action(DeleteLanguage)
+    deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteLanguage) {
         const { id } = action;
-        return this.authorService.deleteAuthor(id).pipe(tap((response: any) => {
+        return this.languageService.deleteLanguage(id).pipe(tap((response: any) => {
             const { message } = response;
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
-            ctx.dispatch(new LoadAuthors());
+            ctx.dispatch(new LoadLanguages());
         }));
     }
 }

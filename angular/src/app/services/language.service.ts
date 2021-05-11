@@ -7,30 +7,31 @@ import { Author } from '../models/author.model';
 import { UpdateAuthorPayload } from '../models/request/author';
 
 import { serverLink } from '../constants/serverLink';
+import { Language } from '../models/language.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class AuthorService {
-    private AUTHORS_URL = `${serverLink}/authors`;
+export class LanguageService {
+    private LANGUAGES_URL = `${serverLink}/languages`;
 
     constructor(
         private http: HttpClient
     ) {}
 
-    getAuthors() {
-        return this.http.get(this.AUTHORS_URL).pipe(map((response: any) => response.data));
+    getLanguages() {
+        return this.http.get(this.LANGUAGES_URL).pipe(map((response: any) => response.data));
     }
 
-    createAuthor(author: Author) {
-        return this.http.post(this.AUTHORS_URL, { author }).pipe(map((response: any) => response.data));
+    createLanguage(language: Language) {
+        return this.http.post(this.LANGUAGES_URL, { language }).pipe(map((response: any) => response.data));
     }
 
-    editAuthor(id: string, author: UpdateAuthorPayload) {
-        return this.http.put(`${this.AUTHORS_URL}/${id}`, { author }).pipe(map((response: any) => response.data));
+    editLanguage(id: string, language: Language) {
+        return this.http.put(`${this.LANGUAGES_URL}/${id}`, { language }).pipe(map((response: any) => response.data));
     }
 
-    deleteAuthor(id: string) {
-        return this.http.delete(`${this.AUTHORS_URL}/${id}`).pipe(map((response: any) => response.data));
+    deleteLanguage(id: string) {
+        return this.http.delete(`${this.LANGUAGES_URL}/${id}`).pipe(map((response: any) => response.data));
     }
 }
