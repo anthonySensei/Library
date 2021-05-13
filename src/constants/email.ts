@@ -6,6 +6,7 @@ exports.subjects = {
     BOOK_ORDERED: 'Book ordered'
 };
 
+// @ts-ignore
 const messages = {
     BEST_REGARDS: `<br>
                     With best regards, <br>
@@ -15,7 +16,7 @@ const messages = {
 };
 exports.messages = messages;
 
-exports.generateActivationMessage = registrationToken => {
+exports.generateActivationMessage = (registrationToken: string) => {
     return `'Hello. Please follow the link below to activate your account.
                 <br />
                 <a href="${process.env.ANGULAR}${activationPageUrl}?rtoken=${registrationToken}">
@@ -25,8 +26,8 @@ exports.generateActivationMessage = registrationToken => {
             `;
 };
 
-exports.generatePasswordMessage = (email, password) => {
-    return `Hello. Your account has been successfully created. 
+exports.generatePasswordMessage = (email: string, password: string) => {
+    return `Hello. Your account has been successfully created.
             <br />
             Email: ${email}<br />
             Password: ${password}
