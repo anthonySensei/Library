@@ -21,6 +21,7 @@ import { Department } from '../../../../models/department.model';
 
 import { SortOrder } from '../../../../constants/sortOrder';
 import { TableColumns } from '../../../../constants/tableColumns';
+import { Store } from '@ngxs/store';
 
 @Component({
     selector: 'app-loans-section',
@@ -54,23 +55,15 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     isShowingDebtors: boolean;
 
     constructor(
-        private loansService: LoansService,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
-        this.dataSource = new LoansDataSource(this.loansService);
-        this.dataSource.loadLoans(
-            '',
-            '',
-            SortOrder.DESC,
-            0,
-            5,
-            null,
-            null,
-            false,
-            this.librarianId,
-            null
-        );
+        this.dataSource = new LoansDataSource(this.store);
+        this.dataSource.loadLoans({
+            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
+            pageSize: this.paginator.pageSize || 5,
+        });
     }
 
     ngAfterViewInit(): void {
@@ -87,18 +80,10 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     loadLoansPage(): void {
-        this.dataSource.loadLoans(
-            null,
-            null,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize,
-            this.departmentSelect,
-            null,
-            this.isShowingDebtors,
-            this.librarianId,
-            null
-        );
+        this.dataSource.loadLoans({
+            sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
+            pageSize: this.paginator.pageSize
+        });
     }
 
     ngOnDestroy(): void {

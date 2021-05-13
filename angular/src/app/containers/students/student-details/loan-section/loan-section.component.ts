@@ -21,6 +21,7 @@ import { HelperService } from '../../../../services/helper.service';
 
 import { TableColumns } from '../../../../constants/tableColumns';
 import { SortOrder } from '../../../../constants/sortOrder';
+import { Store } from '@ngxs/store';
 
 @Component({
     selector: 'app-loan-section',
@@ -51,22 +52,14 @@ export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isShowingDebtors: boolean;
 
-    constructor(private loansService: LoansService) {}
+    constructor(private store: Store) {}
 
     ngOnInit(): void {
-        this.dataSource = new LoansDataSource(this.loansService);
-        this.dataSource.loadLoans(
-            '',
-            '',
-            SortOrder.DESC,
-            0,
-            5,
-            null,
-            null,
-            false,
-            null,
-            this.studentId
-        );
+        this.dataSource = new LoansDataSource(this.store);
+        this.dataSource.loadLoans({
+                sortOrder: this.sort.direction, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
+                pageSize: this.paginator.pageSize || 5,
+            });
     }
 
     ngAfterViewInit(): void {
@@ -78,23 +71,15 @@ export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.sort.sortChange,
             this.paginator.page
         )
-            .pipe(tap(() => this.loadLoansPage()))
+            .pipe(tap(() => this.onLoadLoansPage()))
             .subscribe();
     }
 
-    loadLoansPage(): void {
-        this.dataSource.loadLoans(
-            null,
-            null,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize,
-            this.departmentSelect,
-            null,
-            this.isShowingDebtors,
-            null,
-            this.studentId
-        );
+    onLoadLoansPage(): void {
+        this.dataSource.loadLoans({
+            sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
+            pageSize: this.paginator.pageSize
+        });
     }
 
     ngOnDestroy(): void {

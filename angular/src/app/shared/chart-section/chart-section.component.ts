@@ -41,6 +41,7 @@ export class ChartSectionComponent implements OnInit {
         const seriesArr = [];
         this.statistic.forEach((stat: Statistic) => {
             const item = {
+                // @ts-ignore
                 name: stat.loanTime,
                 value: stat.books
             };

@@ -6,7 +6,6 @@ export const emailSubjects = {
     BOOK_ORDERED: 'Book ordered'
 };
 
-// @ts-ignore
 export const emailMessages = {
     BEST_REGARDS: `<br>
                    With best regards,
@@ -15,7 +14,7 @@ export const emailMessages = {
 };
 
 export const generateUserActivationMessage = (token: string) => {
-    return `'Hello. Please follow the link below to activate your account.
+    return `Hello. Please follow the link below to activate your account.
                 <br />
                 <a href="${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}">
                     ${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}

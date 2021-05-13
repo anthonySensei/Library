@@ -1,22 +1,13 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Loan = sequelize.define('loan_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
-    loan_time: {
-        type: Sequelize.DATE,
-        allowNull: false
-    },
-    returned_time: {
-        type: Sequelize.DATE,
-        allowNull: true
-    }
+const loanSchema: Schema = new Schema({
+    book: { type: Schema.Types.ObjectId, ref: 'Book', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    librarian: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    createdAt: { type: Date, required: true },
+    returnedAt: { type: Date, required: false }
 });
 
-module.exports = Loan;
+export default mongoose.model('Loan', loanSchema);
+

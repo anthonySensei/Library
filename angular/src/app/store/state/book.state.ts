@@ -9,6 +9,8 @@ import { BookService } from '../../services/book.service';
 import { GetBooks } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
 import { Response } from '../../models/response.model';
+import { Loan } from '../../models/loan.model';
+import { GetLoans } from '../../models/request/loan';
 
 
 /*********************************
@@ -60,6 +62,18 @@ export class DeleteBook {
     constructor(public id: string) {}
 }
 
+export class LoadLoans {
+    static readonly type = '[Book] LoadLoans';
+
+    constructor(public filters: GetLoans) {}
+}
+
+export class SetLoans {
+    static readonly type = '[Book] SetLoans';
+
+    constructor(public loans: Loan[], public quantity?: number) {}
+}
+
 /*******************************
  *** AuthorState            ***
  ********************************/
@@ -88,6 +102,16 @@ export class BookState {
     @Selector()
     static Books(state: BookStateModel): Book[] {
         return state.books;
+    }
+
+    @Selector()
+    static LoansTotalItems(state: BookStateModel): number {
+        return state.loansTotalItems;
+    }
+
+    @Selector()
+    static Loans(state: BookStateModel): Loan[] {
+        return state.loans;
     }
 
     @Selector()
@@ -151,5 +175,17 @@ export class BookState {
         return this.bookService.deleteBook(id).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
+    }
+
+    @Action(LoadLoans)
+    loadLoans(ctx: StateContext<BookStateModel>, action: LoadLoans) {
+        return this.bookService.getLoans(action.filters).pipe(tap(response => {
+            ctx.dispatch(new SetLoans(response.loans, response.quantity));
+        }));
+    }
+
+    @Action(SetLoans)
+    setLoans(ctx: StateContext<BookStateModel>, action: SetLoans) {
+        return ctx.patchState({ loans: action.loans, loansTotalItems: action.quantity });
     }
 }

@@ -11,7 +11,7 @@
                     <mat-label>Department address</mat-label>
                     <mat-select
                         [(ngModel)]="departmentSelect"
-                        (ngModelChange)="loadLoansPage()"
+                        (ngModelChange)="onLoadLoansPage()"
                     >
                         <mat-option value="''">All</mat-option>
                         <mat-option
@@ -25,7 +25,7 @@
                     color="primary"
                     class="d-block"
                     [(ngModel)]="isShowingDebtors"
-                    (ngModelChange)="loadLoansPage()"
+                    (ngModelChange)="onLoadLoansPage()"
                     >Show only arrears</mat-slide-toggle
                 >
             </mat-expansion-panel>

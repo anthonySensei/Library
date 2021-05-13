@@ -4,9 +4,9 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
 import { Store } from '@ngxs/store';
+import { User } from '../models/user.model';
 import { LoadStudents } from '../store/state/student.state';
 import { StoreStateModel } from '../store/models/store.model';
-import { User } from '../models/user.model';
 
 export class StudentsDataSource implements DataSource<User> {
     private studentSubject = new BehaviorSubject<User[]>([]);

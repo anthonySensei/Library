@@ -23,9 +23,9 @@ import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
 
 import { StudentsDataSource } from '../../../datasources/students.datasource';
 
-import { DeleteUser } from '../../../store/state/user.state';
 
 import { User } from '../../../models/user.model';
+import { DeleteUser } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-users',
@@ -53,7 +53,7 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
         document.title = PageTitles.STUDENTS;
         this.dataSource = new StudentsDataSource(this.store);
         this.dataSource
-            .loadStudents('', this.sort.active || 'name', SortOrder.DESC, 0, this.paginator.pageSize || 5);
+            .loadStudents('', this.sort.active || 'name', this.sort.direction || SortOrder.DESC, 0, this.paginator.pageSize || 5);
     }
 
     ngAfterViewInit(): void {

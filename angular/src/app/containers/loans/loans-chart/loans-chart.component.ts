@@ -83,6 +83,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         if (this.statistic.length > 0) {
             this.statistic.forEach((stat: Statistic) => {
                 const item = {
+                    // @ts-ignore
                     name: stat.loanTime,
                     value: stat.books
                 };
@@ -118,14 +119,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     getLegendName(): string {
         switch (this.model) {
-            case DbModels.USER:
-                return this.statistic[0].student.name;
-            case DbModels.LIBRARIAN:
-                return this.statistic[0].librarian.name;
-            case DbModels.BOOK:
-                return this.statistic[0].book.title;
-            case DbModels.DEPARTMENT:
-                return this.statistic[0].department.address;
             default:
                 return FiltersName.NOTHING;
         }

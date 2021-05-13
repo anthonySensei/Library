@@ -6,48 +6,24 @@ import { catchError, finalize } from 'rxjs/operators';
 import { Loan } from '../models/loan.model';
 
 import { LoansService } from '../services/loans.service';
+import { GetLoans } from '../models/request/loan';
+import { Store } from '@ngxs/store';
+import { LoadLoans } from '../store/state/book.state';
+import { StoreStateModel } from '../store/models/store.model';
 
 export class LoansDataSource implements DataSource<Loan> {
     private loansSubject = new BehaviorSubject<Loan[]>([]);
-
     private loadingSubject = new BehaviorSubject<boolean>(false);
-
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private loansService: LoansService) {}
+    constructor(private store: Store) {}
 
-    loadLoans(
-        filterName: string,
-        filterValue: string,
-        sortOrder: string,
-        pageIndex: number,
-        pageSize: number,
-        departmentId: number,
-        loanDate: Date,
-        isShowDebtors: boolean,
-        librarianId: number = null,
-        studentId: number = null
-    ) {
+    loadLoans(params: GetLoans) {
         this.loadingSubject.next(true);
-
-        this.loansService
-            .fetchLoansHttp(
-                filterName,
-                filterValue,
-                sortOrder,
-                pageIndex,
-                pageSize,
-                departmentId,
-                loanDate,
-                isShowDebtors,
-                librarianId,
-                studentId
-            )
-            .pipe(
-                catchError(() => of([])),
-                finalize(() => this.loadingSubject.next(false))
-            )
-            .subscribe((loans: Loan[]) => this.loansSubject.next(loans));
+        this.store
+            .dispatch(new LoadLoans(params))
+            .pipe(catchError(() => of([])), finalize(() => this.loadingSubject.next(false)))
+            .subscribe((state: StoreStateModel) => this.loansSubject.next(state.book.loans));
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Loan[]> {

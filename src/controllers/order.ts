@@ -6,7 +6,7 @@ const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
 const Order = require('../schemas/order');
-const Loan = require('../schemas/loan');
+const Loan = require('../schemas/sloan');
 const Author = require('../schemas/sauthor');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
