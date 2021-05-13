@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root'
@@ -34,5 +35,15 @@ export class ValidationService {
 
     comparePasswords(password, passwordRetype): boolean {
         return password === passwordRetype;
+    }
+
+    RequireMatch(control: AbstractControl) {
+        const selection: any = control.value;
+
+        if (typeof selection === 'string') {
+            return { incorrect: true };
+        }
+
+        return null;
     }
 }

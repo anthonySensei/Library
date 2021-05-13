@@ -165,6 +165,7 @@ export class BookPopupComponent implements OnInit {
     }
 
     onAddAuthors() {
-        this.dialog.open(AuthorPopupComponent, { data: {}, disableClose: true, width: '568px' });
+        const { value } = this.detailsForm.controls.language;
+        this.dialog.open(AuthorPopupComponent, { data: { language: value }, disableClose: true, width: '568px' });
     }
 }

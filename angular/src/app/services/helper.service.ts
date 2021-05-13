@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { Pagination } from '../models/pagination.model';
 
 @Injectable({
@@ -16,14 +15,6 @@ export class HelperService {
 
     getItemsPerPage(): number {
         return this.allItems;
-    }
-
-    setPaginationData(pagination: Pagination) {
-        this.paginationData = pagination;
-    }
-
-    getPaginationData(): Pagination {
-        return this.paginationData;
     }
 
     constructor() {}

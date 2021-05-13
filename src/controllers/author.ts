@@ -47,7 +47,7 @@ export const editAuthor = async (req: Request, res: Response) => {
     const { author } = req.body;
 
     try {
-        const isExist = !!(await Author.findOne({ name: author.name }));
+        const isExist = !!(await Author.findOne({ name: author.name, _id: { $ne: id } }));
 
         if (isExist) {
             return responseErrorHandle(res, 400, errorMessages.AUTHOR_EXIST);

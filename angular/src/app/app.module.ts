@@ -40,9 +40,7 @@ import { AuthorPopupComponent } from './components/popups/author-popup/author-po
 import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup.component';
 import { BookPopupComponent } from './components/popups/book-popup/book-popup.component';
 import { BookState } from './store/state/book.state';
-import { LanguageState } from './store/state/language.state';
-import { LanguageSectionComponent } from './components/edit-page/language-section/language-section.component';
-import { LanguagePopupComponent } from './components/popups/language-popup/language-popup.component';
+import { DisableFormControlDirective } from './directives/disableFormControl.directive';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -63,8 +61,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         AuthorPopupComponent,
         GenrePopupComponent,
         BookPopupComponent,
-        LanguageSectionComponent,
-        LanguagePopupComponent,
+        DisableFormControlDirective
     ],
     imports: [
         BrowserModule,
@@ -79,7 +76,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState, LanguageState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),
