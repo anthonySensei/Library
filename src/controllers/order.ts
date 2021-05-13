@@ -14,11 +14,11 @@ const Book = require('../schemas/sbook');
 const Department = require('../schemas/sdepartment');
 
 const helper = require('../helper/responseHandle');
-const mailSender = require('../helper/mailSender');
+const mailSender = require('../helper/email');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
 const filters = require('../constants/filters');
-const mailMessages = require('../constants/mailMessages');
+const mailMessages = require('../constants/email');
 
 const getCondition = (departmentId: number, loanDate: any, nextDay: any, isShowNotLoaned: any) => {
     let departmentCondition = {};

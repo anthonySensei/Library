@@ -1,4 +1,4 @@
-exports.AUTH_ACTIVATION_PAGE_URL = '/activation-page';
+export const AUTH_ACTIVATION_PAGE_URL = '/activation-page';
 
 exports.BOOKS_URL = '/books';
 exports.AUTHORS_URL = '/authors';

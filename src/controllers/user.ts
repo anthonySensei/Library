@@ -12,6 +12,8 @@ import errorMessages from '../constants/errorMessages';
 import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 import { generatePassword } from '../helper/password';
 import { getImagePath, convertToBase64 } from '../helper/image';
+import { sendMail } from '../helper/email';
+import { emailSubjects, generateUserCreationMessage } from '../constants/email';
 
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, phone, admin, librarian } = req.body;
@@ -35,6 +37,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     try {
         await User.create({ name, email, phone, password, admin: admin || false, librarian: librarian || false, active: true });
+        await sendMail(email, emailSubjects.ACCOUNT_CREATED, generateUserCreationMessage(email, password));
         responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error('Error creating user', err.message);

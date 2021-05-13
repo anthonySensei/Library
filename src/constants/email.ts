@@ -1,35 +1,33 @@
-const activationPageUrl = require('./links').AUTH_ACTIVATION_PAGE_URL;
+import { AUTH_ACTIVATION_PAGE_URL } from './links';
 
-exports.subjects = {
+export const emailSubjects = {
     ACCOUNT_ACTIVATION: 'Account activation',
     ACCOUNT_CREATED: 'Account created',
     BOOK_ORDERED: 'Book ordered'
 };
 
 // @ts-ignore
-const messages = {
+export const emailMessages = {
     BEST_REGARDS: `<br>
-                    With best regards, <br>
-                    Library`,
-    BOOK_ORDERED: `Your book has been successfully ordered.
-                    ${this.BEST_REGARDS}`
+                   With best regards,
+                   <br>
+                   Library`,
 };
-exports.messages = messages;
 
-exports.generateActivationMessage = (registrationToken: string) => {
+export const generateUserActivationMessage = (token: string) => {
     return `'Hello. Please follow the link below to activate your account.
                 <br />
-                <a href="${process.env.ANGULAR}${activationPageUrl}?rtoken=${registrationToken}">
-                    http://localhost:4200/activation-page?rtoken=${registrationToken}
+                <a href="${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}">
+                    ${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}
                 </a>
-                ${messages.BEST_REGARDS}
+                ${emailMessages.BEST_REGARDS}
             `;
 };
 
-exports.generatePasswordMessage = (email: string, password: string) => {
+export const generateUserCreationMessage = (email: string, password: string) => {
     return `Hello. Your account has been successfully created.
             <br />
             Email: ${email}<br />
             Password: ${password}
-            ${messages.BEST_REGARDS}`;
+            ${emailMessages.BEST_REGARDS}`;
 };

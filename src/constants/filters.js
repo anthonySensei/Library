@@ -3,4 +3,4 @@ module.exports = {
     ISBN: 'isbn',
     EMAIL: 'email',
     NAME: 'name',
-}; 
+};
