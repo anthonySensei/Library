@@ -76,15 +76,12 @@ export class AuthorState {
      *****************/
     @Action(InitAuthorState)
     initAuthorState(ctx: StateContext<AuthorStateModel>) {
-        ctx.setState(new AuthorStateModel());
-        return ctx;
+        return ctx.setState(new AuthorStateModel());
     }
 
     @Action(LoadAuthors)
     loadAuthors(ctx: StateContext<AuthorStateModel>) {
-        return this.authorService.getAuthors().pipe(tap(response => {
-            ctx.dispatch(new SetAuthors(response.authors));
-        }));
+        return this.authorService.getAuthors().pipe(tap(response => ctx.dispatch(new SetAuthors(response.authors))));
     }
 
     @Action(SetAuthors)
@@ -95,8 +92,7 @@ export class AuthorState {
     @Action(CreateAuthor)
     createAuthor(ctx: StateContext<AuthorStateModel>, action: CreateAuthor) {
         return this.authorService.createAuthor(action.data).pipe(tap(response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadAuthors());
         }));
     }
@@ -105,8 +101,7 @@ export class AuthorState {
     editAuthor(ctx: StateContext<AuthorStateModel>, action: EditAuthor) {
         const { authorId, data } = action;
         return this.authorService.editAuthor(authorId, data).pipe(tap(response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadAuthors());
         }));
     }
@@ -114,9 +109,8 @@ export class AuthorState {
     @Action(DeleteAuthor)
     deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteAuthor) {
         const { id } = action;
-        return this.authorService.deleteAuthor(id).pipe(tap((response: any) => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        return this.authorService.deleteAuthor(id).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadAuthors());
         }));
     }

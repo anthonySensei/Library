@@ -11,6 +11,7 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { RegisterUserPayload, UpdatePasswordPayload, UpdateUserPayload } from '../../models/request/user';
 import { UserService } from '../../services/user.service';
 import { StudentStateModel } from '../models/student.model';
+import { Response } from '../../models/response.model';
 
 
 /*********************************
@@ -137,10 +138,7 @@ export class UserState {
     @Action(LoadUser)
     loadUser(ctx: StateContext<UserStateModel>) {
         const { id } = ctx.getState().user;
-        return this.userService.getUser(id).pipe(tap(async response => {
-            const { user } = response;
-            ctx.dispatch(new SetUser(user));
-        }));
+        return this.userService.getUser(id).pipe(tap(async response => ctx.dispatch(new SetUser(response.user))));
     }
 
     @Action(SetUser)
@@ -191,8 +189,7 @@ export class UserState {
     @Action(RegisterUser)
     registerUser(ctx: StateContext<UserStateModel>, action: RegisterUser) {
         return this.authService.createUser(action.data).pipe(tap(async response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             await this.router.navigate([AngularLinks.LOGIN]);
         }));
     }
@@ -200,16 +197,14 @@ export class UserState {
     @Action(CreateUser)
     createUser(ctx: StateContext<UserStateModel>, action: CreateUser) {
         return this.userService.createUser(action.data).pipe(tap(async response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
     }
 
     @Action(CheckActivationToken)
     checkActivationToken(ctx: StateContext<UserStateModel>, action: CheckActivationToken) {
         return this.authService.checkActivationToken(action.token).pipe(tap(async response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             await this.router.navigate([AngularLinks.LOGIN]);
         }));
     }
@@ -242,19 +237,16 @@ export class UserState {
     @Action(EditImage)
     editImage(ctx: StateContext<UserStateModel>, action: EditImage) {
         const { id } = ctx.getState().user;
-        return this.userService.editImage(id, action.image).pipe(tap(async response => {
-            const { message } = response;
+        return this.userService.editImage(id, action.image).pipe(tap( response => {
             ctx.dispatch(new LoadUser());
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
     }
 
     @Action(DeleteUser)
     deleteStudent(ctx: StateContext<StudentStateModel>, action: DeleteUser) {
-        const { id } = action;
-        return this.userService.deleteUser(id).pipe(tap((response: any) => {
-            const { success, message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        return this.userService.deleteUser(action.id).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
     }
 
@@ -265,7 +257,6 @@ export class UserState {
             this.authService.setJwtToken(null);
             localStorage.clear();
             await this.router.navigate([AngularLinks.LOGIN]);
-            return ctx;
         }));
     }
 

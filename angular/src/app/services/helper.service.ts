@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Pagination } from '../models/pagination.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class HelperService {
     private allItems: number;
-    private paginationData: Pagination;
 
     // @TODO Fix this
     setItemsPerPage(itemsNumber: number) {

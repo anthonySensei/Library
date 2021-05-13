@@ -4,32 +4,29 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { Genre } from '../models/genre.model';
+import { Response } from '../models/response.model';
 
 import { serverLink } from '../constants/serverLink';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class GenreService {
     private GENRES_URL = `${serverLink}/genres`;
 
-    constructor(
-        private http: HttpClient,
-    ) {}
+    constructor(private http: HttpClient) {}
 
     getGenres() {
-        return this.http.get(this.GENRES_URL).pipe(map((response: any) => response.data));
+        return this.http.get(this.GENRES_URL).pipe(map((response: Response) => response.data));
     }
 
     createGenre(genre: Genre) {
-        return this.http.post(this.GENRES_URL, { genre }).pipe(map((response: any) => response.data));
+        return this.http.post(this.GENRES_URL, { genre }).pipe(map((response: Response) => response.data));
     }
 
-    ediGenre(id: string, name: string) {
-        return this.http.put(`${this.GENRES_URL}/${id}`, { name }).pipe(map((response: any) => response.data));
+    ediGenre(id: string, genre: Genre) {
+        return this.http.put(`${this.GENRES_URL}/${id}`, { genre }).pipe(map((response: Response) => response.data));
     }
 
     deleteGenre(id: string) {
-        return this.http.delete(`${this.GENRES_URL}/${id}`).pipe(map((response: any) => response.data));
+        return this.http.delete(`${this.GENRES_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 }

@@ -8,6 +8,7 @@ import { BookStateModel } from '../models/book.model';
 import { BookService } from '../../services/book.service';
 import { GetBooks } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
+import { Response } from '../../models/response.model';
 
 
 /*********************************
@@ -15,6 +16,12 @@ import { Pagination } from '../../models/pagination.model';
  **********************************/
 export class InitBookState {
     static readonly type = '[Book] InitBookState';
+}
+
+export class LoadBook {
+    static readonly type = '[Book] LoadBook';
+
+    constructor(public id: string) {}
 }
 
 export class LoadBooks {
@@ -97,6 +104,11 @@ export class BookState {
         return ctx;
     }
 
+    @Action(LoadBook)
+    loadBook(ctx: StateContext<BookStateModel>, action: LoadBook) {
+        return this.bookService.getBook(action.id).pipe(tap(response => ctx.dispatch(new SetBook(response.book))));
+    }
+
     @Action(LoadBooks)
     loadBooks(ctx: StateContext<BookStateModel>, action: LoadBooks) {
         return this.bookService.getBooks(action.filters).pipe(tap(response => {
@@ -122,24 +134,22 @@ export class BookState {
             ctx.dispatch(new LoadBooks({ page: 0, pageSize: 16 }));
         }));
     }
-    //
-    // @Action(EditBook)
-    // EditBook(ctx: StateContext<BookStateModel>, action: EditBook) {
-    //     const { authorId, data } = action;
-    //     return this.authorService.EditBook(authorId, data).pipe(tap(response => {
-    //         const { message } = response;
-    //         this.materialService.openSnackbar(message, SnackBarClasses.Success);
-    //         ctx.dispatch(new LoadBooks());
-    //     }));
-    // }
-    //
-    // @Action(DeleteBook)
-    // deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteBook) {
-    //     const { id } = action;
-    //     return this.authorService.deleteAuthor(id).pipe(tap((response: any) => {
-    //         const { message } = response;
-    //         this.materialService.openSnackbar(message, SnackBarClasses.Success);
-    //         ctx.dispatch(new LoadBooks());
-    //     }));
-    // }
+
+    @Action(EditBook)
+    editBook(ctx: StateContext<BookStateModel>, action: EditBook) {
+        const { id, data } = action;
+        return this.bookService.editBook(id, data).pipe(tap(response => {
+            const { message } = response;
+            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadBook(id));
+        }));
+    }
+
+    @Action(DeleteBook)
+    deleteBook(ctx: StateContext<BookStateModel>, action: DeleteBook) {
+        const { id } = action;
+        return this.bookService.deleteBook(id).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
+        }));
+    }
 }

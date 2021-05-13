@@ -16,12 +16,12 @@ import genreRoutes from './routes/genre';
 import librarianRoutes from './routes/librarian';
 import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
+import bookRoutes from './routes/book';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
 
-const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
 const periodRoutes = require('./routes/period');
@@ -42,7 +42,6 @@ const Period = require('./schemas/period');
 const authorsUrl = require('./constants/links').AUTHORS_URL;
 const booksUrl = require('./constants/links').BOOKS_URL;
 const librariansUrl = require('./constants/links').LIBRARIANS_URL;
-const languagesUrl = require('./constants/links').LANGUAGES_URL;
 const genresUrl = require('./constants/links').GENRES_URL;
 const ordersUrl = require('./constants/links').ORDERS_URL;
 const loansUrl = require('./constants/links').LOANS_URL;

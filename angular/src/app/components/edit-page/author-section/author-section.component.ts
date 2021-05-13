@@ -3,13 +3,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Author } from '../../../models/author.model';
 import { MatDialog } from '@angular/material/dialog';
 import { Select, Store } from '@ngxs/store';
-import { UserState } from '../../../store/state/user.state';
 import { Observable } from 'rxjs';
-import { User } from '../../../models/user.model';
 import { AuthorState, DeleteAuthor } from '../../../store/state/author.state';
 import { MatTableDataSource } from '@angular/material/table';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { AuthorPopupComponent } from '../../popups/author-popup/author-popup.component';
+import { LocalizationService } from '../../../services/localization.service';
 
 @Component({
     selector: 'app-author-section',
@@ -26,7 +25,8 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
 
     constructor(
         private store: Store,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private localizationService: LocalizationService
     ) {}
 
     ngOnInit(): void {
@@ -35,6 +35,14 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
 
     getAuthors$() {
         this.authors$.pipe(untilDestroyed(this)).subscribe(authors => this.dataSource = new MatTableDataSource(authors));
+    }
+
+    getCountry(countryCode: string): string {
+        return this.localizationService.getCountryName(countryCode);
+    }
+
+    getLanguage(languageCode: string): string {
+        return this.localizationService.getLanguageName(languageCode);
     }
 
     openConfirmDeleteDialog(): void {

@@ -1,25 +1,11 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { LoansService } from '../../../services/loans.service';
-import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
@@ -64,8 +50,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private loansService: LoansService,
-        public helperService: HelperService,
-        private responseService: ResponseService
+        public helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -96,9 +81,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     returnBook(loanId: any, bookId: any): void {
         this.loansService.returnBookHttp(loanId, bookId, new Date()).pipe(untilDestroyed(this)).subscribe(() => {
-            if (this.responseService.responseHandle()) {
-                this.loadLoansPage();
-            }
         });
     }
 

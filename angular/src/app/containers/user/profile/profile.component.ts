@@ -10,7 +10,6 @@ import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
 import { MaterialService } from '../../../services/material.service';
-import { ResponseService } from '../../../services/response.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { ChangePasswordModalComponent } from './change-password-modal/change-password-modal.component';
@@ -50,7 +49,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private userService: UserService,
-        private responseService: ResponseService,
         private helperService: HelperService,
         private materialService: MaterialService,
         private validationService: ValidationService,

@@ -1,21 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
 
-import { merge, Observable, Subscription } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Order } from '../../../models/order.model';
@@ -23,8 +10,6 @@ import { User } from '../../../models/user.model';
 import { Department } from '../../../models/department.model';
 
 import { OrderService } from '../../../services/orders.service';
-import { ResponseService } from '../../../services/response.service';
-import { AuthService } from '../../../services/auth.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
@@ -74,9 +59,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private orderService: OrderService,
-        private authService: AuthService,
         public helperService: HelperService,
-        private responseService: ResponseService
     ) {}
 
     ngOnInit(): void {
@@ -122,9 +105,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             )
             .pipe(untilDestroyed(this))
             .subscribe(() => {
-                if (this.responseService.responseHandle()) {
-                    this.loadOrdersPage();
-                }
             });
     }
 

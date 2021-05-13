@@ -8,12 +8,9 @@
         </mat-expansion-panel>
         <mat-expansion-panel>
             <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Books
-                </mat-panel-title>
+                <mat-panel-title>Books</mat-panel-title>
             </mat-expansion-panel-header>
             <app-book-section
-                [responseService]="responseService"
                 [departmentSelect]="departmentSelect"
                 [departments]="departments"
                 [helperService]="helperService"
@@ -27,26 +24,20 @@
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Schedule
-                </mat-panel-title>
+                <mat-panel-title>Schedule</mat-panel-title>
             </mat-expansion-panel-header>
             <app-schedule-section
                 (nothingToChange)="nothingChangeHandle()"
-                [responseService]="responseService"
                 [periods]="periods"
                 [helperService]="helperService"
             ></app-schedule-section>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Period
-                </mat-panel-title>
+                <mat-panel-title>Period</mat-panel-title>
             </mat-expansion-panel-header>
             <app-period-section
                 (nothingToChange)="nothingChangeHandle()"
-                [responseService]="responseService"
                 [periods]="periods"
                 [helperService]="helperService"
             ></app-period-section>

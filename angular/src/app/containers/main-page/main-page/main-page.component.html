@@ -35,7 +35,7 @@
                 <mat-label>Genre</mat-label>
                 <mat-select [(ngModel)]="genres" multiple>
                     <mat-option>-</mat-option>
-                    <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name }}</mat-option>
+                    <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name.en }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <div class="d-flex justify-content-between">

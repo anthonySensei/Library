@@ -12,7 +12,10 @@ import logger from '../config/logger';
 export const getGenres = async (req: Request, res: Response) => {
     try {
         const genres = await Genre.find() as GenreSchema[];
-        const data = { genres: genres.map(genre => ({ id: genre._id, name: genre.name })), message: successMessages.SUCCESSFULLY_FETCHED };
+        const data = {
+            genres: genres.map(genre => ({ id: genre._id, name: genre.name })),
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
         responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error(`Error fetching genres: ${err.message}`);
@@ -22,15 +25,16 @@ export const getGenres = async (req: Request, res: Response) => {
 
 export const addGenre = async (req: Request, res: Response) => {
     const { genre } = req.body;
+    const { name } = genre;
 
     try {
-        const isNotUnique = !!(await Genre.findOne({ name: genre.name }));
+        const isNotUnique = !!(await Genre.findOne({ 'name.en': name.en }));
 
         if (isNotUnique) {
             return responseErrorHandle(res, 400, errorMessages.GENRE_EXIST);
         }
 
-        await Genre.create({ name: genre.name });
+        await Genre.create({ name });
         const data = { message: successMessages.GENRE_SUCCESSFULLY_CREATED };
         responseSuccessHandle(res, 200, data);
     } catch (err) {
@@ -41,10 +45,11 @@ export const addGenre = async (req: Request, res: Response) => {
 
 export const editGenre = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { name } = req.body;
+    const { genre } = req.body;
+    const { name } = genre;
 
     try {
-        const isExist = !!(await Genre.findOne({ name }));
+        const isExist = !!(await Genre.findOne({ 'name.en': name.en }));
 
         if (isExist) {
             return responseErrorHandle(res, 400, errorMessages.GENRE_EXIST);

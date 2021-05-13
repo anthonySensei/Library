@@ -2,8 +2,8 @@ import { Author } from './author.model';
 import { Genre } from './genre.model';
 
 export interface Book {
-    id?: number;
-    isbn: number;
+    id?: string;
+    isbn: string;
     title: string;
     language: string;
     image: string;

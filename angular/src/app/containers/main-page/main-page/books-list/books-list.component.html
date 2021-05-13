@@ -28,6 +28,10 @@
                     <span class="card__label">Year:</span>
                     {{ book.year }}
                 </div>
+                <div class="mt-2">
+                    <span class="card__label">Language:</span>
+                    {{ getLanguage(book.language) }}
+                </div>
             </div>
         </div>
     </div>

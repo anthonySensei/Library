@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
 import { HelperService } from '../../../services/helper.service';
@@ -14,7 +14,6 @@ import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { AuthService } from '../../../services/auth.service';
 import { Select } from '@ngxs/store';
 import { UserState } from '../../../store/state/user.state';
 import { User } from '../../../models/user.model';
@@ -60,7 +59,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         private loansService: LoansService,
         private helperService: HelperService,
         private materialService: MaterialService,
-        private authService: AuthService,
     ) {}
 
     ngOnInit(): void {
@@ -135,11 +133,11 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         }
     }
 
-    onSelect(data): void {}
+    onSelect(): void {}
 
-    onActivate(data): void {}
+    onActivate(): void {}
 
-    onDeactivate(data): void {}
+    onDeactivate(): void {}
 
     showStatistic(): void {
         this.loansService.fetchLoansStatisticHttp(this.model, this.modelValue).pipe(untilDestroyed(this)).subscribe();

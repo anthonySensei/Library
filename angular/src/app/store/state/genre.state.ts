@@ -76,15 +76,12 @@ export class GenreState {
      *****************/
     @Action(InitGenreState)
     initAuthorState(ctx: StateContext<GenreStateModel>) {
-        ctx.setState(new GenreStateModel());
-        return ctx;
+        return ctx.setState(new GenreStateModel());
     }
 
     @Action(LoadGenres)
     loadAuthors(ctx: StateContext<GenreStateModel>) {
-        return this.genreService.getGenres().pipe(tap(response => {
-            ctx.dispatch(new SetGenres(response.genres));
-        }));
+        return this.genreService.getGenres().pipe(tap(response => ctx.dispatch(new SetGenres(response.genres))));
     }
 
     @Action(SetGenres)
@@ -94,9 +91,8 @@ export class GenreState {
 
     @Action(CreateGenre)
     createGenre(ctx: StateContext<GenreStateModel>, action: CreateGenre) {
-        return this.genreService.createGenre({ name: action.name }).pipe(tap(response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        return this.genreService.createGenre({ name: { en: action.name, uk: 'Not Provided' } }).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadGenres());
         }));
     }
@@ -104,9 +100,8 @@ export class GenreState {
     @Action(EditGenre)
     editAuthor(ctx: StateContext<GenreStateModel>, action: EditGenre) {
         const { id, name } = action;
-        return this.genreService.ediGenre(id, name).pipe(tap(response => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        return this.genreService.ediGenre(id, { name: { en: name, uk: 'Not Provided' } }).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadGenres());
         }));
     }
@@ -114,9 +109,8 @@ export class GenreState {
     @Action(DeleteGenre)
     deleteGenre(ctx: StateContext<StudentStateModel>, action: DeleteGenre) {
         const { id } = action;
-        return this.genreService.deleteGenre(id).pipe(tap((response: any) => {
-            const { message } = response;
-            this.materialService.openSnackbar(message, SnackBarClasses.Success);
+        return this.genreService.deleteGenre(id).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadGenres());
         }));
     }

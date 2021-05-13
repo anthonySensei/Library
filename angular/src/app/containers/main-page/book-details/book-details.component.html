@@ -1,63 +1,51 @@
 <div class="wrapper">
-    <div class="form">
+    <div class="form" *ngVar="(book$ | async) as book">
         <mat-spinner *ngIf="isLoading"></mat-spinner>
         <div class="book-container" *ngIf="!isLoading">
-            <h2>{{ book.name }}</h2>
-            <img class="book-detail-image" src="{{ book.image }}" alt="img" />
+            <h2>{{ book?.title }}</h2>
+            <img class="book-detail-image" src="{{ book?.image }}" alt="img" />
             <section class="book-info">
-                <p>Author: {{ book.author.name }}</p>
-                <p class="book-description">
-                    Description: {{ book.description }}
-                </p>
-                <p>Genre: {{ book.genre.name }}</p>
-                <p>Year: {{ book.year }}</p>
-                <p *ngIf="user.admin || user.librarian">
-                    Quantity: {{ book.quantity }}
-                </p>
-                <p class="book-location">
-                    <i class="material-icons">location_on</i>
-                    {{ book.department.address }}
-                </p>
+                <p class="book-description">Description: {{ book?.description }}</p>
+                <p>Author: {{ getAuthors(book?.authors) }}</p>
+                <p>Genre: {{ getGenres(book?.genres) }}</p>
+                <p>Language: {{ getLanguage(book?.language) }}</p>
+                <p>Year: {{ book?.year }}</p>
+                <p>Quantity: {{ book?.quantity }}</p>
             </section>
             <div class="btn-group">
                 <button
-                    *ngIf="user.librarian"
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
-                    matTooltip="Loan book"
-                    (click)="openLoanBookModal()"
+                    (click)="onOpenLoanBookModal()"
+                    *ngIf="user.librarian"
                 >
                     Loan
                 </button>
-                <a
-                    *ngIf="user.admin || user.librarian"
+                <button
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
-                    matTooltip="Edit book"
-                    [routerLink]="['/', links.ADD_BOOK]"
-                    [queryParams]="{ id: book.id }"
+                    (click)="onEditBook()"
+                    *ngIf="user.admin || user.librarian"
                 >
                     Edit
-                </a>
-                <button
-                    *ngIf="user.admin"
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    matTooltip="Move book to another department"
-                    (click)="openMoveBookModal()"
-                >
-                    Move
                 </button>
                 <button
-                    *ngIf="!user.admin && !user.librarian"
+                        mat-stroked-button
+                        color="primary"
+                        class="ml-5"
+                        (click)="onDeleteBook()"
+                        *ngIf="user.admin || user.librarian"
+                >
+                    Delete
+                </button>
+                <button
                     mat-stroked-button
                     color="primary"
                     class="ml-5"
-                    matTooltip="Order book"
-                    (click)="orderBook()"
+                    (click)="onOrderBook()"
+                    *ngIf="!user.admin && !user.librarian"
                 >
                     Order
                 </button>

@@ -1,7 +1,10 @@
 import { Document } from 'mongoose';
 
 export interface GenreSchema extends Document {
-    name: string;
+    name: {
+        en: string;
+        uk: string;
+    };
 }
 
 

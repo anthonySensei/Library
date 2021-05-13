@@ -2,31 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
-
-import { ResponseService } from './response.service';
-
-import { serverLink } from '../constants/serverLink';
-import { HelperService } from './helper.service';
 import { GetBooks } from '../models/request/book';
 
-@Injectable({
-    providedIn: 'root'
-})
+import { serverLink } from '../constants/serverLink';
+import { Response } from '../models/response.model';
+
+@Injectable({ providedIn: 'root' })
 export class BookService {
     private BOOKS_URL = `${serverLink}/books`;
-    private BOOKS_MOVE_URL = `${this.BOOKS_URL}/move`;
-    private BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
-
     private LOAN_BOOK_URL = `${serverLink}/loans`;
 
-    constructor(
-        private http: HttpClient,
-        private helperService: HelperService,
-        private responseService: ResponseService
-    ) {}
+    constructor(private http: HttpClient) {}
 
     getBooks(data: GetBooks) {
         return this.http
@@ -41,19 +29,11 @@ export class BookService {
                     .set('department', data.department ? data.department.toString() : '')
                     .set('filterValue', data.filterValue)
             })
-            .pipe(map((response: any) => response.data));
+            .pipe(map((response: Response) => response.data));
     }
 
-    getBookHttp(bookId: number) {
-        return this.http
-            .get(this.BOOKS_DETAILS_URL, {
-                params: new HttpParams().set('bookId', bookId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    // this.setBook(response.data.book);
-                })
-            );
+    getBook(id: string) {
+        return this.http.get(`${this.BOOKS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 
     addBook(book: Book) {
@@ -61,47 +41,22 @@ export class BookService {
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
         formData.append('book', JSON.stringify(book));
-        return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(map((response: any) => response.data));
+        return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(map((response: Response) => response.data));
     }
 
-    editBookHttp(book: Book, imageToUploadBase64: string) {
+    editBook(id: string, book: Book) {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
-        return this.http.put(this.BOOKS_URL, formData, { headers }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        formData.append('book', JSON.stringify(book));
+        return this.http.put(`${this.BOOKS_URL}/${id}`, formData, { headers }).pipe(map((response: Response) => response.data));
     }
 
-    deleteBookHttp(bookId: number) {
-        return this.http
-            .delete(this.BOOKS_URL, {
-                params: new HttpParams().set('bookId', bookId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+    deleteBook(id: string) {
+        return this.http.delete(`${this.BOOKS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 
     loanBookHttp(info) {
-        return this.http.post(this.LOAN_BOOK_URL, info).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
-    }
-
-    moveBookHttp(book: Book, departmentId: number, quantity: number) {
-        return this.http
-            .post(this.BOOKS_MOVE_URL, { book, departmentId, quantity })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+        return this.http.post(this.LOAN_BOOK_URL, info).pipe(map((response: Response) => response.data));
     }
 }

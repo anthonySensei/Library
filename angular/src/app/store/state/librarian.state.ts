@@ -2,7 +2,6 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { User } from '../../models/user.model';
 import { Injectable } from '@angular/core';
 import { tap } from 'rxjs/operators';
-import { MaterialService } from '../../services/material.service';
 import { LibrarianStateModel } from '../models/librarian.model';
 import { LibrarianService } from '../../services/librarian.service';
 
@@ -56,10 +55,8 @@ export const STATE_NAME = 'librarian';
 
 @Injectable()
 export class LibrarianState {
-    constructor(
-        private librarianService: LibrarianService,
-        private materialService: MaterialService
-    ) { }
+
+    constructor(private librarianService: LibrarianService) { }
 
     /****************
      *** Selectors ***
@@ -96,8 +93,7 @@ export class LibrarianState {
     loadStudents(ctx: StateContext<LibrarianStateModel>, action: LoadLibrarians) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.librarianService.getLibrarians(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            const { librarians } = res;
-            ctx.dispatch(new SetLibrarians(librarians));
+            ctx.dispatch(new SetLibrarians(res.librarians));
         }));
     }
 

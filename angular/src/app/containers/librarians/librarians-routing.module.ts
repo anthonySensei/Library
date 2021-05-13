@@ -5,8 +5,6 @@ import { AuthGuard } from '../../guards/auth.guard';
 import { ManagerGuard } from '../../guards/manager.guard';
 import { LibrarianGuard } from '../../guards/librarian.guard';
 
-import { CanDeactivateGuard } from '@shared/can-deactivate-guard.service';
-
 import { AngularLinks } from '../../constants/angularLinks';
 
 import { LibrariansComponent } from './librarians/librarians.component';

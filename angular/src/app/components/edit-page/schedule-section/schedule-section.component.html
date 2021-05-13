@@ -6,22 +6,6 @@
     <div class="input-groups flex">
         <div class="left-side">
             <mat-form-field class="edit-field">
-                <mat-label>Librarian</mat-label>
-                <mat-select
-                    name="scheduleSelect"
-                    [(ngModel)]="librarianSelect"
-                    (ngModelChange)="setShowedSchedule()"
-                    required
-                >
-                    <mat-option
-                        *ngFor="let librarian of librarians"
-                        [value]="librarian.id"
-                    >
-                        {{ librarian.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-form-field class="edit-field">
                 <mat-label>Schedule</mat-label>
                 <mat-select
                     name="scheduleSelect"
@@ -49,21 +33,6 @@
             style="margin-right: 10px;"
         ></mat-divider>
         <div class="right-side">
-            <mat-form-field class="edit-field">
-                <mat-label>Librarian</mat-label>
-                <mat-select
-                        name="scheduleLibrarian"
-                        [disabled]="!scheduleSelect"
-                        [(ngModel)]="scheduleLibrarianId"
-                >
-                    <mat-option
-                            *ngFor="let librarian of librarians"
-                            [value]="librarian.id"
-                    >
-                        {{ librarian.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
             <mat-form-field class="edit-field">
                 <mat-label>Day</mat-label>
                 <mat-select
@@ -133,20 +102,6 @@
     </button>
     <h3>Please fill in fields to add schedule:</h3>
     <div class="input-groups">
-        <mat-form-field class="edit-field">
-            <mat-label>Librarian</mat-label>
-            <mat-select
-                name="scheduleLibrarian"
-                [(ngModel)]="newScheduleLibrarianId"
-            >
-                <mat-option
-                    *ngFor="let librarian of librarians"
-                    [value]="librarian.id"
-                >
-                    {{ librarian.name }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
         <mat-form-field class="edit-field">
             <mat-label>Day</mat-label>
             <mat-select name="schedulePeriod" [(ngModel)]="newScheduleDay">

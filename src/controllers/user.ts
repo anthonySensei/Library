@@ -88,7 +88,7 @@ export const editPassword = async (req: Request, res: Response) => {
         responseSuccessHandle(res, 200, { message: successMessages.PASSWORD_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error('Error updating user', err.message);
-        return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+        return responseErrorHandle(res, 400, errorMessages.PASSWORD_ERROR_CHANGED);
     }
 };
 

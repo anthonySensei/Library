@@ -1,18 +1,6 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Department } from '../../../../models/department.model';
-import { Librarian } from '../../../../models/librarian.model';
-
-import { LibrarianService } from '../../../../services/librarian.service';
 import { HelperService } from '../../../../services/helper.service';
 
 @Component({
@@ -34,16 +22,8 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     @Output() setSchedules = new EventEmitter();
 
     departments: Department[];
-    librarians: Librarian[];
 
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
-
-    constructor(
-        private librarianService: LibrarianService,
-    ) {}
+    constructor() {}
 
     ngOnInit() {}
 
@@ -53,6 +33,5 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
         this.setSchedules.emit();
     }
 
-    ngOnDestroy(): void {
-    }
+    ngOnDestroy(): void {}
 }

@@ -16,7 +16,7 @@ import { AuthorSectionComponent } from './components/edit-page/author-section/au
 import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
 import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
 
-import { AuthInterceptor } from './services/auth.interceptor.service';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 import { MainPageModule } from './containers/main-page/main-page.module';
 import { UsersModule } from './containers/user/users.module';
@@ -41,6 +41,7 @@ import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup
 import { BookPopupComponent } from './components/popups/book-popup/book-popup.component';
 import { BookState } from './store/state/book.state';
 import { DisableFormControlDirective } from './directives/disableFormControl.directive';
+import { LocalizationState } from './store/state/localization.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -76,7 +77,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState, LocalizationState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),

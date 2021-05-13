@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { Period } from '../../models/period.model';
 
-import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
 import { PeriodService } from '../../services/period.service';
@@ -42,7 +41,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     constructor(
         private authService: AuthService,
-        public responseService: ResponseService,
         private materialService: MaterialService,
         private periodService: PeriodService,
         public helperService: HelperService,

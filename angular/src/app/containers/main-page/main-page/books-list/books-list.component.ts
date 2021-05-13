@@ -6,6 +6,7 @@ import { BookState } from '../../../../store/state/book.state';
 import { Observable } from 'rxjs';
 import { Author } from '../../../../models/author.model';
 import { Genre } from '../../../../models/genre.model';
+import { LocalizationService } from '../../../../services/localization.service';
 
 @Component({
     selector: 'app-books-list',
@@ -19,7 +20,9 @@ export class BooksListComponent implements OnInit {
     @Select(BookState.Books)
     books$: Observable<Book[]>;
 
-    constructor() {}
+    constructor(
+        private localizationService: LocalizationService
+    ) {}
 
     ngOnInit() {}
 
@@ -28,6 +31,10 @@ export class BooksListComponent implements OnInit {
     }
 
     getGenres(genres: Genre[]): string {
-        return genres.map(genre => genre.name).join(', ');
+        return genres.map(genre => genre.name.en).join(', ');
+    }
+
+    getLanguage(code: string): string {
+       return this.localizationService.getLanguageName(code);
     }
 }

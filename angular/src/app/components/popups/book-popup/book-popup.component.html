@@ -21,6 +21,14 @@
                     <mat-error *ngIf="hasError('quantity', 'required')">Quantity is required</mat-error>
                     <mat-error *ngIf="hasError('quantity', 'max')">You cannot add so much books</mat-error>
                 </mat-form-field>
+                <mat-form-field class="w-50">
+                    <mat-label>Language</mat-label>
+                    <input matInput type="text" name="language" formControlName="language" placeholder="Language" [matAutocomplete]="languageAutoComplete">
+                    <mat-autocomplete #languageAutoComplete="matAutocomplete" [displayWith]="displayWith">
+                        <mat-option *ngFor="let language of filteredLanguages | async" [value]="language">{{ language.name }}</mat-option>
+                    </mat-autocomplete>
+                    <mat-error *ngIf="hasError('language', 'incorrect')">Please select a language</mat-error>
+                </mat-form-field>
             </form>
         </mat-step>
         <mat-step [stepControl]="detailsForm">
@@ -41,8 +49,8 @@
                 <mat-form-field class="w-50">
                     <mat-label>Authors</mat-label>
                     <mat-select name="authors" formControlName="authors" multiple>
-                        <mat-option *ngFor="let author of authors$ | async" [value]="author.id">
-                            {{ author.name }} ({{ author.country }})
+                        <mat-option *ngFor="let author of getFilteredAuthors()" [value]="author.id">
+                            {{ author.name }} ({{ getCountryName(author.country) }})
                         </mat-option>
                         <mat-divider></mat-divider>
                         <mat-option (click)="onAddAuthors()">Add Author</mat-option>
@@ -55,7 +63,7 @@
                     <mat-label>Genres</mat-label>
                     <mat-select name="genres" formControlName="genres" multiple>
                         <mat-option *ngFor="let genre of genres$ | async" [value]="genre.id">
-                            {{ genre.name }}
+                            {{ genre.name.en }}
                         </mat-option>
                         <mat-divider></mat-divider>
                         <mat-option (click)="onAddAuthors()">Add Author</mat-option>
@@ -69,13 +77,6 @@
                     <input matInput type="number" name="year" formControlName="year" placeholder="Year" />
                     <mat-error *ngIf="hasError('year', 'required')">
                         Year is required
-                    </mat-error>
-                </mat-form-field>
-                <mat-form-field class="w-50">
-                    <mat-label>Language</mat-label>
-                    <input matInput type="text" name="language" formControlName="language" placeholder="Language" />
-                    <mat-error *ngIf="hasError('language', 'required')">
-                        Language is required
                     </mat-error>
                 </mat-form-field>
             </form>
@@ -99,17 +100,17 @@
         </mat-step>
         <mat-step>
             <ng-template matStepLabel>Summary</ng-template>
-            <div class="d-flex justify-content-center" *ngIf="file">
+            <div class="d-flex justify-content-center" *ngIf="file || isEdit">
                 <div class="image-container" [ngStyle]="{ 'background-image': getImage() }"></div>
             </div>
             <p>ISBN: <span class="text-main">{{ mainForm?.value?.isbn }}</span></p>
             <p>Title: <span class="text-main">{{ mainForm?.value?.title }}</span></p>
             <p>Quantity: <span class="text-main">{{ mainForm?.value?.quantity }}</span></p>
+            <p>Language: <span class="text-main">{{ languageControl.value?.name }}</span></p>
             <p>Description: <span class="text-main">{{ detailsForm?.value?.description }}</span></p>
-            <p>Authors: <span class="text-main">{{ getAuthors(detailsForm?.value?.authors) }}</span></p>
+            <p>Authors: <span class="text-main">{{ getAuthorsForSummary(authorsControl.value) }}</span></p>
             <p>Genres: <span class="text-main">{{ getGenres(detailsForm?.value?.genres) }}</span></p>
             <p>Year: <span class="text-main">{{ detailsForm?.value?.year }}</span></p>
-            <p>Language: <span class="text-main">{{ detailsForm?.value?.language }}</span></p>
         </mat-step>
     </mat-horizontal-stepper>
 </mat-dialog-content>

@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 import { StudentStateModel } from '../models/student.model';
 import { StudentService } from '../../services/student.service';
 import { tap } from 'rxjs/operators';
-import { MaterialService } from '../../services/material.service';
 
 
 /*********************************
@@ -56,10 +55,7 @@ export const STATE_NAME = 'student';
 
 @Injectable()
 export class StudentState {
-    constructor(
-        private studentService: StudentService,
-        private materialService: MaterialService
-    ) { }
+    constructor(private studentService: StudentService) { }
 
     /****************
      *** Selectors ***
@@ -79,37 +75,29 @@ export class StudentState {
      *****************/
     @Action(InitStudentState)
     initUserState(ctx: StateContext<StudentStateModel>) {
-        ctx.setState(new StudentStateModel());
-        return ctx;
+        return ctx.setState(new StudentStateModel());
     }
 
     @Action(LoadStudent)
     loadStudent(ctx: StateContext<StudentStateModel>, action: LoadStudent) {
-        const { id } = action;
-        return this.studentService.getStudent(id).pipe(tap(res => {
-            const { student } = res;
-            ctx.dispatch(new SetStudent(student));
-        }));
+        return this.studentService.getStudent(action.id).pipe(tap(res => ctx.dispatch(new SetStudent(res.student))));
     }
 
     @Action(LoadStudents)
     loadStudents(ctx: StateContext<StudentStateModel>, action: LoadStudents) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.studentService.getStudents(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            const { students } = res;
-            ctx.dispatch(new SetStudents(students));
+            ctx.dispatch(new SetStudents(res.students));
         }));
     }
 
     @Action(SetStudent)
     setStudent(ctx: StateContext<StudentStateModel>, action: SetStudent) {
-        const { student } = action;
-        return ctx.patchState({ student });
+        return ctx.patchState({ student: action.student });
     }
 
     @Action(SetStudents)
     setStudents(ctx: StateContext<StudentStateModel>, action: SetStudents) {
-        const { students } = action;
-        return ctx.patchState({ students });
+        return ctx.patchState({ students: action.students });
     }
 }

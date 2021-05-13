@@ -1,17 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { LibrarianService } from '../../../services/librarian.service';
-import { HelperService } from '../../../services/helper.service';
-
-import { Librarian } from '../../../models/librarian.model';
-import { Schedule } from '../../../models/schedule.model';
 
 import { PageTitles } from '../../../constants/pageTitles';
 import { Select, Store } from '@ngxs/store';
-import { LoadStudent, StudentState } from '../../../store/state/student.state';
 import { User } from '../../../models/user.model';
 import { LibrarianState, LoadLibrarian } from '../../../store/state/librarian.state';
 import { untilDestroyed } from 'ngx-take-until-destroy';

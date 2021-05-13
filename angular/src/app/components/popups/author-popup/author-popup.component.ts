@@ -6,11 +6,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { StoreStateModel } from '../../../store/models/store.model';
 import { CreateAuthor, EditAuthor } from '../../../store/state/author.state';
-import * as countries from 'i18n-iso-countries';
 import { Country } from '../../../models/country.model';
 import { ValidationService } from '../../../services/validation.service';
 import { map, startWith } from 'rxjs/operators';
 import { Language } from '../../../models/language.model';
+import { LocalizationState } from '../../../store/state/localization.state';
 
 @Component({
     selector: 'app-author-popup',
@@ -36,8 +36,8 @@ export class AuthorPopupComponent implements OnInit {
     ngOnInit(): void {
         this.isEdit = !!this.data.id;
         this.isBookAdding = !!(!this.data.id && this.data.language);
-        this.initCountries();
-        this.initLanguages();
+        this.countries = this.store.selectSnapshot(LocalizationState.Countries);
+        this.languages = this.store.selectSnapshot(LocalizationState.Languages);
         this.initForm();
     }
 
@@ -62,22 +62,6 @@ export class AuthorPopupComponent implements OnInit {
                 startWith(''),
                 map(value => this._filterLanguages(value))
             );
-    }
-
-    initCountries() {
-        countries.registerLocale(require('i18n-iso-countries/langs/en.json'));
-        countries.registerLocale(require('i18n-iso-countries/langs/uk.json'));
-        this.countries = Object
-            .entries(countries.getNames('en', {select: 'official'}))
-            .map(country => ({ code: country[0], name: country[1] }));
-    }
-
-    initLanguages() {
-        const languages = require('@cospired/i18n-iso-languages');
-        languages.registerLocale(require('@cospired/i18n-iso-languages/langs/en.json'));
-        this.languages = Object
-            .entries(languages.getNames('en', {select: 'official'}))
-            .map(country => ({ code: country[0], name: country[1] as string }));
     }
 
     isInvalid(): boolean {

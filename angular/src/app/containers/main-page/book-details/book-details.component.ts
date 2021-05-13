@@ -11,17 +11,21 @@ import { User } from '../../../models/user.model';
 import { BookService } from '../../../services/book.service';
 import { AuthService } from '../../../services/auth.service';
 import { OrderService } from '../../../services/orders.service';
-import { ResponseService } from '../../../services/response.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
-import { MoveBookModalComponent } from './move-book-modal/move-book-modal.component';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { ModalWidth } from '../../../constants/modalWidth';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { Select } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { UserState } from '../../../store/state/user.state';
+import { BookState, DeleteBook, LoadBook } from '../../../store/state/book.state';
+import { Author } from '../../../models/author.model';
+import { Genre } from '../../../models/genre.model';
+import { LocalizationService } from '../../../services/localization.service';
+import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
+import { LoadAuthors } from '../../../store/state/author.state';
+import { LoadGenres } from '../../../store/state/genre.state';
 
 @Component({
     selector: 'app-book-details',
@@ -29,11 +33,10 @@ import { UserState } from '../../../store/state/user.state';
     styleUrls: ['./book-details.component.sass']
 })
 export class BookDetailsComponent implements OnInit, OnDestroy {
-    book: Book;
     user: User;
 
-    bookId: number;
     isLoading: boolean;
+    bookId: string;
     readerTicket: string;
 
     links = AngularLinks;
@@ -41,22 +44,27 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     @Select(UserState.User)
     user$: Observable<User>;
 
+    @Select(BookState.Book)
+    book$: Observable<Book>;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private store: Store,
         private bookService: BookService,
         private authService: AuthService,
-        private responseService: ResponseService,
-        private helperService: HelperService,
         private orderService: OrderService,
+        private localizationService: LocalizationService,
         public dialog: MatDialog
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.BOOK_DETAILS;
         this.isLoading = true;
-        this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => this.bookId = +params.id);
-        this.handleBookSubscriptions();
+        this.route.params
+            .pipe(untilDestroyed(this))
+            .subscribe((params: Params) => this.loadBook(params.id));
+        this.store.dispatch([new LoadAuthors(), new LoadGenres()]);
         this.getUser$();
     }
 
@@ -64,11 +72,24 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User);
     }
 
-    handleBookSubscriptions(): void {
-        this.bookService.getBookHttp(this.bookId).pipe(untilDestroyed(this)).subscribe();
+    getLanguage(languageCode: string): string {
+        return this.localizationService.getLanguageName(languageCode);
     }
 
-    openLoanBookModal(): void {
+    getAuthors(authors: Author[]): string {
+        return authors.map(author => author?.name).join(', ');
+    }
+
+    getGenres(genres: Genre[]): string {
+        return genres.map(genre => genre?.name?.en).join(', ');
+    }
+
+    loadBook(id?: string) {
+        this.bookId = this.bookId || id;
+        this.store.dispatch(new LoadBook(this.bookId)).subscribe(() => this.isLoading = false);
+    }
+
+    onOpenLoanBookModal(): void {
         const dialogRef = this.dialog.open(LoanBookModalComponent, {
             width: ModalWidth.W30P,
             data: {
@@ -86,54 +107,27 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
                 bookId: this.bookId,
                 time: new Date()
             };
-            this.bookService.loanBookHttp(loanData).pipe(untilDestroyed(this)).subscribe(() => {
-                this.responseHandle();
-                this.handleBookSubscriptions();
-            });
+            this.bookService.loanBookHttp(loanData).pipe(untilDestroyed(this)).subscribe(() => {});
         });
     }
 
-    openMoveBookModal(): void {
-        const dialogRef = this.dialog.open(MoveBookModalComponent, {
-            width: ModalWidth.W30P,
-            data: {
-                availableBooks: this.book.quantity,
-                bookDepartmentId: this.book.id
-            }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (!result) {
-                return;
-            }
-            this.bookService
-                .moveBookHttp(
-                    this.book,
-                    result.departmentId,
-                    result.booksToMove
-                )
-                .pipe(untilDestroyed(this))
-                .subscribe(() => {
-                    this.responseHandle();
-                    this.handleBookSubscriptions();
-                });
-        });
-    }
-
-    orderBook(): void {
+    onOrderBook(): void {
         this.orderService
             .orderBookHttp({
                 studentEmail: this.user.email,
                 bookId: this.bookId,
                 time: new Date()
             })
-            .subscribe(() => {
-                this.responseService.responseHandle();
-            });
+            .subscribe(() => {});
     }
 
-    responseHandle(): void {
-        this.responseService.responseHandle();
+    onEditBook() {
+        const book = this.store.selectSnapshot(BookState.Book);
+        this.dialog.open(BookPopupComponent, { data: book, disableClose: true, width: '768px'  });
+    }
+
+    onDeleteBook() {
+        this.store.dispatch(new DeleteBook(this.bookId)).subscribe(() => this.router.navigate([this.links.BOOKS]));
     }
 
     ngOnDestroy(): void {}
