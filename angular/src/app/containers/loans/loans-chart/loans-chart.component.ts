@@ -15,9 +15,9 @@ import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
 import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/state/user.state';
 import { User } from '../../../models/user.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { UserState } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-loans-chart',
@@ -105,8 +105,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     getInputName(): string {
         switch (this.model) {
-            case DbModels.USER:
-                return FiltersName.READER_TICKET;
             case DbModels.LIBRARIAN:
                 return FiltersName.EMAIL;
             case DbModels.BOOK:

@@ -13,6 +13,8 @@ import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHa
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 import { convertToBase64 } from '../helper/image';
+import { sendMail } from '../helper/email';
+import { emailSubjects, generateUserActivationMessage, generateUserCreationMessage } from '../constants/email';
 
 const expiresIn = 3600 * 12;
 
@@ -53,10 +55,7 @@ export const login = (req: Request, res: Response, next: any) => {
 
 export const logout = (req: Request, res: Response) => {
     req.logout();
-    const data = {
-        message: successMessages.SUCCESSFULLY_LOGGED_OUT
-    };
-    return responseSuccessHandle(res, 200, data);
+    return responseSuccessHandle(res, 200,  { message: successMessages.SUCCESSFULLY_LOGGED_OUT });
 };
 
 export const createUser = async (req: Request, res: Response) => {
@@ -81,7 +80,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         const activationToken = uuidv4();
         await User.create({ name, password, phone, email, activationToken });
-        logger.info(`User ${email} has been successfully created`);
+        await sendMail(email, emailSubjects.ACCOUNT_ACTIVATION, generateUserActivationMessage(activationToken));
         responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error(`Error creating user: ${err.message}`);
