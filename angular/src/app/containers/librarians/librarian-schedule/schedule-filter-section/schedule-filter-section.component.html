@@ -13,18 +13,4 @@
             >
         </mat-select>
     </mat-form-field>
-    <mat-form-field class="d-block">
-        <mat-label>Librarian</mat-label>
-        <mat-select
-            [(ngModel)]="librarianSelect"
-            (ngModelChange)="onSetSchedules()"
-        >
-            <mat-option>All</mat-option>
-            <mat-option
-                *ngFor="let librarian of librarians"
-                [value]="librarian.id"
-                >{{ librarian.name }}</mat-option
-            >
-        </mat-select>
-    </mat-form-field>
 </section>

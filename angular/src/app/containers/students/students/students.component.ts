@@ -23,7 +23,7 @@ import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
 
 import { StudentsDataSource } from '../../../datasources/students.datasource';
 
-import { DeleteUser } from '../../../store/user.state';
+import { DeleteUser } from '../../../store/state/user.state';
 
 import { User } from '../../../models/user.model';
 
@@ -34,12 +34,7 @@ import { User } from '../../../models/user.model';
 })
 export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
     filterValue: string;
-    columnsToDisplay: string[] = [
-        TableColumns.NAME,
-        TableColumns.EMAIL,
-        TableColumns.PHONE,
-        TableColumns.STATUS
-    ];
+    columnsToDisplay: string[] = [TableColumns.NAME, TableColumns.EMAIL, TableColumns.PHONE, TableColumns.STATUS];
     expandedElement: User | null;
     links = AngularLinks;
     dataSource: StudentsDataSource;

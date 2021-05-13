@@ -5,7 +5,7 @@ import User from '../schemas/user';
 import { UserModel, UserSchema } from '../models/user';
 
 import { convertToBase64 } from '../helper/image';
-import { responseErrorHandle, responseHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
@@ -42,10 +42,9 @@ export const getLibrarians = async (req: Request, res: Response) => {
         const data = {
             librarians,
             message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity: librariansQuantity,
-            success: true
+            quantity: librariansQuantity
         };
-        return responseHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting librarians', err.message);
         return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -68,11 +67,10 @@ export const getLibrarian = async (req: Request, res: Response) => {
             loans: []
         };
         const data = {
-            success: true,
             message: successMessages.SUCCESSFULLY_FETCHED,
             librarian: librarianData
         };
-        return responseHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting librarian', err.message);
         return responseErrorHandle(res, 400, err);

@@ -4,9 +4,9 @@ const Op = Sequelize.Op;
 const Loan = require('../schemas/loan');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
-const Book = require('../schemas/book');
-const Department = require('../schemas/department');
-const Author = require('../schemas/author');
+const Book = require('../schemas/sbook');
+const Department = require('../schemas/sdepartment');
+const Author = require('../schemas/sauthor');
 
 const helper = require('../helper/responseHandle');
 
@@ -144,7 +144,7 @@ exports.getAllLoans = async (req, res) => {
             message: successMessages.SUCCESSFULLY_FETCHED,
             quantity: quantity
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
@@ -233,7 +233,7 @@ exports.returnBook = async (req, res) => {
         const book = await Book.findOne({ where: { id: bookId } });
         await book.update({ quantity: book.get().quantity + 1 });
         const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_RETURNED_BOOK };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
@@ -256,7 +256,7 @@ exports.getLoansStatistic = (req, res) => {
         departmentCondition = { id: value };
     } else {
         const data = { statistic: [] };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     }
 
     Loan.findAll({
@@ -313,7 +313,7 @@ exports.getLoansStatistic = (req, res) => {
                 }
             }
             const data = { statistic: loansStatisticArr, message: successMessages.SUCCESSFULLY_FETCHED };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         })
         .catch(err => {
             return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -361,7 +361,7 @@ exports.loanBook = async (req, res) => {
             await book.update({ quantity: book.get().quantity - 1 });
 
             const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_LOANED };
-            helper.responseHandle(res, 200, data);
+            helper.responseSuccessHandle(res, 200, data);
         }
     } catch (error) {
         return helper.responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);

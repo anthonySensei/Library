@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
-
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { Subject } from 'rxjs';
 
-import { DiscardChangesModalComponent } from '../shared/discard-changes-modal/discard-changes-modal.component';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { DiscardChangesModalComponent } from '@shared/discard-changes-modal/discard-changes-modal.component';
+
 import { SnackBarClasses } from '../constants/snackBarClasses';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class MaterialService {
     private changeDiscardModalWidth = '25%';
     private snackbarDuration = 3000;
@@ -37,29 +35,21 @@ export class MaterialService {
             });
     }
 
-    public openSnackbar(
-        message: string,
-        snackBarClass: string
-    ): void {
+    public openSnackbar(message: string, snackBarClass: string): void {
         const config = new MatSnackBarConfig();
         config.panelClass = [snackBarClass];
         config.duration = this.snackbarDuration;
         this.snackBar.open(message || 'Completed', null, config);
     }
 
-    public openErrorSnackbar(
-        message: string
-    ): void {
+    public openErrorSnackbar(message: string): void {
         const config = new MatSnackBarConfig();
         config.panelClass = [SnackBarClasses.Danger];
         config.duration = 4000;
         this.snackBar.open(message, null, config);
     }
 
-    openDiscardChangesDialog(
-        discard: boolean,
-        discardChanged: Subject<boolean>
-    ): void {
+    openDiscardChangesDialog(discard: boolean, discardChanged: Subject<boolean>): void {
         const dialogRef = this.dialog.open(DiscardChangesModalComponent, {
             width: this.changeDiscardModalWidth
         });

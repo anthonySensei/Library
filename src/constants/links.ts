@@ -1,14 +1,8 @@
-exports.BOOKS_URL = '/books';
-exports.BOOKS_DETAILS_URL = `/details`;
-exports.BOOKS_ISBN_URL = `/isbn`;
-exports.BOOKS_MOVE_URL = `/move`;
-
 exports.AUTH_ACTIVATION_PAGE_URL = '/activation-page';
 
+exports.BOOKS_URL = '/books';
 exports.AUTHORS_URL = '/authors';
-
 exports.DEPARTMENTS_URL = '/departments';
-
 exports.GENRES_URL = '/genres';
 
 exports.LIBRARIANS_URL = '/librarians';

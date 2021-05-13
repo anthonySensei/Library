@@ -10,38 +10,36 @@ import logger from './config/logger';
 import sequelize from './config/database';
 import multer from './config/multer';
 
+import authorRoutes from './routes/author';
 import authRoutes from './routes/auth';
+import genreRoutes from './routes/genre';
 import librarianRoutes from './routes/librarian';
 import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
+import bookRoutes from './routes/book';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
 
-const bookRoutes = require('./routes/book');
 const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
-const departmentRoutes = require('./routes/department');
-const authorRoutes = require('./routes/author');
-const genreRoutes = require('./routes/genre');
 const periodRoutes = require('./routes/period');
 const scheduleRoutes = require('./routes/schedule');
 
 const Student = require('./schemas/student');
 const Librarian = require('./schemas/librarian');
 const Role = require('./schemas/role');
-const Department = require('./schemas/department');
-const Book = require('./schemas/book');
-const Genre = require('./schemas/genre');
-const Author = require('./schemas/author');
+const Department = require('./schemas/sdepartment');
+const Book = require('./schemas/sbook');
+const Genre = require('./schemas/sgenre');
+const Author = require('./schemas/sauthor');
 const Loan = require('./schemas/loan');
 const Order = require('./schemas/order');
 const Schedule = require('./schemas/schedule');
 const Period = require('./schemas/period');
 
 const authorsUrl = require('./constants/links').AUTHORS_URL;
-const departmentsUrl = require('./constants/links').DEPARTMENTS_URL;
 const booksUrl = require('./constants/links').BOOKS_URL;
 const librariansUrl = require('./constants/links').LIBRARIANS_URL;
 const genresUrl = require('./constants/links').GENRES_URL;
@@ -70,7 +68,6 @@ app.use(cors);
 app.use(authRoutes);
 app.use(authorsUrl, authorRoutes);
 app.use(booksUrl, bookRoutes);
-app.use(departmentsUrl, departmentRoutes);
 app.use(genresUrl, genreRoutes);
 app.use(librariansUrl, librarianRoutes);
 app.use(loansUrl, loanRoutes);

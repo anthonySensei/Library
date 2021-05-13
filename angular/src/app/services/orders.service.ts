@@ -6,20 +6,17 @@ import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
 
-import { ResponseService } from './response.service';
 import { HelperService } from './helper.service';
 
 import { serverLink } from '../constants/serverLink';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class OrderService {
     private ORDERS_URL = `${serverLink}/orders`;
 
     constructor(
         private http: HttpClient,
-        private responseService: ResponseService,
         private helperService: HelperService
     ) {}
 
@@ -60,7 +57,7 @@ export class OrderService {
                     )
             })
             .pipe(
-                map((response: any) => {
+                map((response: Response) => {
                     this.helperService.setItemsPerPage(response.data.quantity);
                     return response.data.orders;
                 })
@@ -68,11 +65,7 @@ export class OrderService {
     }
 
     orderBookHttp(orderInfo) {
-        return this.http.post(this.ORDERS_URL, orderInfo).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        return this.http.post(this.ORDERS_URL, orderInfo).pipe(map((response: Response) => response.data));
     }
 
     loanBookFromOrderHttp(
@@ -90,10 +83,6 @@ export class OrderService {
                 librarianEmail,
                 loanTime
             })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+            .pipe(map((response: Response) => response.data));
     }
 }

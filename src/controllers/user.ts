@@ -9,7 +9,7 @@ import { UserSchema } from '../models/user';
 import successMessages from '../constants/successMessages';
 import errorMessages from '../constants/errorMessages';
 
-import { responseErrorHandle, responseHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 import { generatePassword } from '../helper/password';
 import { getImagePath, convertToBase64 } from '../helper/image';
 
@@ -35,7 +35,7 @@ export const createUser = async (req: Request, res: Response) => {
 
     try {
         await User.create({ name, email, phone, password, admin: admin || false, librarian: librarian || false, active: true });
-        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_CREATED });
+        responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error('Error creating user', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
@@ -52,7 +52,7 @@ export const editUser = async (req: Request, res: Response) => {
 
     try {
         await User.findByIdAndUpdate(id, { name, email, phone });
-        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_UPDATED });
+        responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error('Error updating user', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
@@ -85,10 +85,10 @@ export const editPassword = async (req: Request, res: Response) => {
         user.password = newPassword;
         await user.save();
 
-        responseHandle(res, 200, { success: true, message: successMessages.PASSWORD_SUCCESSFULLY_UPDATED });
+        responseSuccessHandle(res, 200, { message: successMessages.PASSWORD_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error('Error updating user', err.message);
-        return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+        return responseErrorHandle(res, 400, errorMessages.PASSWORD_ERROR_CHANGED);
     }
 };
 
@@ -110,7 +110,7 @@ export const editImage = async (req: Request, res: Response) => {
         user.image = getImagePath(image);
         await user.save();
 
-        responseHandle(res, 200, { success: true, message: successMessages.IMAGE_SUCCESSFULLY_UPDATED });
+        responseSuccessHandle(res, 200, { message: successMessages.IMAGE_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error('Error updating user', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
@@ -122,7 +122,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     try {
         await User.findByIdAndDelete(id);
-        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_DELETED });
+        responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_DELETED });
     } catch (err) {
         logger.error('Error deleting user', err.message);
     }
@@ -140,7 +140,7 @@ export const getUser = async (req: Request, res: Response) => {
       }
 
       const userData = { id: _id, name, email, image: convertToBase64(image), admin, librarian, phone };
-      responseHandle(res, 200, { success: true, user: userData });
+      responseSuccessHandle(res, 200, { user: userData });
   } catch (err) {
       logger.error('Error fetching user', err.message);
       responseErrorHandle(res, 500, 'Cannot fetch user');

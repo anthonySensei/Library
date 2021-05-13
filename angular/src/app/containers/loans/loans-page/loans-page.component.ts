@@ -1,26 +1,11 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { LoansService } from '../../../services/loans.service';
-import { ResponseService } from '../../../services/response.service';
-import { DepartmentService } from '../../../services/department.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
@@ -65,9 +50,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private loansService: LoansService,
-        private departmentService: DepartmentService,
-        public helperService: HelperService,
-        private responseService: ResponseService
+        public helperService: HelperService
     ) {}
 
     ngOnInit(): void {
@@ -83,7 +66,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
             null,
             false
         );
-        this.subscriptionsHandle();
     }
 
     ngAfterViewInit(): void {
@@ -97,18 +79,8 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         ).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLoansPage())).subscribe();
     }
 
-    subscriptionsHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
-    }
-
     returnBook(loanId: any, bookId: any): void {
         this.loansService.returnBookHttp(loanId, bookId, new Date()).pipe(untilDestroyed(this)).subscribe(() => {
-            if (this.responseService.responseHandle()) {
-                this.loadLoansPage();
-            }
         });
     }
 

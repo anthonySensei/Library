@@ -23,7 +23,7 @@ exports.getPeriods = async (req, res) => {
             periods: periodsArr,
             message: successMessages.SUCCESSFULLY_FETCHED
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (error) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
@@ -51,7 +51,7 @@ exports.addPeriod = async (req, res) => {
                 isSuccessful: true,
                 message: successMessages.PERIOD_SUCCESSFULLY_CREATED
             };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(
@@ -90,7 +90,7 @@ exports.editPeriod = async (req, res) => {
                 isSuccessful: true,
                 message: successMessages.PERIOD_SUCCESSFULLY_UPDATED
             };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(
@@ -110,7 +110,7 @@ exports.deletePeriod = async (req, res) => {
             isSuccessful: true,
             message: successMessages.PERIOD_SUCCESSFULLY_DELETED
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(
             res,

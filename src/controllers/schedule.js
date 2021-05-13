@@ -4,7 +4,7 @@ const Op = Sequelize.Op;
 const Schedule = require('../schemas/schedule');
 const Period = require('../schemas/period');
 const Librarian = require('../schemas/librarian');
-const Department = require('../schemas/department');
+const Department = require('../schemas/sdepartment');
 
 const helper = require('../helper/responseHandle');
 
@@ -32,7 +32,7 @@ exports.getSchedules = async (req, res) => {
             schedules: schedulesArr,
             message: successMessages.SUCCESSFULLY_FETCHED
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
@@ -62,7 +62,7 @@ exports.addSchedule = async (req, res) => {
                 isSuccessful: true,
                 message: successMessages.SCHEDULE_SUCCESSFULLY_CREATED
             };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(
@@ -106,7 +106,7 @@ exports.editSchedule = async (req, res) => {
                 isSuccessful: true,
                 message: successMessages.SCHEDULE_SUCCESSFULLY_UPDATED
             };
-            return helper.responseHandle(res, 200, data);
+            return helper.responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         return helper.responseErrorHandle(
@@ -126,7 +126,7 @@ exports.deleteSchedule = async (req, res) => {
             isSuccessful: true,
             message: successMessages.SCHEDULE_SUCCESSFULLY_DELETED
         };
-        return helper.responseHandle(res, 200, data);
+        return helper.responseSuccessHandle(res, 200, data);
     } catch (err) {
         return helper.responseErrorHandle(
             res,

@@ -3,8 +3,8 @@ import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { Store } from '@ngxs/store';
-import { StoreStateModel } from '../store/store.model';
-import { LoadLibrarians } from '../store/librarian.state';
+import { StoreStateModel } from '../store/models/store.model';
+import { LoadLibrarians } from '../store/state/librarian.state';
 import { User } from '../models/user.model';
 
 export class LibrariansDataSource implements DataSource<User> {

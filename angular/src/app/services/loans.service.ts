@@ -9,12 +9,10 @@ import { Statistic } from '../models/statistic.model';
 
 import { serverLink } from '../constants/serverLink';
 
-import { ResponseService } from './response.service';
 import { HelperService } from './helper.service';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LoansService {
     private LOANS_URL = `${serverLink}/loans`;
     private LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
@@ -25,7 +23,6 @@ export class LoansService {
 
     constructor(
         private http: HttpClient,
-        private responseService: ResponseService,
         private helperService: HelperService
     ) {}
 
@@ -76,7 +73,7 @@ export class LoansService {
                     .set('studentId', studentId ? studentId.toString() : '')
             })
             .pipe(
-                map((response: any) => {
+                map((response: Response) => {
                     this.helperService.setItemsPerPage(response.data.quantity);
                     return response.data.loans;
                 })
@@ -89,7 +86,7 @@ export class LoansService {
                 params: new HttpParams().set('model', model).set('value', value)
             })
             .pipe(
-                map((response: any) => {
+                map((response: Response) => {
                     this.setStatistic(response.data.statistic);
                 })
             );
@@ -101,10 +98,6 @@ export class LoansService {
             bookId,
             returnedTime
         };
-        return this.http.put(this.LOANS_URL, updatedData).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        return this.http.put(this.LOANS_URL, updatedData).pipe(map((response: Response) => response.data));
     }
 }

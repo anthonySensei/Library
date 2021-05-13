@@ -14,10 +14,9 @@ import { HeaderComponent } from './components/header/header.component';
 import { EditPageComponent } from './components/edit-page/edit-page.component';
 import { AuthorSectionComponent } from './components/edit-page/author-section/author-section.component';
 import { BookSectionComponent } from './components/edit-page/book-section/book-section.component';
-import { DepartmentSectionComponent } from './components/edit-page/department-section/department-section.component';
 import { GenreSectionComponent } from './components/edit-page/genre-section/genre-section.component';
 
-import { AuthInterceptor } from './services/auth.interceptor.service';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 import { MainPageModule } from './containers/main-page/main-page.module';
 import { UsersModule } from './containers/user/users.module';
@@ -28,12 +27,21 @@ import { ScheduleSectionComponent } from './components/edit-page/schedule-sectio
 import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
-import { UserState } from './store/user.state';
+import { UserState } from './store/state/user.state';
 import { environment } from '../environments/environment';
-import { StudentState } from './store/student.state';
+import { StudentState } from './store/state/student.state';
 import { MAT_AUTOCOMPLETE_SCROLL_STRATEGY } from '@angular/material/autocomplete';
 import { CloseScrollStrategy, Overlay } from '@angular/cdk/overlay';
-import { LibrarianState } from './store/librarian.state';
+import { LibrarianState } from './store/state/librarian.state';
+import { HttpErrorInterceptor } from './interceptors/error.interceptor';
+import { GenreState } from './store/state/genre.state';
+import { AuthorState } from './store/state/author.state';
+import { AuthorPopupComponent } from './components/popups/author-popup/author-popup.component';
+import { GenrePopupComponent } from './components/popups/genre-popup/genre-popup.component';
+import { BookPopupComponent } from './components/popups/book-popup/book-popup.component';
+import { BookState } from './store/state/book.state';
+import { DisableFormControlDirective } from './directives/disableFormControl.directive';
+import { LocalizationState } from './store/state/localization.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -47,11 +55,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         EditPageComponent,
         AuthorSectionComponent,
         BookSectionComponent,
-        DepartmentSectionComponent,
         GenreSectionComponent,
         ScheduleSectionComponent,
         PeriodSectionComponent,
         MyOrdersModalComponent,
+        AuthorPopupComponent,
+        GenrePopupComponent,
+        BookPopupComponent,
+        DisableFormControlDirective
     ],
     imports: [
         BrowserModule,
@@ -66,7 +77,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState], {
+        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState, LocalizationState], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
         }),
@@ -81,9 +92,14 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,
             multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorInterceptor,
+            multi: true
         }
     ],
-    entryComponents: [MyOrdersModalComponent],
+    entryComponents: [MyOrdersModalComponent, AuthorPopupComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -6,22 +6,16 @@ import { map } from 'rxjs/operators';
 
 import { serverLink } from '../constants/serverLink';
 
-import { ResponseService } from './response.service';
-
 import { Schedule } from '../models/schedule.model';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ScheduleService {
     private SCHEDULES_URL = `${serverLink}/schedules`;
 
     private schedules = new Subject<Schedule[]>();
 
-    constructor(
-        private http: HttpClient,
-        private responseService: ResponseService
-    ) {}
+    constructor(private http: HttpClient) {}
 
     setSchedule(schedules: Schedule[]): void {
         this.schedules.next(schedules);
@@ -33,26 +27,18 @@ export class ScheduleService {
 
     fetchAllSchedulesHttp() {
         return this.http.get(this.SCHEDULES_URL).pipe(
-            map((response: any) => {
+            map((response: Response) => {
                 this.setSchedule(response.data.schedules);
             })
         );
     }
 
     addScheduleHttp(schedule: Schedule) {
-        return this.http.post(this.SCHEDULES_URL, { schedule }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        return this.http.post(this.SCHEDULES_URL, { schedule }).pipe(map((response: Response) => response.data));
     }
 
     ediScheduleHttp(schedule: Schedule) {
-        return this.http.put(this.SCHEDULES_URL, { schedule }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        return this.http.put(this.SCHEDULES_URL, { schedule }).pipe(map((response: Response) => response.data));
     }
 
     deleteScheduleHttp(scheduleId: number) {
@@ -63,10 +49,6 @@ export class ScheduleService {
                     scheduleId.toString()
                 )
             })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+            .pipe(map((response: Response) => response.data));
     }
 }

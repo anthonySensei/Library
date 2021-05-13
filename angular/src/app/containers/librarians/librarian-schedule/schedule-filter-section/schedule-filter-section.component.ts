@@ -1,19 +1,6 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output
-} from '@angular/core';
-
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Department } from '../../../../models/department.model';
-import { Librarian } from '../../../../models/librarian.model';
-
-import { LibrarianService } from '../../../../services/librarian.service';
-import { DepartmentService } from '../../../../services/department.service';
 import { HelperService } from '../../../../services/helper.service';
 
 @Component({
@@ -35,32 +22,10 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     @Output() setSchedules = new EventEmitter();
 
     departments: Department[];
-    librarians: Librarian[];
 
-    librariansSubscription: Subscription;
-    librariansFetchSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
+    constructor() {}
 
-    constructor(
-        private librarianService: LibrarianService,
-        private departmentService: DepartmentService
-    ) {}
-
-    ngOnInit() {
-        this.subscriptionHandle();
-    }
-
-    subscriptionHandle() {
-        this.departmentsFetchSubscription = this.departmentService
-            .fetchAllDepartmentsHttp()
-            .subscribe();
-        this.departmentsSubscription = this.departmentService
-            .getDepartments()
-            .subscribe((departments: Department[]) => {
-                this.departments = departments;
-            });
-    }
+    ngOnInit() {}
 
     onSetSchedules() {
         this.departmentSelectChange.emit(this.departmentSelect);
@@ -68,11 +33,5 @@ export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
         this.setSchedules.emit();
     }
 
-    ngOnDestroy(): void {
-        this.helperService.unsubscribeHandle(this.departmentsSubscription, [
-            this.departmentsFetchSubscription,
-            this.librariansSubscription,
-            this.librariansFetchSubscription
-        ]);
-    }
+    ngOnDestroy(): void {}
 }

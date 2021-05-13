@@ -3,20 +3,18 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatHorizontalStepper } from '@angular/material/stepper';
 import { Router } from '@angular/router';
 
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
-import { Response } from '../../../models/response.model';
 import { PasswordVisibility } from '../../../constants/passwordVisibility';
 import { ErrorMessages } from '../../../constants/errorMessages';
 import { PageTitles } from '../../../constants/pageTitles';
 import { MaterialService } from '../../../services/material.service';
 import { Store } from '@ngxs/store';
-import { RegisterUser } from '../../../store/user.state';
+import { RegisterUser } from '../../../store/state/user.state';
 import { RegisterUserPayload } from '../../../models/request/user';
 
 @Component({
@@ -44,12 +42,9 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     phoneValidation: RegExp;
     passwordValidation: RegExp;
 
-    discardChanged = new Subject<boolean>();
-
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
-        private responseService: ResponseService,
         private materialService: MaterialService,
         private router: Router,
         private store: Store

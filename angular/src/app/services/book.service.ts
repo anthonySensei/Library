@@ -2,167 +2,61 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
 
 import { Book } from '../models/book.model';
-
-import { ResponseService } from './response.service';
+import { GetBooks } from '../models/request/book';
 
 import { serverLink } from '../constants/serverLink';
-import { HelperService } from './helper.service';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class BookService {
     private BOOKS_URL = `${serverLink}/books`;
-    private BOOKS_ISBN_URL = `${this.BOOKS_URL}/isbn`;
-    private BOOKS_MOVE_URL = `${this.BOOKS_URL}/move`;
-    private BOOKS_DETAILS_URL = `${this.BOOKS_URL}/details`;
-
     private LOAN_BOOK_URL = `${serverLink}/loans`;
 
-    private books = new Subject<Book[]>();
+    constructor(private http: HttpClient) {}
 
-    private book = new Subject<Book>();
-
-    constructor(
-        private http: HttpClient,
-        private helperService: HelperService,
-        private responseService: ResponseService
-    ) {}
-
-    setBooks(books: Book[]): void {
-        this.books.next(books);
-    }
-
-    getBooks(): Observable<Book[]> {
-        return this.books;
-    }
-
-    setBook(book: Book): void {
-        this.book.next(book);
-    }
-
-    getBook(): Observable<Book> {
-        return this.book;
-    }
-
-    fetchAllBooksHttp(
-        page: number = 1,
-        author: number,
-        genre: number,
-        department: number,
-        yearFrom: number,
-        yearTo: number,
-        filterName: string,
-        filterValue: string
-    ) {
+    getBooks(data: GetBooks) {
         return this.http
             .get(this.BOOKS_URL, {
                 params: new HttpParams()
-                    .set('page', page.toString())
-                    .set('yFrom', yearFrom ? yearFrom.toString() : '')
-                    .set('yTo', yearTo ? yearTo.toString() : '')
-                    .set('author', author ? author.toString() : '')
-                    .set('genre', genre ? genre.toString() : '')
-                    .set('department', department ? department.toString() : '')
-                    .set('filterName', filterName)
-                    .set('filterValue', filterValue)
+                    .set('page', data.page.toString())
+                    .set('pageSize', data.pageSize.toString())
+                    .set('yFrom', data.yearFrom ? data.yearFrom.toString() : '')
+                    .set('yTo', data.yearTo ? data.yearTo.toString() : '')
+                    .set('authors', data.authors?.length ? data.authors.join(',') : '')
+                    .set('genres', data.genres?.length ? data.genres.join(',') : '')
+                    .set('department', data.department ? data.department.toString() : '')
+                    .set('filterValue', data.filterValue)
             })
-            .pipe(
-                map((response: any) => {
-                    this.setBooks(response.data.books);
-                    this.helperService.setPaginationData(
-                        response.data.paginationData
-                    );
-                })
-            );
+            .pipe(map((response: Response) => response.data));
     }
 
-    fetchBooksISBNsHttp() {
-        return this.http.get(this.BOOKS_ISBN_URL).pipe(
-            map((response: any) => {
-                this.setBooks(response.data.books);
-            })
-        );
+    getBook(id: string) {
+        return this.http.get(`${this.BOOKS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 
-    getBookHttp(bookId: number) {
-        return this.http
-            .get(this.BOOKS_DETAILS_URL, {
-                params: new HttpParams().set('bookId', bookId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.setBook(response.data.book);
-                })
-            );
-    }
-
-    addBookHttp(book: Book, imageToUploadBase64: string) {
+    addBook(book: Book) {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
-        formData.append('base64', imageToUploadBase64);
-        formData.append('book_data', JSON.stringify(book));
-        return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        formData.append('book', JSON.stringify(book));
+        return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(map((response: Response) => response.data));
     }
 
-    editBookHttp(book: Book, imageToUploadBase64: string) {
+    editBook(id: string, book: Book) {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
-        formData.append(
-            'base64',
-            JSON.stringify({ image: imageToUploadBase64 })
-        );
-        formData.append(
-            'book_data',
-            JSON.stringify({
-                ...book,
-                authorId: book.author.id,
-                genreId: book.genre.id,
-                departmentId: book.department.id
-            })
-        );
-        return this.http.put(this.BOOKS_URL, formData, { headers }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
+        formData.append('book', JSON.stringify(book));
+        return this.http.put(`${this.BOOKS_URL}/${id}`, formData, { headers }).pipe(map((response: Response) => response.data));
     }
-    deleteBookHttp(bookId: number) {
-        return this.http
-            .delete(this.BOOKS_URL, {
-                params: new HttpParams().set('bookId', bookId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+
+    deleteBook(id: string) {
+        return this.http.delete(`${this.BOOKS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 
     loanBookHttp(info) {
-        return this.http.post(this.LOAN_BOOK_URL, info).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
-    }
-
-    moveBookHttp(book: Book, departmentId: number, quantity: number) {
-        return this.http
-            .post(this.BOOKS_MOVE_URL, { book, departmentId, quantity })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+        return this.http.post(this.LOAN_BOOK_URL, info).pipe(map((response: Response) => response.data));
     }
 }

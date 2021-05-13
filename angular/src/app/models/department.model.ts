@@ -1,12 +1,5 @@
-export class Department {
-    id: number;
+export interface Department {
+    id?: string;
+    name: string;
     address: string;
-
-    constructor(
-        id: number,
-        address: string,
-    ) {
-        this.id = id;
-        this.address = address;
-    }
 }

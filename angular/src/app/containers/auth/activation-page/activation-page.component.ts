@@ -1,16 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-
-import { Subscription } from 'rxjs';
-
-import { AuthService } from '../../../services/auth.service';
-import { ResponseService } from '../../../services/response.service';
-
-import { AngularLinks } from '../../../constants/angularLinks';
+import { ActivatedRoute, Params } from '@angular/router';
 import { PageTitles } from '../../../constants/pageTitles';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Store } from '@ngxs/store';
-import { CheckActivationToken } from '../../../store/user.state';
+import { CheckActivationToken } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-activation-page',

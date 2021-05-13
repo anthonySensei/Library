@@ -1,21 +1,15 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Department = sequelize.define('department_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+const departmentSchema: Schema = new Schema({
+    name: {
+        type: String,
+        required: true
     },
     address: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notNull: { msg: 'You must enter department address' }
-        }
+        type: String,
+        required: true
     }
 });
 
-module.exports = Department;
+export default mongoose.model('Department', departmentSchema);

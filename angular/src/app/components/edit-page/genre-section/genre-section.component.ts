@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-
-import { ResponseService } from '../../../services/response.service';
-import { GenreService } from '../../../services/genre.service';
-import { HelperService } from '../../../services/helper.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Genre } from '../../../models/genre.model';
 import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select, Store } from '@ngxs/store';
+import { MatTableDataSource } from '@angular/material/table';
+import { DeleteGenre, GenreState } from '../../../store/state/genre.state';
+import { Observable } from 'rxjs';
+import { GenrePopupComponent } from '../../popups/genre-popup/genre-popup.component';
 
 @Component({
     selector: 'app-genre-section',
@@ -14,73 +15,24 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
     styleUrls: ['../edit-page.component.sass']
 })
 export class GenreSectionComponent implements OnInit, OnDestroy {
-    @Output() nothingToChange = new EventEmitter();
 
-    @Input() responseService: ResponseService;
-    @Input() helperService: HelperService;
+    dataSource = new MatTableDataSource([]);
+    displayedColumns: string[] = ['name', 'actions'];
 
-    genres: Genre[];
-
-    genreSelect: number = null;
-    genreName: string = null;
-    newGenreName: string = null;
-
-    showGenreAdding: boolean;
+    @Select(GenreState.Genres)
+    authors$: Observable<Genre[]>;
 
     constructor(
-        private genreService: GenreService,
+        private store: Store,
         private dialog: MatDialog
-    ) {
-    }
+    ) {}
 
     ngOnInit(): void {
-        this.setGenres();
+        this.getGenres$();
     }
 
-    setGenres() {
-        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
-        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) => {
-            this.genres = genres;
-        });
-    }
-
-    getGenre(): Genre {
-        return this.genres.find(gen => gen.id === this.genreSelect);
-    }
-
-    setGenreName(): void {
-        if (this.genreSelect) {
-            this.genreName = this.getGenre().name;
-        }
-    }
-
-    addGenre(): void {
-        this.genreService.addGenreHttp({ id: null, name: this.newGenreName }).pipe(untilDestroyed(this)).subscribe(() => {
-            this.genreResponseHandler();
-        });
-    }
-
-    editGenre(): void {
-        if (!this.genreName) {
-            return;
-        }
-        if (this.genreName === this.getGenre().name) {
-            this.nothingToChange.emit();
-            return;
-        }
-
-        this.genreService.ediGenreHttp(this.genreSelect, this.genreName).pipe(untilDestroyed(this)).subscribe(() => {
-            this.genreResponseHandler();
-        });
-    }
-
-    deleteGenre(): void {
-        if (!this.genreSelect) {
-            return;
-        }
-        this.genreService.deleteGenreHttp(this.genreSelect).pipe(untilDestroyed(this)).subscribe(() => {
-            this.genreResponseHandler();
-        });
+    getGenres$() {
+        this.authors$.pipe(untilDestroyed(this)).subscribe(genres => this.dataSource = new MatTableDataSource(genres));
     }
 
     openConfirmDeleteDialog(): void {
@@ -95,15 +47,26 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
         // });
     }
 
-    genreResponseHandler(): void {
-        if (this.responseService.responseHandle()) {
-            this.setGenres();
-            this.newGenreName = null;
-            this.genreName = null;
-            this.genreSelect = null;
-        }
+    openGenrePopup(data: Genre) {
+        this.dialog.open(GenrePopupComponent, { data, disableClose: true, width: `569px`});
     }
 
-    ngOnDestroy(): void {
+    onApplyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
     }
+
+    onAddGenre(): void {
+        this.openGenrePopup({} as Genre);
+    }
+
+    onEditGenre(genre: Genre): void {
+        this.openGenrePopup(genre);
+    }
+
+    onDeleteGenre(id: string): void {
+        this.store.dispatch(new DeleteGenre(id));
+    }
+
+    ngOnDestroy(): void {}
 }

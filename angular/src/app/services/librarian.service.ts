@@ -4,16 +4,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 import { serverLink } from '../constants/serverLink';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LibrarianService {
     private LIBRARIANS_URL = `${serverLink}/librarians`;
 
-    constructor(
-        private http: HttpClient,
-    ) {}
+    constructor(private http: HttpClient) {}
 
     getLibrarians(filterValue: string, sortName: string, sortOrder: string, pageNumber: number, pageSize: number) {
         const params = new HttpParams()
@@ -22,10 +19,10 @@ export class LibrarianService {
             .set('sortName', sortName)
             .set('pageNumber', (pageNumber + 1).toString())
             .set('pageSize', pageSize.toString());
-        return this.http.get(this.LIBRARIANS_URL, { params }).pipe(map((response: any) => response.data));
+        return this.http.get(this.LIBRARIANS_URL, { params }).pipe(map((response: Response) => response.data));
     }
 
     getLibrarian(librarianId: string) {
-        return this.http.get(`${this.LIBRARIANS_URL}/${librarianId}`).pipe(map((response: any) => response.data));
+        return this.http.get(`${this.LIBRARIANS_URL}/${librarianId}`).pipe(map((response: Response) => response.data));
     }
 }

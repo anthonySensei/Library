@@ -6,11 +6,10 @@ import { ChangePasswordDialogData } from './change-password-dialog-data.model';
 
 import { ValidationService } from '../../../../services/validation.service';
 import { UserService } from '../../../../services/user.service';
-import { ResponseService } from '../../../../services/response.service';
 import { ErrorMessages } from '../../../../constants/errorMessages';
 import { PasswordVisibility } from '../../../../constants/passwordVisibility';
 import { Store } from '@ngxs/store';
-import { EditPassword } from '../../../../store/user.state';
+import { EditPassword } from '../../../../store/state/user.state';
 
 @Component({
     selector: 'app-dialog',
@@ -31,7 +30,6 @@ export class ChangePasswordModalComponent implements OnInit, OnDestroy {
     constructor(
         private validationService: ValidationService,
         private userService: UserService,
-        private responseService: ResponseService,
         private store: Store,
         public dialogRef: MatDialogRef<ChangePasswordModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: ChangePasswordDialogData

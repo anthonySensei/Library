@@ -1,21 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import {
-    animate,
-    state,
-    style,
-    transition,
-    trigger
-} from '@angular/animations';
 
-import { merge, Observable, Subscription } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Order } from '../../../models/order.model';
@@ -23,10 +10,7 @@ import { User } from '../../../models/user.model';
 import { Department } from '../../../models/department.model';
 
 import { OrderService } from '../../../services/orders.service';
-import { ResponseService } from '../../../services/response.service';
-import { AuthService } from '../../../services/auth.service';
 import { HelperService } from '../../../services/helper.service';
-import { DepartmentService } from '../../../services/department.service';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
@@ -36,7 +20,7 @@ import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { TABLE_ANIMATION } from '../../../constants/animation';
 import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { UserState } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-orders',
@@ -75,10 +59,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private orderService: OrderService,
-        private authService: AuthService,
-        private departmentService: DepartmentService,
         public helperService: HelperService,
-        private responseService: ResponseService
     ) {}
 
     ngOnInit(): void {
@@ -111,10 +92,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     subscriptionsHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
         this.getUser$();
     }
 
@@ -128,9 +105,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             )
             .pipe(untilDestroyed(this))
             .subscribe(() => {
-                if (this.responseService.responseHandle()) {
-                    this.loadOrdersPage();
-                }
             });
     }
 

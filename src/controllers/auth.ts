@@ -8,10 +8,11 @@ import { UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import { convertToBase64 } from '../helper/image';
 
 const expiresIn = 3600 * 12;
 
@@ -37,16 +38,15 @@ export const login = (req: Request, res: Response, next: any) => {
             const userJWT = { id: user.id, email: user.email };
             const token = jwt.sign(userJWT, secretKey, { expiresIn });
             const { _id: id, name, email, image, admin, librarian } = user;
-            const userData = { id, name, email, image, admin, librarian };
+            const userData = { id, name, email, image: convertToBase64(image), admin, librarian };
             jwt.verify(token, secretKey);
             const data = {
-                success: true,
                 message: successMessages.SUCCESSFULLY_LOGGED_IN,
                 user: userData,
                 token: 'Bearer ' + token,
                 tokenExpiresIn: expiresIn
             };
-            return responseHandle(res, 200, data);
+            return responseSuccessHandle(res, 200, data);
         });
     })(req, res, next);
 };
@@ -54,10 +54,9 @@ export const login = (req: Request, res: Response, next: any) => {
 export const logout = (req: Request, res: Response) => {
     req.logout();
     const data = {
-        success: true,
         message: successMessages.SUCCESSFULLY_LOGGED_OUT
     };
-    return responseHandle(res, 200, data);
+    return responseSuccessHandle(res, 200, data);
 };
 
 export const createUser = async (req: Request, res: Response) => {
@@ -83,10 +82,10 @@ export const createUser = async (req: Request, res: Response) => {
         const activationToken = uuidv4();
         await User.create({ name, password, phone, email, activationToken });
         logger.info(`User ${email} has been successfully created`);
-        responseHandle(res, 200, { success: true, message: successMessages.USER_SUCCESSFULLY_CREATED });
+        responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error(`Error creating user: ${err.message}`);
-        responseHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+        responseSuccessHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -107,8 +106,8 @@ export const checkActivationToken = async (req: Request, res: Response) => {
         user.active = true;
         user.activationToken = '';
         await user.save();
-        const data = { success: true, message: successMessages.SUCCESSFULLY_ACTIVATED };
-        return responseHandle(res, 200, data);
+        const data = { message: successMessages.SUCCESSFULLY_ACTIVATED };
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         console.error('Cannot activate user', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);

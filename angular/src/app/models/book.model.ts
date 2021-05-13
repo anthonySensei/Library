@@ -1,43 +1,15 @@
-import { Department } from './department.model';
 import { Author } from './author.model';
 import { Genre } from './genre.model';
 
-export class Book {
-    id: number;
-    isbn: number;
-    name: string;
-    author: Author;
-    genre: Genre;
+export interface Book {
+    id?: string;
+    isbn: string;
+    title: string;
+    language: string;
     image: string;
-    status: string;
     description: string;
     year: number;
     quantity: number;
-    department: Department;
-
-    constructor(
-        id: number,
-        isbn: number,
-        name: string,
-        author: Author,
-        genre: Genre,
-        image: string,
-        status: string,
-        description: string,
-        year: number,
-        quantity: number,
-        department: Department
-    ) {
-        this.id = id;
-        this.isbn = isbn;
-        this.name = name;
-        this.author = author;
-        this.image = image;
-        this.genre = genre;
-        this.status = status;
-        this.description = description;
-        this.year = year;
-        this.quantity = quantity;
-        this.department = department;
-    }
+    authors: Author[];
+    genres: Genre[];
 }

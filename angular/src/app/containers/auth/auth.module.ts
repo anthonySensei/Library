@@ -9,7 +9,7 @@ import { AuthComponent } from './login/auth.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { ActivationPageComponent } from './activation-page/activation-page.component';
 import { NgxsModule } from '@ngxs/store';
-import { UserState } from '../../store/user.state';
+import { UserState } from '../../store/state/user.state';
 
 @NgModule({
     declarations: [

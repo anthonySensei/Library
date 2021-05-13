@@ -1,67 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { map } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
 
 import { Author } from '../models/author.model';
 
-import { ResponseService } from './response.service';
-
 import { serverLink } from '../constants/serverLink';
+import { Response } from '../models/response.model';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthorService {
     private AUTHORS_URL = `${serverLink}/authors`;
 
-    private authors = new Subject<Author[]>();
+    constructor(private http: HttpClient) {}
 
-    constructor(
-        private http: HttpClient,
-        private responseService: ResponseService
-    ) {}
-
-    setAuthors(authors: Author[]): void {
-        this.authors.next(authors);
+    getAuthors() {
+        return this.http.get(this.AUTHORS_URL).pipe(map((response: Response) => response.data));
     }
 
-    getAuthors(): Observable<Author[]> {
-        return this.authors;
+    createAuthor(author: Author) {
+        return this.http.post(this.AUTHORS_URL, { author }).pipe(map((response: Response) => response.data));
     }
 
-    fetchAllAuthorsHttp() {
-        return this.http.get(this.AUTHORS_URL).pipe(
-            map((response: any) => {
-                this.setAuthors(response.data.authors);
-            })
-        );
+    editAuthor(id: string, author: Author) {
+        return this.http.put(`${this.AUTHORS_URL}/${id}`, { author }).pipe(map((response: Response) => response.data));
     }
 
-    addAuthorHttp(author: Author) {
-        return this.http.post(this.AUTHORS_URL, { author }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
-    }
-    editAuthorHttp(authorId: number, name: string) {
-        return this.http.put(this.AUTHORS_URL, { name, authorId }).pipe(
-            map((response: any) => {
-                this.responseService.setResponse(response.data);
-            })
-        );
-    }
-    deleteAuthorHttp(authorId: number) {
-        return this.http
-            .delete(this.AUTHORS_URL, {
-                params: new HttpParams().set('authorId', authorId.toString())
-            })
-            .pipe(
-                map((response: any) => {
-                    this.responseService.setResponse(response.data);
-                })
-            );
+    deleteAuthor(id: string) {
+        return this.http.delete(`${this.AUTHORS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 }

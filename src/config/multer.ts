@@ -21,4 +21,4 @@ const fileFilter = (req: Request, file: any, cb: any) => {
     cb(null, false);
 };
 
-export default () => multer({ limits: { fieldSize: 5 * 1024 * 1024 }, storage: imageStorage, fileFilter }).single('image');
+export default () => multer({ limits: { fieldSize: 10 * 1024 * 1024 }, storage: imageStorage, fileFilter }).single('image');

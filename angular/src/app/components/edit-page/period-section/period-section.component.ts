@@ -1,11 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
-import { ResponseService } from '../../../services/response.service';
 import { PeriodService } from '../../../services/period.service';
 import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
-import { MatDialog } from '@angular/material/dialog';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
@@ -16,7 +14,6 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 export class PeriodSectionComponent implements OnDestroy {
     @Output() nothingToChange = new EventEmitter();
 
-    @Input() responseService: ResponseService;
     @Input() helperService: HelperService;
     @Input() periods: Period[];
 
@@ -30,10 +27,8 @@ export class PeriodSectionComponent implements OnDestroy {
     showPeriodAdding = false;
 
     constructor(
-        private periodService: PeriodService,
-        private dialog: MatDialog
-    ) {
-    }
+        private periodService: PeriodService
+    ) {}
 
     getPeriod(): Period {
         return this.periods.find((per: Period) => per.id === this.periodSelect);
@@ -55,7 +50,6 @@ export class PeriodSectionComponent implements OnDestroy {
             })
             .pipe(untilDestroyed(this))
             .subscribe(() => {
-                this.periodResponseHandler();
             });
     }
 
@@ -80,7 +74,6 @@ export class PeriodSectionComponent implements OnDestroy {
             })
             .pipe(untilDestroyed(this))
             .subscribe(() => {
-                this.periodResponseHandler();
             });
     }
 
@@ -89,7 +82,6 @@ export class PeriodSectionComponent implements OnDestroy {
             return;
         }
         this.periodService.deletePeriodsHttp(this.periodSelect).pipe(untilDestroyed(this)).subscribe(() => {
-            this.periodResponseHandler();
         });
     }
 
@@ -103,20 +95,6 @@ export class PeriodSectionComponent implements OnDestroy {
         //         this.deletePeriod();
         //     }
         // });
-    }
-
-    periodResponseHandler(): void {
-        if (this.responseService.responseHandle()) {
-            this.periodService.fetchAllPeriodsHttp().subscribe();
-            this.periodService.getPeriods().subscribe((periods: Period[]) => {
-                this.periods = periods;
-            });
-            this.newPeriodEnd = null;
-            this.newPeriodStart = null;
-            this.periodStart = null;
-            this.periodEnd = null;
-            this.periodSelect = null;
-        }
     }
 
     ngOnDestroy(): void {}

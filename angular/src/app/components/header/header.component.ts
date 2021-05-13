@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth.service';
 import { HelperService } from '../../services/helper.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
-import { UserRoles } from '../../constants/userRoles';
 import { ModalWidth } from '../../constants/modalWidth';
 
 import { User } from '../../models/user.model';
@@ -16,7 +15,7 @@ import { MyOrdersModalComponent } from './my-orders-modal/my-orders-modal.compon
 
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
-import { Logout, UserState } from '../../store/user.state';
+import { Logout, UserState } from '../../store/state/user.state';
 import { Observable } from 'rxjs';
 
 @Component({

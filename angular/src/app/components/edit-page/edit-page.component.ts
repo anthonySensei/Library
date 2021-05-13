@@ -4,10 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Department } from '../../models/department.model';
 import { Period } from '../../models/period.model';
-import { Librarian } from '../../models/librarian.model';
 
-import { DepartmentService } from '../../services/department.service';
-import { ResponseService } from '../../services/response.service';
 import { MaterialService } from '../../services/material.service';
 
 import { PeriodService } from '../../services/period.service';
@@ -19,9 +16,11 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
 import { WarnMessages } from '../../constants/warnMessages';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { Select } from '@ngxs/store';
-import { UserState } from '../../store/user.state';
+import { Select, Store } from '@ngxs/store';
+import { UserState } from '../../store/state/user.state';
 import { User } from '../../models/user.model';
+import { LoadAuthors } from '../../store/state/author.state';
+import { LoadGenres } from '../../store/state/genre.state';
 
 @Component({
     selector: 'app-edit-page',
@@ -41,13 +40,12 @@ export class EditPageComponent implements OnInit, OnDestroy {
     user$: Observable<User>;
 
     constructor(
-        public departmentService: DepartmentService,
         private authService: AuthService,
-        public responseService: ResponseService,
         private materialService: MaterialService,
         private periodService: PeriodService,
         public helperService: HelperService,
         public librarianService: LibrarianService,
+        private store: Store
     ) {}
 
     ngOnInit(): void {
@@ -61,10 +59,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
     }
 
     selectsValuesSubscriptionHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
         this.periodService.fetchAllPeriodsHttp().pipe(untilDestroyed(this)).subscribe();
         this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
             this.periods = periods;
@@ -73,6 +67,14 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     nothingChangeHandle(): void {
         this.materialService.openSnackbar(this.nothingToChange, SnackBarClasses.Warn);
+    }
+
+    onLoadAuthors() {
+        this.store.dispatch(new LoadAuthors());
+    }
+
+    onLoadGenres() {
+        this.store.dispatch(new LoadGenres());
     }
 
     ngOnDestroy(): void {}

@@ -6,13 +6,12 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 
 import { AuthService } from '../../../services/auth.service';
 import { ValidationService } from '../../../services/validation.service';
-import { ResponseService } from '../../../services/response.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { Store } from '@ngxs/store';
-import { Login } from '../../../store/user.state';
-import { StoreStateModel } from '../../../store/store.model';
+import { Login } from '../../../store/state/user.state';
+import { StoreStateModel } from '../../../store/models/store.model';
 
 @Component({
     selector: 'app-auth',
@@ -28,11 +27,9 @@ export class AuthComponent implements OnInit, OnDestroy {
     constructor(
         private validationService: ValidationService,
         private authService: AuthService,
-        private responseService: ResponseService,
         private router: Router,
         private store: Store
-    ) {
-    }
+    ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.LOGIN;

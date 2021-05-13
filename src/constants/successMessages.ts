@@ -4,20 +4,14 @@ export default {
     SUCCESSFULLY_LOANED: 'Book has been successfully loaned!',
     SUCCESSFULLY_ORDERED: 'Book has been successfully ordered!',
     SUCCESSFULLY_RETURNED_BOOK: 'Book has been successfully returned!',
-    SUCCESSFULLY_INFO_UPDATED: 'User info has been successfully changed!',
     ACCOUNT_SUCCESSFULLY_CREATED:
         'Account has successfully created. Please confirm email to activate account',
     BOOK_SUCCESSFULLY_CREATED: 'Book has been successfully created',
     BOOK_SUCCESSFULLY_UPDATED: 'Book has been successfully updated',
     BOOK_SUCCESSFULLY_DELETED: 'Book has been successfully deleted',
-    BOOK_SUCCESSFULLY_MOVED:
-        'Book has been successfully moved to another department',
     AUTHOR_SUCCESSFULLY_CREATED: 'Author has been successfully created',
     AUTHOR_SUCCESSFULLY_UPDATED: 'Author has been successfully updated',
     AUTHOR_SUCCESSFULLY_DELETED: 'Author has been successfully deleted',
-    DEPARTMENT_SUCCESSFULLY_CREATED: 'Department has been successfully created',
-    DEPARTMENT_SUCCESSFULLY_UPDATED: 'Department has been successfully updated',
-    DEPARTMENT_SUCCESSFULLY_DELETED: 'Department has been successfully deleted',
     GENRE_SUCCESSFULLY_CREATED: 'Genre has been successfully created',
     GENRE_SUCCESSFULLY_UPDATED: 'Genre has been successfully updated',
     GENRE_SUCCESSFULLY_DELETED: 'Genre has been successfully deleted',
@@ -38,9 +32,5 @@ export default {
     LIBRARIAN_SUCCESSFULLY_UPDATED: 'Librarian has been successfully updated',
     LIBRARIAN_SUCCESSFULLY_DELETED: 'Librarian has been successfully deleted',
     SUCCESSFULLY_ACTIVATED: 'User has been successfully activated',
-    SUCCESSFULLY_FETCHED: 'Successfully fetched',
-    PASSWORD_SUCCESSFULLY_CHANGED: 'Password has been successfully changed',
-    INFO_SUCCESSFULLY_CHANGED: 'Info has been successfully changed!',
-    PROFILE_IMAGE_SUCCESSFULLY_CHANGED:
-        'Profile image has been successfully changed!'
+    SUCCESSFULLY_FETCHED: 'Successfully fetched'
 };

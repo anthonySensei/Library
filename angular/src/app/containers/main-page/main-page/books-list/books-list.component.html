@@ -1,0 +1,44 @@
+<section class="position-relative overflow-hidden" *ngIf="(books$ | async)?.length > 0; else noBooks">
+    <div class="d-flex flex-wrap justify-content-center">
+        <div class="card" *ngFor="let book of books$ | async">
+            <div class="image-container">
+                <img
+                    src="{{ book.image ? book.image : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png' }}"
+                    alt="Book image"
+                    class="image"
+                />
+                <div class="image-data">
+                    <a class="image-data__link" [routerLink]="['/', links.BOOKS, book.id]">Details</a>
+                </div>
+            </div>
+            <div class="p-2">
+                <div class="mt-2">
+                    <span class="card__label">Title:</span>
+                    {{ book.title }}
+                </div>
+                <div class="mt-2">
+                    <span class="card__label">Author:</span>
+                    {{ getAuthors(book.authors) }}
+                </div>
+                <div class="mt-2">
+                    <span class="card__label">Genre:</span>
+                    {{ getGenres(book.genres) }}
+                </div>
+                <div class="mt-2">
+                    <span class="card__label">Year:</span>
+                    {{ book.year }}
+                </div>
+                <div class="mt-2">
+                    <span class="card__label">Language:</span>
+                    {{ getLanguage(book.language) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<ng-template #noBooks>
+    <div style="text-align: center; font-size: 3rem; margin-top: 20px;">
+        <span>There are no books</span>
+    </div>
+</ng-template>

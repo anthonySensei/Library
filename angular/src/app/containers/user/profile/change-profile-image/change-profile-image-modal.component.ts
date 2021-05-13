@@ -3,14 +3,14 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { Store } from '@ngxs/store';
-import { EditImage } from '../../../../store/user.state';
+import { EditImage } from '../../../../store/state/user.state';
 
 @Component({
     selector: 'app-change-profile-image-dialog',
     templateUrl: './change-profile-image-modal.html'
 })
 export class ChangeProfileImageModalComponent {
-    imageChangedEvent: any = '';
+    imageChangedEvent: Event;
     image: string;
 
     constructor(
@@ -18,7 +18,7 @@ export class ChangeProfileImageModalComponent {
         private store: Store
     ) {}
 
-    fileChangeEvent(event: any): void {
+    fileChangeEvent(event: Event): void {
         this.imageChangedEvent = event;
     }
 

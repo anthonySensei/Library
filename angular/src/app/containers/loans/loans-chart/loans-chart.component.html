@@ -9,12 +9,8 @@
             >
                 <mat-option value="user">Student</mat-option>
                 <mat-option value="book">Book</mat-option>
-                <mat-option value="librarian" *ngIf="isManager"
-                    >Librarian</mat-option
-                >
-                <mat-option value="department" *ngIf="isManager"
-                    >Department</mat-option
-                >
+                <mat-option value="librarian" *ngIf="isManager">Librarian</mat-option>
+                <mat-option value="department" *ngIf="isManager">Department</mat-option>
             </mat-select>
         </mat-form-field>
         <mat-form-field *ngIf="model !== 'department'">
@@ -59,9 +55,9 @@
             [yAxisLabel]="yAxisLabel"
             [timeline]="timeline"
             [results]="multi"
-            (select)="onSelect($event)"
-            (activate)="onActivate($event)"
-            (deactivate)="onDeactivate($event)"
+            (select)="onSelect()"
+            (activate)="onActivate()"
+            (deactivate)="onDeactivate()"
         >
         </ngx-charts-line-chart>
     </div>

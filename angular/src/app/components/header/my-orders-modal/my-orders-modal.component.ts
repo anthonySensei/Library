@@ -12,7 +12,6 @@ import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
 import { HelperService } from '../../../services/helper.service';
 import { OrderService } from '../../../services/orders.service';
-import { DepartmentService } from '../../../services/department.service';
 import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
@@ -39,7 +38,6 @@ export class MyOrdersModalComponent
 
     constructor(
         private orderService: OrderService,
-        private departmentService: DepartmentService,
         public helperService: HelperService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
@@ -58,14 +56,6 @@ export class MyOrdersModalComponent
             true,
             this.data.studentId
         );
-        this.subscriptionsHandle();
-    }
-
-    subscriptionsHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-            this.departments = departments;
-        });
     }
 
     ngAfterViewInit(): void {

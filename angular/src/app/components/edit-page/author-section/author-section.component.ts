@@ -1,12 +1,14 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Author } from '../../../models/author.model';
-
-import { AuthorService } from '../../../services/author.service';
-import { ResponseService } from '../../../services/response.service';
-import { HelperService } from '../../../services/helper.service';
 import { MatDialog } from '@angular/material/dialog';
+import { Select, Store } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { AuthorState, DeleteAuthor } from '../../../store/state/author.state';
+import { MatTableDataSource } from '@angular/material/table';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { AuthorPopupComponent } from '../../popups/author-popup/author-popup.component';
+import { LocalizationService } from '../../../services/localization.service';
 
 @Component({
     selector: 'app-author-section',
@@ -14,74 +16,33 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
     styleUrls: ['../edit-page.component.sass']
 })
 export class AuthorSectionComponent implements OnInit, OnDestroy {
-    @Output() nothingToChange = new EventEmitter();
 
-    @Input() responseService: ResponseService;
-    @Input() helperService: HelperService;
+    dataSource = new MatTableDataSource([]);
+    displayedColumns: string[] = ['name', 'country', 'language', 'actions'];
 
-    authors: Author[];
-
-    authorSelect: number;
-    authorName: string;
-    newAuthorName: string;
-
-    showAuthorAdding: boolean;
+    @Select(AuthorState.Authors)
+    authors$: Observable<Author[]>;
 
     constructor(
-        private authorService: AuthorService,
-        private dialog: MatDialog
+        private store: Store,
+        private dialog: MatDialog,
+        private localizationService: LocalizationService
     ) {}
 
     ngOnInit(): void {
-        this.setAuthors();
+        this.getAuthors$();
     }
 
-    setAuthors(): void {
-        this.authorService
-            .fetchAllAuthorsHttp()
-            .pipe(untilDestroyed(this))
-            .subscribe();
-        this.authorService
-            .getAuthors()
-            .pipe(untilDestroyed(this))
-            .subscribe((authors: Author[]) => {
-                this.authors = authors;
-            });
+    getAuthors$() {
+        this.authors$.pipe(untilDestroyed(this)).subscribe(authors => this.dataSource = new MatTableDataSource(authors));
     }
 
-    getAuthor(): Author {
-        return this.authors.find(aut => aut.id === this.authorSelect);
+    getCountry(countryCode: string): string {
+        return this.localizationService.getCountryName(countryCode);
     }
 
-    setAuthorName(): void {
-        if (this.authorSelect) {
-            this.authorName = this.getAuthor().name;
-        }
-    }
-
-    addAuthor(): void {
-        this.authorService
-            .addAuthorHttp({ id: null, name: this.newAuthorName })
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.authorResponseHandler();
-            });
-    }
-
-    editAuthor(): void {
-        if (!this.authorName) {
-            return;
-        }
-        if (this.authorName === this.getAuthor().name) {
-            this.nothingToChange.emit();
-            return;
-        }
-        this.authorService
-            .editAuthorHttp(this.authorSelect, this.authorName)
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.authorResponseHandler();
-            });
+    getLanguage(languageCode: string): string {
+        return this.localizationService.getLanguageName(languageCode);
     }
 
     openConfirmDeleteDialog(): void {
@@ -91,31 +52,30 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
         //
         // dialogRef.afterClosed().subscribe(result => {
         //     if (result) {
-        //         this.deleteAuthor();
+        //         this.onDeleteAuthor();
         //     }
         // });
     }
 
-    deleteAuthor(): void {
-        if (!this.authorSelect) {
-            return;
-        }
-        this.authorName = null;
-        this.authorService
-            .deleteAuthorHttp(this.authorSelect)
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.authorResponseHandler();
-            });
+    openAuthorPopup(data: Author) {
+        this.dialog.open(AuthorPopupComponent, {data, disableClose: true, width: `569px`});
     }
 
-    authorResponseHandler(): void {
-        if (this.responseService.responseHandle()) {
-            this.setAuthors();
-            this.newAuthorName = null;
-            this.authorName = null;
-            this.authorSelect = null;
-        }
+    onApplyFilter(event: Event) {
+        const filterValue = (event.target as HTMLInputElement).value;
+        this.dataSource.filter = filterValue.trim().toLowerCase();
+    }
+
+    onAddAuthor(): void {
+        this.openAuthorPopup({} as Author);
+    }
+
+    onEditAuthor(author: Author): void {
+        this.openAuthorPopup(author);
+    }
+
+    onDeleteAuthor(id: string): void {
+        this.store.dispatch(new DeleteAuthor(id));
     }
 
     ngOnDestroy(): void {}

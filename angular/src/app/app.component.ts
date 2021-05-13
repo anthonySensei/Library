@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Store } from '@ngxs/store';
-import { AutoLogin, InitUserState } from './store/user.state';
-import { InitStudentState } from './store/student.state';
-import { InitLibrarianState } from './store/librarian.state';
+import { AutoLogin, InitUserState } from './store/state/user.state';
+import { InitStudentState } from './store/state/student.state';
+import { InitLibrarianState } from './store/state/librarian.state';
+import { InitAuthorState } from './store/state/author.state';
+import { InitGenreState } from './store/state/genre.state';
+import { InitBookState } from './store/state/book.state';
+import { InitLocalizationState } from './store/state/localization.state';
 
 @Component({
     selector: 'app-root',
@@ -13,6 +17,15 @@ export class AppComponent implements OnInit {
     constructor(private authService: AuthService, private store: Store) {}
 
     ngOnInit(): void {
-        this.store.dispatch([new InitUserState(), new InitStudentState(), new InitLibrarianState(), new AutoLogin()]);
+        this.store.dispatch([
+            new InitUserState(),
+            new InitStudentState(),
+            new InitLibrarianState(),
+            new InitAuthorState(),
+            new InitGenreState(),
+            new InitBookState(),
+            new InitLocalizationState(),
+            new AutoLogin()
+        ]);
     }
 }

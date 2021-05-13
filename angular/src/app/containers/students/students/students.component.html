@@ -1,11 +1,6 @@
 <div class="table-section">
     <section class="d-flex justify-content-between align-items-center mb-1">
-        <button
-                mat-stroked-button
-                color="primary"
-                matTooltip="Add student"
-                (click)="onOpenCreatePopup()"
-        >
+        <button mat-stroked-button color="primary" (click)="onOpenCreatePopup()">
             <i class="material-icons">add</i> Add student
         </button>
         <mat-form-field>
@@ -137,9 +132,10 @@
         ></tr>
     </table>
     <mat-paginator
-        [length]="paginator.pageSize || 5"
-        [pageSize]="5"
+        [length]="1"
+        [pageSize]="paginator.pageSize || 5"
         [pageSizeOptions]="[5, 10]"
+        #paginator
     ></mat-paginator>
 </div>
 <app-small-screen></app-small-screen>

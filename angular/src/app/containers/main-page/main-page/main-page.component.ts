@@ -1,29 +1,27 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../services/auth.service';
 import { BookService } from '../../../services/book.service';
-import { DepartmentService } from '../../../services/department.service';
-import { AuthorService } from '../../../services/author.service';
-import { GenreService } from '../../../services/genre.service';
 import { HelperService } from '../../../services/helper.service';
-
-import { Filters } from '../../../constants/filters';
-import { UserRoles } from '../../../constants/userRoles';
-import { AngularLinks } from '../../../constants/angularLinks';
-import { FiltersName } from '../../../constants/filtersName';
 import { PageTitles } from '../../../constants/pageTitles';
 
 import { Book } from '../../../models/book.model';
 import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
-import { Department } from '../../../models/department.model';
 import { User } from '../../../models/user.model';
 import { Pagination } from '../../../models/pagination.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { Select } from '@ngxs/store';
-import { UserState } from '../../../store/user.state';
+import { Select, Store } from '@ngxs/store';
+import { UserState } from '../../../store/state/user.state';
 import { Observable } from 'rxjs';
+import { AuthorState, LoadAuthors } from '../../../store/state/author.state';
+import { GenreState, LoadGenres } from '../../../store/state/genre.state';
+import { MatDialog } from '@angular/material/dialog';
+import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
+import { BookState, LoadBooks } from '../../../store/state/book.state';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
     selector: 'app-main-page',
@@ -31,53 +29,41 @@ import { Observable } from 'rxjs';
     styleUrls: ['./main-page.component.scss']
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-    books: Book[] = [];
-    authors: Author[] = [];
-    genres: Genre[] = [];
-    departments: Department[] = [];
     user: User;
-    paginationData: Pagination;
 
     isLoading: boolean;
     showFilterButton = true;
 
-    filterName = Filters.NOTHING;
-    authorSelect: number;
-    genreSelect: number;
-    departmentSelect: number;
+    authors: string[];
+    genres: string[];
     filterValue: string;
-    fromYear: number;
-    toYear: number;
+    fromYear: string;
+    toYear: string;
 
-    roles = UserRoles;
-    links = AngularLinks;
-
-    bookFilters = [
-        { name: FiltersName.NOTHING, value: Filters.NOTHING },
-        { name: FiltersName.TITLE, value: Filters.TITLE },
-        { name: FiltersName.ISBN, value: Filters.ISBN }
-    ];
-
-    currentPage: number;
-
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    nextPage: number;
-    previousPage: number;
-    lastPage: number;
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild('drawer') drawer: MatDrawer;
 
     @Select(UserState.User)
     user$: Observable<User>;
 
+    @Select(AuthorState.Authors)
+    authors$: Observable<Author[]>;
+
+    @Select(GenreState.Genres)
+    genres$: Observable<Genre[]>;
+
+    @Select(BookState.Pagination)
+    pagination$: Observable<Pagination>;
+
+
     constructor(
         private authService: AuthService,
         private bookService: BookService,
-        private authorService: AuthorService,
-        private departmentService: DepartmentService,
         private helperService: HelperService,
-        private genreService: GenreService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private store: Store,
+        private dialog: MatDialog
     ) {
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
             return false;
@@ -86,137 +72,57 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         document.title = PageTitles.CATALOG;
-        this.isLoading = true;
-        this.paramsHandle();
+        this.store.dispatch([new LoadAuthors(), new LoadGenres()]);
+        this.getUser$();
+        this.loadBooks();
     }
 
     getUser$(): void {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.user = user || {} as User );
     }
 
-    paramsHandle(): void {
-        this.route.queryParams.pipe(untilDestroyed(this)).subscribe(
-            (params: Params) => {
-                this.currentPage = +params.page || 1;
-                this.departmentSelect = +params.department || null;
-                this.authorSelect = +params.author || null;
-                this.genreSelect = +params.genre || null;
-                this.fromYear = +params.fYear || null;
-                this.toYear = +params.tYear || null;
-                this.filterName = params.fName || null;
-                this.filterValue = params.fValue || null;
-                this.subscriptionsHandle();
-            }
-        );
-    }
-
-    subscriptionsHandle(): void {
-        this.departmentService.fetchAllDepartmentsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.departmentService.getDepartments().pipe(untilDestroyed(this)).subscribe((departments: Department[]) => {
-                this.departments = departments;
-                this.booksSubscriptionHandle();
-        });
-        this.authorService.fetchAllAuthorsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.authorService.getAuthors().pipe(untilDestroyed(this)).subscribe((authors: Author[]) => {
-                this.authors = authors;
-        });
-        this.genreService.fetchAllGenresHttp().pipe(untilDestroyed(this)).subscribe();
-        this.genreService.getGenres().pipe(untilDestroyed(this)).subscribe((genres: Genre[]) => {
-                this.genres = genres;
-        });
-        this.getUser$();
-    }
-
-    booksSubscriptionHandle(): void {
-        this.bookService
-            .fetchAllBooksHttp(
-                this.currentPage,
-                this.authorSelect,
-                this.genreSelect,
-                this.departmentSelect,
-                this.fromYear,
-                this.toYear,
-                this.filterName,
-                this.filterValue
-            )
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.paginationData = this.helperService.getPaginationData();
-                this.currentPage = this.paginationData.currentPage;
-                this.hasNextPage = this.paginationData.hasNextPage;
-                this.hasPreviousPage = this.paginationData.hasPreviousPage;
-                this.nextPage = this.paginationData.nextPage;
-                this.previousPage = this.paginationData.previousPage;
-                this.lastPage = this.paginationData.lastPage;
-            });
-        this.bookService
-            .getBooks()
-            .pipe(untilDestroyed(this))
-            .subscribe((books: Book[]) => {
-                this.books = books || [];
-                this.isLoading = false;
-            });
-    }
-
-    paginate(page: number) {
+    loadBooks(): void {
         this.isLoading = true;
-        const department = this.departmentSelect
-            ? { department: this.departmentSelect }
-            : {};
-        const author = this.authorSelect ? { author: this.authorSelect } : {};
-        const genre = this.genreSelect ? { genre: this.genreSelect } : {};
-        const fYear = this.fromYear ? { fYear: this.fromYear } : {};
-        const tYear = this.toYear ? { tYear: this.toYear } : {};
-        const fName = this.filterName ? { fName: this.filterName } : {};
-        const fValue = this.filterValue ? { fValue: this.filterValue } : {};
-        this.router.navigate([''], {
-            relativeTo: this.route,
-            queryParams: {
-                ...department,
-                ...author,
-                ...genre,
-                ...fYear,
-                ...tYear,
-                ...fName,
-                ...fValue,
-                page
-            }
-        });
+        this.store
+            .dispatch(new LoadBooks({
+                page: this.paginator?.pageIndex || 0, authors: this.authors, filterValue: this.filterValue || '',
+                genres: this.genres, yearFrom: this.fromYear, yearTo: this.toYear, pageSize: this.paginator?.pageSize || 16
+            }))
+            .subscribe(() => this.isLoading = false);
     }
 
-    toggleFilterButton(): void {
+    getAllOption(total: number): number {
+        return total > 64 ? total : 8;
+    }
+
+    onToggleFilterButton(): void {
         this.showFilterButton = !this.showFilterButton;
+        this.drawer.toggle();
     }
 
-    isNothingFilter(): boolean {
-        return this.filterName === Filters.NOTHING;
-    }
-
-    isIsbnFilter(): boolean {
-        return this.filterName === Filters.ISBN;
-    }
-
-    isHaveAccess(): boolean {
+    isHasAccess(): boolean {
         return (this.user.admin || this.user.librarian);
     }
 
     clearInputs(): void {
-        this.filterName = Filters.NOTHING;
         this.filterValue = '';
-        this.genreSelect = null;
-        this.authorSelect = null;
+        this.genres = null;
+        this.authors = null;
         this.fromYear = null;
         this.toYear = null;
     }
 
-    showBooksByDepartment(): void {
-        this.filterName = Filters.NOTHING;
-        this.authorSelect = null;
-        this.genreSelect = null;
-        this.filterValue = null;
-        this.fromYear = null;
-        this.toYear = null;
-        this.paginate(1);
+    onAddBook() {
+        this.dialog.open(BookPopupComponent, { data: {} as Book, disableClose: true, width: '768px' });
+    }
+
+    onPaginate(event: PageEvent) {
+        console.log(event);
+    }
+
+    onSearch() {
+        this.onToggleFilterButton();
+        this.loadBooks();
     }
 
     ngOnDestroy(): void {}
