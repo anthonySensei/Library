@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { Book } from '../models/book.model';
 import { Response } from '../models/response.model';
 import { GetLoans } from '../models/request/loan';
-import { GetBooks } from '../models/request/book';
+import { GetBooksModel, LoanBookModel } from '../models/request/book';
 
 import { serverLink } from '../constants/serverLink';
 
@@ -18,7 +18,7 @@ export class BookService {
 
     constructor(private http: HttpClient) {}
 
-    getBooks(params: GetBooks) {
+    getBooks(params: GetBooksModel) {
         return this.http
             .get(this.BOOKS_URL, {
                 params: new HttpParams()
@@ -64,19 +64,21 @@ export class BookService {
                 params: new HttpParams()
                     .set('page', params.page.toString())
                     .set('pageSize', params.pageSize.toString())
-                    .set('userId', params.userId)
-                    .set('librarianId', params.librarianId)
-                    .set('createdAt', params.createdAt?.toString())
-                    .set('returnedAt', params.returnedAt?.toString())
+                    .set('loanedAt', params.loanedAt?.toString() || '')
                     .set('sortName', params.sortName)
                     .set('sortOrder', params.sortOrder)
-                    .set('showOnlyDebtors', String(params.showOnlyDebtors))
-                    .set('filterValue', params.filterValue)
+                    .set('filterValue', params.filterValue || '')
+                    .set('showOnlyDebtors', params.showOnlyDebtors ? 'true' : '')
+                    .set('showOnlyReturned', params.showOnlyReturned ? 'true' : '')
             })
             .pipe(map((response: Response) => response.data));
     }
 
-    loanBookHttp(info) {
-        return this.http.post(this.LOANS_URL, info).pipe(map((response: Response) => response.data));
+    loanBook(data: LoanBookModel) {
+        return this.http.post(this.LOANS_URL, data).pipe(map((response: Response) => response.data));
+    }
+
+    returnBook(loanId: string) {
+        return this.http.patch(`${this.LOANS_URL}/${loanId}`, {}).pipe(map((response: Response) => response.data));
     }
 }

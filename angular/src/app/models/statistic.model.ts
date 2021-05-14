@@ -8,7 +8,7 @@ export class Statistic implements Loan {
     books: Book[];
     _id: string;
     book: Book;
-    createdAt: Date;
+    loanedAt: Date;
     librarian: User;
     returnedAt: Date;
     student: User;

@@ -7,6 +7,6 @@ export interface LoanSchema extends Document {
     user: UserModel;
     book: BookModel;
     librarian: UserSchema;
-    createdAt: Date;
+    loanedAt: Date;
     returnedAt: Date;
 }

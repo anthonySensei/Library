@@ -1,4 +1,4 @@
-export interface GetBooks {
+export interface GetBooksModel {
     page: number;
     pageSize: number;
     authors?: string[];
@@ -7,4 +7,10 @@ export interface GetBooks {
     yearFrom?: string;
     yearTo?: string;
     filterValue?: string;
+}
+
+export interface LoanBookModel {
+    userCredentials: string;
+    librarianId: string;
+    bookId: string;
 }

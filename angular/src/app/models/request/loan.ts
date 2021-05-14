@@ -7,6 +7,6 @@ export interface GetLoans {
     sortName?: string;
     sortOrder?: string;
     showOnlyDebtors?: boolean;
-    createdAt?: Date;
-    returnedAt?: Date;
+    showOnlyReturned?: boolean;
+    loanedAt?: Date;
 }

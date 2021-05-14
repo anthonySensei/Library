@@ -1,7 +1,19 @@
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
 import { Request, Response } from 'express';
+
+import logger from '../config/logger';
+
+import Book from '../schemas/book';
 import Loan from '../schemas/loan';
+import User from '../schemas/user';
+
 import { LoanSchema } from '../models/loan';
+import { BookSchema } from '../models/book';
+
+import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+
+import errorMessages from '../constants/errorMessages';
+import successMessages from '../constants/successMessages';
+import { removedEmptyFields } from '../helper/object';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -9,17 +21,35 @@ const Op = Sequelize.Op;
 const SequelizeLoan = require('../schemas/sloan');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
-const Book = require('../schemas/sbook');
+const SequelizeBook = require('../schemas/sbook');
 const Department = require('../schemas/sdepartment');
-const errorMessages = require('../constants/errorMessages');
-const successMessages = require('../constants/successMessages');
 const models = require('../constants/models');
 
-exports.getAllLoans = async (req: Request, res: Response) => {
+export const getLoans = async (req: Request, res: Response) => {
+    const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
+    const showOnlyDebtors = !!req.query.showOnlyDebtors;
+    const showOnlyReturned = !!req.query.showOnlyReturned;
+    const regex = new RegExp(filterValue as string, 'i');
+
+    const sort: any = {};
+    sort[sortName as string] = sortOrder;
+    const filterDate = new Date(String(loanedAt));
+    const oneDay = 24 * 60 * 60 * 1000;
+    const tomorrow = new Date(filterDate.getTime() + oneDay);
+    const filterCondition = {
+        loanedAt: loanedAt && { $gte: filterDate, $lt: tomorrow },
+        returnedAt: (showOnlyReturned && { $exists: true, $ne: null }) || (showOnlyDebtors && { $exists: false }) || null
+        // $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
+    };
+    const filter: any = removedEmptyFields(filterCondition);
 
     try {
-        const quantity = await Loan.countDocuments();
-        const loans = await Loan.find().populate('Book').populate('User') as LoanSchema[];
+        const quantity = await Loan.countDocuments(filter);
+        const loans = await Loan.find()
+            .find(filter, {}, { limit: Number(pageSize), skip: (Number(page) - 1) * Number(pageSize), sort })
+            .populate('book')
+            .populate('user')
+            .populate('librarian') as LoanSchema[];
         const loansData = loans.map(loan => {
             const { user, book, librarian } = loan;
 
@@ -34,6 +64,7 @@ exports.getAllLoans = async (req: Request, res: Response) => {
 
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
+        logger.error(`Error getting loans: ${err.message}`);
         return responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
@@ -59,73 +90,27 @@ exports.getLoanStatistic = (loans: any) => {
     return loansStatisticArr;
 };
 
-exports.getLoans = async (modelId: any, modelName: any) => {
-    let model: any;
-    let condition: any;
-    let info: any;
+export const returnBook = async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-    if (modelName === models.LIBRARIAN) {
-        condition = { librarianId: modelId };
-        model = Student;
-    } else if (modelName === models.STUDENT) {
-        condition = { studentId: modelId };
-        model = Librarian;
+    if (!id) {
+        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 
     try {
-        const loans = await SequelizeLoan.findAll({
-            where: condition,
-            include: [
-                { model },
-                { model: Book },
-                { model: Department }
-            ],
-            order: [['loan_time', 'ASC']]
-        });
-        const loansArr: any = [];
-        if (loans.length > 0) {
-            loans.forEach((loan: any) => {
-                const loanValues = loan.get();
+        const loan = await Loan.findById(id) as LoanSchema;
 
-                if (modelName === models.LIBRARIAN) {
-                    info = { studentTicketReader: loanValues.student_.get().reader_ticket};
-                } else if (modelName === models.STUDENT) {
-                    info = { librarianEmail: loanValues.librarian_.get().email, departmentAddress: loanValues.department_.get().address };
-                }
-
-                loansArr.push({
-                    ...info,
-                    loanTime: loanValues.loan_time,
-                    returnedTime: loanValues.returned_time,
-                    bookISBN: loanValues.book_.get().isbn
-                });
-            });
-            return loansArr;
+        if (!loan) {
+            return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
         }
-        return null;
+
+        const book = await Book.findById(loan.book) as BookSchema;
+        await Book.findByIdAndUpdate(loan.book, { quantity: book.quantity + 1 });
+        await Loan.findByIdAndUpdate(id, { returnedAt: new Date() });
+        responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_RETURNED_BOOK });
     } catch (err) {
-        return null;
-    }
-};
-
-exports.returnBook = async (req: Request, res: Response) => {
-    const loanId = req.body.loanId;
-    const bookId = req.body.bookId;
-    const returnedTime = req.body.returnedTime;
-
-    if (!loanId || !bookId || !returnedTime) {
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
-    }
-
-    try {
-        const loan = await SequelizeLoan.findOne({ where: { id: loanId } });
-        await loan.update({ returned_time: returnedTime });
-        const book = await Book.findOne({ where: { id: bookId } });
-        await book.update({ quantity: book.get().quantity + 1 });
-        const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_RETURNED_BOOK };
-        return responseSuccessHandle(res, 200, data);
-    } catch (err) {
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        logger.error(`Error returning book: ${err.message}`);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -159,7 +144,7 @@ exports.getLoansStatistic = (req: Request, res: Response) => {
                 model: Librarian,
                 where: librarianCondition
             },
-            { model: Book, where: bookCondition },
+            { model: SequelizeBook, where: bookCondition },
             { model: Department, where: departmentCondition }
         ],
         where: { loan_time: { [Op.gte]: new Date().setDate(new Date().getDate() - 30) } },
@@ -210,50 +195,32 @@ exports.getLoansStatistic = (req: Request, res: Response) => {
         });
 };
 
-exports.loanBook = async (req: Request, res: Response) => {
-    const studentTReader = req.body.studentTicketReader;
-    const librarianEmail = req.body.librarianEmail;
-    const bookId = req.body.bookId;
-    const loanTime = req.body.time;
+export const loanBook = async (req: Request, res: Response) => {
+    const { userCredentials, librarianId, bookId } = req.body;
 
-    if (!req.body) {
+    if (!userCredentials || !librarianId || !bookId) {
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 
     try {
-        const student = await Student.findOne({
-            where: {
-                reader_ticket: studentTReader
-            }
-        });
+        const student = { librarian: { $ne: true }, admin: { $ne: true } };
+        const user = await User.findOne({ ...student, $or: [ { phone: userCredentials }, { email: userCredentials } ] });
 
-        if (!student) {
-            return responseErrorHandle(res, 400, errorMessages.USER_EMAIL_EXISTS);
+        if (!user) {
+            return responseErrorHandle(res, 400, errorMessages.CANNOT_FIND_USER);
         }
 
-        const librarian = await Librarian.findOne({
-            where: { email: librarianEmail },
-            include: { model: Department }
-        });
-        const book = await Book.findOne({ where: { id: bookId } });
+        const book = await Book.findOne({ _id: bookId, quantity: { $gt: 0 } }) as BookSchema;
 
-        if (book.get().quantity <= 0) {
-            return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
-        } else {
-            const bookLoan = new SequelizeLoan({
-                loan_time: loanTime,
-                studentId: student.get().id,
-                bookId,
-                librarianId: librarian.get().id,
-                departmentId: librarian.get().department_.get().id
-            });
-            await bookLoan.save();
-            await book.update({ quantity: book.get().quantity - 1 });
-
-            const data = { isSuccessful: true, message: successMessages.SUCCESSFULLY_LOANED };
-            responseSuccessHandle(res, 200, data);
+        if (!book) {
+            return responseErrorHandle(res, 500, errorMessages.BOOK_IS_NOT_AVAILABLE_NOW);
         }
-    } catch (error) {
-        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+
+        await Loan.create({ book: bookId, user: user._id, librarian: librarianId, loanedAt: new Date() });
+        await Book.findByIdAndUpdate(bookId, { quantity: book.quantity - 1 });
+        responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_LOANED });
+    } catch (err) {
+        logger.error(`Error loaning book: ${err.message}`);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

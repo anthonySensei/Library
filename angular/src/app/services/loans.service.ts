@@ -34,52 +34,6 @@ export class LoansService {
         return this.statistic;
     }
 
-    fetchLoansHttp(
-        filterName: string = '',
-        filterValue: string = '',
-        sortOrder = 'desc',
-        pageNumber = 0,
-        pageSize = 5,
-        departmentId: number = null,
-        loanDate: Date = null,
-        isShowDebtors = false,
-        librarianId: number = null,
-        studentId: number = null
-    ): Observable<Loan[]> {
-        let nextDay: Date;
-        if (loanDate) {
-            nextDay = new Date();
-            nextDay.setDate(loanDate.getDate() + 1);
-        }
-        return this.http
-            .get(this.LOANS_URL, {
-                params: new HttpParams()
-                    .set('filterName', filterName ? filterName : '')
-                    .set('filterValue', filterValue)
-                    .set('sortOrder', sortOrder)
-                    .set('pageNumber', (pageNumber + 1).toString())
-                    .set('pageSize', pageSize.toString())
-                    .set(
-                        'departmentId',
-                        departmentId ? departmentId.toString() : ''
-                    )
-                    .set('loanDate', loanDate ? loanDate.toDateString() : '')
-                    .set('nextDay', nextDay ? nextDay.toDateString() : '')
-                    .set('isShowDebtors', isShowDebtors.toString())
-                    .set(
-                        'librarianId',
-                        librarianId ? librarianId.toString() : ''
-                    )
-                    .set('studentId', studentId ? studentId.toString() : '')
-            })
-            .pipe(
-                map((response: Response) => {
-                    this.helperService.setItemsPerPage(response.data.quantity);
-                    return response.data.loans;
-                })
-            );
-    }
-
     fetchLoansStatisticHttp(model: string, value: string) {
         return this.http
             .get(this.LOANS_STATISTIC_URL, {
@@ -90,14 +44,5 @@ export class LoansService {
                     this.setStatistic(response.data.statistic);
                 })
             );
-    }
-
-    returnBookHttp(loanId: number, bookId: number, returnedTime: Date) {
-        const updatedData = {
-            loanId,
-            bookId,
-            returnedTime
-        };
-        return this.http.put(this.LOANS_URL, updatedData).pipe(map((response: Response) => response.data));
     }
 }

@@ -1,0 +1,18 @@
+<form class="modal-form">
+    <h4>Loan book</h4>
+    <mat-divider></mat-divider>
+    <mat-form-field class="modal-input">
+        <mat-label>Email/Phone</mat-label>
+        <input matInput type="text" name="credentials" placeholder="Email/Phone" [(ngModel)]="credentials" />
+    </mat-form-field>
+    <div class="btn-group">
+        <button mat-raised-button class="form-btn" color="primary" type="submit"
+                [disabled]="!credentials" (click)="onLoanBook()"
+        >
+            Loan
+        </button>
+        <button mat-stroked-button class="form-btn" color="primary" type="button" (click)="onClose()">
+            Cancel
+        </button>
+    </div>
+</form>

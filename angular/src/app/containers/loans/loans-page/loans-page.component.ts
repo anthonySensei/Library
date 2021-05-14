@@ -16,7 +16,7 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 import { TABLE_ANIMATION } from '../../../constants/animation';
 import { Store } from '@ngxs/store';
 import { SortOrder } from '../../../constants/sortOrder';
-import { BookState } from '../../../store/state/book.state';
+import { BookState, ReturnBook } from '../../../store/state/book.state';
 
 @Component({
     selector: 'app-loan-page',
@@ -28,9 +28,10 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     filterValue: string;
     departmentSelect: number;
     showOnlyDebtors: boolean;
-    columnsToDisplay: string[] = ['user', 'librarian', 'book', 'createdAt', 'returnedAt'];
+    showOnlyReturned: boolean;
+    columnsToDisplay: string[] = ['user', 'librarian', 'book', 'loanedAt', 'returnedAt'];
     expandedElement: Loan | null;
-    date: Date;
+    loanedAt: Date;
 
     tableColumns = TableColumns;
     dataSource: LoansDataSource;
@@ -59,21 +60,22 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(
             this.sort.sortChange,
             this.paginator.page
-        ).pipe(untilDestroyed(this)).pipe(tap(() => this.onLoadLoansPage())).subscribe();
+        ).pipe(untilDestroyed(this)).pipe(tap(() => this.onLoadLoans())).subscribe();
     }
 
     getTotalItems(): number {
         return this.store.selectSnapshot(BookState.LoansTotalItems);
     }
 
-    returnBook(loanId: any, bookId: any): void {
-        // this.loansService.returnBookHttp(loanId, bookId, new Date()).pipe(untilDestroyed(this)).subscribe(() => {});
+    returnBook(loanId: string): void {
+        this.store.dispatch(new ReturnBook(loanId)).subscribe(() => this.onLoadLoans());
     }
 
-    onLoadLoansPage(): void {
+    onLoadLoans(): void {
         this.dataSource.loadLoans({
             sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize, showOnlyDebtors: this.showOnlyDebtors
+            pageSize: this.paginator.pageSize, showOnlyDebtors: this.showOnlyDebtors, showOnlyReturned: this.showOnlyReturned,
+            loanedAt: this.loanedAt
         });
     }
 

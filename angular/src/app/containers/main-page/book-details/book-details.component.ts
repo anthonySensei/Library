@@ -9,10 +9,9 @@ import { Book } from '../../../models/book.model';
 import { User } from '../../../models/user.model';
 
 import { BookService } from '../../../services/book.service';
-import { AuthService } from '../../../services/auth.service';
 import { OrderService } from '../../../services/orders.service';
 
-import { LoanBookModalComponent } from './loan-book-modal/loan-book-modal.component';
+import { LoanBookPopupComponent } from './loan-book-modal/loan-book-popup.component';
 import { AngularLinks } from '../../../constants/angularLinks';
 import { PageTitles } from '../../../constants/pageTitles';
 import { ModalWidth } from '../../../constants/modalWidth';
@@ -52,7 +51,6 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         private router: Router,
         private store: Store,
         private bookService: BookService,
-        private authService: AuthService,
         private orderService: OrderService,
         private localizationService: LocalizationService,
         public dialog: MatDialog
@@ -61,9 +59,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         document.title = PageTitles.BOOK_DETAILS;
         this.isLoading = true;
-        this.route.params
-            .pipe(untilDestroyed(this))
-            .subscribe((params: Params) => this.loadBook(params.id));
+        this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => this.loadBook(params.id));
         this.store.dispatch([new LoadAuthors(), new LoadGenres()]);
         this.getUser$();
     }
@@ -90,24 +86,9 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
 
     onOpenLoanBookModal(): void {
-        const dialogRef = this.dialog.open(LoanBookModalComponent, {
+        this.dialog.open(LoanBookPopupComponent, {
             width: ModalWidth.W30P,
-            data: {
-                readerTicket: this.readerTicket
-            }
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (!result) {
-                return;
-            }
-            const loanData = {
-                studentTicketReader: result.readerTicket,
-                librarianEmail: this.user.email,
-                bookId: this.bookId,
-                time: new Date()
-            };
-            this.bookService.loanBookHttp(loanData).pipe(untilDestroyed(this)).subscribe(() => {});
+            data: { readerTicket: this.readerTicket }
         });
     }
 

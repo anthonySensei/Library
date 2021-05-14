@@ -5,11 +5,7 @@
         </button>
         <mat-form-field>
             <mat-label>Search</mat-label>
-            <input
-                    matInput
-                    [(ngModel)]="filterValue"
-                    (ngModelChange)="loadStudentsPage()"
-            />
+            <input matInput [(ngModel)]="filterValue" (ngModelChange)="loadStudentsPage()" />
         </mat-form-field>
     </section>
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">

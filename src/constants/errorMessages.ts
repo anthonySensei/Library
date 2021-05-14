@@ -4,9 +4,11 @@ export default {
     SOMETHING_WENT_WRONG: 'Something went wrong',
     WRONG_PASSWORD_OR_EMAIL: 'Wrong password or email',
     EMPTY_FIELDS: 'Please fill in form',
+    BOOK_IS_NOT_AVAILABLE_NOW: 'Book is not available now',
     EMAIL_ADDRESS_ALREADY_IN_USE: 'Email address already in use',
     CANNOT_FETCH: 'Cannot fetch',
     USER_EMAIL_EXISTS: 'User with this has email already exists',
+    CANNOT_FIND_USER: 'Cannot find user',
     USER_PHONE_EXISTS: 'User with this has phone number already exists',
     PASSWORD_ERROR_CHANGED: 'Password was not changed',
     OLD_PASSWORD_EQUEL_NEW_PASSWORD:
