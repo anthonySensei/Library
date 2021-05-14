@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../services/auth.service';
 import { BookService } from '../../../services/book.service';
-import { HelperService } from '../../../services/helper.service';
 import { PageTitles } from '../../../constants/pageTitles';
 
 import { Book } from '../../../models/book.model';
@@ -59,7 +58,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private bookService: BookService,
-        private helperService: HelperService,
         private router: Router,
         private route: ActivatedRoute,
         private store: Store,
@@ -95,9 +93,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
         return total > 64 ? total : 8;
     }
 
-    onToggleFilterButton(): void {
+    async onToggleFilterButton() {
         this.showFilterButton = !this.showFilterButton;
-        this.drawer.toggle();
+        await this.drawer.toggle();
     }
 
     isHasAccess(): boolean {
@@ -120,8 +118,8 @@ export class MainPageComponent implements OnInit, OnDestroy {
         console.log(event);
     }
 
-    onSearch() {
-        this.onToggleFilterButton();
+    async onSearch() {
+        await this.onToggleFilterButton();
         this.loadBooks();
     }
 

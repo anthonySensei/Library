@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
-import { HelperService } from '../../services/helper.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
 import { ModalWidth } from '../../constants/modalWidth';
@@ -36,7 +35,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     constructor(
         private breakpointObserver: BreakpointObserver,
         private authService: AuthService,
-        private helperService: HelperService,
         private router: Router,
         public dialog: MatDialog,
         private store: Store

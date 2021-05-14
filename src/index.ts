@@ -18,6 +18,8 @@ import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
 import bookRoutes from './routes/book';
 
+import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL, STUDENTS_URL, USERS_URL } from './constants/links';
+
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
@@ -39,14 +41,7 @@ const Order = require('./schemas/order');
 const Schedule = require('./schemas/schedule');
 const Period = require('./schemas/period');
 
-const authorsUrl = require('./constants/links').AUTHORS_URL;
-const booksUrl = require('./constants/links').BOOKS_URL;
-const librariansUrl = require('./constants/links').LIBRARIANS_URL;
-const genresUrl = require('./constants/links').GENRES_URL;
 const ordersUrl = require('./constants/links').ORDERS_URL;
-const loansUrl = require('./constants/links').LOANS_URL;
-const studentsUrl = require('./constants/links').STUDENTS_URL;
-const usersUrl = require('./constants/links').USERS_URL;
 const periodsUrl = require('./constants/links').PERIODS_URL;
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
@@ -66,14 +61,14 @@ app.use('images', express.static(path.join(__dirname, 'images')));
 app.use(cors);
 
 app.use(authRoutes);
-app.use(authorsUrl, authorRoutes);
-app.use(booksUrl, bookRoutes);
-app.use(genresUrl, genreRoutes);
-app.use(librariansUrl, librarianRoutes);
-app.use(loansUrl, loanRoutes);
+app.use(AUTHORS_URL, authorRoutes);
+app.use(BOOKS_URL, bookRoutes);
+app.use(GENRES_URL, genreRoutes);
+app.use(LIBRARIANS_URL, librarianRoutes);
+app.use(LOANS_URL, loanRoutes);
 app.use(ordersUrl, orderRoutes);
-app.use(studentsUrl, studentRoutes);
-app.use(usersUrl, userRoutes);
+app.use(STUDENTS_URL, studentRoutes);
+app.use(USERS_URL, userRoutes);
 app.use(periodsUrl, periodRoutes);
 app.use(schedulesUrl, scheduleRoutes);
 app.use(schedulesUrl, scheduleRoutes);

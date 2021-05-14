@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import Book from '../schemas/book';
 import { BookSchema } from '../models/book';
 
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import { convertToBase64, getImagePath } from '../helper/image';
 import { removedEmptyFields } from '../helper/object';
 

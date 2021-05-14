@@ -8,7 +8,7 @@ import { UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';

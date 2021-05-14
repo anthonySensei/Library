@@ -6,7 +6,7 @@ import { UserModel, UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
 import { convertToBase64 } from '../helper/image';
 
 import errorMessages from '../constants/errorMessages';

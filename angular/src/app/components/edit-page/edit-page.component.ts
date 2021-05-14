@@ -8,13 +8,9 @@ import { Period } from '../../models/period.model';
 import { MaterialService } from '../../services/material.service';
 
 import { PeriodService } from '../../services/period.service';
-import { HelperService } from '../../services/helper.service';
 import { AuthService } from '../../services/auth.service';
 import { LibrarianService } from '../../services/librarian.service';
-
-import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { PageTitles } from '../../constants/pageTitles';
-import { WarnMessages } from '../../constants/warnMessages';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
 import { UserState } from '../../store/state/user.state';
@@ -33,7 +29,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     departmentSelect: number;
 
-    nothingToChange = WarnMessages.NOTHING_TO_CHANGE;
     isManager: boolean;
 
     @Select(UserState.User)
@@ -43,7 +38,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private materialService: MaterialService,
         private periodService: PeriodService,
-        public helperService: HelperService,
         public librarianService: LibrarianService,
         private store: Store
     ) {}
@@ -63,10 +57,6 @@ export class EditPageComponent implements OnInit, OnDestroy {
         this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
             this.periods = periods;
         });
-    }
-
-    nothingChangeHandle(): void {
-        this.materialService.openSnackbar(this.nothingToChange, SnackBarClasses.Warn);
     }
 
     onLoadAuthors() {

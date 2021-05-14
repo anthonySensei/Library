@@ -9,11 +9,11 @@ import User from '../schemas/user';
 import { LoanSchema } from '../models/loan';
 import { BookSchema } from '../models/book';
 
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
+import { removedEmptyFields } from '../helper/object';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import { removedEmptyFields } from '../helper/object';
 
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
@@ -23,13 +23,13 @@ const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 const SequelizeBook = require('../schemas/sbook');
 const Department = require('../schemas/sdepartment');
-const models = require('../constants/models');
 
 export const getLoans = async (req: Request, res: Response) => {
-    const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
+    // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
+    const { sortName, sortOrder, page, pageSize, loanedAt } = req.query;
     const showOnlyDebtors = !!req.query.showOnlyDebtors;
     const showOnlyReturned = !!req.query.showOnlyReturned;
-    const regex = new RegExp(filterValue as string, 'i');
+    // const regex = new RegExp(filterValue as string, 'i');
 
     const sort: any = {};
     sort[sortName as string] = sortOrder;
@@ -69,27 +69,6 @@ export const getLoans = async (req: Request, res: Response) => {
     }
 };
 
-exports.getLoanStatistic = (loans: any) => {
-    let last30;
-
-    if (loans) { last30 = [...loans].splice(0, 30); } else { last30 = []; }
-
-    const loansStatisticArr = [];
-    for (const loan of last30) {
-        loan.loanTime.setHours(0, 0, 0, 0);
-        const loanObj = { books: 1, loanTime: loan.loanTime.toLocaleDateString() };
-
-        if (loansStatisticArr.length > 0) {
-            let index;
-            index = loansStatisticArr.findIndex(statistic => statistic.loanTime === loanObj.loanTime);
-            index !== -1 ? loansStatisticArr[index].books += 1 : loansStatisticArr.push(loanObj);
-        } else {
-            loansStatisticArr.push(loanObj);
-        }
-    }
-    return loansStatisticArr;
-};
-
 export const returnBook = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -115,37 +94,16 @@ export const returnBook = async (req: Request, res: Response) => {
 };
 
 exports.getLoansStatistic = (req: Request, res: Response) => {
-    const model = req.query.model;
-    const value = req.query.value;
-    let userCondition = {};
-    let bookCondition = {};
-    let librarianCondition = {};
-    let departmentCondition = {};
-    if (model === models.USER) {
-        userCondition = { reader_ticket: value };
-    } else if (model === models.BOOK) {
-        bookCondition = { isbn: value };
-    } else if (model === models.LIBRARIAN) {
-        librarianCondition = { email: value };
-    } else if (model === models.DEPARTMENT) {
-        departmentCondition = { id: value };
-    } else {
-        const data = { statistic: [] };
-        return responseSuccessHandle(res, 200, data);
-    }
-
     SequelizeLoan.findAll({
         include: [
             {
                 model: Student,
-                where: userCondition
             },
             {
                 model: Librarian,
-                where: librarianCondition
             },
-            { model: SequelizeBook, where: bookCondition },
-            { model: Department, where: departmentCondition }
+            { model: SequelizeBook },
+            { model: Department }
         ],
         where: { loan_time: { [Op.gte]: new Date().setDate(new Date().getDate() - 30) } },
         order: [['loan_time', 'ASC']]
@@ -190,7 +148,7 @@ exports.getLoansStatistic = (req: Request, res: Response) => {
             const data = { statistic: loansStatisticArr, message: successMessages.SUCCESSFULLY_FETCHED };
             return responseSuccessHandle(res, 200, data);
         })
-        .catch((err: any) => {
+        .catch((_: any) => {
             return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
         });
 };

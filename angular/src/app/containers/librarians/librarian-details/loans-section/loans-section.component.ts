@@ -12,9 +12,6 @@ import { MatSort } from '@angular/material/sort';
 import { merge, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { HelperService } from '../../../../services/helper.service';
-import { LoansService } from '../../../../services/loans.service';
-
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { Department } from '../../../../models/department.model';
@@ -29,13 +26,7 @@ import { Store } from '@ngxs/store';
 })
 export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() librarianId: number;
-    @Input() helperService: HelperService;
     departments: Department[];
-
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
-    departmentsSubscription: Subscription;
-    departmentsFetchSubscription: Subscription;
 
     columnsToDisplay: string[] = [
         TableColumns.LOAN_TIME,
@@ -67,11 +58,11 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
+        this.sort.sortChange.subscribe(
             () => (this.paginator.pageIndex = 0)
         );
 
-        this.mergeSubscription = merge(
+        merge(
             this.sort.sortChange,
             this.paginator.page
         )
@@ -86,6 +77,5 @@ export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-    }
+    ngOnDestroy(): void {}
 }

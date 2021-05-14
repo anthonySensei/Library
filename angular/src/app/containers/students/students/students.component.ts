@@ -16,7 +16,6 @@ import { SortOrder } from '../../../constants/sortOrder';
 import { TABLE_ANIMATION } from '../../../constants/animation';
 
 import { StudentService } from '../../../services/student.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { UserPopupData } from '@shared/user-popup/user-popup.data';
 import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
@@ -44,7 +43,6 @@ export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private studentService: StudentService,
-        public helperService: HelperService,
         private store: Store,
         private dialog: MatDialog,
     ) {}

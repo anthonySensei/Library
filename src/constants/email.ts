@@ -1,4 +1,4 @@
-import { AUTH_ACTIVATION_PAGE_URL } from './links';
+import { CLIENT_AUTH_ACTIVATION_PAGE_URL } from './links';
 
 export const emailSubjects = {
     ACCOUNT_ACTIVATION: 'Account activation',
@@ -16,8 +16,8 @@ export const emailMessages = {
 export const generateUserActivationMessage = (token: string) => {
     return `Hello. Please follow the link below to activate your account.
                 <br />
-                <a href="${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}">
-                    ${process.env.ANGULAR}${AUTH_ACTIVATION_PAGE_URL}?token=${token}
+                <a href="${process.env.ANGULAR}${CLIENT_AUTH_ACTIVATION_PAGE_URL}?token=${token}">
+                    ${process.env.ANGULAR}${CLIENT_AUTH_ACTIVATION_PAGE_URL}?token=${token}
                 </a>
                 ${emailMessages.BEST_REGARDS}
             `;

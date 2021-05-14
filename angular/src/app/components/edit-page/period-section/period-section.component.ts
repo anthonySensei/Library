@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { PeriodService } from '../../../services/period.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { Period } from '../../../models/period.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
@@ -14,7 +13,6 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 export class PeriodSectionComponent implements OnDestroy {
     @Output() nothingToChange = new EventEmitter();
 
-    @Input() helperService: HelperService;
     @Input() periods: Period[];
 
     periodSelect: number;

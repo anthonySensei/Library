@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { ScheduleService } from '../../../services/schedule.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { Schedule } from '../../../models/schedule.model';
 import { Period } from '../../../models/period.model';
@@ -17,7 +16,6 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 export class ScheduleSectionComponent implements OnInit, OnDestroy {
     @Output() nothingToChange = new EventEmitter();
 
-    @Input() helperService: HelperService;
     @Input() periods: Period[];
 
     schedules: Schedule[];

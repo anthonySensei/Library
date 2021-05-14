@@ -5,7 +5,7 @@ import User from '../schemas/user';
 import { UserModel, UserSchema } from '../models/user';
 
 import { convertToBase64 } from '../helper/image';
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';

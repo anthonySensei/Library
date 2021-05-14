@@ -6,8 +6,6 @@ import { map } from 'rxjs/operators';
 
 import { Order } from '../models/order.model';
 
-import { HelperService } from './helper.service';
-
 import { serverLink } from '../constants/serverLink';
 import { Response } from '../models/response.model';
 
@@ -15,10 +13,7 @@ import { Response } from '../models/response.model';
 export class OrderService {
     private ORDERS_URL = `${serverLink}/orders`;
 
-    constructor(
-        private http: HttpClient,
-        private helperService: HelperService
-    ) {}
+    constructor(private http: HttpClient) {}
 
     fetchOrdersHttp(
         filterName: string = '',
@@ -30,7 +25,7 @@ export class OrderService {
         orderDate: Date = null,
         isShowNotLoaned = false,
         studentId: number = null
-    ): Observable<Order[]> {
+    ) {
         let nextDay: Date;
         if (orderDate) {
             nextDay = new Date();
@@ -56,12 +51,7 @@ export class OrderService {
                         studentId ? studentId.toString() : ''
                     )
             })
-            .pipe(
-                map((response: Response) => {
-                    this.helperService.setItemsPerPage(response.data.quantity);
-                    return response.data.orders;
-                })
-            );
+            .pipe(map((response: Response) => response.data));
     }
 
     orderBookHttp(orderInfo) {

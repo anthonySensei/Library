@@ -9,7 +9,6 @@ import { MainPageComponent } from './main-page/main-page.component';
 import { BookDetailsComponent } from './book-details/book-details.component';
 
 import { LoanBookPopupComponent } from './book-details/loan-book-modal/loan-book-popup.component';
-import { MoveBookModalComponent } from './book-details/move-book-modal/move-book-modal.component';
 import { BooksListComponent } from './main-page/books-list/books-list.component';
 
 @NgModule({
@@ -17,13 +16,9 @@ import { BooksListComponent } from './main-page/books-list/books-list.component'
         MainPageComponent,
         BookDetailsComponent,
         LoanBookPopupComponent,
-        MoveBookModalComponent,
         BooksListComponent,
     ],
     imports: [RouterModule, MainPageRoutingModule, SharedModule, FormsModule],
-    entryComponents: [
-        LoanBookPopupComponent,
-        MoveBookModalComponent,
-    ]
+    entryComponents: [LoanBookPopupComponent]
 })
 export class MainPageModule {}

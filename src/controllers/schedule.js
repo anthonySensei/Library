@@ -6,7 +6,7 @@ const Period = require('../schemas/period');
 const Librarian = require('../schemas/librarian');
 const Department = require('../schemas/sdepartment');
 
-const helper = require('../helper/responseHandle');
+const helper = require('../helper/response');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');

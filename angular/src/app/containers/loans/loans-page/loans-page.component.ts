@@ -4,7 +4,6 @@ import { MatSort } from '@angular/material/sort';
 
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { HelperService } from '../../../services/helper.service';
 
 import { Loan } from '../../../models/loan.model';
 
@@ -38,10 +37,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(
-        public store: Store,
-        public helperService: HelperService
-    ) {}
+    constructor(public store: Store) {}
 
     ngOnInit(): void {
         document.title = PageTitles.LOANS;

@@ -2,15 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { Statistic } from '../../models/statistic.model';
 
-import { HelperService } from '../../services/helper.service';
-
 @Component({
     selector: 'app-chart-section',
     templateUrl: './chart-section.component.html'
 })
 export class ChartSectionComponent implements OnInit {
     @Input() statistic: Statistic[];
-    @Input() helperService: HelperService;
     @Input() name: string;
 
     showLabels = true;
@@ -56,7 +53,6 @@ export class ChartSectionComponent implements OnInit {
             ];
         } else {
             this.xAxisLabel = '';
-            this.multi = this.helperService.emptyChartHandle(this.name);
         }
     }
 

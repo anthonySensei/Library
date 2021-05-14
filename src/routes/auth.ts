@@ -2,10 +2,10 @@ import express from 'express';
 
 import { createUser, login, logout, checkActivationToken } from '../controllers/auth';
 
-import { authUrls } from '../constants/links';
+import { AUTH_URLS } from '../constants/links';
 
 const router = express.Router();
-const { CHECK_ACTIVATION_TOKEN_URL, REGISTRATION_URL, LOGIN_URL, LOGOUT_URL } = authUrls;
+const { CHECK_ACTIVATION_TOKEN_URL, REGISTRATION_URL, LOGIN_URL, LOGOUT_URL } = AUTH_URLS;
 
 router.post(REGISTRATION_URL, createUser);
 router.post(CHECK_ACTIVATION_TOKEN_URL, checkActivationToken);

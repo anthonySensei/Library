@@ -9,7 +9,7 @@ import { UserSchema } from '../models/user';
 import successMessages from '../constants/successMessages';
 import errorMessages from '../constants/errorMessages';
 
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import { generatePassword } from '../helper/password';
 import { getImagePath, convertToBase64 } from '../helper/image';
 import { sendMail } from '../helper/email';

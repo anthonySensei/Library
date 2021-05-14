@@ -7,7 +7,6 @@ import { AbstractControl } from '@angular/forms';
 export class ValidationService {
     private emailValidation = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
     private passwordValidation = /(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
-    private readerTicketValidation = /^([1-9][0-9]{9})$/;
     private isbnValidation = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
     private phoneValidation = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
 
@@ -23,10 +22,6 @@ export class ValidationService {
 
     getPasswordValidation() {
         return this.passwordValidation;
-    }
-
-    getReaderTicketValidation() {
-        return this.readerTicketValidation;
     }
 
     getIsbnValidation() {

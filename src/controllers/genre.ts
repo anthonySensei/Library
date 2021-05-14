@@ -6,7 +6,7 @@ import { GenreSchema } from '../models/genre';
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import logger from '../config/logger';
 
 export const getGenres = async (req: Request, res: Response) => {

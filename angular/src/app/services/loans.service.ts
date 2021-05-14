@@ -9,7 +9,6 @@ import { Statistic } from '../models/statistic.model';
 
 import { serverLink } from '../constants/serverLink';
 
-import { HelperService } from './helper.service';
 import { Response } from '../models/response.model';
 
 @Injectable({ providedIn: 'root' })
@@ -17,14 +16,9 @@ export class LoansService {
     private LOANS_URL = `${serverLink}/loans`;
     private LOANS_STATISTIC_URL = `${this.LOANS_URL}/statistic`;
 
-    private loans = new Subject<Loan[]>();
-
     private statistic = new Subject<Statistic[]>();
 
-    constructor(
-        private http: HttpClient,
-        private helperService: HelperService
-    ) {}
+    constructor(private http: HttpClient) {}
 
     setStatistic(statistic: Statistic[]): void {
         this.statistic.next(statistic);

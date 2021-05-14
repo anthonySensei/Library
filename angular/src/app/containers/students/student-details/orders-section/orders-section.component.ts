@@ -1,15 +1,8 @@
-import {
-    AfterViewInit,
-    Component,
-    Input,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Department } from '../../../../models/department.model';
@@ -17,7 +10,6 @@ import { Department } from '../../../../models/department.model';
 import { OrdersDataSource } from '../../../../datasources/orders.datasource';
 
 import { OrderService } from '../../../../services/orders.service';
-import { HelperService } from '../../../../services/helper.service';
 
 import { TableColumns } from '../../../../constants/tableColumns';
 import { SortOrder } from '../../../../constants/sortOrder';
@@ -30,10 +22,6 @@ export class OrdersSectionComponent
     implements OnInit, AfterViewInit, OnDestroy {
     @Input() studentId: number;
     @Input() departments: Department[];
-    @Input() helperService: HelperService;
-
-    mergeSubscription: Subscription;
-    sortSubscription: Subscription;
 
     departmentSelect: number;
 
@@ -69,11 +57,11 @@ export class OrdersSectionComponent
     }
 
     ngAfterViewInit(): void {
-        this.sortSubscription = this.sort.sortChange.subscribe(
+        this.sort.sortChange.subscribe(
             () => (this.paginator.pageIndex = 0)
         );
 
-        this.mergeSubscription = merge(
+        merge(
             this.sort.sortChange,
             this.paginator.page
         )
@@ -95,8 +83,5 @@ export class OrdersSectionComponent
         );
     }
 
-    ngOnDestroy(): void {
-        this.mergeSubscription.add(this.sortSubscription);
-        this.mergeSubscription.unsubscribe();
-    }
+    ngOnDestroy(): void {}
 }

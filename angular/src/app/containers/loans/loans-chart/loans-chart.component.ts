@@ -3,13 +3,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { LoansService } from '../../../services/loans.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { Statistic } from '../../../models/statistic.model';
 
 import { WarnMessages } from '../../../constants/warnMessages';
 import { PageTitles } from '../../../constants/pageTitles';
-import { DbModels } from '../../../constants/dbModels';
 import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
@@ -57,13 +55,11 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     constructor(
         private loansService: LoansService,
-        private helperService: HelperService,
         private materialService: MaterialService,
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STATISTIC;
-        this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
         this.getUser$();
     }
 
@@ -96,7 +92,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
                 }
             ];
         } else {
-            this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
             this.materialService.openSnackbar(
                 WarnMessages.EMPTY_STATISTIC,
                 SnackBarClasses.Warn
@@ -106,12 +101,6 @@ export class LoansChartComponent implements OnInit, OnDestroy {
 
     getInputName(): string {
         switch (this.model) {
-            case DbModels.LIBRARIAN:
-                return FiltersName.EMAIL;
-            case DbModels.BOOK:
-                return FiltersName.ISBN;
-            case DbModels.DEPARTMENT:
-                return FiltersName.ADDRESS;
             default:
                 return FiltersName.NOTHING;
         }
