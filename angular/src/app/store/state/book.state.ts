@@ -10,7 +10,7 @@ import { GetBooksModel } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
 import { Response } from '../../models/response.model';
 import { Loan } from '../../models/loan.model';
-import { GetLoans } from '../../models/request/loan';
+import { GetLoans, SummaryStatistic } from '../../models/request/loan';
 import { UserState } from './user.state';
 
 
@@ -87,6 +87,16 @@ export class SetLoans {
     constructor(public loans: Loan[], public quantity?: number) {}
 }
 
+export class LoadSummaryStatistic {
+    static readonly type = '[Book] LoadSummaryStatistic';
+}
+
+export class SetSummaryStatistic {
+    static readonly type = '[Book] SetSummaryStatistic';
+
+    constructor(public summaryStatistic: SummaryStatistic) {}
+}
+
 /*******************************
  *** AuthorState            ***
  ********************************/
@@ -131,6 +141,11 @@ export class BookState {
     @Selector()
     static Pagination(state: BookStateModel): Pagination {
         return state.pagination;
+    }
+
+    @Selector()
+    static SummaryStatistic(state: BookStateModel): SummaryStatistic {
+        return state.summaryStatistic;
     }
 
     /****************
@@ -219,5 +234,17 @@ export class BookState {
     @Action(SetLoans)
     setLoans(ctx: StateContext<BookStateModel>, action: SetLoans) {
         return ctx.patchState({ loans: action.loans, loansTotalItems: action.quantity });
+    }
+
+    @Action(LoadSummaryStatistic)
+    loadSummaryStatistic(ctx: StateContext<BookStateModel>) {
+        return this.bookService
+            .getSummaryStatistic()
+            .pipe(tap(response => ctx.dispatch(new SetSummaryStatistic(response.summaryStatistic))));
+    }
+
+    @Action(SetSummaryStatistic)
+    setSummaryStatistic(ctx: StateContext<BookStateModel>, action: SetSummaryStatistic) {
+        return ctx.patchState({ summaryStatistic: action.summaryStatistic });
     }
 }

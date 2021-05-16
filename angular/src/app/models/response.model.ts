@@ -8,6 +8,7 @@ import { User } from './user.model';
 import { Period } from './period.model';
 import { Order } from './order.model';
 import { Pagination } from './pagination.model';
+import { SummaryStatistic } from './request/loan';
 
 export interface Data {
     message: string;
@@ -22,6 +23,7 @@ export interface Data {
     librarians?: User[];
     students?: User[];
     pagination: Pagination;
+    summaryStatistic: SummaryStatistic;
     orders?: Order[];
     schedules?: Schedule[];
     statistic?: Statistic[];

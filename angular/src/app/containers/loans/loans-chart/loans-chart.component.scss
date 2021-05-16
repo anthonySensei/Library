@@ -1,0 +1,23 @@
+$header: 64px;
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - #{$header});
+
+  .card {
+    width: 700px;
+    height: 400px;
+
+    @media screen and (max-width: 1080px) {
+      display: none;
+    }
+
+    .chart {
+      margin: 20px auto;
+    }
+  }
+}
+
+

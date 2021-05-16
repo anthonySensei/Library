@@ -10,6 +10,7 @@ import { LoansPageComponent } from './loans-page/loans-page.component';
 import { LoansChartComponent } from './loans-chart/loans-chart.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { NumberCardModule, PieChartModule } from '@swimlane/ngx-charts';
 
 @NgModule({
     declarations: [LoansPageComponent, LoansChartComponent],
@@ -19,7 +20,9 @@ import { MatSortModule } from '@angular/material/sort';
         SharedModule,
         FormsModule,
         MatPaginatorModule,
-        MatSortModule
+        MatSortModule,
+        PieChartModule,
+        NumberCardModule
     ],
     entryComponents: []
 })

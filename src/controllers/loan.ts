@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import moment from 'moment';
 
 import logger from '../config/logger';
 
@@ -34,8 +35,7 @@ export const getLoans = async (req: Request, res: Response) => {
     const sort: any = {};
     sort[sortName as string] = sortOrder;
     const filterDate = new Date(String(loanedAt));
-    const oneDay = 24 * 60 * 60 * 1000;
-    const tomorrow = new Date(filterDate.getTime() + oneDay);
+    const tomorrow = moment(filterDate.getTime()).add(1, 'days').toDate();
     const filterCondition = {
         loanedAt: loanedAt && { $gte: filterDate, $lt: tomorrow },
         returnedAt: (showOnlyReturned && { $exists: true, $ne: null }) || (showOnlyDebtors && { $exists: false }) || null
@@ -45,8 +45,8 @@ export const getLoans = async (req: Request, res: Response) => {
 
     try {
         const quantity = await Loan.countDocuments(filter);
-        const loans = await Loan.find()
-            .find(filter, {}, { limit: Number(pageSize), skip: (Number(page) - 1) * Number(pageSize), sort })
+        const loans = await Loan
+            .find(filter, {}, { limit: Number(pageSize), skip: Number(page) * Number(pageSize), sort })
             .populate('book')
             .populate('user')
             .populate('librarian') as LoanSchema[];
@@ -179,6 +179,24 @@ export const loanBook = async (req: Request, res: Response) => {
         responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_LOANED });
     } catch (err) {
         logger.error(`Error loaning book: ${err.message}`);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+};
+
+export const getSummaryStatistic = async (req: Request, res: Response) => {
+    try {
+        const monthAgo = moment().subtract('1', 'months').toDate();
+        const totalBooks = await Book.countDocuments();
+        const loansForLastMonth = await Loan.countDocuments({  loanedAt: { $gt: monthAgo } });
+        const allDebtorsLoans = await Loan.find({  loanedAt: { $gt: monthAgo }, returnedAt: { $exists: false } }) as LoanSchema[];
+        const totalDebtors = new Set(allDebtorsLoans.map(loan => loan.user)).size;
+        const data = {
+            summaryStatistic: { totalBooks, loansForLastMonth, totalDebtors },
+            message: successMessages.SUCCESSFULLY_FETCHED
+        };
+        responseSuccessHandle(res, 200,  data);
+    } catch (err) {
+        logger.error('Error getting summary statistic', err.message);
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

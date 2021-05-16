@@ -15,6 +15,8 @@ import { serverLink } from '../constants/serverLink';
 export class BookService {
     private BOOKS_URL = `${serverLink}/books`;
     private LOANS_URL = `${serverLink}/loans`;
+    private STATISTIC_URL = `${this.LOANS_URL}/statistic`;
+    private SUMMARY_STATISTIC_URL = `${this.STATISTIC_URL}/summary`;
 
     constructor(private http: HttpClient) {}
 
@@ -80,5 +82,9 @@ export class BookService {
 
     returnBook(loanId: string) {
         return this.http.patch(`${this.LOANS_URL}/${loanId}`, {}).pipe(map((response: Response) => response.data));
+    }
+
+    getSummaryStatistic() {
+        return this.http.get(this.SUMMARY_STATISTIC_URL).pipe(map((response: Response) => response.data));
     }
 }

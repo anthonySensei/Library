@@ -10,3 +10,9 @@ export interface GetLoans {
     showOnlyReturned?: boolean;
     loanedAt?: Date;
 }
+
+export interface SummaryStatistic {
+    totalBooks: number;
+    loansForLastMonth: number;
+    totalDebtors: number;
+}

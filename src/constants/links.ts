@@ -4,9 +4,14 @@ export const BOOKS_URL = '/books';
 export const AUTHORS_URL = '/authors';
 export const GENRES_URL = '/genres';
 export const LIBRARIANS_URL = '/librarians';
-export const LOANS_URL = '/loans';
 export const STUDENTS_URL = '/students';
 export const USERS_URL = '/users';
+
+export const LOANS_URL = {
+    baseUrl: '/loans',
+    statisticUrl: '/statistic',
+    summaryStatisticUrl: `/statistic/summary`
+};
 
 exports.LOANS_STATISTIC_URL = '/statistic';
 

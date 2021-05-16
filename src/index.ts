@@ -65,7 +65,7 @@ app.use(AUTHORS_URL, authorRoutes);
 app.use(BOOKS_URL, bookRoutes);
 app.use(GENRES_URL, genreRoutes);
 app.use(LIBRARIANS_URL, librarianRoutes);
-app.use(LOANS_URL, loanRoutes);
+app.use(LOANS_URL.baseUrl, loanRoutes);
 app.use(ordersUrl, orderRoutes);
 app.use(STUDENTS_URL, studentRoutes);
 app.use(USERS_URL, userRoutes);
