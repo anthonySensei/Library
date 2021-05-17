@@ -10,3 +10,8 @@ export interface LoanSchema extends Document {
     loanedAt: Date;
     returnedAt: Date;
 }
+
+export interface Statistic {
+    name: string;
+    value: number;
+}

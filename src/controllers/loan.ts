@@ -7,23 +7,16 @@ import Book from '../schemas/book';
 import Loan from '../schemas/loan';
 import User from '../schemas/user';
 
-import { LoanSchema } from '../models/loan';
+import { LoanSchema, Statistic } from '../models/loan';
 import { BookSchema } from '../models/book';
+import { UserSchema } from '../models/user';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import { removedEmptyFields } from '../helper/object';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-
-const { Sequelize } = require('sequelize');
-const Op = Sequelize.Op;
-
-const SequelizeLoan = require('../schemas/sloan');
-const Student = require('../schemas/student');
-const Librarian = require('../schemas/librarian');
-const SequelizeBook = require('../schemas/sbook');
-const Department = require('../schemas/sdepartment');
+import { getStatistic } from '../helper/statistic';
 
 export const getLoans = async (req: Request, res: Response) => {
     // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
@@ -93,66 +86,6 @@ export const returnBook = async (req: Request, res: Response) => {
     }
 };
 
-exports.getLoansStatistic = (req: Request, res: Response) => {
-    SequelizeLoan.findAll({
-        include: [
-            {
-                model: Student,
-            },
-            {
-                model: Librarian,
-            },
-            { model: SequelizeBook },
-            { model: Department }
-        ],
-        where: { loan_time: { [Op.gte]: new Date().setDate(new Date().getDate() - 30) } },
-        order: [['loan_time', 'ASC']]
-    })
-        .then((loans: any) => {
-            const loansStatisticArr = [];
-
-            for (const loan of loans) {
-                const loanValues = loan.get();
-                const studentData = loanValues.student_.get();
-                const bookData = loanValues.book_.get();
-                loanValues.loan_time.setHours(0, 0, 0, 0);
-                const loanObj = {
-                    books: 1,
-                    loanTime: loanValues.loan_time.toLocaleDateString(),
-                    returnedTime: loanValues.returned_time
-                        ? loanValues.returned_time.toLocaleDateString()
-                        : '',
-                    student: {
-                        name: studentData.name,
-                        readerTicket: studentData.reader_ticket
-                    },
-                    book: {
-                        name: bookData.name
-                    },
-                    librarian: {
-                        name: loanValues.librarian_.get().name
-                    },
-                    department: {
-                        address: loanValues.department_.get().address
-                    }
-                };
-
-                if (loansStatisticArr.length > 0) {
-                    let index;
-                    index = loansStatisticArr.findIndex(statistic => statistic.loanTime === loanObj.loanTime);
-                    index !== -1 ? loansStatisticArr[index].books += 1 : loansStatisticArr.push(loanObj);
-                } else {
-                    loansStatisticArr.push(loanObj);
-                }
-            }
-            const data = { statistic: loansStatisticArr, message: successMessages.SUCCESSFULLY_FETCHED };
-            return responseSuccessHandle(res, 200, data);
-        })
-        .catch((_: any) => {
-            return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
-        });
-};
-
 export const loanBook = async (req: Request, res: Response) => {
     const { userCredentials, librarianId, bookId } = req.body;
 
@@ -179,6 +112,54 @@ export const loanBook = async (req: Request, res: Response) => {
         responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_LOANED });
     } catch (err) {
         logger.error(`Error loaning book: ${err.message}`);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+};
+
+// TODO Optimize code
+export const getUserStatistic = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.query;
+        const monthAgo = moment().subtract('1', 'months').toDate();
+        const user = await User.findOne({ email }) as UserSchema;
+        const loans = await Loan.find({  loanedAt: { $gt: monthAgo }, user: user._id }) as LoanSchema[];
+        const statistic: Statistic[] = getStatistic(loans);
+        responseSuccessHandle(res, 200,  { message: successMessages.SUCCESSFULLY_FETCHED, statistic });
+    } catch (err) {
+        logger.error('Error getting summary statistic', err.message);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+};
+
+export const getLibrarianStatistic = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.query;
+        const monthAgo = moment().subtract('1', 'months').toDate();
+        const librarian = await User.findOne({ email }) as UserSchema;
+        const loans = await Loan.find({  loanedAt: { $gt: monthAgo }, librarian: librarian._id }) as LoanSchema[];
+        const statistic: Statistic[] = getStatistic(loans);
+        responseSuccessHandle(res, 200,  { message: successMessages.SUCCESSFULLY_FETCHED, statistic });
+    } catch (err) {
+        logger.error('Error getting summary statistic', err.message);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+};
+
+export const getBookStatistic = async (req: Request, res: Response) => {
+    try {
+        const { isbn } = req.query;
+        const monthAgo = moment().subtract('1', 'months').toDate();
+        const book = await Book.findOne({ isbn }) as BookSchema;
+
+        if (!book) {
+            return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+        }
+
+        const loans = await Loan.find({  loanedAt: { $gt: monthAgo }, book: book._id }) as LoanSchema[];
+        const statistic: Statistic[] = getStatistic(loans);
+        responseSuccessHandle(res, 200,  { message: successMessages.SUCCESSFULLY_FETCHED, statistic });
+    } catch (err) {
+        logger.error('Error getting summary statistic', err.message);
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

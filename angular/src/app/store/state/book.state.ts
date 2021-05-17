@@ -10,8 +10,9 @@ import { GetBooksModel } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
 import { Response } from '../../models/response.model';
 import { Loan } from '../../models/loan.model';
-import { GetLoans, SummaryStatistic } from '../../models/request/loan';
+import { GetLoans, Statistic, SummaryStatistic } from '../../models/request/loan';
 import { UserState } from './user.state';
+import { models } from '../../constants/models';
 
 
 /*********************************
@@ -87,14 +88,14 @@ export class SetLoans {
     constructor(public loans: Loan[], public quantity?: number) {}
 }
 
-export class LoadSummaryStatistic {
-    static readonly type = '[Book] LoadSummaryStatistic';
+export class LoadStatistic {
+    static readonly type = '[Book] LoadStatistic';
+
+    constructor(public model: string, public value: string) {}
 }
 
-export class SetSummaryStatistic {
-    static readonly type = '[Book] SetSummaryStatistic';
-
-    constructor(public summaryStatistic: SummaryStatistic) {}
+export class LoadSummaryStatistic {
+    static readonly type = '[Book] LoadSummaryStatistic';
 }
 
 /*******************************
@@ -141,6 +142,11 @@ export class BookState {
     @Selector()
     static Pagination(state: BookStateModel): Pagination {
         return state.pagination;
+    }
+
+    @Selector()
+    static Statistic(state: BookStateModel): Statistic[] {
+        return state.statistic;
     }
 
     @Selector()
@@ -236,15 +242,28 @@ export class BookState {
         return ctx.patchState({ loans: action.loans, loansTotalItems: action.quantity });
     }
 
+    @Action(LoadStatistic)
+    loadStatistic(ctx: StateContext<BookStateModel>, action: LoadStatistic) {
+        switch (action.model) {
+            case models.USER:
+                return this.bookService
+                    .getUserStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+            case models.LIBRARIAN:
+                return this.bookService
+                    .getLibrarianStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+            case models.BOOK:
+                return this.bookService
+                    .getBookStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+        }
+    }
+
     @Action(LoadSummaryStatistic)
     loadSummaryStatistic(ctx: StateContext<BookStateModel>) {
         return this.bookService
             .getSummaryStatistic()
-            .pipe(tap(response => ctx.dispatch(new SetSummaryStatistic(response.summaryStatistic))));
-    }
-
-    @Action(SetSummaryStatistic)
-    setSummaryStatistic(ctx: StateContext<BookStateModel>, action: SetSummaryStatistic) {
-        return ctx.patchState({ summaryStatistic: action.summaryStatistic });
+            .pipe(tap(response => ctx.patchState({ summaryStatistic: response.summaryStatistic })));
     }
 }

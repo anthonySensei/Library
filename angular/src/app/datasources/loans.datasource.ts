@@ -1,11 +1,9 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
 import { Loan } from '../models/loan.model';
-
-import { LoansService } from '../services/loans.service';
 import { GetLoans } from '../models/request/loan';
 import { Store } from '@ngxs/store';
 import { LoadLoans } from '../store/state/book.state';

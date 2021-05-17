@@ -10,6 +10,9 @@ export const USERS_URL = '/users';
 export const LOANS_URL = {
     baseUrl: '/loans',
     statisticUrl: '/statistic',
+    statisticUserUrl: '/statistic/user',
+    statisticLibrarianUrl: '/statistic/librarian',
+    statisticBookUrl: '/statistic/book',
     summaryStatisticUrl: `/statistic/summary`
 };
 

@@ -84,6 +84,18 @@ export class BookService {
         return this.http.patch(`${this.LOANS_URL}/${loanId}`, {}).pipe(map((response: Response) => response.data));
     }
 
+    getUserStatistic(email: string) {
+        return this.http.get(`${this.STATISTIC_URL}/user?email=${email}`).pipe(map((response: Response) => response.data));
+    }
+
+    getLibrarianStatistic(email: string) {
+        return this.http.get(`${this.STATISTIC_URL}/librarian?email=${email}`).pipe(map((response: Response) => response.data));
+    }
+
+    getBookStatistic(isbn: string) {
+        return this.http.get(`${this.STATISTIC_URL}/book?isbn=${isbn}`).pipe(map((response: Response) => response.data));
+    }
+
     getSummaryStatistic() {
         return this.http.get(this.SUMMARY_STATISTIC_URL).pipe(map((response: Response) => response.data));
     }

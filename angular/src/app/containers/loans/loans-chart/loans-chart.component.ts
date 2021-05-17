@@ -2,22 +2,16 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { LoansService } from '../../../services/loans.service';
-
-import { Statistic } from '../../../models/statistic.model';
-
-import { WarnMessages } from '../../../constants/warnMessages';
 import { PageTitles } from '../../../constants/pageTitles';
-import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
 import { Select, Store } from '@ngxs/store';
 import { User } from '../../../models/user.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { UserState } from '../../../store/state/user.state';
-import { BookState, LoadSummaryStatistic } from '../../../store/state/book.state';
-import { SummaryStatistic } from '../../../models/request/loan';
+import { BookState, LoadStatistic, LoadSummaryStatistic } from '../../../store/state/book.state';
+import { Statistic, SummaryStatistic } from '../../../models/request/loan';
+import { models } from '../../../constants/models';
 
 @Component({
     selector: 'app-loans-chart',
@@ -25,14 +19,11 @@ import { SummaryStatistic } from '../../../models/request/loan';
     styleUrls: ['./loans-chart.component.scss']
 })
 export class LoansChartComponent implements OnInit, OnDestroy {
-    statistic: Statistic[];
-
     isManager: boolean;
 
     view: any[] = [700, 300];
     view2: any[] = [200, 400];
 
-    multi: any;
 
     legend = true;
     showLabels = true;
@@ -46,7 +37,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     timeline = true;
 
     model: string;
-    modelValue: string;
+    value: string;
 
     colorScheme = {
         domain: ['#FFDF6C']
@@ -56,16 +47,19 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     };
     cardColor = '#202020';
 
+    statistic = [];
     summaryStatistic = [];
 
     @Select(UserState.User)
     user$: Observable<User>;
 
+    @Select(BookState.Statistic)
+    statistic$: Observable<Statistic>;
+
     @Select(BookState.SummaryStatistic)
     summaryStatistic$: Observable<SummaryStatistic>;
 
     constructor(
-        private loansService: LoansService,
         private materialService: MaterialService,
         private store: Store,
     ) {}
@@ -74,18 +68,23 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         document.title = PageTitles.STATISTIC;
         this.loadSummaryStatistic();
         this.getUser$();
+        this.getStatistic$();
         this.getSummaryStatistic$();
     }
 
     isChartEmpty(): boolean {
-        return !this.multi?.length || !this.multi[0]?.seriesArr?.length;
+        return !this.statistic[0]?.series?.length;
     }
 
     getUser$(): void {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.isManager = user && user.admin);
     }
 
-    getSummaryStatistic$() {
+    getStatistic$(): void {
+        this.statistic$.pipe(untilDestroyed(this)).subscribe(stat => this.statistic = [{ name: this.value, series: stat }]);
+    }
+
+    getSummaryStatistic$(): void {
         this.summaryStatistic$.pipe(untilDestroyed(this)).subscribe(summaryStatistic => {
             const { totalBooks, loansForLastMonth, totalDebtors } = summaryStatistic || {} as SummaryStatistic;
             this.summaryStatistic = [
@@ -100,55 +99,21 @@ export class LoansChartComponent implements OnInit, OnDestroy {
         this.store.dispatch(new LoadSummaryStatistic());
     }
 
-    statisticHandler(): void {
-        this.loansService.getStatistic().pipe(untilDestroyed(this)).subscribe((statistic: Statistic[]) => {
-            this.statistic = statistic;
-            this.setStatisticToChart();
-        });
-    }
-
-    setStatisticToChart() {
-        const seriesArr = [];
-        if (this.statistic.length > 0) {
-            this.statistic.forEach((stat: Statistic) => {
-                const item = {
-                    // @ts-ignore
-                    name: stat.loanTime,
-                    value: stat.books
-                };
-                seriesArr.push(item);
-            });
-            this.multi = [
-                {
-                    name: this.getLegendName(),
-                    series: seriesArr
-                }
-            ];
-        } else {
-            this.materialService.openSnackbar(
-                WarnMessages.EMPTY_STATISTIC,
-                SnackBarClasses.Warn
-            );
-        }
-    }
-
     getInputName(): string {
         switch (this.model) {
+            case models.USER:
+                return FiltersName.EMAIL;
+            case models.LIBRARIAN:
+                return FiltersName.EMAIL;
+            case models.BOOK:
+                return FiltersName.ISBN;
             default:
                 return FiltersName.NOTHING;
         }
     }
 
-    getLegendName(): string {
-        switch (this.model) {
-            default:
-                return FiltersName.NOTHING;
-        }
-    }
-
-    showStatistic(): void {
-        this.loansService.fetchLoansStatisticHttp(this.model, this.modelValue).pipe(untilDestroyed(this)).subscribe();
-        this.statisticHandler();
+    onShowStatistic(): void {
+        this.store.dispatch(new LoadStatistic(this.model, this.value));
     }
 
     ngOnDestroy(): void {}

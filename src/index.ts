@@ -17,14 +17,13 @@ import librarianRoutes from './routes/librarian';
 import studentRoutes from './routes/student';
 import userRoutes from './routes/user';
 import bookRoutes from './routes/book';
+import loanRoutes from './routes/loan';
 
 import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL, STUDENTS_URL, USERS_URL } from './constants/links';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
-
-const loanRoutes = require('./routes/loan');
 const orderRoutes = require('./routes/order');
 const periodRoutes = require('./routes/period');
 const scheduleRoutes = require('./routes/schedule');

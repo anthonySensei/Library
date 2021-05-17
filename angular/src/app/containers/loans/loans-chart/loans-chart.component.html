@@ -1,14 +1,10 @@
 <div class="container">
     <div class="d-flex flex-wrap">
         <mat-card class="card mr-4">
-            <section class="chart-options">
+            <section>
                 <mat-form-field style="margin: 1% 1% 0 3%;">
                     <mat-label>Select an option</mat-label>
-                    <mat-select
-                            [(ngModel)]="model"
-                            (ngModelChange)="modelValue = null"
-                            required
-                    >
+                    <mat-select [(ngModel)]="model" (ngModelChange)="value = null">
                         <mat-option value="user">User</mat-option>
                         <mat-option value="book">Book</mat-option>
                         <mat-option value="librarian" *ngIf="isManager">Librarian</mat-option>
@@ -16,17 +12,12 @@
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>{{ getInputName() }}</mat-label>
-                    <input matInput [(ngModel)]="modelValue" [disabled]="!model" />
+                    <input matInput [(ngModel)]="value" [disabled]="!model" />
                 </mat-form-field>
-                <button
-                        style="margin: 0 1%;"
-                        mat-stroked-button
-                        color="primary"
-                        type="button"
-                        class="ml-5"
-                        matTooltip="Show statistic"
-                        [disabled]="!model || !modelValue"
-                        (click)="showStatistic()"
+                <button style="margin: 0 1%;" mat-stroked-button color="primary" type="button"
+                        class="ml-5" matTooltip="Show statistic"
+                        [disabled]="!model || !value"
+                        (click)="onShowStatistic()"
                 >
                     Show statistic
                 </button>
@@ -44,7 +35,7 @@
                         [xAxisLabel]="xAxisLabel"
                         [yAxisLabel]="yAxisLabel"
                         [timeline]="timeline"
-                        [results]="multi"
+                        [results]="statistic"
                 >
                 </ngx-charts-line-chart>
             </div>

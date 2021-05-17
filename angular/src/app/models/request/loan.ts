@@ -16,3 +16,8 @@ export interface SummaryStatistic {
     loansForLastMonth: number;
     totalDebtors: number;
 }
+
+export interface Statistic {
+    name: string;
+    value: number;
+}
