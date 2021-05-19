@@ -6,8 +6,6 @@ import { MatSort } from '@angular/material/sort';
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { Department } from '../../../models/department.model';
-
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
 import { OrderService } from '../../../services/orders.service';
@@ -18,17 +16,12 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
     selector: 'app-add-option-dialog',
     templateUrl: './my-orders-modal.component.html'
 })
-export class MyOrdersModalComponent
-    implements OnInit, AfterViewInit, OnDestroy {
-    departments: Department[];
-
-    departmentSelect: number;
+export class MyOrdersModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     columnsToDisplay: string[] = [
         'orderTime',
         'loanTime',
         'bookISBN',
-        'departmentAddress'
     ];
 
     dataSource: OrdersDataSource;
@@ -39,21 +32,22 @@ export class MyOrdersModalComponent
         private orderService: OrderService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
-        this.dataSource = new OrdersDataSource(this.orderService);
-        this.dataSource.loadOrders(
-            '',
-            '',
-            SortOrder.DESC,
-            0,
-            5,
-            null,
-            null,
-            true,
-            this.data.studentId
-        );
+        // this.dataSource = new OrdersDataSource(this.orderService);
+        // this.dataSource.loadOrders(
+        //     '',
+        //     '',
+        //     SortOrder.DESC,
+        //     0,
+        //     5,
+        //     null,
+        //     null,
+        //     true,
+        //     this.data.studentId
+        // );
     }
 
     ngAfterViewInit(): void {
@@ -75,12 +69,12 @@ export class MyOrdersModalComponent
             this.sort.direction,
             this.paginator.pageIndex,
             this.paginator.pageSize,
-            this.departmentSelect,
             null,
             true,
             this.data.studentId
         );
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+    }
 }

@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { Department } from '../../models/department.model';
 import { Period } from '../../models/period.model';
 
 import { MaterialService } from '../../services/material.service';
@@ -24,10 +23,7 @@ import { LoadGenres } from '../../store/state/genre.state';
     styleUrls: ['./edit-page.component.sass']
 })
 export class EditPageComponent implements OnInit, OnDestroy {
-    departments: Department[];
     periods: Period[];
-
-    departmentSelect: number;
 
     isManager: boolean;
 

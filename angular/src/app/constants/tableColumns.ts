@@ -8,5 +8,4 @@ export enum TableColumns {
     EMAIL = 'email',
     PHONE = 'phone',
     STATUS = 'active',
-    DEPARTMENT_ADDRESS = 'departmentAddress'
 }

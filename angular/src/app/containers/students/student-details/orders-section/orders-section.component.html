@@ -8,20 +8,6 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
-                <mat-form-field class="d-block">
-                    <mat-label>Department address</mat-label>
-                    <mat-select
-                        [(ngModel)]="departmentSelect"
-                        (ngModelChange)="loadOrdersPage()"
-                    >
-                        <mat-option value="''">All</mat-option>
-                        <mat-option
-                            *ngFor="let department of departments"
-                            [value]="department.id"
-                            >{{ department.address }}</mat-option
-                        >
-                    </mat-select>
-                </mat-form-field>
                 <mat-slide-toggle
                     color="primary"
                     class="d-block"
@@ -70,15 +56,6 @@
             </th>
             <td mat-cell *matCellDef="let row">
                 {{ row.bookISBN }}
-            </td>
-        </ng-container>
-
-        <ng-container [matColumnDef]="tableColumns.DEPARTMENT_ADDRESS">
-            <th mat-header-cell *matHeaderCellDef>
-                Department address
-            </th>
-            <td mat-cell *matCellDef="let row">
-                {{ row.departmentAddress }}
             </td>
         </ng-container>
 

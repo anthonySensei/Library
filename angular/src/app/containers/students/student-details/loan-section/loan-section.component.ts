@@ -5,8 +5,6 @@ import { MatSort } from '@angular/material/sort';
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { Department } from '../../../../models/department.model';
-
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { TableColumns } from '../../../../constants/tableColumns';
@@ -19,7 +17,6 @@ import { Store } from '@ngxs/store';
 })
 export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() studentId: number;
-    @Input() departments: Department[];
 
     columnsToDisplay: string[] = [
         TableColumns.LOAN_TIME,
@@ -28,8 +25,6 @@ export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
         TableColumns.EMAIL
     ];
     tableColumns = TableColumns;
-
-    departmentSelect: number;
 
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

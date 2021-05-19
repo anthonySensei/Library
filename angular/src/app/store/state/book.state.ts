@@ -8,11 +8,11 @@ import { BookStateModel } from '../models/book.model';
 import { BookService } from '../../services/book.service';
 import { GetBooksModel } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
-import { Response } from '../../models/response.model';
 import { Loan } from '../../models/loan.model';
 import { GetLoans, Statistic, SummaryStatistic } from '../../models/request/loan';
 import { UserState } from './user.state';
 import { models } from '../../constants/models';
+import { GetOrders, Order } from '../../models/order.model';
 
 
 /*********************************
@@ -32,18 +32,6 @@ export class LoadBooks {
     static readonly type = '[Book] LoadBooks';
 
     constructor(public filters: GetBooksModel) {}
-}
-
-export class SetBook {
-    static readonly type = '[Book] SetBook';
-
-    constructor(public book: Book) {}
-}
-
-export class SetBooks {
-    static readonly type = '[Book] SetBooks';
-
-    constructor(public books: Book[], public pagination?: Pagination) {}
 }
 
 export class CreateBook {
@@ -82,10 +70,10 @@ export class LoadLoans {
     constructor(public filters: GetLoans) {}
 }
 
-export class SetLoans {
-    static readonly type = '[Book] SetLoans';
+export class LoadOrders {
+    static readonly type = '[Book] LoadOrders';
 
-    constructor(public loans: Loan[], public quantity?: number) {}
+    constructor(public filters: GetOrders) {}
 }
 
 export class LoadStatistic {
@@ -130,13 +118,23 @@ export class BookState {
     }
 
     @Selector()
+    static Loans(state: BookStateModel): Loan[] {
+        return state.loans;
+    }
+
+    @Selector()
     static LoansTotalItems(state: BookStateModel): number {
         return state.loansTotalItems;
     }
 
     @Selector()
-    static Loans(state: BookStateModel): Loan[] {
-        return state.loans;
+    static Orders(state: BookStateModel): Order[] {
+        return state.orders;
+    }
+
+    @Selector()
+    static OrdersTotalItems(state: BookStateModel): number {
+        return state.ordersTotalItems;
     }
 
     @Selector()
@@ -165,24 +163,14 @@ export class BookState {
 
     @Action(LoadBook)
     loadBook(ctx: StateContext<BookStateModel>, action: LoadBook) {
-        return this.bookService.getBook(action.id).pipe(tap(response => ctx.dispatch(new SetBook(response.book))));
+        return this.bookService.getBook(action.id).pipe(tap(response => ctx.patchState({ book: response.book })));
     }
 
     @Action(LoadBooks)
     loadBooks(ctx: StateContext<BookStateModel>, action: LoadBooks) {
         return this.bookService.getBooks(action.filters).pipe(tap(response => {
-            ctx.dispatch(new SetBooks(response.books, response.pagination));
+            ctx.patchState({ books: response.books, pagination: response.pagination });
         }));
-    }
-
-    @Action(SetBook)
-    setBook(ctx: StateContext<BookStateModel>, action: SetBook) {
-        return ctx.patchState({ book: action.book });
-    }
-
-    @Action(SetBooks)
-    setABooks(ctx: StateContext<BookStateModel>, action: SetBooks) {
-        return ctx.patchState({ books: action.books, pagination: action.pagination });
     }
 
     @Action(CreateBook)
@@ -233,13 +221,8 @@ export class BookState {
     @Action(LoadLoans)
     loadLoans(ctx: StateContext<BookStateModel>, action: LoadLoans) {
         return this.bookService.getLoans(action.filters).pipe(tap(response => {
-            ctx.dispatch(new SetLoans(response.loans, response.quantity));
+            ctx.patchState({ loans: response.loans, loansTotalItems: response.quantity });
         }));
-    }
-
-    @Action(SetLoans)
-    setLoans(ctx: StateContext<BookStateModel>, action: SetLoans) {
-        return ctx.patchState({ loans: action.loans, loansTotalItems: action.quantity });
     }
 
     @Action(LoadStatistic)
@@ -265,5 +248,12 @@ export class BookState {
         return this.bookService
             .getSummaryStatistic()
             .pipe(tap(response => ctx.patchState({ summaryStatistic: response.summaryStatistic })));
+    }
+
+    @Action(LoadOrders)
+    loadOrders(ctx: StateContext<BookStateModel>, action: LoadOrders) {
+        return this.bookService.getOrders(action.filters).pipe(tap(response => {
+            ctx.patchState({ orders: response.orders, ordersTotalItems: response.quantity });
+        }));
     }
 }

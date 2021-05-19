@@ -9,12 +9,14 @@ import { GetLoans } from '../models/request/loan';
 import { GetBooksModel, LoanBookModel } from '../models/request/book';
 
 import { serverLink } from '../constants/serverLink';
+import { GetOrders } from '../models/order.model';
 
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
     private BOOKS_URL = `${serverLink}/books`;
     private LOANS_URL = `${serverLink}/loans`;
+    private ORDERS_URL = `${serverLink}/orders`;
     private STATISTIC_URL = `${this.LOANS_URL}/statistic`;
     private SUMMARY_STATISTIC_URL = `${this.STATISTIC_URL}/summary`;
 
@@ -30,7 +32,6 @@ export class BookService {
                     .set('yTo', params.yearTo ? params.yearTo.toString() : '')
                     .set('authors', params.authors?.length ? params.authors.join(',') : '')
                     .set('genres', params.genres?.length ? params.genres.join(',') : '')
-                    .set('department', params.department ? params.department.toString() : '')
                     .set('filterValue', params.filterValue)
             })
             .pipe(map((response: Response) => response.data));
@@ -98,5 +99,21 @@ export class BookService {
 
     getSummaryStatistic() {
         return this.http.get(this.SUMMARY_STATISTIC_URL).pipe(map((response: Response) => response.data));
+    }
+
+    getOrders(params: GetOrders) {
+        return this.http
+            .get(this.ORDERS_URL, {
+                params: new HttpParams()
+                    .set('page', params.page.toString())
+                    .set('pageSize', params.pageSize.toString())
+                    .set('loanedAt', params.loanedAt?.toString() || '')
+                    .set('sortName', params.sortName)
+                    .set('sortOrder', params.sortOrder)
+                    .set('filterValue', params.filterValue || '')
+                    .set('showOnlyLoaned', params.showOnlyLoaned ? 'true' : '')
+                    .set('showOnlyNotLoaned', params.showOnlyNotLoaned ? 'true' : '')
+            })
+            .pipe(map((response: Response) => response.data));
     }
 }

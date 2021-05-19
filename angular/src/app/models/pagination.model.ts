@@ -1,4 +1,8 @@
 export interface Pagination {
     page: number;
-    length: number;
+    pageSize: number;
+    sortName: string;
+    sortOrder: string;
+    length?: number;
 }
+

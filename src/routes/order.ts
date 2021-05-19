@@ -1,15 +1,13 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import passport from 'passport';
 
-const passport = require('passport');
+import { getOrders } from '../controllers/order';
+
+const router = express.Router();
 
 const orderController = require('../controllers/order');
 
-router.get(
-    '',
-    passport.authenticate('jwt', { session: false }),
-    orderController.getAllOrders
-);
+router.get('', passport.authenticate('jwt', { session: false }), getOrders);
 
 router.put(
     '',

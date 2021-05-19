@@ -4,6 +4,7 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { Order } from '../models/order.model';
 import { OrderService } from '../services/orders.service';
+import { Store } from '@ngxs/store';
 
 export class OrdersDataSource implements DataSource<Order> {
     private ordersSubject = new BehaviorSubject<Order[]>([]);
@@ -12,7 +13,7 @@ export class OrdersDataSource implements DataSource<Order> {
 
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private orderService: OrderService) {}
+    constructor(private store: Store) {}
 
     loadOrders(
         filterName: string,
@@ -20,30 +21,28 @@ export class OrdersDataSource implements DataSource<Order> {
         sortOrder: string,
         pageIndex: number,
         pageSize: number,
-        departmentId: number,
         orderDate: Date,
         isShowNotLoaned: boolean,
         studentId: number = null
     ) {
         this.loadingSubject.next(true);
 
-        this.orderService
-            .fetchOrdersHttp(
-                filterName,
-                filterValue,
-                sortOrder,
-                pageIndex,
-                pageSize,
-                departmentId,
-                orderDate,
-                isShowNotLoaned,
-                studentId
-            )
-            .pipe(
-                catchError(() => of([])),
-                finalize(() => this.loadingSubject.next(false))
-            )
-            .subscribe((orders: Order[]) => this.ordersSubject.next(orders));
+        // this.orderService
+        //     .fetchOrdersHttp(
+        //         filterName,
+        //         filterValue,
+        //         sortOrder,
+        //         pageIndex,
+        //         pageSize,
+        //         orderDate,
+        //         isShowNotLoaned,
+        //         studentId
+        //     )
+        //     .pipe(
+        //         catchError(() => of([])),
+        //         finalize(() => this.loadingSubject.next(false))
+        //     )
+        //     .subscribe((orders: Order[]) => this.ordersSubject.next(orders));
     }
 
     connect(collectionViewer: CollectionViewer): Observable<Order[]> {

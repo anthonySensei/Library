@@ -25,7 +25,6 @@ import { BookState, ReturnBook } from '../../../store/state/book.state';
 export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
     filterValue: string;
-    departmentSelect: number;
     showOnlyDebtors: boolean;
     showOnlyReturned: boolean;
     columnsToDisplay: string[] = ['user', 'librarian', 'book', 'loanedAt', 'returnedAt'];
@@ -63,7 +62,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         return this.store.selectSnapshot(BookState.LoansTotalItems);
     }
 
-    returnBook(loanId: string): void {
+    onReturnBook(loanId: string): void {
         this.store.dispatch(new ReturnBook(loanId)).subscribe(() => this.onLoadLoans());
     }
 

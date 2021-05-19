@@ -1,26 +1,10 @@
 <section class="edit-section">
     <div class="input-groups">
         <mat-form-field class="edit-field">
-            <mat-label>Address</mat-label>
-            <mat-select
-                name="address"
-                [(ngModel)]="departmentSelect"
-                required
-            >
-                <mat-option
-                    *ngFor="let department of departments"
-                    [value]="department.id"
-                >
-                    {{ department.address }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="edit-field">
             <mat-label>ISBN</mat-label>
             <mat-select
                 name="isbn"
                 [(ngModel)]="bookSelect"
-                [disabled]="!departmentSelect"
                 required
             >
                 <mat-option

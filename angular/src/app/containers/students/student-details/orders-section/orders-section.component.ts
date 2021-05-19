@@ -5,8 +5,6 @@ import { MatSort } from '@angular/material/sort';
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { Department } from '../../../../models/department.model';
-
 import { OrdersDataSource } from '../../../../datasources/orders.datasource';
 
 import { OrderService } from '../../../../services/orders.service';
@@ -18,18 +16,13 @@ import { SortOrder } from '../../../../constants/sortOrder';
     selector: 'app-orders-section',
     templateUrl: './orders-section.component.html'
 })
-export class OrdersSectionComponent
-    implements OnInit, AfterViewInit, OnDestroy {
+export class OrdersSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() studentId: number;
-    @Input() departments: Department[];
-
-    departmentSelect: number;
 
     columnsToDisplay: string[] = [
         TableColumns.ORDER_TIME,
         TableColumns.LOAN_TIME,
         TableColumns.BOOK_ISBN,
-        TableColumns.DEPARTMENT_ADDRESS
     ];
     tableColumns = TableColumns;
 
@@ -39,21 +32,22 @@ export class OrdersSectionComponent
 
     isShowingNotLoaned: boolean;
 
-    constructor(private orderService: OrderService) {}
+    constructor(private orderService: OrderService) {
+    }
 
     ngOnInit() {
-        this.dataSource = new OrdersDataSource(this.orderService);
-        this.dataSource.loadOrders(
-            '',
-            '',
-            SortOrder.DESC,
-            0,
-            5,
-            null,
-            null,
-            false,
-            this.studentId
-        );
+        // this.dataSource = new OrdersDataSource(this.orderService);
+        // this.dataSource.loadOrders(
+        //     '',
+        //     '',
+        //     SortOrder.DESC,
+        //     0,
+        //     5,
+        //     null,
+        //     null,
+        //     false,
+        //     this.studentId
+        // );
     }
 
     ngAfterViewInit(): void {
@@ -76,12 +70,12 @@ export class OrdersSectionComponent
             this.sort.direction,
             this.paginator.pageIndex,
             this.paginator.pageSize,
-            this.departmentSelect,
             null,
             this.isShowingNotLoaned,
             this.studentId
         );
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+    }
 }

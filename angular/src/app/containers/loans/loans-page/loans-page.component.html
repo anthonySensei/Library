@@ -78,9 +78,9 @@
                         </div>
                         <div class="loan-info">
                             <h4>Librarian:</h4>
-                            <p>name: <b>{{ element.user.name }}</b></p>
-                            <p>email: <b>{{ element.user.email }}</b></p>
-                            <p>phone: <b>{{ element.user.phone }}</b></p>
+                            <p>name: <b>{{ element.librarian.name }}</b></p>
+                            <p>email: <b>{{ element.librarian.email }}</b></p>
+                            <p>phone: <b>{{ element.librarian.phone }}</b></p>
                         </div>
                         <div class="loan-info">
                             <h4>Book:</h4>
@@ -91,7 +91,7 @@
                         <div class="loan-info">
                             <div class="btn-group" *ngIf="!element.returnedAt">
                                 <a mat-stroked-button color="primary" class="expanded-btn" matTooltip="Return book"
-                                    (click)="returnBook(element._id)"
+                                    (click)="onReturnBook(element._id)"
                                 >
                                     <i class="material-icons">keyboard_return</i> Return book
                                 </a>

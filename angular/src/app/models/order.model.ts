@@ -1,25 +1,21 @@
 import { Book } from './book.model';
-import { Department } from './department.model';
+import { User } from './user.model';
+import { Pagination } from './pagination.model';
 
-export class Order {
-    id: number;
-    orderTime: Date;
-    loanTime: Date;
-    student;
-    book: Book;
-    department: Department;
+export interface Order {
+    _id?: string;
+    orderedAt?: Date;
+    loanedAt?: Date;
+    user: User | string;
+    librarian: User | string;
+    book: Book | string;
+}
 
-    constructor(
-        id: number,
-        orderTime: Date,
-        student,
-        book: Book,
-        department: Department
-    ) {
-        this.id = id;
-        this.orderTime = orderTime;
-        this.student = student;
-        this.book = book;
-        this.department = department;
-    }
+export interface GetOrders extends Pagination {
+    userId?: string;
+    librarianId?: string;
+    filterValue?: string;
+    showOnlyNotLoaned?: boolean;
+    showOnlyLoaned?: boolean;
+    loanedAt?: Date;
 }

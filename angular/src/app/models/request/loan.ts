@@ -1,11 +1,9 @@
-export interface GetLoans {
-    page: number;
-    pageSize: number;
+import { Pagination } from '../pagination.model';
+
+export interface GetLoans extends Pagination {
     userId?: string;
     librarianId?: string;
     filterValue?: string;
-    sortName?: string;
-    sortOrder?: string;
     showOnlyDebtors?: boolean;
     showOnlyReturned?: boolean;
     loanedAt?: Date;
