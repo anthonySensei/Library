@@ -2,152 +2,35 @@ import { Request, Response } from 'express';
 
 import logger from '../config/logger';
 
-const { Sequelize } = require('sequelize');
-const Op = Sequelize.Op;
+import errorMessages from '../constants/errorMessages';
+import successMessages from '../constants/successMessages';
 
-const Order = require('../schemas/order');
+import Order from '../schemas/order';
+
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
+import { OrderSchema } from '../models/order';
+
+const SequelizeOrder = require('../schemas/sorder');
 const Loan = require('../schemas/sloan');
-const Author = require('../schemas/sauthor');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 const Book = require('../schemas/sbook');
 const Department = require('../schemas/sdepartment');
 
-const helper = require('../helper/response');
 const mailSender = require('../helper/email');
-const errorMessages = require('../constants/errorMessages');
-const successMessages = require('../constants/successMessages');
 const mailMessages = require('../constants/email');
 
-const getCondition = (departmentId: number, loanDate: any, nextDay: any, isShowNotLoaned: any) => {
-    let departmentCondition = {};
-    let dateCondition = {};
-    let isShowNotLoanedCondition = {};
-
-    if (departmentId) {
-        departmentCondition = { departmentId };
-    }
-
-    if (loanDate) {
-        dateCondition = {
-            loan_time: {
-                [Op.between]: [loanDate, nextDay]
-            }
-        };
-    }
-
-    if (isShowNotLoaned === 'true') {
-        isShowNotLoanedCondition = {
-            loan_time: null
-        };
-    }
-
-    return {
-        ...departmentCondition,
-        ...dateCondition,
-        ...isShowNotLoanedCondition
-    };
-};
-
-exports.getAllOrders = async (req: Request, res: Response) => {
-    const page = Number(req.query.pageNumber);
-    const pageSize = Number(req.query.pageSize);
-    const sortOrder = (req.query.sortOrder as string).toUpperCase();
-    const filterName = req.query.filterName;
-    const filterValue = req.query.filterValue;
-    const departmentId = Number(req.query.departmentId);
-    const orderDate = req.query.orderDate;
-    const nextDay = req.query.nextDay;
-    const isShowNotLoaned = req.query.isShowNotLoaned;
-    const studentId = Number(req.query.studentId);
-    let studentCondition = {};
-
-    if (studentId) { studentCondition = { id: studentId }; }
-
-    const includeArr = [
-        {
-            model: Student,
-            where: studentCondition
-        },
-        {
-            model: Book,
-            include: {
-                model: Author
-            }
-        },
-        { model: Department }
-    ];
-
+export const getOrders = async (req: Request, res: Response) => {
     try {
-        const quantity = await Order.count({
-            include: includeArr,
-            where: getCondition(
-                departmentId,
-                orderDate,
-                nextDay,
-                isShowNotLoaned
-            )
-        });
-        const orders = await Order.findAll({
-            include: includeArr,
-            where: getCondition(
-                departmentId,
-                orderDate,
-                nextDay,
-                isShowNotLoaned
-            ),
-            limit: pageSize,
-            order: [['order_time', sortOrder]],
-            offset: (page - 1) * pageSize
-        });
-        const ordersArr = [];
-        for (const order of orders) {
-            const ordersValues = order.get();
-            const studentData = ordersValues.student_.get();
-            const departmentData = ordersValues.department_.get();
-            const bookData = ordersValues.book_.get();
-            let ordersObj: any = {
-                id: ordersValues.id,
-                orderTime: ordersValues.order_time,
-                loanTime: ordersValues.loan_time,
-                bookISBN: bookData.isbn,
-                departmentAddress: departmentData.address
-            };
-            if (!studentId) {
-                ordersObj = {
-                    ...ordersObj,
-                    student: {
-                        id: studentData.id,
-                        name: studentData.name,
-                        email: studentData.email,
-                        readerTicket: studentData.reader_ticket
-                    },
-                    department: {
-                        address: departmentData.address
-                    },
-                    book: {
-                        bookId: bookData.id,
-                        isbn: bookData.isbn,
-                        name: bookData.name,
-                        year: bookData.year,
-                        author: {
-                            name: bookData.author_.get().name
-                        }
-                    },
-                    studentReaderTicket: studentData.reader_ticket
-                };
-            }
-            ordersArr.push(ordersObj);
-        }
+        const orders = await Order.find() as OrderSchema[];
         const data = {
-            orders: ordersArr,
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity
+            orders: orders.map(order => order.toJSON()),
+            message: successMessages.SUCCESSFULLY_FETCHED
         };
-        return helper.responseSuccessHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting orders', err.message);
-        return helper.responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
+        return responseErrorHandle(res, 500, errorMessages.CANNOT_FETCH);
     }
 };
 
@@ -156,7 +39,7 @@ exports.orderBook = async (req: Request, res: Response) => {
     const bookId = req.body.bookId;
     const orderTime = req.body.time;
     if (!req.body) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             400,
             errorMessages.SOMETHING_WENT_WRONG
@@ -169,7 +52,7 @@ exports.orderBook = async (req: Request, res: Response) => {
             }
         });
         if (!student) {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.USER_EMAIL_EXISTS
@@ -181,13 +64,13 @@ exports.orderBook = async (req: Request, res: Response) => {
             include: { model: Department }
         });
         if (book.get().quantity <= 0) {
-            return helper.responseErrorHandle(
+            return responseErrorHandle(
                 res,
                 400,
                 errorMessages.THERE_ARE_NO_AVAILABLE_BOOKS
             );
         } else {
-            const bookOrder = new Order({
+            const bookOrder = new SequelizeOrder({
                 order_time: orderTime,
                 studentId: student.get().id,
                 bookId,
@@ -206,11 +89,11 @@ exports.orderBook = async (req: Request, res: Response) => {
                 message: successMessages.SUCCESSFULLY_ORDERED
             };
 
-            helper.responseSuccessHandle(res, 200, data);
+            responseSuccessHandle(res, 200, data);
         }
     } catch (err) {
         logger.error('Cannot order sbook', err.message);
-        helper.responseErrorHandle(
+        responseErrorHandle(
             res,
             500,
             errorMessages.SOMETHING_WENT_WRONG
@@ -226,7 +109,7 @@ exports.loanBookFromOrder = async (req: Request, res: Response) => {
     const loanTime = req.body.loanTime;
 
     if (!orderId || !bookId || !studentId || !librarianEmail || !loanTime) {
-        return helper.responseErrorHandle(
+        return responseErrorHandle(
             res,
             500,
             errorMessages.SOMETHING_WENT_WRONG
@@ -234,7 +117,7 @@ exports.loanBookFromOrder = async (req: Request, res: Response) => {
     }
 
     try {
-        const order = await Order.findOne({ where: { id: orderId } });
+        const order = await SequelizeOrder.findOne({ where: { id: orderId } });
         await order.update({ loan_time: loanTime });
         const librarian = await Librarian.findOne({
             where: { email: librarianEmail }
@@ -251,10 +134,10 @@ exports.loanBookFromOrder = async (req: Request, res: Response) => {
             isSuccessful: true,
             message: successMessages.SUCCESSFULLY_LOANED
         };
-        return helper.responseSuccessHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Cannot loan book from order', err.message);
-        helper.responseErrorHandle(
+        responseErrorHandle(
             res,
             500,
             errorMessages.SOMETHING_WENT_WRONG

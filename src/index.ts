@@ -36,7 +36,7 @@ const Book = require('./schemas/sbook');
 const Genre = require('./schemas/sgenre');
 const Author = require('./schemas/sauthor');
 const Loan = require('./schemas/sloan');
-const Order = require('./schemas/order');
+const Order = require('./schemas/sorder');
 const Schedule = require('./schemas/schedule');
 const Period = require('./schemas/period');
 
