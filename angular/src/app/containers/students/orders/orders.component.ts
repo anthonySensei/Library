@@ -10,7 +10,6 @@ import { User } from '../../../models/user.model';
 import { Department } from '../../../models/department.model';
 
 import { OrderService } from '../../../services/orders.service';
-import { HelperService } from '../../../services/helper.service';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
@@ -58,8 +57,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     user$: Observable<User>;
 
     constructor(
-        private orderService: OrderService,
-        public helperService: HelperService,
+        private orderService: OrderService
     ) {}
 
     ngOnInit(): void {

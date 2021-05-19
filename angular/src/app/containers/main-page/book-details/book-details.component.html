@@ -13,39 +13,23 @@
                 <p>Quantity: {{ book?.quantity }}</p>
             </section>
             <div class="btn-group">
-                <button
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="onOpenLoanBookModal()"
-                    *ngIf="user.librarian"
+                <button mat-stroked-button color="primary" class="mr-2"
+                        [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian"
                 >
                     Loan
                 </button>
-                <button
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="onEditBook()"
-                    *ngIf="user.admin || user.librarian"
+                <button mat-stroked-button color="primary" class="mr-2"
+                        (click)="onEditBook()" *ngIf="user.admin || user.librarian"
                 >
                     Edit
                 </button>
-                <button
-                        mat-stroked-button
-                        color="primary"
-                        class="ml-5"
-                        (click)="onDeleteBook()"
-                        *ngIf="user.admin || user.librarian"
+                <button mat-stroked-button color="primary" class="mr-2"
+                        (click)="onDeleteBook()" *ngIf="user.admin || user.librarian"
                 >
                     Delete
                 </button>
-                <button
-                    mat-stroked-button
-                    color="primary"
-                    class="ml-5"
-                    (click)="onOrderBook()"
-                    *ngIf="!user.admin && !user.librarian"
+                <button mat-stroked-button color="primary" class="mr-2"
+                        (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian"
                 >
                     Order
                 </button>

@@ -2,12 +2,12 @@ import { Book } from './book.model';
 import { Author } from './author.model';
 import { Genre } from './genre.model';
 import { Schedule } from './schedule.model';
-import { Statistic } from './statistic.model';
 import { Loan } from './loan.model';
 import { User } from './user.model';
 import { Period } from './period.model';
 import { Order } from './order.model';
 import { Pagination } from './pagination.model';
+import { Statistic, SummaryStatistic } from './request/loan';
 
 export interface Data {
     message: string;
@@ -21,10 +21,11 @@ export interface Data {
     librarian?: User;
     librarians?: User[];
     students?: User[];
+    statistic?: Statistic[];
     pagination: Pagination;
+    summaryStatistic: SummaryStatistic;
     orders?: Order[];
     schedules?: Schedule[];
-    statistic?: Statistic[];
     periods?: Period[];
     loans?: Loan[];
 }

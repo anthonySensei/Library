@@ -3,7 +3,7 @@ const Op = Sequelize.Op;
 
 const Period = require('../schemas/period');
 
-const helper = require('../helper/responseHandle');
+const helper = require('../helper/response');
 
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');

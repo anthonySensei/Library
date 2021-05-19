@@ -6,7 +6,7 @@ import { UserModel, UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
 import { convertToBase64 } from '../helper/image';
 
 import errorMessages from '../constants/errorMessages';
@@ -24,7 +24,7 @@ export const getStudents = async (req: Request, res: Response) => {
     };
 
     try {
-        const studentQuantity = await User.countDocuments(filterCondition);
+        const quantity = await User.countDocuments(filterCondition);
         const studentsDb = await User.find(filterCondition, {}, {
             limit: Number(pageSize),
             skip: (Number(page) - 1) * Number(pageSize),
@@ -39,11 +39,7 @@ export const getStudents = async (req: Request, res: Response) => {
             phone: student.phone,
             active: student.active
         }));
-        const data = {
-            students,
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity: studentQuantity
-        };
+        const data = { students, quantity, message: successMessages.SUCCESSFULLY_FETCHED };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error fetching users', err.message);

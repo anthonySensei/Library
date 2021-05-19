@@ -11,3 +11,15 @@ export interface BookSchema extends Document {
     authors: any[];
     genres: any[];
 }
+
+export interface BookModel {
+    isbn: string;
+    title: string;
+    year: number;
+    quantity: number;
+    description: number;
+    image: string;
+    language: string;
+    authors: any[];
+    genres: any[];
+}

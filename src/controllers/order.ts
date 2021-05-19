@@ -6,18 +6,17 @@ const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
 const Order = require('../schemas/order');
-const Loan = require('../schemas/loan');
+const Loan = require('../schemas/sloan');
 const Author = require('../schemas/sauthor');
 const Student = require('../schemas/student');
 const Librarian = require('../schemas/librarian');
 const Book = require('../schemas/sbook');
 const Department = require('../schemas/sdepartment');
 
-const helper = require('../helper/responseHandle');
+const helper = require('../helper/response');
 const mailSender = require('../helper/email');
 const errorMessages = require('../constants/errorMessages');
 const successMessages = require('../constants/successMessages');
-const filters = require('../constants/filters');
 const mailMessages = require('../constants/email');
 
 const getCondition = (departmentId: number, loanDate: any, nextDay: any, isShowNotLoaned: any) => {
@@ -62,12 +61,6 @@ exports.getAllOrders = async (req: Request, res: Response) => {
     const isShowNotLoaned = req.query.isShowNotLoaned;
     const studentId = Number(req.query.studentId);
     let studentCondition = {};
-    let bookCondition = {};
-
-    const like = { [Op.iLike]: `%${filterValue}%` };
-    if (filterName === filters.READER_TICKET) {
-        studentCondition = { reader_ticket: like };
-    } else if (filterName === filters.ISBN) { bookCondition = { isbn: like }; }
 
     if (studentId) { studentCondition = { id: studentId }; }
 
@@ -80,8 +73,7 @@ exports.getAllOrders = async (req: Request, res: Response) => {
             model: Book,
             include: {
                 model: Author
-            },
-            where: bookCondition
+            }
         },
         { model: Department }
     ];

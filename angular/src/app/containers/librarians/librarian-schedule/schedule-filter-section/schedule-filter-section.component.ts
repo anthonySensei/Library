@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { Department } from '../../../../models/department.model';
-import { HelperService } from '../../../../services/helper.service';
 
 @Component({
     selector: 'app-schedule-filter-section',
@@ -11,14 +10,9 @@ import { HelperService } from '../../../../services/helper.service';
 export class ScheduleFilterSectionComponent implements OnInit, OnDestroy {
     @Input() departmentSelect: number;
     @Input() librarianSelect: number;
-    @Input() helperService: HelperService;
 
-    @Output() departmentSelectChange: EventEmitter<number> = new EventEmitter<
-        number
-    >();
-    @Output() librarianSelectChange: EventEmitter<number> = new EventEmitter<
-        number
-    >();
+    @Output() departmentSelectChange: EventEmitter<number> = new EventEmitter<number>();
+    @Output() librarianSelectChange: EventEmitter<number> = new EventEmitter<number>();
     @Output() setSchedules = new EventEmitter();
 
     departments: Department[];

@@ -50,7 +50,7 @@ import { NgxsModule } from '@ngxs/store';
 import { UserState } from '../store/state/user.state';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UserPopupComponent } from './user-popup/user-popup.component';
-import { VarDirective } from '@shared/directives/ng-var.directive';
+import { VarDirective } from '../directives/ng-var.directive';
 
 @NgModule({
     declarations: [

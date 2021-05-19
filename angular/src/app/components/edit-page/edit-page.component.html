@@ -13,7 +13,6 @@
             <app-book-section
                 [departmentSelect]="departmentSelect"
                 [departments]="departments"
-                [helperService]="helperService"
             ></app-book-section>
         </mat-expansion-panel>
         <mat-expansion-panel #genres (click)="genres.expanded && onLoadGenres()">
@@ -26,21 +25,13 @@
             <mat-expansion-panel-header>
                 <mat-panel-title>Schedule</mat-panel-title>
             </mat-expansion-panel-header>
-            <app-schedule-section
-                (nothingToChange)="nothingChangeHandle()"
-                [periods]="periods"
-                [helperService]="helperService"
-            ></app-schedule-section>
+            <app-schedule-section [periods]="periods"></app-schedule-section>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="isManager">
             <mat-expansion-panel-header>
                 <mat-panel-title>Period</mat-panel-title>
             </mat-expansion-panel-header>
-            <app-period-section
-                (nothingToChange)="nothingChangeHandle()"
-                [periods]="periods"
-                [helperService]="helperService"
-            ></app-period-section>
+            <app-period-section [periods]="periods"></app-period-section>
         </mat-expansion-panel>
     </mat-accordion>
 </div>

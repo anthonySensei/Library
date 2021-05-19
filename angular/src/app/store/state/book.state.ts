@@ -1,4 +1,4 @@
-import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext, Store } from '@ngxs/store';
 import { tap } from 'rxjs/operators';
 import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
@@ -6,9 +6,13 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { Book } from '../../models/book.model';
 import { BookStateModel } from '../models/book.model';
 import { BookService } from '../../services/book.service';
-import { GetBooks } from '../../models/request/book';
+import { GetBooksModel } from '../../models/request/book';
 import { Pagination } from '../../models/pagination.model';
 import { Response } from '../../models/response.model';
+import { Loan } from '../../models/loan.model';
+import { GetLoans, Statistic, SummaryStatistic } from '../../models/request/loan';
+import { UserState } from './user.state';
+import { models } from '../../constants/models';
 
 
 /*********************************
@@ -27,7 +31,7 @@ export class LoadBook {
 export class LoadBooks {
     static readonly type = '[Book] LoadBooks';
 
-    constructor(public filters: GetBooks) {}
+    constructor(public filters: GetBooksModel) {}
 }
 
 export class SetBook {
@@ -60,6 +64,40 @@ export class DeleteBook {
     constructor(public id: string) {}
 }
 
+export class LoanBook {
+    static readonly type = '[Book] LoanBook';
+
+    constructor(public credentials: string, public bookId?: string) {}
+}
+
+export class ReturnBook {
+    static readonly type = '[Book] ReturnBook';
+
+    constructor(public loanId: string) {}
+}
+
+export class LoadLoans {
+    static readonly type = '[Book] LoadLoans';
+
+    constructor(public filters: GetLoans) {}
+}
+
+export class SetLoans {
+    static readonly type = '[Book] SetLoans';
+
+    constructor(public loans: Loan[], public quantity?: number) {}
+}
+
+export class LoadStatistic {
+    static readonly type = '[Book] LoadStatistic';
+
+    constructor(public model: string, public value: string) {}
+}
+
+export class LoadSummaryStatistic {
+    static readonly type = '[Book] LoadSummaryStatistic';
+}
+
 /*******************************
  *** AuthorState            ***
  ********************************/
@@ -74,7 +112,8 @@ export const STATE_NAME = 'book';
 export class BookState {
     constructor(
         private bookService: BookService,
-        private materialService: MaterialService
+        private materialService: MaterialService,
+        private store: Store
     ) { }
 
     /****************
@@ -91,8 +130,28 @@ export class BookState {
     }
 
     @Selector()
+    static LoansTotalItems(state: BookStateModel): number {
+        return state.loansTotalItems;
+    }
+
+    @Selector()
+    static Loans(state: BookStateModel): Loan[] {
+        return state.loans;
+    }
+
+    @Selector()
     static Pagination(state: BookStateModel): Pagination {
         return state.pagination;
+    }
+
+    @Selector()
+    static Statistic(state: BookStateModel): Statistic[] {
+        return state.statistic;
+    }
+
+    @Selector()
+    static SummaryStatistic(state: BookStateModel): SummaryStatistic {
+        return state.summaryStatistic;
     }
 
     /****************
@@ -151,5 +210,60 @@ export class BookState {
         return this.bookService.deleteBook(id).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
+    }
+
+    @Action(LoanBook)
+    loanBook(ctx: StateContext<BookStateModel>, action: LoanBook) {
+        const { credentials, bookId  } = action;
+        const id = bookId || ctx.getState().book?.id;
+        const librarianId = this.store.selectSnapshot(UserState.User).id;
+        return this.bookService.loanBook({ userCredentials: credentials, bookId: id, librarianId }).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadBook(id));
+        }));
+    }
+
+    @Action(ReturnBook)
+    returnBook(ctx: StateContext<BookStateModel>, action: ReturnBook) {
+        return this.bookService.returnBook(action.loanId).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
+        }));
+    }
+
+    @Action(LoadLoans)
+    loadLoans(ctx: StateContext<BookStateModel>, action: LoadLoans) {
+        return this.bookService.getLoans(action.filters).pipe(tap(response => {
+            ctx.dispatch(new SetLoans(response.loans, response.quantity));
+        }));
+    }
+
+    @Action(SetLoans)
+    setLoans(ctx: StateContext<BookStateModel>, action: SetLoans) {
+        return ctx.patchState({ loans: action.loans, loansTotalItems: action.quantity });
+    }
+
+    @Action(LoadStatistic)
+    loadStatistic(ctx: StateContext<BookStateModel>, action: LoadStatistic) {
+        switch (action.model) {
+            case models.USER:
+                return this.bookService
+                    .getUserStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+            case models.LIBRARIAN:
+                return this.bookService
+                    .getLibrarianStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+            case models.BOOK:
+                return this.bookService
+                    .getBookStatistic(action.value)
+                    .pipe(tap(response => ctx.patchState({ statistic: response.statistic })));
+        }
+    }
+
+    @Action(LoadSummaryStatistic)
+    loadSummaryStatistic(ctx: StateContext<BookStateModel>) {
+        return this.bookService
+            .getSummaryStatistic()
+            .pipe(tap(response => ctx.patchState({ summaryStatistic: response.summaryStatistic })));
     }
 }

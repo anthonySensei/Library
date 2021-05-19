@@ -8,13 +8,13 @@ import { UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 
-import { responseSuccessHandle, responseErrorHandle } from '../helper/responseHandle';
+import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 import { convertToBase64 } from '../helper/image';
+import { emailSubjects, generateUserActivationMessage } from '../constants/email';
 import { sendMail } from '../helper/email';
-import { emailSubjects, generateUserActivationMessage, generateUserCreationMessage } from '../constants/email';
 
 const expiresIn = 3600 * 12;
 

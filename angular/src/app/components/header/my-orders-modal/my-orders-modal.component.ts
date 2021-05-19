@@ -10,7 +10,6 @@ import { Department } from '../../../models/department.model';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
-import { HelperService } from '../../../services/helper.service';
 import { OrderService } from '../../../services/orders.service';
 import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
@@ -38,7 +37,6 @@ export class MyOrdersModalComponent
 
     constructor(
         private orderService: OrderService,
-        public helperService: HelperService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
     ) {}

@@ -1,14 +1,11 @@
 import { Book } from './book.model';
-import { Department } from './department.model';
+import { User } from './user.model';
 
-export class Loan {
-    id: number;
-    loanTime: Date;
-    returnedTime: Date;
-    student;
-    librarian: any;
-    book: Book;
-    department: Department;
-
-    constructor() {}
+export interface Loan {
+    _id?: string;
+    loanedAt?: Date;
+    returnedAt?: Date;
+    student: User | string;
+    librarian: User | string;
+    book: Book | string;
 }

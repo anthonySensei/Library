@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { addDays, addHours, endOfMonth, startOfDay, subDays } from 'date-fns';
-import { HelperService } from '../../../services/helper.service';
 import { CalendarEvent, CalendarEventAction } from 'angular-calendar';
 
 const colors: any = {
@@ -79,9 +78,7 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     departmentSelect: number;
     librarianSelect: number;
 
-    constructor(
-        public helperService: HelperService,
-    ) {}
+    constructor() {}
 
     ngOnInit(): void {}
 

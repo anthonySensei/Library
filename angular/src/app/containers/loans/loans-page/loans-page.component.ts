@@ -5,19 +5,17 @@ import { MatSort } from '@angular/material/sort';
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { LoansService } from '../../../services/loans.service';
-import { HelperService } from '../../../services/helper.service';
-
 import { Loan } from '../../../models/loan.model';
-import { Department } from '../../../models/department.model';
 
 import { LoansDataSource } from '../../../datasources/loans.datasource';
 
 import { TableColumns } from '../../../constants/tableColumns';
 import { PageTitles } from '../../../constants/pageTitles';
-import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { TABLE_ANIMATION } from '../../../constants/animation';
+import { Store } from '@ngxs/store';
+import { SortOrder } from '../../../constants/sortOrder';
+import { BookState, ReturnBook } from '../../../store/state/book.state';
 
 @Component({
     selector: 'app-loan-page',
@@ -26,46 +24,28 @@ import { TABLE_ANIMATION } from '../../../constants/animation';
 })
 export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    columnsToDisplay: string[] = [
-        TableColumns.LOAN_TIME,
-        TableColumns.RETURNED_TIME,
-        TableColumns.BOOK_ISBN,
-        TableColumns.READER_TICKET,
-        TableColumns.EMAIL
-    ];
-    expandedElement: Loan | null;
-    tableColumns = TableColumns;
-    departments: Department[];
-
-    filterName: string;
     filterValue: string;
     departmentSelect: number;
-    date: Date;
+    showOnlyDebtors: boolean;
+    showOnlyReturned: boolean;
+    columnsToDisplay: string[] = ['user', 'librarian', 'book', 'loanedAt', 'returnedAt'];
+    expandedElement: Loan | null;
+    loanedAt: Date;
 
+    tableColumns = TableColumns;
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    isShowingDebtors: boolean;
-
-    constructor(
-        private loansService: LoansService,
-        public helperService: HelperService
-    ) {}
+    constructor(public store: Store) {}
 
     ngOnInit(): void {
         document.title = PageTitles.LOANS;
-        this.dataSource = new LoansDataSource(this.loansService);
-        this.dataSource.loadLoans(
-            '',
-            '',
-            SortOrder.DESC,
-            0,
-            5,
-            null,
-            null,
-            false
-        );
+        this.dataSource = new LoansDataSource(this.store);
+        this.dataSource.loadLoans({
+            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
+            pageSize: this.paginator.pageSize || 5,
+        });
     }
 
     ngAfterViewInit(): void {
@@ -76,28 +56,23 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(
             this.sort.sortChange,
             this.paginator.page
-        ).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLoansPage())).subscribe();
+        ).pipe(untilDestroyed(this)).pipe(tap(() => this.onLoadLoans())).subscribe();
     }
 
-    returnBook(loanId: any, bookId: any): void {
-        this.loansService.returnBookHttp(loanId, bookId, new Date()).pipe(untilDestroyed(this)).subscribe(() => {
+    getTotalItems(): number {
+        return this.store.selectSnapshot(BookState.LoansTotalItems);
+    }
+
+    returnBook(loanId: string): void {
+        this.store.dispatch(new ReturnBook(loanId)).subscribe(() => this.onLoadLoans());
+    }
+
+    onLoadLoans(): void {
+        this.dataSource.loadLoans({
+            sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
+            pageSize: this.paginator.pageSize, showOnlyDebtors: this.showOnlyDebtors, showOnlyReturned: this.showOnlyReturned,
+            loanedAt: this.loanedAt
         });
-    }
-
-    loadLoansPage(): void {
-        if (!this.filterName) {
-            this.filterValue = '';
-        }
-        this.dataSource.loadLoans(
-            this.filterName,
-            this.filterValue,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize,
-            this.departmentSelect,
-            this.date,
-            this.isShowingDebtors
-        );
     }
 
     ngOnDestroy(): void {}

@@ -2,37 +2,28 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { LoansService } from '../../../services/loans.service';
-import { HelperService } from '../../../services/helper.service';
-
-import { Statistic } from '../../../models/statistic.model';
-
-import { WarnMessages } from '../../../constants/warnMessages';
 import { PageTitles } from '../../../constants/pageTitles';
-import { DbModels } from '../../../constants/dbModels';
-import { Department } from '../../../models/department.model';
 import { FiltersName } from '../../../constants/filtersName';
 import { MaterialService } from '../../../services/material.service';
-import { SnackBarClasses } from '../../../constants/snackBarClasses';
-import { Select } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { User } from '../../../models/user.model';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { UserState } from '../../../store/state/user.state';
+import { BookState, LoadStatistic, LoadSummaryStatistic } from '../../../store/state/book.state';
+import { Statistic, SummaryStatistic } from '../../../models/request/loan';
+import { models } from '../../../constants/models';
 
 @Component({
     selector: 'app-loans-chart',
     templateUrl: './loans-chart.component.html',
-    styleUrls: ['./loans-chart.component.sass']
+    styleUrls: ['./loans-chart.component.scss']
 })
 export class LoansChartComponent implements OnInit, OnDestroy {
-    statistic: Statistic[];
-    departments: Department[];
-
     isManager: boolean;
 
     view: any[] = [700, 300];
+    view2: any[] = [200, 400];
 
-    multi: any;
 
     legend = true;
     showLabels = true;
@@ -46,100 +37,83 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     timeline = true;
 
     model: string;
-    modelValue: string;
+    value: string;
 
     colorScheme = {
-        domain: ['#ffaa00']
+        domain: ['#FFDF6C']
     };
+    colorScheme2 = {
+        domain: ['#FFFFFF', '#FFDF6C', '#C30415']
+    };
+    cardColor = '#202020';
+
+    statistic = [];
+    summaryStatistic = [];
 
     @Select(UserState.User)
     user$: Observable<User>;
 
+    @Select(BookState.Statistic)
+    statistic$: Observable<Statistic>;
+
+    @Select(BookState.SummaryStatistic)
+    summaryStatistic$: Observable<SummaryStatistic>;
+
     constructor(
-        private loansService: LoansService,
-        private helperService: HelperService,
         private materialService: MaterialService,
+        private store: Store,
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.STATISTIC;
-        this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
+        this.loadSummaryStatistic();
         this.getUser$();
+        this.getStatistic$();
+        this.getSummaryStatistic$();
+    }
+
+    isChartEmpty(): boolean {
+        return !this.statistic[0]?.series?.length;
     }
 
     getUser$(): void {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.isManager = user && user.admin);
     }
 
-    statisticHandler(): void {
-        this.loansService.getStatistic().pipe(untilDestroyed(this)).subscribe((statistic: Statistic[]) => {
-            this.statistic = statistic;
-            this.setStatisticToChart();
+    getStatistic$(): void {
+        this.statistic$.pipe(untilDestroyed(this)).subscribe(stat => this.statistic = [{ name: this.value, series: stat }]);
+    }
+
+    getSummaryStatistic$(): void {
+        this.summaryStatistic$.pipe(untilDestroyed(this)).subscribe(summaryStatistic => {
+            const { totalBooks, loansForLastMonth, totalDebtors } = summaryStatistic || {} as SummaryStatistic;
+            this.summaryStatistic = [
+                { name: 'Total books', value: totalBooks },
+                { name: 'Loans last month', value: loansForLastMonth },
+                { name: 'Debtors', value: totalDebtors },
+            ];
         });
     }
 
-    setStatisticToChart() {
-        const seriesArr = [];
-        if (this.statistic.length > 0) {
-            this.statistic.forEach((stat: Statistic) => {
-                const item = {
-                    name: stat.loanTime,
-                    value: stat.books
-                };
-                seriesArr.push(item);
-            });
-            this.multi = [
-                {
-                    name: this.getLegendName(),
-                    series: seriesArr
-                }
-            ];
-        } else {
-            this.multi = this.helperService.emptyChartHandle(WarnMessages.EMPTY);
-            this.materialService.openSnackbar(
-                WarnMessages.EMPTY_STATISTIC,
-                SnackBarClasses.Warn
-            );
-        }
+    loadSummaryStatistic() {
+        this.store.dispatch(new LoadSummaryStatistic());
     }
 
     getInputName(): string {
         switch (this.model) {
-            case DbModels.LIBRARIAN:
+            case models.USER:
                 return FiltersName.EMAIL;
-            case DbModels.BOOK:
+            case models.LIBRARIAN:
+                return FiltersName.EMAIL;
+            case models.BOOK:
                 return FiltersName.ISBN;
-            case DbModels.DEPARTMENT:
-                return FiltersName.ADDRESS;
             default:
                 return FiltersName.NOTHING;
         }
     }
 
-    getLegendName(): string {
-        switch (this.model) {
-            case DbModels.USER:
-                return this.statistic[0].student.name;
-            case DbModels.LIBRARIAN:
-                return this.statistic[0].librarian.name;
-            case DbModels.BOOK:
-                return this.statistic[0].book.title;
-            case DbModels.DEPARTMENT:
-                return this.statistic[0].department.address;
-            default:
-                return FiltersName.NOTHING;
-        }
-    }
-
-    onSelect(): void {}
-
-    onActivate(): void {}
-
-    onDeactivate(): void {}
-
-    showStatistic(): void {
-        this.loansService.fetchLoansStatisticHttp(this.model, this.modelValue).pipe(untilDestroyed(this)).subscribe();
-        this.statisticHandler();
+    onShowStatistic(): void {
+        this.store.dispatch(new LoadStatistic(this.model, this.value));
     }
 
     ngOnDestroy(): void {}

@@ -4,7 +4,6 @@ import { MatSort } from '@angular/material/sort';
 
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { HelperService } from '../../../services/helper.service';
 
 import { AngularLinks } from '../../../constants/angularLinks';
 import { TableColumns } from '../../../constants/tableColumns';
@@ -43,7 +42,6 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
     constructor(
         private store: Store,
-        public helperService: HelperService,
         private dialog: MatDialog,
     ) {}
 

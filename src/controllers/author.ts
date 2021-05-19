@@ -8,7 +8,7 @@ import successMessages from '../constants/successMessages';
 import { AuthorSchema } from '../models/author';
 import Author from '../schemas/author';
 
-import { responseErrorHandle, responseSuccessHandle } from '../helper/responseHandle';
+import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 
 export const getAuthors = async (req: Request, res: Response) => {
     try {
