@@ -8,8 +8,6 @@ import { tap } from 'rxjs/operators';
 
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
-import { OrderService } from '../../../services/orders.service';
-import { SortOrder } from '../../../constants/sortOrder';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
@@ -29,14 +27,12 @@ export class MyOrdersModalComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
-        private orderService: OrderService,
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
     ) {
     }
 
     ngOnInit(): void {
-        // this.dataSource = new OrdersDataSource(this.orderService);
         // this.dataSource.loadOrders(
         //     '',
         //     '',
@@ -63,16 +59,16 @@ export class MyOrdersModalComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     loadOrdersPage(): void {
-        this.dataSource.loadOrders(
-            null,
-            null,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize,
-            null,
-            true,
-            this.data.studentId
-        );
+        // this.dataSource.loadOrders(
+        //     null,
+        //     null,
+        //     this.sort.direction,
+        //     this.paginator.pageIndex,
+        //     this.paginator.pageSize,
+        //     null,
+        //     true,
+        //     this.data.studentId
+        // );
     }
 
     ngOnDestroy(): void {

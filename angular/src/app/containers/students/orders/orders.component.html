@@ -51,11 +51,6 @@
             <td mat-cell *matCellDef="let element">{{ element.book.title }} ({{ element.book.isbn }})</td>
         </ng-container>
 
-        <ng-container matColumnDef="orderedAt">
-            <th mat-header-cell mat-sort-header *matHeaderCellDef>Loaned At</th>
-            <td mat-cell *matCellDef="let element">{{ element.loanedAt | date }}</td>
-        </ng-container>
-
         <ng-container matColumnDef="librarian">
             <th mat-header-cell *matHeaderCellDef>Librarian</th>
             <td mat-cell *matCellDef="let element">
@@ -64,8 +59,13 @@
             </td>
         </ng-container>
 
+        <ng-container matColumnDef="orderedAt">
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>Ordered At</th>
+            <td mat-cell *matCellDef="let element">{{ element.orderedAt | date }}</td>
+        </ng-container>
+
         <ng-container matColumnDef="loanedAt">
-            <th mat-header-cell *matHeaderCellDef>Returned At</th>
+            <th mat-header-cell *matHeaderCellDef>Loaned At</th>
             <td mat-cell *matCellDef="let element">
                 <span *ngIf="element.loanedAt">{{ element.loanedAt | date }}</span>
                 <span *ngIf="!element.loanedAt">Not Loaned Yet</span>
@@ -97,9 +97,9 @@
                         <div class="loan-info">
                             <div class="btn-group" *ngIf="!element.returnedAt">
                                 <a mat-stroked-button color="primary" class="expanded-btn" matTooltip="Return book"
-                                    (click)="onLoanBook(element._id)"
+                                    (click)="onLoanBook(element)"
                                 >
-                                    <i class="material-icons">keyboard_return</i> Return book
+                                    <i class="material-icons">keyboard_return</i> Loan book
                                 </a>
                             </div>
                         </div>

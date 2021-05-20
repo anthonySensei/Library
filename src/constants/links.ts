@@ -6,6 +6,7 @@ export const GENRES_URL = '/genres';
 export const LIBRARIANS_URL = '/librarians';
 export const STUDENTS_URL = '/students';
 export const USERS_URL = '/users';
+export const ORDERS_URL = '/orders';
 
 export const LOANS_URL = {
     baseUrl: '/loans',
@@ -17,8 +18,6 @@ export const LOANS_URL = {
 };
 
 exports.LOANS_STATISTIC_URL = '/statistic';
-
-exports.ORDERS_URL = '/orders';
 
 exports.PERIODS_URL = '/periods';
 

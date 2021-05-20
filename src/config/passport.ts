@@ -1,9 +1,11 @@
 import * as passportJWT from 'passport-jwt';
+import { Strategy as LocalStrategy } from 'passport-local';
 import { Request } from 'express';
 
 import logger from './logger';
 
 import User from '../schemas/user';
+
 import { UserSchema } from '../models/user';
 
 import fields from '../constants/fields';
@@ -13,11 +15,7 @@ const { SECRET_KEY } = process.env;
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 
-
-module.exports = (passport: any) => {
-
-    const LocalStrategy = require('passport-local').Strategy;
-
+export default (passport: any) => {
     passport.use(
         new LocalStrategy(
             {
@@ -56,8 +54,7 @@ module.exports = (passport: any) => {
     );
 
     passport.use(
-        new JWTStrategy(
-            {
+        new JWTStrategy({
                 jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
                 secretOrKey: SECRET_KEY
             },

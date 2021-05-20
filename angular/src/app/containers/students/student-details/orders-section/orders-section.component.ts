@@ -7,10 +7,7 @@ import { tap } from 'rxjs/operators';
 
 import { OrdersDataSource } from '../../../../datasources/orders.datasource';
 
-import { OrderService } from '../../../../services/orders.service';
-
 import { TableColumns } from '../../../../constants/tableColumns';
-import { SortOrder } from '../../../../constants/sortOrder';
 
 @Component({
     selector: 'app-orders-section',
@@ -32,11 +29,9 @@ export class OrdersSectionComponent implements OnInit, AfterViewInit, OnDestroy 
 
     isShowingNotLoaned: boolean;
 
-    constructor(private orderService: OrderService) {
-    }
+    constructor() {}
 
     ngOnInit() {
-        // this.dataSource = new OrdersDataSource(this.orderService);
         // this.dataSource.loadOrders(
         //     '',
         //     '',
@@ -64,16 +59,16 @@ export class OrdersSectionComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     loadOrdersPage(): void {
-        this.dataSource.loadOrders(
-            null,
-            null,
-            this.sort.direction,
-            this.paginator.pageIndex,
-            this.paginator.pageSize,
-            null,
-            this.isShowingNotLoaned,
-            this.studentId
-        );
+        // this.dataSource.loadOrders(
+        //     null,
+        //     null,
+        //     this.sort.direction,
+        //     this.paginator.pageIndex,
+        //     this.paginator.pageSize,
+        //     null,
+        //     this.isShowingNotLoaned,
+        //     this.studentId
+        // );
     }
 
     ngOnDestroy(): void {

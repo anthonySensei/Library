@@ -11,11 +11,24 @@ export interface Order {
     book: Book | string;
 }
 
-export interface GetOrders extends Pagination {
+export interface GetOrdersModel extends Pagination {
     userId?: string;
     librarianId?: string;
     filterValue?: string;
     showOnlyNotLoaned?: boolean;
     showOnlyLoaned?: boolean;
     loanedAt?: Date;
+    orderedAt?: Date;
+}
+
+export interface OrderBookModel {
+    userId: string;
+    bookId: string;
+}
+
+export interface LoanBookFromOrderModel {
+    orderId: string;
+    userId: string;
+    bookId: string;
+    librarianId?: string;
 }

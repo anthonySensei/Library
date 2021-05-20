@@ -12,7 +12,7 @@ import { Loan } from '../../models/loan.model';
 import { GetLoans, Statistic, SummaryStatistic } from '../../models/request/loan';
 import { UserState } from './user.state';
 import { models } from '../../constants/models';
-import { GetOrders, Order } from '../../models/order.model';
+import { GetOrdersModel, LoanBookFromOrderModel, Order } from '../../models/order.model';
 
 
 /*********************************
@@ -73,7 +73,19 @@ export class LoadLoans {
 export class LoadOrders {
     static readonly type = '[Book] LoadOrders';
 
-    constructor(public filters: GetOrders) {}
+    constructor(public filters: GetOrdersModel) {}
+}
+
+export class OrderBook {
+    static readonly type = '[Book] OrderBook';
+
+    constructor(public bookId?: string) {}
+}
+
+export class LoanBookFromOrder {
+    static readonly type = '[Book] LoanBookFromOrder';
+
+    constructor(public data: LoanBookFromOrderModel) {}
 }
 
 export class LoadStatistic {
@@ -254,6 +266,26 @@ export class BookState {
     loadOrders(ctx: StateContext<BookStateModel>, action: LoadOrders) {
         return this.bookService.getOrders(action.filters).pipe(tap(response => {
             ctx.patchState({ orders: response.orders, ordersTotalItems: response.quantity });
+        }));
+    }
+
+    @Action(OrderBook)
+    orderBook(ctx: StateContext<BookStateModel>, action: OrderBook) {
+        const { bookId  } = action;
+        const id = bookId || ctx.getState().book?.id;
+        const userId = this.store.selectSnapshot(UserState.User).id;
+        return this.bookService.orderBook({ bookId: id, userId }).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
+            ctx.dispatch(new LoadBook(id));
+        }));
+    }
+
+    @Action(LoanBookFromOrder)
+    loanBookFromOrder(ctx: StateContext<BookStateModel>, action: LoanBookFromOrder) {
+        const { orderId, bookId, userId  } = action.data;
+        const librarianId = this.store.selectSnapshot(UserState.User).id;
+        return this.bookService.loanBookFromOrder({ orderId, bookId, userId, librarianId }).pipe(tap(response => {
+            this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));
     }
 }

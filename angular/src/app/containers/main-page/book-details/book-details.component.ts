@@ -9,7 +9,6 @@ import { Book } from '../../../models/book.model';
 import { User } from '../../../models/user.model';
 
 import { BookService } from '../../../services/book.service';
-import { OrderService } from '../../../services/orders.service';
 
 import { LoanBookPopupComponent } from './loan-book-modal/loan-book-popup.component';
 import { AngularLinks } from '../../../constants/angularLinks';
@@ -18,7 +17,7 @@ import { ModalWidth } from '../../../constants/modalWidth';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
 import { UserState } from '../../../store/state/user.state';
-import { BookState, DeleteBook, LoadBook } from '../../../store/state/book.state';
+import { BookState, DeleteBook, LoadBook, OrderBook } from '../../../store/state/book.state';
 import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
 import { LocalizationService } from '../../../services/localization.service';
@@ -51,7 +50,6 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
         private router: Router,
         private store: Store,
         private bookService: BookService,
-        private orderService: OrderService,
         private localizationService: LocalizationService,
         public dialog: MatDialog
     ) {}
@@ -93,13 +91,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
 
     onOrderBook(): void {
-        this.orderService
-            .orderBookHttp({
-                studentEmail: this.user.email,
-                bookId: this.bookId,
-                time: new Date()
-            })
-            .subscribe(() => {});
+        this.store.dispatch(new OrderBook());
     }
 
     onEditBook() {

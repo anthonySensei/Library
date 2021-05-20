@@ -2,6 +2,7 @@ import passport from 'passport';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
 
 import User from '../schemas/user';
 import { UserSchema } from '../models/user';
@@ -9,16 +10,17 @@ import { UserSchema } from '../models/user';
 import logger from '../config/logger';
 
 import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
+import { convertToBase64 } from '../helper/image';
+import { sendMail } from '../helper/email';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import { convertToBase64 } from '../helper/image';
 import { emailSubjects, generateUserActivationMessage } from '../constants/email';
-import { sendMail } from '../helper/email';
+
 
 const expiresIn = 3600 * 12;
 
-require('dotenv').config();
+config();
 
 export const login = (req: Request, res: Response, next: any) => {
     passport.authenticate('local', async (err: any, user: UserSchema) => {

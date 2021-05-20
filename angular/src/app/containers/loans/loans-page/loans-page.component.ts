@@ -48,10 +48,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
-
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
         merge(
             this.sort.sortChange,
             this.paginator.page

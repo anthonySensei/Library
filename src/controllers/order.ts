@@ -1,31 +1,54 @@
 import { Request, Response } from 'express';
+import moment from 'moment';
 
 import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import { emailMessages, emailSubjects } from '../constants/email';
 
 import Order from '../schemas/order';
+import Book from '../schemas/book';
+import User from '../schemas/user';
+import Loan from '../schemas/loan';
+
+import { OrderSchema } from '../models/order';
+import { BookSchema } from '../models/book';
+import { UserSchema } from '../models/user';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
-import { OrderSchema } from '../models/order';
-
-const SequelizeOrder = require('../schemas/sorder');
-const Loan = require('../schemas/sloan');
-const Student = require('../schemas/student');
-const Librarian = require('../schemas/librarian');
-const Book = require('../schemas/sbook');
-const Department = require('../schemas/sdepartment');
-
-const mailSender = require('../helper/email');
-const mailMessages = require('../constants/email');
+import { sendMail } from '../helper/email';
+import { removedEmptyFields } from '../helper/object';
 
 export const getOrders = async (req: Request, res: Response) => {
+    // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
+    const { sortName, sortOrder, page, pageSize, returnedAt } = req.query;
+    const showOnlyNotLoaned = !!req.query.showOnlyNotLoaned;
+    const showOnlyLoaned = !!req.query.showOnlyLoaned;
+    // const regex = new RegExp(filterValue as string, 'i');
+
+    const sort: any = {};
+    sort[sortName as string] = sortOrder;
+    const filterDate = new Date(String(returnedAt));
+    const tomorrow = moment(filterDate.getTime()).add(1, 'days').toDate();
+    const filterCondition = {
+        returnedAt: returnedAt && { $gte: filterDate, $lt: tomorrow },
+        loanedAt: (showOnlyLoaned && { $exists: true, $ne: null }) || (showOnlyNotLoaned && { $exists: false }) || null
+        // $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
+    };
+    const filter: any = removedEmptyFields(filterCondition);
+
     try {
-        const orders = await Order.find() as OrderSchema[];
+        const quantity = await Order.countDocuments(filter);
+        const orders = await Order
+            .find(filter, {}, { limit: Number(pageSize), skip: Number(page) * Number(pageSize), sort })
+            .populate('book')
+            .populate('user')
+            .populate('librarian') as OrderSchema[];
         const data = {
             orders: orders.map(order => order.toJSON()),
-            message: successMessages.SUCCESSFULLY_FETCHED
+            message: successMessages.SUCCESSFULLY_FETCHED,
+            quantity
         };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
@@ -34,113 +57,50 @@ export const getOrders = async (req: Request, res: Response) => {
     }
 };
 
-exports.orderBook = async (req: Request, res: Response) => {
-    const studentEmail = req.body.studentEmail;
-    const bookId = req.body.bookId;
-    const orderTime = req.body.time;
-    if (!req.body) {
-        return responseErrorHandle(
-            res,
-            400,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+export const orderBook = async (req: Request, res: Response) => {
+    const { userId, bookId } = req.body;
+
+    if (!userId || !bookId) {
+        return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
+
     try {
-        const student = await Student.findOne({
-            where: {
-                email: studentEmail
-            }
-        });
-        if (!student) {
-            return responseErrorHandle(
-                res,
-                400,
-                errorMessages.USER_EMAIL_EXISTS
-            );
+        const user = await User.findById(userId) as UserSchema;
+
+        if (!user) {
+            return responseErrorHandle(res, 400, errorMessages.USER_DOES_NOT_EXIST);
         }
 
-        const book = await Book.findOne({
-            where: { id: bookId },
-            include: { model: Department }
-        });
-        if (book.get().quantity <= 0) {
-            return responseErrorHandle(
-                res,
-                400,
-                errorMessages.THERE_ARE_NO_AVAILABLE_BOOKS
-            );
-        } else {
-            const bookOrder = new SequelizeOrder({
-                order_time: orderTime,
-                studentId: student.get().id,
-                bookId,
-                departmentId: book.get().department_.get().id
-            });
-            await bookOrder.save();
-            await book.update({ quantity: book.get().quantity - 1 });
-            await mailSender.sendMail(
-                studentEmail,
-                mailMessages.subjects.BOOK_ORDERED,
-                mailMessages.messages.BOOK_ORDERED
-            );
+        const book = await Book.findOne({ _id: bookId, quantity: { $gt: 0 } }) as BookSchema;
 
-            const data = {
-                isSuccessful: true,
-                message: successMessages.SUCCESSFULLY_ORDERED
-            };
-
-            responseSuccessHandle(res, 200, data);
+        if (!book) {
+            return responseErrorHandle(res, 500, errorMessages.BOOK_IS_NOT_AVAILABLE_NOW);
         }
+
+        await Order.create({ book: bookId, user: user._id, orderedAt: new Date() });
+        await Book.findByIdAndUpdate(bookId, { quantity: book.quantity - 1 });
+        await sendMail(user.email, emailSubjects.BOOK_ORDERED, emailMessages.bookOrdered(user.name));
+        responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_ORDERED });
     } catch (err) {
-        logger.error('Cannot order sbook', err.message);
-        responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        logger.error('Cannot order book', err.message);
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
-exports.loanBookFromOrder = async (req: Request, res: Response) => {
-    const orderId = req.body.orderId;
-    const bookId = req.body.bookId;
-    const studentId = req.body.studentId;
-    const librarianEmail = req.body.librarianEmail;
-    const loanTime = req.body.loanTime;
+export const loanBookFromOrder = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { userId, librarianId, bookId } = req.body;
 
-    if (!orderId || !bookId || !studentId || !librarianEmail || !loanTime) {
-        return responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+    if (!id || !bookId || !userId || !librarianId) {
+        return responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 
     try {
-        const order = await SequelizeOrder.findOne({ where: { id: orderId } });
-        await order.update({ loan_time: loanTime });
-        const librarian = await Librarian.findOne({
-            where: { email: librarianEmail }
-        });
-        const book = await Book.findOne({ where: { id: bookId } });
-        await Loan.create({
-            loan_time: loanTime,
-            bookId,
-            studentId,
-            librarianId: librarian.get().id,
-            departmentId: book.get().departmentId
-        });
-        const data = {
-            isSuccessful: true,
-            message: successMessages.SUCCESSFULLY_LOANED
-        };
-        return responseSuccessHandle(res, 200, data);
+        await Loan.create({ book: bookId, user: userId, librarian: librarianId, loanedAt: new Date() });
+        await Order.findByIdAndUpdate(id, { librarian: librarianId, loanedAt: new Date() });
+        return responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_LOANED });
     } catch (err) {
         logger.error('Cannot loan book from order', err.message);
-        responseErrorHandle(
-            res,
-            500,
-            errorMessages.SOMETHING_WENT_WRONG
-        );
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
 };

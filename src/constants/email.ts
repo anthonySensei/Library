@@ -11,6 +11,8 @@ export const emailMessages = {
                    With best regards,
                    <br>
                    Library`,
+    bookOrdered: (name: string) => `Hello, ${name}.
+    Book successfully ordered.`,
 };
 
 export const generateUserActivationMessage = (token: string) => {

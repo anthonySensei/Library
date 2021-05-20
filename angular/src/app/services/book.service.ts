@@ -9,7 +9,7 @@ import { GetLoans } from '../models/request/loan';
 import { GetBooksModel, LoanBookModel } from '../models/request/book';
 
 import { serverLink } from '../constants/serverLink';
-import { GetOrders } from '../models/order.model';
+import { GetOrdersModel, LoanBookFromOrderModel, OrderBookModel } from '../models/order.model';
 
 
 @Injectable({ providedIn: 'root' })
@@ -101,7 +101,7 @@ export class BookService {
         return this.http.get(this.SUMMARY_STATISTIC_URL).pipe(map((response: Response) => response.data));
     }
 
-    getOrders(params: GetOrders) {
+    getOrders(params: GetOrdersModel) {
         return this.http
             .get(this.ORDERS_URL, {
                 params: new HttpParams()
@@ -115,5 +115,13 @@ export class BookService {
                     .set('showOnlyNotLoaned', params.showOnlyNotLoaned ? 'true' : '')
             })
             .pipe(map((response: Response) => response.data));
+    }
+
+    orderBook(data: OrderBookModel) {
+        return this.http.post(this.ORDERS_URL, data).pipe(map((response: Response) => response.data));
+    }
+
+    loanBookFromOrder(data: LoanBookFromOrderModel) {
+        return this.http.put(`${this.ORDERS_URL}/${data.orderId}`, data).pipe(map((response: Response) => response.data));
     }
 }
