@@ -2,7 +2,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Book } from '../../../models/book.model';
-import { Department } from '../../../models/department.model';
 
 import { BookService } from '../../../services/book.service';
 
@@ -14,9 +13,6 @@ import { AngularLinks } from '../../../constants/angularLinks';
     styleUrls: ['../edit-page.component.sass']
 })
 export class BookSectionComponent implements OnInit, OnDestroy {
-    @Input() departmentSelect: number;
-    @Input() departments: Department[];
-
     booksForSelect: Book[];
 
     bookSelect: number = null;
@@ -36,7 +32,7 @@ export class BookSectionComponent implements OnInit, OnDestroy {
     }
 
     async editBook() {
-        if (!this.bookSelect || !this.departmentSelect) {
+        if (!this.bookSelect) {
             return;
         }
         await this.router.navigate(['/', this.links.ADD_BOOK], {

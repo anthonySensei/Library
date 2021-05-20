@@ -1,20 +1,12 @@
-import {
-    AfterViewInit,
-    Component,
-    Input,
-    OnDestroy,
-    OnInit,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
-import { merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
-import { Department } from '../../../../models/department.model';
 
 import { SortOrder } from '../../../../constants/sortOrder';
 import { TableColumns } from '../../../../constants/tableColumns';
@@ -26,18 +18,14 @@ import { Store } from '@ngxs/store';
 })
 export class LoansSectionComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() librarianId: number;
-    departments: Department[];
 
     columnsToDisplay: string[] = [
         TableColumns.LOAN_TIME,
         TableColumns.RETURNED_TIME,
         TableColumns.BOOK_ISBN,
         TableColumns.READER_TICKET,
-        TableColumns.DEPARTMENT_ADDRESS,
     ];
     tableColumns = TableColumns;
-
-    departmentSelect: number;
 
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

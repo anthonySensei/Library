@@ -1,16 +1,2 @@
 <section class="filter-section">
-    <mat-form-field class="d-block">
-        <mat-label>Department address</mat-label>
-        <mat-select
-            [(ngModel)]="departmentSelect"
-            (ngModelChange)="onSetSchedules()"
-        >
-            <mat-option>All</mat-option>
-            <mat-option
-                *ngFor="let department of departments"
-                [value]="department.id"
-                >{{ department.address }}</mat-option
-            >
-        </mat-select>
-    </mat-form-field>
 </section>

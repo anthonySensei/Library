@@ -1,192 +1,105 @@
 <section class="table-section">
+    <section class="d-flex justify-content-end align-items-center mb-1">
+        <mat-form-field>
+            <mat-label>Search</mat-label>
+            <input matInput [(ngModel)]="filterValue" (ngModelChange)="onLoadOrders()" />
+        </mat-form-field>
+    </section>
     <section class="mb-1">
         <mat-accordion>
             <mat-expansion-panel>
                 <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Filters
-                    </mat-panel-title>
+                    <mat-panel-title>Filters</mat-panel-title>
                 </mat-expansion-panel-header>
-
-                <mat-form-field class="d-block">
-                    <mat-label>Department address</mat-label>
-                    <mat-select
-                        [(ngModel)]="departmentSelect"
-                        (ngModelChange)="loadOrdersPage()"
-                    >
-                        <mat-option value="''">All</mat-option>
-                        <mat-option
-                            *ngFor="let department of departments"
-                            [value]="department.id"
-                            >{{ department.address }}</mat-option
-                        >
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="d-block">
-                    <mat-label>Order date</mat-label>
-                    <input
-                        matInput
-                        [matDatepicker]="picker"
-                        [(ngModel)]="date"
-                        (ngModelChange)="loadOrdersPage()"
-                    />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="picker"
-                    ></mat-datepicker-toggle>
+                <mat-form-field class="d-block w-50">
+                    <mat-label>Date</mat-label>
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="orderedAt" (ngModelChange)="onLoadOrders()" />
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                <mat-form-field class="d-block">
-                    <mat-label>Filter</mat-label>
-                    <mat-select
-                        [(ngModel)]="filterName"
-                        (ngModelChange)="loadOrdersPage()"
-                    >
-                        <mat-option>-</mat-option>
-                        <mat-option value="readerTicket"
-                            >Reader ticket</mat-option
-                        >
-                        <mat-option value="isbn">ISBN</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <mat-form-field class="d-block">
-                    <mat-label>Value</mat-label>
-                    <input
-                        matInput
-                        [(ngModel)]="filterValue"
-                        (ngModelChange)="loadOrdersPage()"
-                        [disabled]="!filterName"
-                    />
-                </mat-form-field>
-                <mat-slide-toggle
-                    color="primary"
-                    class="d-block"
-                    [(ngModel)]="isShowingNotLoaned"
-                    (ngModelChange)="loadOrdersPage()"
-                    >Show only not loaned</mat-slide-toggle
+                <mat-slide-toggle color="primary" class="d-block"
+                                  [(ngModel)]="showOnlyNotLoaned"
+                                  (ngModelChange)="showOnlyLoaned = false; onLoadOrders()"
                 >
+                    Show only not loaned
+                </mat-slide-toggle>
+                <mat-slide-toggle color="primary" class="d-block"
+                                  [(ngModel)]="showOnlyLoaned"
+                                  (ngModelChange)="showOnlyNotLoaned = false; onLoadOrders()"
+                >
+                    Show only loaned
+                </mat-slide-toggle>
             </mat-expansion-panel>
         </mat-accordion>
     </section>
     <div class="spinner-container" *ngIf="dataSource.loading$ | async">
         <mat-spinner></mat-spinner>
     </div>
-    <table
-        mat-table
-        multiTemplateDataRows
-        class="mat-elevation-z8"
-        matSort
-        matSortActive="orderTime"
-        matSortDirection="asc"
-        matSortDisableClear
-        [dataSource]="dataSource"
+    <table mat-table multiTemplateDataRows matSort matSortDisableClear
+           class="mat-elevation-z8" matSortActive="orderedAt" matSortDirection="desc"
+           [dataSource]="dataSource"
     >
-        <ng-container [matColumnDef]="tableColumns.ORDER_TIME">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Order time
-            </th>
-            <td mat-cell *matCellDef="let element">
-                {{ element.orderTime | date }}
+        <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>User</th>
+            <td mat-cell *matCellDef="let element" matSort>
+                {{ element.user.name }} ({{ element.user.email }})
             </td>
         </ng-container>
 
-        <ng-container [matColumnDef]="tableColumns.LOAN_TIME">
-            <th mat-header-cell *matHeaderCellDef>
-                Loan time
-            </th>
+        <ng-container matColumnDef="book">
+            <th mat-header-cell *matHeaderCellDef>Book</th>
+            <td mat-cell *matCellDef="let element">{{ element.book.title }} ({{ element.book.isbn }})</td>
+        </ng-container>
+
+        <ng-container matColumnDef="librarian">
+            <th mat-header-cell *matHeaderCellDef>Librarian</th>
             <td mat-cell *matCellDef="let element">
-                {{
-                    element.loanTime
-                        ? (element.loanTime | date)
-                        : 'Not loaned yet'
-                }}
+                <span *ngIf="element.lebrarian">{{ element.librarian.name }} ({{ element.librarian.email }})</span>
+                <span *ngIf="!element.lebrarian">Not Loaned Yet</span>
             </td>
         </ng-container>
 
-        <ng-container [matColumnDef]="tableColumns.BOOK_ISBN">
-            <th mat-header-cell *matHeaderCellDef>Book ISBN</th>
-            <td mat-cell *matCellDef="let element">{{ element.bookISBN }}</td>
+        <ng-container matColumnDef="orderedAt">
+            <th mat-header-cell mat-sort-header *matHeaderCellDef>Ordered At</th>
+            <td mat-cell *matCellDef="let element">{{ element.orderedAt | date }}</td>
         </ng-container>
 
-        <ng-container [matColumnDef]="tableColumns.READER_TICKET">
-            <th mat-header-cell *matHeaderCellDef>
-                Reader ticket
-            </th>
+        <ng-container matColumnDef="loanedAt">
+            <th mat-header-cell *matHeaderCellDef>Loaned At</th>
             <td mat-cell *matCellDef="let element">
-                {{ element.studentReaderTicket }}
-            </td>
-        </ng-container>
-
-        <ng-container [matColumnDef]="tableColumns.DEPARTMENT_ADDRESS">
-            <th mat-header-cell *matHeaderCellDef>
-                Address
-            </th>
-            <td mat-cell *matCellDef="let element">
-                {{ element.departmentAddress }}
+                <span *ngIf="element.loanedAt">{{ element.loanedAt | date }}</span>
+                <span *ngIf="!element.loanedAt">Not Loaned Yet</span>
             </td>
         </ng-container>
 
         <ng-container matColumnDef="expandedDetail">
-            <td
-                mat-cell
-                *matCellDef="let element"
-                [attr.colspan]="columnsToDisplay.length"
-            >
-                <div
-                    class="loan-detail"
-                    [@detailExpand]="
-                        element == expandedElement ? 'expanded' : 'collapsed'
-                    "
-                >
+            <td mat-cell [attr.colspan]="columnsToDisplay.length" *matCellDef="let element">
+                <div class="loan-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
                     <div class="loan-diagram">
                         <div class="loan-info">
-                            <h4>Student:</h4>
-                            <p>
-                                name: <b>{{ element.student.name }}</b>
-                            </p>
-                            <p>
-                                email:
-                                <b>{{ element.student.email }}</b>
-                            </p>
+                            <h4>User:</h4>
+                            <p>name: <b>{{ element.user.name }}</b></p>
+                            <p>email: <b>{{ element.user.email }}</b></p>
+                            <p>phone: <b>{{ element.user.phone }}</b></p>
                         </div>
                         <div class="loan-info">
                             <h4>Book:</h4>
-                            <p>
-                                name:
-                                <b>{{ element.book.name }}</b>
-                            </p>
-                            <p>
-                                year:
-                                <b>{{ element.book.year }}</b>
-                            </p>
-                            <p>
-                                author:
-                                <b>{{ element.book.author.name }}</b>
-                            </p>
+                            <p>title: <b>{{ element.book.title }}</b></p>
+                            <p>year: <b>{{ element.book.year }}</b></p>
+                            <p>isbn: <b>{{ element.book.isbn }}</b></p>
+                        </div>
+                        <div class="loan-info" *ngIf="element.librarian">
+                            <h4>Librarian:</h4>
+                            <p>name: <b>{{ element.librarian.name }}</b></p>
+                            <p>email: <b>{{ element.librarian.email }}</b></p>
+                            <p>phone: <b>{{ element.librarian.phone }}</b></p>
                         </div>
                         <div class="loan-info">
-                            <h4>Department:</h4>
-                            <p>
-                                Department address:
-                                <b>{{ element.department.address }}</b>
-                            </p>
-                            <p>&nbsp;</p>
-                            <div class="btn-group" *ngIf="!element.loanTime">
-                                <a
-                                    mat-stroked-button
-                                    color="primary"
-                                    class="ml-5"
-                                    style="float: right;"
-                                    matTooltip="Loan book"
-                                    (click)="
-                                        loanBook(
-                                            element.id,
-                                            element.book.bookId,
-                                            element.student.id
-                                        )
-                                    "
+                            <div class="btn-group" *ngIf="!element.returnedAt">
+                                <a mat-stroked-button color="primary" class="expanded-btn" matTooltip="Return book"
+                                    (click)="onLoanBook(element)"
                                 >
-                                    Loan book
+                                    <i class="material-icons">keyboard_return</i> Loan book
                                 </a>
                             </div>
                         </div>
@@ -196,24 +109,16 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-        <tr
-            mat-row
-            *matRowDef="let element; columns: columnsToDisplay"
-            class="element-row"
+        <tr mat-row class="element-row"
             [class.example-expanded-row]="expandedElement === element"
-            (click)="
-                expandedElement = expandedElement === element ? null : element
-            "
+            (click)="expandedElement = expandedElement === element ? null : element"
+            *matRowDef="let element; columns: columnsToDisplay"
         ></tr>
-        <tr
-            mat-row
-            *matRowDef="let row; columns: ['expandedDetail']"
-            class="detail-row"
-        ></tr>
+        <tr mat-row class="detail-row" *matRowDef="let row; columns: ['expandedDetail']"></tr>
     </table>
     <mat-paginator
-        [length]="5"
-        [pageSize]="5"
+        [length]="getTotalItems() || 0"
+        [pageSize]="paginator.pageSize || 5"
         [pageSizeOptions]="[5, 10]"
     ></mat-paginator>
 </section>

@@ -75,7 +75,6 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         }
     ];
 
-    departmentSelect: number;
     librarianSelect: number;
 
     constructor() {}

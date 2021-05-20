@@ -5,7 +5,6 @@ import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 
-import { Department } from '../../../models/department.model';
 import { StudentService } from '../../../services/student.service';
 
 import { PageTitles } from '../../../constants/pageTitles';
@@ -19,7 +18,6 @@ import { LoadStudent, StudentState } from '../../../store/state/student.state';
 })
 export class StudentDetailsComponent implements OnInit, OnDestroy {
     isLoading: boolean;
-    departments: Department[];
 
     @Select(StudentState.Student)
     student$: Observable<User>;

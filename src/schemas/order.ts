@@ -1,22 +1,13 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Order = sequelize.define('order_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
-    order_time: {
-        type: Sequelize.DATE,
-        allowNull: false
-    },
-    loan_time: {
-        type: Sequelize.DATE,
-        allowNull: true
-    }
+const orderSchema: Schema = new Schema({
+    book: { type: Schema.Types.ObjectId, ref: 'Book', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    librarian: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+    orderedAt: { type: Date, required: false },
+    loanedAt: { type: Date, required: false }
 });
 
-module.exports = Order;
+export default mongoose.model('Order', orderSchema);
+

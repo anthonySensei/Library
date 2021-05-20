@@ -4,7 +4,6 @@ const Op = Sequelize.Op;
 const Schedule = require('../schemas/schedule');
 const Period = require('../schemas/period');
 const Librarian = require('../schemas/librarian');
-const Department = require('../schemas/sdepartment');
 
 const helper = require('../helper/response');
 
@@ -16,7 +15,7 @@ exports.getSchedules = async (req, res) => {
         const schedules = await Schedule.findAll({
             include: [
                 { model: Period },
-                { model: Librarian, include: { model: Department } }
+                { model: Librarian }
             ]
         });
         let schedulesArr = [];

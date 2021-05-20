@@ -3,7 +3,6 @@ export interface GetBooksModel {
     pageSize: number;
     authors?: string[];
     genres?: string[];
-    department?: string;
     yearFrom?: string;
     yearTo?: string;
     filterValue?: string;
