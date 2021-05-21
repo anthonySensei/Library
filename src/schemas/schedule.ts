@@ -1,18 +1,11 @@
-import Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-import sequelize from '../config/database';
-
-const Schedule = sequelize.define('schedule_', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
-    },
-    day: {
-        type: Sequelize.STRING,
-        allowNull: false
-    }
+const scheduleSchema: Schema = new Schema({
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
+    weekDays: { type: [String], required: true },
+    librarian: { type: Schema.Types.ObjectId, ref: 'User', required: false },
 });
 
-module.exports = Schedule;
+export default mongoose.model('Schedule', scheduleSchema);

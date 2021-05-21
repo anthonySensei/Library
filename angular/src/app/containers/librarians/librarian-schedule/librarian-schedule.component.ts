@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { addDays, addHours, endOfMonth, startOfDay, subDays } from 'date-fns';
+import { addDays, addHours, startOfDay, subDays } from 'date-fns';
 import { CalendarEvent, CalendarEventAction } from 'angular-calendar';
 
 const colors: any = {
@@ -41,25 +41,11 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
             title: 'Іван Васильович 10.00-18.00',
             color: colors.yellow,
             actions: this.actions,
-            allDay: true,
             resizable: {
                 beforeStart: true,
                 afterEnd: true
             },
             draggable: true
-        },
-        {
-            start: startOfDay(new Date()),
-            title: 'Василь Васильович 12.00-18.00',
-            color: colors.yellow,
-            actions: this.actions
-        },
-        {
-            start: subDays(endOfMonth(new Date()), 3),
-            end: addDays(endOfMonth(new Date()), 3),
-            title: 'Іван Олександрович 14.00-18.00',
-            color: colors.blue,
-            allDay: true
         },
         {
             start: addHours(startOfDay(new Date()), 2),

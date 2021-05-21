@@ -55,7 +55,10 @@ export class ScheduleComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
+  onEventResize(event) {
+    console.warn(event);
   }
+
+  ngOnInit() {}
 
 }

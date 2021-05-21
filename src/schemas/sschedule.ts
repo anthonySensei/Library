@@ -2,21 +2,17 @@ import Sequelize from 'sequelize';
 
 import sequelize from '../config/database';
 
-const Period = sequelize.define('period_', {
+const Schedule = sequelize.define('schedule_', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    start: {
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    end: {
+    day: {
         type: Sequelize.STRING,
         allowNull: false
     }
 });
 
-module.exports = Period;
+module.exports = Schedule;

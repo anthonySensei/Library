@@ -24,7 +24,6 @@ import { LoansModule } from './containers/loans/loans.module';
 import { LibrariansModule } from './containers/librarians/librarians.module';
 import { StudentsModule } from './containers/students/students.module';
 import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
-import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
 import { UserState } from './store/state/user.state';
@@ -57,7 +56,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         BookSectionComponent,
         GenreSectionComponent,
         ScheduleSectionComponent,
-        PeriodSectionComponent,
         MyOrdersModalComponent,
         AuthorPopupComponent,
         GenrePopupComponent,

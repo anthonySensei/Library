@@ -1,8 +1,7 @@
 const { Sequelize } = require('sequelize');
 const Op = Sequelize.Op;
 
-const Schedule = require('../schemas/schedule');
-const Period = require('../schemas/period');
+const Schedule = require('../schemas/sschedule');
 const Librarian = require('../schemas/librarian');
 
 const helper = require('../helper/response');
@@ -14,7 +13,6 @@ exports.getSchedules = async (req, res) => {
     try {
         const schedules = await Schedule.findAll({
             include: [
-                { model: Period },
                 { model: Librarian }
             ]
         });
@@ -23,7 +21,6 @@ exports.getSchedules = async (req, res) => {
             schedulesArr.push({
                 id: schedule.get().id,
                 day: schedule.get().day,
-                period: schedule.period_.get(),
                 librarian: schedule.librarian_.get()
             });
         });
@@ -39,22 +36,20 @@ exports.getSchedules = async (req, res) => {
 
 exports.addSchedule = async (req, res) => {
     const day = req.body.schedule.day;
-    const periodId = req.body.schedule.period.id;
     const librarianId = req.body.schedule.librarian.id;
     try {
         const isNotUnique = await Schedule.findOne({
-            where: { day: day, periodId: periodId, librarianId: librarianId }
+            where: { day: day, librarianId: librarianId }
         });
         if (isNotUnique) {
             return helper.responseErrorHandle(
                 res,
                 500,
-                errorMessages.PERIOD_EXIST
+                ``
             );
         } else {
             await Schedule.create({
                 day: day,
-                periodId: periodId,
                 librarianId: librarianId
             });
             const data = {
@@ -75,13 +70,11 @@ exports.addSchedule = async (req, res) => {
 exports.editSchedule = async (req, res) => {
     const scheduleId = req.body.schedule.id;
     const day = req.body.schedule.day;
-    const periodId = req.body.schedule.period.id;
     const librarianId = req.body.schedule.librarian.id;
     try {
         const isNotUnique = await Schedule.findOne({
             where: {
                 day: day,
-                periodId: periodId,
                 librarianId: librarianId,
                 id: { [Op.ne]: scheduleId }
             }
@@ -98,7 +91,6 @@ exports.editSchedule = async (req, res) => {
             });
             await schedule.update({
                 day: day,
-                periodId: periodId,
                 librarianId: librarianId
             });
             const data = {

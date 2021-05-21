@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { ScheduleService } from '../../../services/schedule.service';
 
 import { Schedule } from '../../../models/schedule.model';
-import { Period } from '../../../models/period.model';
 
 import { Days } from '../../../constants/days';
 import { untilDestroyed } from 'ngx-take-until-destroy';
@@ -16,19 +15,15 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 export class ScheduleSectionComponent implements OnInit, OnDestroy {
     @Output() nothingToChange = new EventEmitter();
 
-    @Input() periods: Period[];
-
     schedules: Schedule[];
     showedSchedules: Schedule[] = [];
 
     scheduleSelect: number;
     librarianSelect: string;
     scheduleDay: string;
-    schedulePeriodId: number;
     scheduleLibrarianId: string;
 
     newScheduleDay: string;
-    newSchedulePeriodId: number;
     newScheduleLibrarianId: number;
 
     showScheduleAdding = false;
@@ -55,10 +50,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
         return this.schedules.find((sch: Schedule) => sch.id === this.scheduleSelect);
     }
 
-    getPeriod(periodId): Period {
-        return this.periods.find((per: Period) => per.id === periodId);
-    }
-
     setShowedSchedule(): void {
         this.showedSchedules = this.schedules.filter((sch: Schedule) => sch.librarian.id === this.librarianSelect);
     }
@@ -66,7 +57,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     setSchedule(): void {
         if (this.scheduleSelect) {
             this.scheduleDay = this.getSchedule().day;
-            this.schedulePeriodId = this.getSchedule().period.id;
             this.scheduleLibrarianId = this.getSchedule().librarian.id;
         }
     }
@@ -76,7 +66,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             .addScheduleHttp({
                 id: null,
                 day: this.newScheduleDay,
-                period: this.getPeriod(this.newSchedulePeriodId),
                 librarian: {}
             })
             .pipe(untilDestroyed(this))
@@ -87,14 +76,12 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     editSchedule(): void {
         if (
             !this.scheduleDay ||
-            !this.scheduleLibrarianId ||
-            !this.schedulePeriodId
+            !this.scheduleLibrarianId
         ) {
             return;
         }
         if (
             this.scheduleDay === this.getSchedule().day &&
-            this.schedulePeriodId === this.getSchedule().period.id &&
             this.scheduleLibrarianId === this.getSchedule().librarian.id
         ) {
             this.nothingToChange.emit();
@@ -104,7 +91,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             .ediScheduleHttp({
                 id: this.scheduleSelect,
                 day: this.scheduleDay,
-                period: this.getPeriod(this.schedulePeriodId),
                 librarian: {}
             })
             .pipe(untilDestroyed(this))
@@ -121,7 +107,6 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
             .pipe(untilDestroyed(this))
             .subscribe(() => {
                 this.scheduleDay = null;
-                this.schedulePeriodId = null;
                 this.scheduleLibrarianId = null;
                 this.scheduleSelect = null;
             });

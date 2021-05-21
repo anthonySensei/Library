@@ -2,11 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { Period } from '../../models/period.model';
 
 import { MaterialService } from '../../services/material.service';
 
-import { PeriodService } from '../../services/period.service';
 import { AuthService } from '../../services/auth.service';
 import { LibrarianService } from '../../services/librarian.service';
 import { PageTitles } from '../../constants/pageTitles';
@@ -23,7 +21,6 @@ import { LoadGenres } from '../../store/state/genre.state';
     styleUrls: ['./edit-page.component.sass']
 })
 export class EditPageComponent implements OnInit, OnDestroy {
-    periods: Period[];
 
     isManager: boolean;
 
@@ -33,26 +30,17 @@ export class EditPageComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private materialService: MaterialService,
-        private periodService: PeriodService,
         public librarianService: LibrarianService,
         private store: Store
     ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.MANAGING;
-        this.selectsValuesSubscriptionHandle();
         this.getUser$();
     }
 
     getUser$(): void {
         this.user$.pipe(untilDestroyed(this)).subscribe(user => this.isManager = user && user.admin);
-    }
-
-    selectsValuesSubscriptionHandle(): void {
-        this.periodService.fetchAllPeriodsHttp().pipe(untilDestroyed(this)).subscribe();
-        this.periodService.getPeriods().pipe(untilDestroyed(this)).subscribe((periods: Period[]) => {
-            this.periods = periods;
-        });
     }
 
     onLoadAuthors() {

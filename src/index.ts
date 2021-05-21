@@ -30,14 +30,11 @@ if (process.env.NODE_ENV !== 'production') {
     config();
 }
 
-const periodRoutes = require('./routes/period');
 const scheduleRoutes = require('./routes/schedule');
 
 const Librarian = require('./schemas/librarian');
-const Schedule = require('./schemas/schedule');
-const Period = require('./schemas/period');
+const Schedule = require('./schemas/sschedule');
 
-const periodsUrl = require('./constants/links').PERIODS_URL;
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
 const app = express();
@@ -64,12 +61,10 @@ app.use(LOANS_URL.baseUrl, loanRoutes);
 app.use(ORDERS_URL, orderRoutes);
 app.use(STUDENTS_URL, studentRoutes);
 app.use(USERS_URL, userRoutes);
-app.use(periodsUrl, periodRoutes);
 app.use(schedulesUrl, scheduleRoutes);
 
 Schedule.belongsTo(Librarian);
 Librarian.hasMany(Schedule);
-Schedule.belongsTo(Period);
 
 (async () => {
     try {

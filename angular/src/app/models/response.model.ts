@@ -4,7 +4,6 @@ import { Genre } from './genre.model';
 import { Schedule } from './schedule.model';
 import { Loan } from './loan.model';
 import { User } from './user.model';
-import { Period } from './period.model';
 import { Order } from './order.model';
 import { Pagination } from './pagination.model';
 import { Statistic, SummaryStatistic } from './request/loan';
@@ -26,7 +25,6 @@ export interface Data {
     summaryStatistic: SummaryStatistic;
     orders?: Order[];
     schedules?: Schedule[];
-    periods?: Period[];
     loans?: Loan[];
 }
 

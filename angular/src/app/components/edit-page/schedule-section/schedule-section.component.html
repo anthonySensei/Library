@@ -18,8 +18,7 @@
                         *ngFor="let schedule of showedSchedules"
                         [value]="schedule.id"
                     >
-                        {{ schedule.day }}({{ schedule.period.start }} -
-                        {{ schedule.period.end }})
+                        {{ schedule.day }}
                     </mat-option>
                     <mat-divider></mat-divider>
                     <mat-option (click)="showScheduleAdding = true">
@@ -45,22 +44,6 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-form-field class="edit-field">
-                <mat-label>Period</mat-label>
-                <mat-select
-                    name="schedulePeriod"
-                    [disabled]="!scheduleSelect"
-                    [(ngModel)]="schedulePeriodId"
-                >
-                    <mat-option
-                        *ngFor="let period of periods"
-                        [value]="period.id"
-                    >
-                        {{ period.start }} -
-                        {{ period.end }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
             <div class="btn-group">
                 <button
                     mat-raised-button
@@ -70,8 +53,7 @@
                     [disabled]="
                         !scheduleSelect ||
                         !scheduleDay ||
-                        !scheduleLibrarianId ||
-                        !schedulePeriodId
+                        !scheduleLibrarianId
                     "
                     (click)="editSchedule()"
                 >
@@ -110,15 +92,6 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <mat-form-field class="edit-field">
-            <mat-label>Period</mat-label>
-            <mat-select name="schedulePeriod" [(ngModel)]="newSchedulePeriodId">
-                <mat-option *ngFor="let period of periods" [value]="period.id">
-                    {{ period.start }} -
-                    {{ period.end }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
     </div>
     <div class="btn-group">
         <button
@@ -128,7 +101,6 @@
             type="submit"
             [disabled]="
                 !newScheduleDay ||
-                !newSchedulePeriodId ||
                 !newScheduleLibrarianId
             "
             (click)="addSchedule()"

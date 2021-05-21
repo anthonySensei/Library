@@ -18,7 +18,6 @@ export default {
     AUTHOR_EXIST: 'Author with this name has already existed.',
     DEPARTMENTS_EXIST: 'Department with this address has already existed.',
     GENRE_EXIST: 'Genre has already existed.',
-    PERIOD_EXIST: 'Period has already existed.',
     SCHEDULE_EXIST: 'Schedule has already existed.',
     THERE_ARE_NO_AVAILABLE_BOOKS:
         'There are no books available on the department.',

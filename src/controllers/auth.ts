@@ -17,7 +17,6 @@ import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 import { emailSubjects, generateUserActivationMessage } from '../constants/email';
 
-
 const expiresIn = 3600 * 12;
 
 config();

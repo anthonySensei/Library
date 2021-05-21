@@ -19,8 +19,6 @@ export const LOANS_URL = {
 
 exports.LOANS_STATISTIC_URL = '/statistic';
 
-exports.PERIODS_URL = '/periods';
-
 exports.SCHEDULES_URL = '/schedules';
 exports.SCHEDULES_SORTED_URL = '/sorted';
 
