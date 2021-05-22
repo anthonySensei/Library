@@ -40,77 +40,22 @@ export class ScheduleSectionComponent implements OnInit, OnDestroy {
     }
 
     setSchedules(): void {
-        this.scheduleService.fetchAllSchedulesHttp().pipe(untilDestroyed(this)).subscribe();
-        this.scheduleService.getSchedules().pipe(untilDestroyed(this)).subscribe(schedules => {
-            this.schedules = schedules;
-        });
     }
 
-    getSchedule(): Schedule {
-        return this.schedules.find((sch: Schedule) => sch.id === this.scheduleSelect);
-    }
-
-    setShowedSchedule(): void {
-        this.showedSchedules = this.schedules.filter((sch: Schedule) => sch.librarian.id === this.librarianSelect);
+    getSchedule(): any {
+        return {};
     }
 
     setSchedule(): void {
         if (this.scheduleSelect) {
-            this.scheduleDay = this.getSchedule().day;
-            this.scheduleLibrarianId = this.getSchedule().librarian.id;
         }
     }
 
-    addSchedule(): void {
-        this.scheduleService
-            .addScheduleHttp({
-                id: null,
-                day: this.newScheduleDay,
-                librarian: {}
-            })
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-            });
-    }
+    addSchedule(): void {}
 
-    editSchedule(): void {
-        if (
-            !this.scheduleDay ||
-            !this.scheduleLibrarianId
-        ) {
-            return;
-        }
-        if (
-            this.scheduleDay === this.getSchedule().day &&
-            this.scheduleLibrarianId === this.getSchedule().librarian.id
-        ) {
-            this.nothingToChange.emit();
-            return;
-        }
-        this.scheduleService
-            .ediScheduleHttp({
-                id: this.scheduleSelect,
-                day: this.scheduleDay,
-                librarian: {}
-            })
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-            });
-    }
+    editSchedule(): void {}
 
-    deleteSchedule(): void {
-        if (!this.scheduleSelect) {
-            return;
-        }
-        this.scheduleService
-            .deleteScheduleHttp(this.scheduleSelect)
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-                this.scheduleDay = null;
-                this.scheduleLibrarianId = null;
-                this.scheduleSelect = null;
-            });
-    }
+    deleteSchedule(): void {}
 
     openConfirmDeleteDialog(): void {}
 

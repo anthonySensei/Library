@@ -32,9 +32,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 const scheduleRoutes = require('./routes/schedule');
 
-const Librarian = require('./schemas/librarian');
-const Schedule = require('./schemas/sschedule');
-
 const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
 const app = express();
@@ -62,9 +59,6 @@ app.use(ORDERS_URL, orderRoutes);
 app.use(STUDENTS_URL, studentRoutes);
 app.use(USERS_URL, userRoutes);
 app.use(schedulesUrl, scheduleRoutes);
-
-Schedule.belongsTo(Librarian);
-Librarian.hasMany(Schedule);
 
 (async () => {
     try {

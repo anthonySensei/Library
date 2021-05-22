@@ -20,7 +20,7 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     displayedColumns: string[] = ['name', 'actions'];
 
     @Select(GenreState.Genres)
-    authors$: Observable<Genre[]>;
+    genres$: Observable<Genre[]>;
 
     constructor(
         private store: Store,
@@ -32,7 +32,7 @@ export class GenreSectionComponent implements OnInit, OnDestroy {
     }
 
     getGenres$() {
-        this.authors$.pipe(untilDestroyed(this)).subscribe(genres => this.dataSource = new MatTableDataSource(genres));
+        this.genres$.pipe(untilDestroyed(this)).subscribe(genres => this.dataSource = new MatTableDataSource(genres));
     }
 
     openConfirmDeleteDialog(): void {

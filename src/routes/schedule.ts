@@ -1,11 +1,13 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import passport from 'passport';
 
-const passport = require('passport');
+import { getSchedules } from '../controllers/schedule';
+
+const router = express.Router();
 
 const scheduleController = require('../controllers/schedule');
 
-router.get('', scheduleController.getSchedules);
+router.get('', getSchedules);
 router.post(
     '',
     passport.authenticate('jwt', { session: false }),

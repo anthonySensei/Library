@@ -41,6 +41,7 @@ import { BookPopupComponent } from './components/popups/book-popup/book-popup.co
 import { BookState } from './store/state/book.state';
 import { DisableFormControlDirective } from './directives/disableFormControl.directive';
 import { LocalizationState } from './store/state/localization.state';
+import { ScheduleState } from './store/state/schedule.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -75,10 +76,18 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState, LocalizationState], {
+        NgxsModule.forRoot([
+            UserState,
+            StudentState,
+            LibrarianState,
+            GenreState,
+            AuthorState,
+            BookState, LocalizationState,
+            ScheduleState
+        ], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
-        }),
+        })
     ],
     providers: [
         {
@@ -100,4 +109,5 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     entryComponents: [MyOrdersModalComponent, AuthorPopupComponent],
     bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}
