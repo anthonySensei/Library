@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-client": "cd angular && ng build --prod",
     "install-client": "cd angular && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
+    "heroku-postbuild": "npm i -g @angular/cli && npm run install-client && npm run build-client",
     "start": "ts-node src/index.ts",
     "start:dev": "nodemon"
   },
@@ -55,5 +55,9 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/nodemailer": "^6.4.1",
     "nodemon": "^2.0.2"
+  },
+  "engines": {
+    "node": "12.14.1",
+    "npm": "6.13.4"
   }
 }
