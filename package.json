@@ -5,6 +5,9 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build-client": "cd angular && ng build --prod",
+    "install-client": "cd angular && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build-client",
     "start": "ts-node src/index.ts",
     "start:dev": "nodemon"
   },
@@ -28,7 +31,6 @@
     "dotenv": "^8.2.0",
     "express": "*",
     "express-session": "*",
-    "firebase-admin": "^9.8.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.19",
     "moment": "^2.29.1",
@@ -52,20 +54,6 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/nodemailer": "^6.4.1",
-    "nodemon": "^2.0.2",
-    "prettier": "2.0.2"
-  },
-  "prettier": {
-    "singleQuote": true,
-    "tabWidth": 4,
-    "insertPragma": false,
-    "printWidth": 80,
-    "semi": true,
-    "proseWrap": "preserve",
-    "htmlWhitespaceSensitivity": "css",
-    "endOfLine": "auto",
-    "bracketSpacing": true,
-    "arrowParens": "avoid",
-    "trailingComma": "none"
+    "nodemon": "^2.0.2"
   }
 }

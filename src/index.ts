@@ -46,6 +46,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('images', express.static(path.join(__dirname, 'images')));
 app.use(cors);
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('angular/dist/angular'));
+}
+
 app.use(authRoutes);
 app.use(AUTHORS_URL, authorRoutes);
 app.use(BOOKS_URL, bookRoutes);
