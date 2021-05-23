@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import { config } from 'dotenv';
@@ -8,35 +8,19 @@ import cors from './config/cors';
 import connectMongoDB from './config/db';
 import logger from './config/logger';
 import multer from './config/multer';
-
-import authorRoutes from './routes/author';
-import authRoutes from './routes/auth';
-import genreRoutes from './routes/genre';
-import librarianRoutes from './routes/librarian';
-import studentRoutes from './routes/student';
-import userRoutes from './routes/user';
-import bookRoutes from './routes/book';
-import loanRoutes from './routes/loan';
-import orderRoutes from './routes/order';
-import scheduleRoutes from './routes/schedule';
-
-import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL } from './constants/links';
-import { ORDERS_URL, STUDENTS_URL, USERS_URL, SCHEDULES_URL } from './constants/links';
-
 import usePassport from './config/passport';
 
+import useRoutes from './routes/index';
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
 
 const app = express();
-
 const port = process.env.PORT || 3000;
+
 app.use(passport.initialize());
 app.use(passport.session());
-
-usePassport(passport);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,16 +33,12 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static('angular/dist/angular'));
 }
 
-app.use(authRoutes);
-app.use(AUTHORS_URL, authorRoutes);
-app.use(BOOKS_URL, bookRoutes);
-app.use(GENRES_URL, genreRoutes);
-app.use(LIBRARIANS_URL, librarianRoutes);
-app.use(LOANS_URL.baseUrl, loanRoutes);
-app.use(ORDERS_URL, orderRoutes);
-app.use(STUDENTS_URL, studentRoutes);
-app.use(USERS_URL, userRoutes);
-app.use(SCHEDULES_URL, scheduleRoutes);
+usePassport(passport);
+useRoutes(app);
+
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname + '/../client/build/index.html'));
+});
 
 (async () => {
     try {

@@ -1,6 +1,6 @@
 import path from 'path';
 
-const rootPath = path.resolve(path.join(__dirname, '../'));
+export const rootPath = path.resolve(path.join(__dirname, '../'));
 
 export const getImagesDirPath = () =>  path.resolve(rootPath, 'images');
 
