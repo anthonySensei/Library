@@ -37,7 +37,7 @@ usePassport(passport);
 useRoutes(app);
 
 app.get('*', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname + '/../client/build/index.html'));
+    res.sendFile(path.join(__dirname + '/../angular/dist/angular/index.html'));
 });
 
 (async () => {
