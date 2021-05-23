@@ -24,7 +24,6 @@ import { LoansModule } from './containers/loans/loans.module';
 import { LibrariansModule } from './containers/librarians/librarians.module';
 import { StudentsModule } from './containers/students/students.module';
 import { ScheduleSectionComponent } from './components/edit-page/schedule-section/schedule-section.component';
-import { PeriodSectionComponent } from './components/edit-page/period-section/period-section.component';
 import { MyOrdersModalComponent } from './components/header/my-orders-modal/my-orders-modal.component';
 import { NgxsModule, NoopNgxsExecutionStrategy } from '@ngxs/store';
 import { UserState } from './store/state/user.state';
@@ -42,6 +41,7 @@ import { BookPopupComponent } from './components/popups/book-popup/book-popup.co
 import { BookState } from './store/state/book.state';
 import { DisableFormControlDirective } from './directives/disableFormControl.directive';
 import { LocalizationState } from './store/state/localization.state';
+import { ScheduleState } from './store/state/schedule.state';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -57,7 +57,6 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         BookSectionComponent,
         GenreSectionComponent,
         ScheduleSectionComponent,
-        PeriodSectionComponent,
         MyOrdersModalComponent,
         AuthorPopupComponent,
         GenrePopupComponent,
@@ -77,10 +76,18 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
-        NgxsModule.forRoot([UserState, StudentState, LibrarianState, GenreState, AuthorState, BookState, LocalizationState], {
+        NgxsModule.forRoot([
+            UserState,
+            StudentState,
+            LibrarianState,
+            GenreState,
+            AuthorState,
+            BookState, LocalizationState,
+            ScheduleState
+        ], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
-        }),
+        })
     ],
     providers: [
         {
@@ -102,4 +109,5 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     entryComponents: [MyOrdersModalComponent, AuthorPopupComponent],
     bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}

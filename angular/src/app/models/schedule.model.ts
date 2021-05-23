@@ -1,15 +1,9 @@
-import { Period } from './period.model';
+import { User } from './user.model';
 
-export class Schedule {
-    id: number;
-    day: string;
-    librarian: any;
-    period: Period;
-
-    constructor(id: number, day: string, librarian: any, period: Period) {
-        this.id = id;
-        this.day = day;
-        this.librarian = librarian;
-        this.period = period;
-    }
+export interface Schedule {
+    _id: string;
+    start: Date | string;
+    end: Date | string;
+    weekDays: string[];
+    librarian: User | string;
 }

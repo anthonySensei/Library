@@ -63,6 +63,7 @@
             [activeDayIsOpen]="activeDayIsOpen"
             (dayClicked)="onDayClick($event.day)"
             (eventClicked)="onEventClick($event.event)"
+            (resize)="onEventResize($event)"
             (eventTimesChanged)="onTimeChanged($event)"
     >
     </mwl-calendar-month-view>

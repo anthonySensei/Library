@@ -5,6 +5,7 @@ import { AuthorStateModel } from './author.model';
 import { GenreStateModel } from './genre.model';
 import { BookStateModel } from './book.model';
 import { LocalizationStateModel } from './localization.model';
+import { ScheduleStateModel } from './schedule.model';
 
 export class StoreStateModel {
     author: AuthorStateModel;
@@ -14,4 +15,5 @@ export class StoreStateModel {
     librarian: LibrarianStateModel;
     user: UserStateModel;
     localization: LocalizationStateModel;
+    schedule: ScheduleStateModel;
 }

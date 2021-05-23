@@ -42,7 +42,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         document.title = PageTitles.LOANS;
         this.dataSource = new LoansDataSource(this.store);
         this.dataSource.loadLoans({
-            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
+            sortOrder: this.sort.direction || SortOrder.DESC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
             pageSize: this.paginator.pageSize || 5,
         });
     }

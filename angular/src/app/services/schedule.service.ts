@@ -8,47 +8,27 @@ import { serverLink } from '../constants/serverLink';
 
 import { Schedule } from '../models/schedule.model';
 import { Response } from '../models/response.model';
+import { Author } from '../models/author.model';
 
 @Injectable({ providedIn: 'root' })
 export class ScheduleService {
     private SCHEDULES_URL = `${serverLink}/schedules`;
 
-    private schedules = new Subject<Schedule[]>();
-
     constructor(private http: HttpClient) {}
 
-    setSchedule(schedules: Schedule[]): void {
-        this.schedules.next(schedules);
+    getSchedules() {
+        return this.http.get(this.SCHEDULES_URL).pipe(map((response: Response) => response.data));
     }
 
-    getSchedules(): Observable<Schedule[]> {
-        return this.schedules;
-    }
-
-    fetchAllSchedulesHttp() {
-        return this.http.get(this.SCHEDULES_URL).pipe(
-            map((response: Response) => {
-                this.setSchedule(response.data.schedules);
-            })
-        );
-    }
-
-    addScheduleHttp(schedule: Schedule) {
+    createSchedules(schedule: Schedule) {
         return this.http.post(this.SCHEDULES_URL, { schedule }).pipe(map((response: Response) => response.data));
     }
 
-    ediScheduleHttp(schedule: Schedule) {
-        return this.http.put(this.SCHEDULES_URL, { schedule }).pipe(map((response: Response) => response.data));
+    editSchedules(id: string, author: Schedule) {
+        return this.http.put(`${this.SCHEDULES_URL}/${id}`, { author }).pipe(map((response: Response) => response.data));
     }
 
-    deleteScheduleHttp(scheduleId: number) {
-        return this.http
-            .delete(this.SCHEDULES_URL, {
-                params: new HttpParams().set(
-                    'scheduleId',
-                    scheduleId.toString()
-                )
-            })
-            .pipe(map((response: Response) => response.data));
+    deleteSchedules(id: string) {
+        return this.http.delete(`${this.SCHEDULES_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 }
