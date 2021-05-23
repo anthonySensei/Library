@@ -4,7 +4,6 @@ import User from '../schemas/user';
 
 import { UserModel, UserSchema } from '../models/user';
 
-import { convertToBase64 } from '../helper/image';
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 
 import errorMessages from '../constants/errorMessages';
@@ -34,7 +33,7 @@ export const getLibrarians = async (req: Request, res: Response) => {
             id: student._id,
             name: student.name,
             email: student.email,
-            image: convertToBase64(student.image),
+            image: student.image,
             phone: student.phone,
             schedule: []
         }));

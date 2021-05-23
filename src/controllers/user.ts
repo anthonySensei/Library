@@ -8,12 +8,12 @@ import { UserSchema } from '../models/user';
 
 import successMessages from '../constants/successMessages';
 import errorMessages from '../constants/errorMessages';
+import { emailSubjects, generateUserCreationMessage } from '../constants/email';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import { generatePassword } from '../helper/password';
-import { getImagePath, convertToBase64 } from '../helper/image';
 import { sendMail } from '../helper/email';
-import { emailSubjects, generateUserCreationMessage } from '../constants/email';
+import { uploadImageToStorage } from '../helper/storage';
 
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, phone, admin, librarian } = req.body;
@@ -110,13 +110,13 @@ export const editImage = async (req: Request, res: Response) => {
             return responseErrorHandle(res, 400, errorMessages.USER_DOES_NOT_EXIST);
         }
 
-        user.image = getImagePath(image);
+        user.image = await uploadImageToStorage(image);
         await user.save();
 
         responseSuccessHandle(res, 200, { message: successMessages.IMAGE_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error('Error updating user', err.message);
-        return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
+        responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -128,6 +128,7 @@ export const deleteUser = async (req: Request, res: Response) => {
         responseSuccessHandle(res, 200, { message: successMessages.USER_SUCCESSFULLY_DELETED });
     } catch (err) {
         logger.error('Error deleting user', err.message);
+        responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
     }
 };
 
@@ -142,7 +143,7 @@ export const getUser = async (req: Request, res: Response) => {
           return responseErrorHandle(res, 500, errorMessages.USER_DOES_NOT_EXIST);
       }
 
-      const userData = { id: _id, name, email, image: convertToBase64(image), admin, librarian, phone };
+      const userData = { id: _id, name, email, image, admin, librarian, phone };
       responseSuccessHandle(res, 200, { user: userData });
   } catch (err) {
       logger.error('Error fetching user', err.message);

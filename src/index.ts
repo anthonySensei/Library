@@ -2,12 +2,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import passport from 'passport';
 import { config } from 'dotenv';
-import * as path from 'path';
+import path from 'path';
 
 import cors from './config/cors';
 import connectMongoDB from './config/db';
 import logger from './config/logger';
-import sequelize from './config/database';
 import multer from './config/multer';
 
 import authorRoutes from './routes/author';
@@ -20,9 +19,7 @@ import bookRoutes from './routes/book';
 import loanRoutes from './routes/loan';
 import orderRoutes from './routes/order';
 
-import { AUTHORS_URL, GENRES_URL, LIBRARIANS_URL , STUDENTS_URL, USERS_URL } from './constants/links';
-import { LOANS_URL, BOOKS_URL, ORDERS_URL } from './constants/links';
-
+import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL, ORDERS_URL, STUDENTS_URL, USERS_URL } from './constants/links';
 
 import usePassport from './config/passport';
 
@@ -62,7 +59,6 @@ app.use(schedulesUrl, scheduleRoutes);
 
 (async () => {
     try {
-        await sequelize.sync();
         await connectMongoDB();
         app.listen(port);
         logger.info('Successfully connected to MongoDB');

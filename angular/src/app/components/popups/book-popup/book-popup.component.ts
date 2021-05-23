@@ -155,11 +155,11 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     getGenresIds(genres: Genre[]): string[] {
-        return genres.map(genre => genre?._id);
+        return genres?.map(genre => genre?._id);
     }
 
     getAuthorsIds(authors: Author[]): string[] {
-        return authors.map(author => author?._id);
+        return authors?.map(author => author?._id);
     }
 
     getBtnCancelTitle(): string {
