@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 const PASSWORD_SALT = 8;
 
