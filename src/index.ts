@@ -18,18 +18,17 @@ import userRoutes from './routes/user';
 import bookRoutes from './routes/book';
 import loanRoutes from './routes/loan';
 import orderRoutes from './routes/order';
+import scheduleRoutes from './routes/schedule';
 
-import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL, ORDERS_URL, STUDENTS_URL, USERS_URL } from './constants/links';
+import { AUTHORS_URL, BOOKS_URL, GENRES_URL, LIBRARIANS_URL, LOANS_URL } from './constants/links';
+import { ORDERS_URL, STUDENTS_URL, USERS_URL, SCHEDULES_URL } from './constants/links';
 
 import usePassport from './config/passport';
+
 
 if (process.env.NODE_ENV !== 'production') {
     config();
 }
-
-const scheduleRoutes = require('./routes/schedule');
-
-const schedulesUrl = require('./constants/links').SCHEDULES_URL;
 
 const app = express();
 
@@ -59,7 +58,7 @@ app.use(LOANS_URL.baseUrl, loanRoutes);
 app.use(ORDERS_URL, orderRoutes);
 app.use(STUDENTS_URL, studentRoutes);
 app.use(USERS_URL, userRoutes);
-app.use(schedulesUrl, scheduleRoutes);
+app.use(SCHEDULES_URL, scheduleRoutes);
 
 (async () => {
     try {

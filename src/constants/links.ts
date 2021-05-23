@@ -7,6 +7,7 @@ export const LIBRARIANS_URL = '/api/librarians';
 export const STUDENTS_URL = '/api/students';
 export const USERS_URL = '/api/users';
 export const ORDERS_URL = '/api/orders';
+export const SCHEDULES_URL = '/api/schedules';
 
 export const LOANS_URL = {
     baseUrl: '/api/loans',
@@ -17,10 +18,6 @@ export const LOANS_URL = {
     summaryStatisticUrl: `/statistic/summary`
 };
 
-exports.LOANS_STATISTIC_URL = '/api/statistic';
-
-exports.SCHEDULES_URL = '/api/schedules';
-exports.SCHEDULES_SORTED_URL = '/sorted';
 
 export const AUTH_URLS = {
     CHECK_ACTIVATION_TOKEN_URL: '/api/check-activation-token',
