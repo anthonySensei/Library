@@ -1,11 +1,14 @@
 import path from 'path';
+import { config } from 'dotenv';
+
+config();
 
 export const rootPath = path.resolve(path.join(__dirname, '../'));
 
 export const getImagesDirPath = () =>  path.resolve(rootPath, 'images');
 
 // TODO: fix it
-export const getStorageKeyFilePath = () => path.resolve(rootPath, 'keys', 'library-699a0-d747a063fff4.json');
+export const getStorageKeyFilePath = () => path.resolve(rootPath, 'keys', process.env.STORAGE_FILE_NAME as string);
 
 // TODO: Fix path
 export const getStorageImageUrl = (imageId: string) =>
