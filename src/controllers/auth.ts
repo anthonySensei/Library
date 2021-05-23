@@ -10,7 +10,6 @@ import { UserSchema } from '../models/user';
 import logger from '../config/logger';
 
 import { responseSuccessHandle, responseErrorHandle } from '../helper/response';
-import { convertToBase64 } from '../helper/image';
 import { sendMail } from '../helper/email';
 
 import errorMessages from '../constants/errorMessages';
@@ -41,7 +40,7 @@ export const login = (req: Request, res: Response, next: any) => {
             const userJWT = { id: user.id, email: user.email };
             const token = jwt.sign(userJWT, secretKey, { expiresIn });
             const { _id: id, name, email, image, admin, librarian } = user;
-            const userData = { id, name, email, image: convertToBase64(image), admin, librarian };
+            const userData = { id, name, email, image, admin, librarian };
             jwt.verify(token, secretKey);
             const data = {
                 message: successMessages.SUCCESSFULLY_LOGGED_IN,

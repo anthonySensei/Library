@@ -5,6 +5,9 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build-client": "cd angular && ng build --prod",
+    "install-client": "cd angular && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build-client",
     "start": "ts-node src/index.ts",
     "start:dev": "nodemon"
   },
@@ -20,7 +23,6 @@
     "@types/passport": "^1.0.6",
     "@types/passport-jwt": "^3.0.5",
     "@types/passport-local": "^1.0.33",
-    "@types/sequelize": "^4.28.9",
     "@types/uuid": "^8.3.0",
     "base64-img": "^1.0.4",
     "bcryptjs": "^2.4.3",
@@ -42,7 +44,6 @@
     "passport-local": "^1.0.0",
     "pg": "^7.18.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.21.3",
     "ts-node": "^9.1.1",
     "tslint": "~5.15.0",
     "typescript": "^4.2.4",
@@ -53,20 +54,6 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/nodemailer": "^6.4.1",
-    "nodemon": "^2.0.2",
-    "prettier": "2.0.2"
-  },
-  "prettier": {
-    "singleQuote": true,
-    "tabWidth": 4,
-    "insertPragma": false,
-    "printWidth": 80,
-    "semi": true,
-    "proseWrap": "preserve",
-    "htmlWhitespaceSensitivity": "css",
-    "endOfLine": "auto",
-    "bracketSpacing": true,
-    "arrowParens": "avoid",
-    "trailingComma": "none"
+    "nodemon": "^2.0.2"
   }
 }

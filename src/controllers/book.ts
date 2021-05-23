@@ -4,14 +4,13 @@ import Book from '../schemas/book';
 import { BookSchema } from '../models/book';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
-import { convertToBase64, getImagePath } from '../helper/image';
 import { removedEmptyFields } from '../helper/object';
+import { uploadImageToStorage } from '../helper/storage';
 
 import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import { uploadFileToStorage } from '../helper/storage';
 
 export const getBooks = async (req: Request, res: Response) => {
     const { filterValue, yFrom, yTo, pageSize } = req.query;
@@ -51,7 +50,7 @@ export const getBooks = async (req: Request, res: Response) => {
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
             year: book.year,
-            image: convertToBase64(book.image),
+            image: book.image,
             language: book.language
         }));
         const data = {
@@ -83,7 +82,7 @@ export const getBook = async (req: Request, res: Response) => {
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
             year: book.year,
-            image: convertToBase64(book.image),
+            image: book.image,
             language: book.language,
             quantity: book.quantity
         };
@@ -101,9 +100,6 @@ export const addBook = async (req: Request, res: Response) => {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
 
-    // console.log(await uploadFileToStorage());
-    book.image = getImagePath(book.image);
-
     try {
         const isExists = await Book.findOne({ isbn: book.isbn });
 
@@ -111,6 +107,7 @@ export const addBook = async (req: Request, res: Response) => {
             return responseErrorHandle(res, 400, errorMessages.ISBN_EXIST);
         }
 
+        book.image = uploadImageToStorage(book.image);
         book.genres = book.genres.map((genre: any) => ({ genre: genre.id }));
         book.authors = book.authors.map((author: any) => ({ author: author.id }));
         await Book.create(book);
@@ -128,8 +125,6 @@ export const editBook = async (req: Request, res: Response) => {
     if (!book) {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
-
-    book.image = getImagePath(book.image);
 
     try {
         const isExists = await Book.findOne({ _id: { $ne: id }, isbn: book.isbn });
