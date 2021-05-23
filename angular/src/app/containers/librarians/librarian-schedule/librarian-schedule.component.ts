@@ -18,20 +18,20 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
     actions: CalendarEventAction[] = [
-        {
-            label: '<span class="ml-1 text-main">Edit</span>',
-            a11yLabel: 'Edit',
-            onClick: ({ event }: { event: CalendarEvent }): void => {
-                this.onEventEdit(event);
-            }
-        },
-        {
-            label: '<span class="ml-1 text-main">Delete</span>',
-            a11yLabel: 'Delete',
-            onClick: ({ event }: { event: CalendarEvent }): void => {
-                this.onEventDelete(event);
-            }
-        }
+        // {
+        //     label: '<span class="ml-1 text-main">Edit</span>',
+        //     a11yLabel: 'Edit',
+        //     onClick: ({ event }: { event: CalendarEvent }): void => {
+        //         this.onEventEdit(event);
+        //     }
+        // },
+        // {
+        //     label: '<span class="ml-1 text-main">Delete</span>',
+        //     a11yLabel: 'Delete',
+        //     onClick: ({ event }: { event: CalendarEvent }): void => {
+        //         this.onEventDelete(event);
+        //     }
+        // }
     ];
 
     events: CalendarEvent[] = [];

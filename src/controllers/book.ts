@@ -11,6 +11,7 @@ import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import { uploadFileToStorage } from '../helper/storage';
 
 export const getBooks = async (req: Request, res: Response) => {
     const { filterValue, yFrom, yTo, pageSize } = req.query;
@@ -100,6 +101,7 @@ export const addBook = async (req: Request, res: Response) => {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
     }
 
+    // console.log(await uploadFileToStorage());
     book.image = getImagePath(book.image);
 
     try {
