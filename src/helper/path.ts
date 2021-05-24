@@ -7,7 +7,6 @@ export const rootPath = path.resolve(path.join(__dirname, '../'));
 
 export const getImagesDirPath = () =>  path.resolve(rootPath, 'images');
 
-// TODO: fix it
 export const getStorageKeyFilePath = () => path.resolve(rootPath, 'keys', process.env.STORAGE_FILE_NAME as string);
 
 // TODO: Fix path
