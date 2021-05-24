@@ -7,7 +7,7 @@ export const rootPath = path.resolve(path.join(__dirname, '../'));
 
 export const getImagesDirPath = () =>  path.resolve(rootPath, 'images');
 
-export const getStorageKeyFilePath = () => path.resolve(rootPath, 'keys', process.env.STORAGE_FILE_NAME as string);
+export const getStorageKeyFilePath = () => path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS as string);
 
 // TODO: Fix path
 export const getStorageImageUrl = (imageId: string) =>
