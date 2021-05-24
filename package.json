@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-client": "cd angular && ng build --prod",
     "install-client": "cd angular && npm install",
-    "preinstall": "ts-node src/keys/index.ts",
+    "preinstall": "node src/keys/index.js",
     "heroku-postbuild": "npm i -g @angular/cli@10.2.0 && npm run install-client && npm run build-client",
     "start": "ts-node src/index.ts | bunyan",
     "start:dev": "nodemon"

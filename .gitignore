@@ -3,4 +3,4 @@ node_modules
 .idea
 src/images
 src/keys/*
-!src/keys/index.ts
+!src/keys/index.js
