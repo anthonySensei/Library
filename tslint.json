@@ -87,9 +87,7 @@
     "no-trailing-whitespace": true,
     "no-unnecessary-initializer": true,
     "no-use-before-declare": true,
-    // Here
     "no-var-keyword": false,
-    // Here
     "no-var-requires": false,
     "object-literal-sort-keys": false,
     "one-line": [
