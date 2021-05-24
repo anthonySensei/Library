@@ -45,13 +45,9 @@ export const getBooks = async (req: Request, res: Response) => {
             .populate('authors.author')
             .populate('genres.genre') as BookSchema[];
         const booksData = books.map(book => ({
-            id: book._id,
-            title: book.title,
+            ...book.toJSON(),
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
-            year: book.year,
-            image: book.image,
-            language: book.language
         }));
         const data = {
             books: booksData,

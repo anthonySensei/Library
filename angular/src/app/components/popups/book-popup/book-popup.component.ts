@@ -63,7 +63,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.isEdit = !!this.data.id;
+        this.isEdit = !!this.data._id;
         this.isbnValidation = this.validationService.getIsbnValidation();
         this.languages = this.store.selectSnapshot(LocalizationState.Languages);
         this.initForms();
@@ -185,7 +185,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
             isbn, title, quantity, description, image: this.image, language: language.code,
             authors: authorsIds.map(id => ({ id })), genres: genresIds.map(id => ({ id })), year
         };
-        return this.store.dispatch(this.isEdit ? new EditBook(this.data.id, book) : new CreateBook(book));
+        return this.store.dispatch(this.isEdit ? new EditBook(this.data._id, book) : new CreateBook(book));
     }
 
     onClose(): void {
