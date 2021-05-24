@@ -13,6 +13,11 @@
                 <p>Quantity: {{ book?.quantity }}</p>
             </section>
             <div class="btn-group">
+                <a mat-stroked-button color="primary" class="mr-2" target="_blank"
+                        [href]="book.file" *ngIf="book.ebook"
+                >
+                    Read
+                </a>
                 <button mat-stroked-button color="primary" class="mr-2"
                         [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian"
                 >

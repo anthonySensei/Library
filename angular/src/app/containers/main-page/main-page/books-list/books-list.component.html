@@ -32,6 +32,9 @@
                     <span class="card__label">Language:</span>
                     {{ getLanguage(book.language) }}
                 </div>
+                <div class="mt-2" *ngIf="book.ebook">
+                    <span class="card__label">Ebook</span>
+                </div>
             </div>
         </div>
     </div>

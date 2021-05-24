@@ -30,11 +30,13 @@ export class BookPopupComponent implements OnInit, OnDestroy {
 
     image: string;
     isEdit: boolean;
+    isEbook: boolean;
 
     mainForm: FormGroup;
     detailsForm: FormGroup;
 
-    file: Event;
+    bookFile: File;
+    imageFile: Event;
     isbnValidation: RegExp;
 
     languages: Language[];
@@ -113,7 +115,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         }
 
         if (this.getStep() === 2) {
-            return !this.image;
+            return !this.image || this.isEbook && !this.bookFile;
         }
 
         return this.mainForm.invalid;
@@ -182,8 +184,8 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         const { isbn, title, quantity, language } = this.mainForm.value;
         const { description, authors: authorsIds, genres: genresIds, year } = this.detailsForm.value;
         const book: Book = {
-            isbn, title, quantity, description, image: this.image, language: language.code,
-            authors: authorsIds.map(id => ({ id })), genres: genresIds.map(id => ({ id })), year
+            isbn, title, quantity, description, image: this.image, language: language.code, ebook: this.isEbook,
+            authors: authorsIds.map(id => ({ id })), genres: genresIds.map(id => ({ id })), year, file: this.bookFile
         };
         return this.store.dispatch(this.isEdit ? new EditBook(this.data._id, book) : new CreateBook(book));
     }
@@ -193,7 +195,11 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     onImageChanged(event: Event): void {
-        this.file = event;
+        this.imageFile = event;
+    }
+
+    onBookFileChanged(event): void {
+        this.bookFile = event.target.files[0];
     }
 
     onImageCropped(event: ImageCroppedEvent): void {

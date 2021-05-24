@@ -32,7 +32,7 @@ export class BookService {
                     .set('yTo', params.yearTo ? params.yearTo.toString() : '')
                     .set('authors', params.authors?.length ? params.authors.join(',') : '')
                     .set('genres', params.genres?.length ? params.genres.join(',') : '')
-                    .set('filterValue', params.filterValue)
+                    .set('filterValue', params.filterValue || '')
             })
             .pipe(map((response: Response) => response.data));
     }
@@ -45,7 +45,14 @@ export class BookService {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();
         headers.append('Content-Type', 'multipart/form-data');
-        formData.append('book', JSON.stringify(book));
+        formData.append('book', JSON.stringify({ ...book, file: null }));
+
+        if (book.ebook) {
+            formData.append('file', book.file);
+        }
+
+        console.log(book.file);
+        console.log(formData.get('file'));
         return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(map((response: Response) => response.data));
     }
 

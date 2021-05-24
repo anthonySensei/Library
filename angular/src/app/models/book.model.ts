@@ -11,7 +11,7 @@ export interface Book {
     year: number;
     quantity: number;
     ebook?: boolean;
-    file?: string;
+    file?: File | string;
     authors: Author[];
     genres: Genre[];
 }
