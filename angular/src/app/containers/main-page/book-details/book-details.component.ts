@@ -24,6 +24,7 @@ import { LocalizationService } from '../../../services/localization.service';
 import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
 import { LoadAuthors } from '../../../store/state/author.state';
 import { LoadGenres } from '../../../store/state/genre.state';
+import { ReadPopupComponent } from '../../../components/popups/read-popup/read-popup.component';
 
 @Component({
     selector: 'app-book-details',
@@ -81,6 +82,11 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     loadBook(id?: string) {
         this.bookId = this.bookId || id;
         this.store.dispatch(new LoadBook(this.bookId)).subscribe(() => this.isLoading = false);
+    }
+
+    onReadBook() {
+        const book = this.store.selectSnapshot(BookState.Book);
+        this.dialog.open(ReadPopupComponent, { data: book.file, disableClose: true, width: '768px'  });
     }
 
     onOpenLoanBookModal(): void {
