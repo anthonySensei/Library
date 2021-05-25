@@ -1,10 +1,11 @@
 import multer from 'multer';
-import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
-const imageStorage = multer.diskStorage({
+const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'images');
+        cb(null, path.resolve('src', 'assets'));
     },
 
     filename(req, file, cb) {
@@ -14,11 +15,11 @@ const imageStorage = multer.diskStorage({
 });
 
 const fileFilter = (req: Request, file: any, cb: any) => {
-    if (['image/png', 'image/jpg', 'image/jpeg'].includes(file.mimetype)) {
+    if (['application/pdf'].includes(file.mimetype)) {
         return cb(null, true);
     }
 
     cb(null, false);
 };
 
-export default () => multer({ limits: { fieldSize: 10 * 1024 * 1024 }, storage: imageStorage, fileFilter }).single('image');
+export default () => multer({ limits: { fieldSize: 10 * 1024 * 1024 }, storage: fileStorage, fileFilter }).single('file');

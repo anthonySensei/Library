@@ -13,8 +13,19 @@
                 <p>Quantity: {{ book?.quantity }}</p>
             </section>
             <div class="btn-group">
+<!--                <button mat-stroked-button color="primary" class="mr-2" target="_blank"-->
+<!--                        *ngIf="book.ebook" (click)="onReadBook()"-->
+<!--                >-->
+<!--                    Read-->
+<!--                </button>-->
+                <p class="text-main" *ngIf="book.ebook && !user.name">Please login to read book.</p>
+                <a mat-stroked-button color="primary" class="mr-2" target="_blank"
+                   [href]="book.file" *ngIf="user.name && book.ebook"
+                >
+                    Read
+                </a>
                 <button mat-stroked-button color="primary" class="mr-2"
-                        [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian"
+                        [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian && !book.ebook"
                 >
                     Loan
                 </button>
@@ -29,7 +40,7 @@
                     Delete
                 </button>
                 <button mat-stroked-button color="primary" class="mr-2"
-                        (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian"
+                        (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian && !book.ebook"
                 >
                     Order
                 </button>

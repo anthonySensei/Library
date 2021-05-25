@@ -3,13 +3,12 @@ import { unlinkSync } from 'fs';
 
 import storage from '../config/storage';
 
-import { getStorageImageUrl } from './path';
+import { getStorageFileUrl } from './path';
 import { getImagePath } from './image';
 
 config();
 
-export const uploadImageToStorage = async (base64Img: string) => {
-    const filepath = getImagePath(base64Img);
+export const uploadFileToStorage = async (filepath: string) => {
     const files = await storage.upload(filepath, {
         gzip: true,
         metadata: {
@@ -18,5 +17,10 @@ export const uploadImageToStorage = async (base64Img: string) => {
     });
     await unlinkSync(filepath);
 
-    return getStorageImageUrl(files[0].id as string);
+    return getStorageFileUrl(files[0].id as string);
+};
+
+export const uploadImageToStorage = async (base64Img: string) => {
+    const filepath = getImagePath(base64Img);
+    return await uploadFileToStorage(filepath);
 };

@@ -26,7 +26,7 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('images', express.static(path.join(__dirname, 'images')));
+app.use('assets', express.static(path.join(__dirname, 'assets')));
 app.use(cors);
 
 if (process.env.NODE_ENV === 'production') {

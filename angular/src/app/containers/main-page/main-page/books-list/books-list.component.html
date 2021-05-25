@@ -8,7 +8,7 @@
                     class="image"
                 />
                 <div class="image-data">
-                    <a class="image-data__link" [routerLink]="['/', links.BOOKS, book.id]">Details</a>
+                    <a class="image-data__link" [routerLink]="['/', links.BOOKS, book._id]">Details</a>
                 </div>
             </div>
             <div class="p-2">
@@ -31,6 +31,9 @@
                 <div class="mt-2">
                     <span class="card__label">Language:</span>
                     {{ getLanguage(book.language) }}
+                </div>
+                <div class="mt-2" *ngIf="book.ebook">
+                    <span class="card__label">Ebook</span>
                 </div>
             </div>
         </div>

@@ -3,7 +3,6 @@ import { Genre } from './genre.model';
 
 export interface Book {
     _id?: string;
-    id?: string;
     isbn: string;
     title: string;
     language: string;
@@ -11,6 +10,8 @@ export interface Book {
     description: string;
     year: number;
     quantity: number;
+    ebook?: boolean;
+    file?: File | string;
     authors: Author[];
     genres: Genre[];
 }

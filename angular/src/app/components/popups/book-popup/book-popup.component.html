@@ -86,7 +86,8 @@
             <div class="d-flex flex-column">
                 <input class="mb-2" type="file" (change)="onImageChanged($event)" />
                 <image-cropper
-                        [imageChangedEvent]="file"
+                        class="mb-2"
+                        [imageChangedEvent]="imageFile"
                         [maintainAspectRatio]="true"
                         [aspectRatio]="3 / 4"
                         [cropperMinWidth]="350"
@@ -94,13 +95,15 @@
                         [onlyScaleDown]="true"
                         [class.invisible]="!image"
                         (imageCropped)="onImageCropped($event)"
-                        *ngIf="file"
+                        *ngIf="imageFile"
                 ></image-cropper>
+                <mat-slide-toggle class="mb-2" [(ngModel)]="isEbook">Ebook</mat-slide-toggle>
+                <input type="file" (change)="onBookFileChanged($event)" *ngIf="isEbook" />
             </div>
         </mat-step>
         <mat-step>
             <ng-template matStepLabel>Summary</ng-template>
-            <div class="d-flex justify-content-center" *ngIf="file || isEdit">
+            <div class="d-flex justify-content-center" *ngIf="imageFile || isEdit">
                 <div class="image-container" [ngStyle]="{ 'background-image': getImage() }"></div>
             </div>
             <p>ISBN: <span class="text-main">{{ mainForm?.value?.isbn }}</span></p>
@@ -111,6 +114,7 @@
             <p>Authors: <span class="text-main">{{ getAuthorsForSummary(authorsControl.value) }}</span></p>
             <p>Genres: <span class="text-main">{{ getGenres(detailsForm?.value?.genres) }}</span></p>
             <p>Year: <span class="text-main">{{ detailsForm?.value?.year }}</span></p>
+            <p>Ebook: <span class="text-main">{{ isEbook ? 'Yes' : 'No' }}</span></p>
         </mat-step>
     </mat-horizontal-stepper>
 </mat-dialog-content>

@@ -5,7 +5,7 @@ import { BookSchema } from '../models/book';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 import { removedEmptyFields } from '../helper/object';
-import { uploadImageToStorage } from '../helper/storage';
+import {uploadFileToStorage, uploadImageToStorage} from '../helper/storage';
 
 import logger from '../config/logger';
 
@@ -45,13 +45,9 @@ export const getBooks = async (req: Request, res: Response) => {
             .populate('authors.author')
             .populate('genres.genre') as BookSchema[];
         const booksData = books.map(book => ({
-            id: book._id,
-            title: book.title,
+            ...book.toJSON(),
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
-            year: book.year,
-            image: book.image,
-            language: book.language
         }));
         const data = {
             books: booksData,
@@ -75,19 +71,11 @@ export const getBook = async (req: Request, res: Response) => {
     try {
         const book = await Book.findById(id).populate('authors.author').populate('genres.genre') as BookSchema;
         const bookData = {
-            id: book._id,
-            isbn: book.isbn,
-            title: book.title,
-            description: book.description,
+            ...book.toJSON(),
             authors: book.authors.map(author => author.author),
             genres: book.genres.map(genre => genre.genre),
-            year: book.year,
-            image: book.image,
-            language: book.language,
-            quantity: book.quantity
         };
-        const data = { book: bookData, message: successMessages.SUCCESSFULLY_FETCHED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { book: bookData, message: successMessages.SUCCESSFULLY_FETCHED });
     } catch (err) {
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }
@@ -95,6 +83,7 @@ export const getBook = async (req: Request, res: Response) => {
 
 export const addBook = async (req: Request, res: Response) => {
     const book = JSON.parse(req.body.book);
+    const file = req.file;
 
     if (!book) {
         return responseErrorHandle(res, 400, errorMessages.EMPTY_FIELDS);
@@ -107,7 +96,11 @@ export const addBook = async (req: Request, res: Response) => {
             return responseErrorHandle(res, 400, errorMessages.ISBN_EXIST);
         }
 
-        book.image = uploadImageToStorage(book.image);
+        if (book.ebook) {
+            book.file = await uploadFileToStorage(file.path);
+        }
+
+        book.image = await uploadImageToStorage(book.image);
         book.genres = book.genres.map((genre: any) => ({ genre: genre.id }));
         book.authors = book.authors.map((author: any) => ({ author: author.id }));
         await Book.create(book);

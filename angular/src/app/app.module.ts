@@ -42,6 +42,7 @@ import { BookState } from './store/state/book.state';
 import { DisableFormControlDirective } from './directives/disableFormControl.directive';
 import { LocalizationState } from './store/state/localization.state';
 import { ScheduleState } from './store/state/schedule.state';
+import { ReadPopupComponent } from './components/popups/read-popup/read-popup.component';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -61,7 +62,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         AuthorPopupComponent,
         GenrePopupComponent,
         BookPopupComponent,
-        DisableFormControlDirective
+        DisableFormControlDirective,
+        ReadPopupComponent
     ],
     imports: [
         BrowserModule,
@@ -106,7 +108,7 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
             multi: true
         }
     ],
-    entryComponents: [MyOrdersModalComponent, AuthorPopupComponent],
+    entryComponents: [MyOrdersModalComponent, AuthorPopupComponent, ReadPopupComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -1,5 +1,6 @@
 node_modules
 .env
 .idea
-src/images
+src/assets*
+!src/assets/.gitkeep
 keys

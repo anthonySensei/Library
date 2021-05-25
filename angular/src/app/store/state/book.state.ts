@@ -215,7 +215,7 @@ export class BookState {
     @Action(LoanBook)
     loanBook(ctx: StateContext<BookStateModel>, action: LoanBook) {
         const { credentials, bookId  } = action;
-        const id = bookId || ctx.getState().book?.id;
+        const id = bookId || ctx.getState().book?._id;
         const librarianId = this.store.selectSnapshot(UserState.User).id;
         return this.bookService.loanBook({ userCredentials: credentials, bookId: id, librarianId }).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
@@ -272,7 +272,7 @@ export class BookState {
     @Action(OrderBook)
     orderBook(ctx: StateContext<BookStateModel>, action: OrderBook) {
         const { bookId  } = action;
-        const id = bookId || ctx.getState().book?.id;
+        const id = bookId || ctx.getState().book?._id;
         const userId = this.store.selectSnapshot(UserState.User).id;
         return this.bookService.orderBook({ bookId: id, userId }).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);

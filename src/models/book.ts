@@ -8,6 +8,8 @@ export interface BookSchema extends Document {
     description: number;
     image: string;
     language: string;
+    ebook: boolean;
+    file: string;
     authors: any[];
     genres: any[];
 }
