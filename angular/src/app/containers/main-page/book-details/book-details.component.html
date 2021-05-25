@@ -18,8 +18,9 @@
 <!--                >-->
 <!--                    Read-->
 <!--                </button>-->
+                <p class="text-main" *ngIf="book.ebook && !user.name">Please login to read book.</p>
                 <a mat-stroked-button color="primary" class="mr-2" target="_blank"
-                   [href]="book.file" *ngIf="book.ebook"
+                   [href]="book.file" *ngIf="user.name && book.ebook"
                 >
                     Read
                 </a>
