@@ -1,4 +1,7 @@
 <div class="container py-5">
+    <button class="mb-3" mat-stroked-button color="primary" (click)="onOpenCreatePopup()">
+        <i class="material-icons">add</i> Add Schedule
+    </button>
     <mat-card>
         <h3 class="text-center">Schedule</h3>
         <app-schedule-filter-section [(librarianSelect)]="librarianSelect"></app-schedule-filter-section>

@@ -82,14 +82,15 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         });
     }
 
-    onEventEdit(event: CalendarEvent): void {
-        console.log(event);
-    }
+    // onEventEdit(event: CalendarEvent): void {
+    //     console.log(event);
+    // }
+    //
+    // onEventDelete(event: CalendarEvent): void {
+    //     console.log(event);
+    // }
 
-    onEventDelete(event: CalendarEvent): void {
-        console.log(event);
-    }
+    onOpenCreatePopup() {}
 
-    ngOnDestroy(): void {
-    }
+    ngOnDestroy(): void {}
 }
