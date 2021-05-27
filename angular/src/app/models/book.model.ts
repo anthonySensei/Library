@@ -15,3 +15,9 @@ export interface Book {
     authors: Author[];
     genres: Genre[];
 }
+
+export interface BookStats {
+    loansForLastMonth: number;
+    loansAllTime: number;
+    notReturnedBooks: number;
+}

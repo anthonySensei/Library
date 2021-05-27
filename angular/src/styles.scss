@@ -18,7 +18,6 @@
 @import "~ng-pick-datetime/assets/style/picker.min.css";
 
 
-
 $font-main: Robotom, "Helvetica Neue", sans-serif;
 
 $color-main: #FFDF6C;
@@ -49,12 +48,22 @@ $font-title: 22px;
                 )
 );
 
+@mixin centered-flex-container($flex-direction: column) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $flex-direction;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: $font-main;
   color: $font-color-main;
   background: $color-background;
-  //background: background: linear-gradient(145deg, $color-background calc(100% - 88vh), $color-secondary 40vh);
 }
 
 a {
@@ -141,11 +150,10 @@ table {
   flex-direction: column;
   justify-content: center;
   max-height: 100%;
+  height: calc(100vh - 64px);
 }
 
 .form {
-  margin-top: 7%;
-  margin-bottom: 5%;
   border-radius: 10px;
   background: $color-background;
   width: 40%;
@@ -230,15 +238,6 @@ table {
   }
 }
 
-
-.no-button {
-  width: 100px;
-  display: inline-block;
-  margin-right: 10px;
-}
-
-/* Animation */
-
 /* Link animation */
 
 .underline-link {
@@ -320,23 +319,7 @@ table {
   }
 }
 
-.user-loans-table {
-  width: 95%;
-  margin: 10px auto 10px;
-
-  table {
-    width: 95%;
-    margin: 0 auto;
-  }
-
-  td,
-  th {
-    width: 20%;
-    text-align: left;
-  }
-
-  // user-table-expand
-}
+// user-table-expand
 
 .user-table-expand-detail {
   overflow: hidden;
@@ -413,10 +396,10 @@ table {
     .user-library-info {
       flex: 50%;
     }
-
-    //Statistic section
   }
 }
+
+//Statistic section
 
 .statistic-section {
   display: flex;
@@ -524,7 +507,7 @@ table {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
 
 /* Track */
@@ -541,23 +524,18 @@ table {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff9400;
+  background: $color-main-darker;
 }
 
 @media screen and (max-width: 576px) {
-  .no-button {
-    padding: 3px;
-    width: 50px;
-  }
-  .modal-form-submit {
-    padding: 15px 5px;
-  }
   .form {
     width: 90%;
   }
+
   .form-input {
     width: 80%;
   }
+
   .form-button {
     width: 40%;
     padding: 10px 30px;
@@ -569,9 +547,11 @@ table {
   .form {
     width: 80%;
   }
+
   .form-input {
     width: 70%;
   }
+
   .form-button {
     padding: 15px 60px;
   }
@@ -595,7 +575,9 @@ table {
   .form-input {
     width: 60%;
   }
-};
+}
+
+;
 
 /* Loader */
 
@@ -607,7 +589,7 @@ table {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   font-family: helvetica, arial, sans-serif;
   text-transform: uppercase;
   font-weight: 900;
