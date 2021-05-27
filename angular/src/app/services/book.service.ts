@@ -41,6 +41,10 @@ export class BookService {
         return this.http.get(`${this.BOOKS_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 
+    getBookStats(id: string) {
+        return this.http.get(`${this.BOOKS_URL}/${id}/stats`).pipe(map((response: Response) => response.data));
+    }
+
     addBook(book: Book) {
         const headers = new HttpHeaders();
         const formData: FormData = new FormData();

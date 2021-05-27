@@ -11,6 +11,8 @@ import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
+import moment from 'moment';
+import Loan from '../schemas/loan';
 
 export const getBooks = async (req: Request, res: Response) => {
     const { filterValue, yFrom, yTo, pageSize } = req.query;
@@ -76,6 +78,21 @@ export const getBook = async (req: Request, res: Response) => {
             genres: book.genres.map(genre => genre.genre),
         };
         responseSuccessHandle(res, 200, { book: bookData, message: successMessages.SUCCESSFULLY_FETCHED });
+    } catch (err) {
+        responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
+    }
+};
+
+export const getBookStats = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const monthAgo = moment().subtract('1', 'months').toDate();
+
+    try {
+        const loansAllTime = await Loan.countDocuments({ book: id });
+        const loansForLastMonth = await Loan.countDocuments({  loanedAt: { $gt: monthAgo }, book: id });
+        const notReturnedBooks = await Loan.countDocuments({ book: id, returnedAt: { $exists: false } });
+        const bookStats = { loansForLastMonth, loansAllTime, notReturnedBooks };
+        responseSuccessHandle(res, 200, { bookStats, message: successMessages.SUCCESSFULLY_FETCHED });
     } catch (err) {
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
     }

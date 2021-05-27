@@ -1,4 +1,4 @@
-import { Book } from './book.model';
+import { Book, BookStats } from './book.model';
 import { Author } from './author.model';
 import { Genre } from './genre.model';
 import { Schedule } from './schedule.model';
@@ -26,6 +26,7 @@ export interface Data {
     orders?: Order[];
     schedules?: Schedule[];
     loans?: Loan[];
+    bookStats: BookStats;
 }
 
 export interface Response {

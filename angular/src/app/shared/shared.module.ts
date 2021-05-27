@@ -40,7 +40,7 @@ import { CanDeactivateGuard } from './can-deactivate-guard.service';
 
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 
-import { LineChartModule } from '@swimlane/ngx-charts';
+import { LineChartModule, NumberCardModule, PieChartModule } from '@swimlane/ngx-charts';
 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { ChartSectionComponent } from './chart-section/chart-section.component';
@@ -150,7 +150,11 @@ import { VarDirective } from '../directives/ng-var.directive';
         SmallScreenComponent,
         LoaderComponent,
         MatAutocompleteModule,
-        VarDirective
+        VarDirective,
+        MatPaginatorModule,
+        MatSortModule,
+        PieChartModule,
+        NumberCardModule
     ],
     providers: [CanDeactivateGuard],
     entryComponents: [DiscardChangesModalComponent, UserPopupComponent]

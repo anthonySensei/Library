@@ -21,8 +21,8 @@ import { models } from '../../../constants/models';
 export class LoansChartComponent implements OnInit, OnDestroy {
     isManager: boolean;
 
-    view: any[] = [700, 300];
-    view2: any[] = [200, 400];
+    view: number[] = [700, 300];
+    view2: number[] = [200, 400];
 
 
     legend = true;
@@ -39,12 +39,8 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     model: string;
     value: string;
 
-    colorScheme = {
-        domain: ['#FFDF6C']
-    };
-    colorScheme2 = {
-        domain: ['#FFFFFF', '#FFDF6C', '#C30415']
-    };
+    colorScheme = {  domain: ['#FFDF6C']  };
+    colorScheme2 = { domain: ['#FFFFFF', '#FFDF6C', '#C30415'] };
     cardColor = '#202020';
 
     statistic = [];

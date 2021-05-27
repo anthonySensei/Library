@@ -1,50 +1,62 @@
-<div class="wrapper">
-    <div class="form" *ngVar="(book$ | async) as book">
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
-        <div class="book-container" *ngIf="!isLoading">
-            <h2>{{ book?.title }}</h2>
-            <img class="book-detail-image" src="{{ book?.image }}" alt="img" />
-            <section class="book-info">
-                <p class="book-description">Description: {{ book?.description }}</p>
-                <p>Author: {{ getAuthors(book?.authors) }}</p>
-                <p>Genre: {{ getGenres(book?.genres) }}</p>
-                <p>Language: {{ getLanguage(book?.language) }}</p>
-                <p>Year: {{ book?.year }}</p>
-                <p>Quantity: {{ book?.quantity }}</p>
-            </section>
-            <div class="btn-group">
-<!--                <button mat-stroked-button color="primary" class="mr-2" target="_blank"-->
-<!--                        *ngIf="book.ebook" (click)="onReadBook()"-->
-<!--                >-->
-<!--                    Read-->
-<!--                </button>-->
-                <p class="text-main" *ngIf="book.ebook && !user.name">Please login to read book.</p>
-                <a mat-stroked-button color="primary" class="mr-2" target="_blank"
-                   [href]="book.file" *ngIf="user.name && book.ebook"
-                >
-                    Read
-                </a>
-                <button mat-stroked-button color="primary" class="mr-2"
-                        [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian && !book.ebook"
-                >
-                    Loan
-                </button>
-                <button mat-stroked-button color="primary" class="mr-2"
-                        (click)="onEditBook()" *ngIf="user.admin || user.librarian"
-                >
-                    Edit
-                </button>
-                <button mat-stroked-button color="primary" class="mr-2"
-                        (click)="onDeleteBook()" *ngIf="user.admin || user.librarian"
-                >
-                    Delete
-                </button>
-                <button mat-stroked-button color="primary" class="mr-2"
-                        (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian && !book.ebook"
-                >
-                    Order
-                </button>
-            </div>
+<div class="wrapper" *ngVar="(book$ | async) as book">
+    <div class="row w-75">
+        <div class="col-lg-8 col-md-12 mb-lg-0 mb-md-3" [class.col-lg-12]="book.ebook">
+            <mat-card class="book-container">
+                <mat-spinner *ngIf="isLoading"></mat-spinner>
+                <mat-card-content class="d-flex w-100 mb-3" *ngIf="!isLoading">
+                    <img class="image" src="{{ book.image }}" alt="img" />
+                    <div class="px-3">
+                        <h2 class="mt-0 text-main">{{ book.title }}</h2>
+                        <section class="book-info">
+                            <p class="text-break">Description: <span class="text-main">{{ book.description }}</span></p>
+                            <p>Author: <span class="text-main">{{ getAuthors(book.authors) }}</span></p>
+                            <p>Genre: <span class="text-main">{{ getGenres(book.genres) }}</span></p>
+                            <p>Language: <span class="text-main">{{ getLanguage(book.language) }}</span></p>
+                            <p>Year: <span class="text-main">{{ book.year }}</span></p>
+                            <p>Available Books: <span class="text-main">{{ book.quantity }}</span></p>
+                        </section>
+                    </div>
+                </mat-card-content>
+                <mat-divider class="position-relative"></mat-divider>
+                <mat-card-actions class="w-100 mt-3 p-0" *ngIf="!isLoading">
+                        <p class="text-main" *ngIf="book.ebook && !user.name">Please login to read book.</p>
+                        <a mat-stroked-button color="primary" class="mr-2" target="_blank"
+                           [href]="book.file" *ngIf="user.name && book.ebook"
+                        >
+                            Read
+                        </a>
+                        <button mat-stroked-button color="primary" class="mr-2"
+                                [disabled]="!book.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian && !book.ebook"
+                        >
+                            Loan
+                        </button>
+                        <button mat-stroked-button color="primary" class="mr-2"
+                                (click)="onEditBook()" *ngIf="user.admin || user.librarian"
+                        >
+                            Edit
+                        </button>
+                        <button mat-stroked-button color="primary" class="mr-2"
+                                (click)="onDeleteBook()" *ngIf="user.admin || user.librarian"
+                        >
+                            Delete
+                        </button>
+                        <button mat-stroked-button color="primary" class="mr-2"
+                                (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian && !book.ebook"
+                        >
+                            Order
+                        </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="col-lg-4 col-md-12" *ngIf="!book.ebook">
+            <mat-card class="stats-container">
+                <ngx-charts-number-card
+                        [view]="view"
+                        [scheme]="colorScheme"
+                        [results]="stats"
+                        [cardColor]="cardColor"
+                ></ngx-charts-number-card>
+            </mat-card>
         </div>
     </div>
 </div>

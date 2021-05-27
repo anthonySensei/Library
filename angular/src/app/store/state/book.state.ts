@@ -3,7 +3,7 @@ import { tap } from 'rxjs/operators';
 import { MaterialService } from '../../services/material.service';
 import { Injectable } from '@angular/core';
 import { SnackBarClasses } from '../../constants/snackBarClasses';
-import { Book } from '../../models/book.model';
+import { Book, BookStats } from '../../models/book.model';
 import { BookStateModel } from '../models/book.model';
 import { BookService } from '../../services/book.service';
 import { GetBooksModel } from '../../models/request/book';
@@ -24,6 +24,12 @@ export class InitBookState {
 
 export class LoadBook {
     static readonly type = '[Book] LoadBook';
+
+    constructor(public id: string) {}
+}
+
+export class LoadBookStats {
+    static readonly type = '[Book] LoadBookStats';
 
     constructor(public id: string) {}
 }
@@ -130,6 +136,11 @@ export class BookState {
     }
 
     @Selector()
+    static BookStats(state: BookStateModel): BookStats {
+        return state.bookStats;
+    }
+
+    @Selector()
     static Loans(state: BookStateModel): Loan[] {
         return state.loans;
     }
@@ -183,6 +194,11 @@ export class BookState {
         return this.bookService.getBooks(action.filters).pipe(tap(response => {
             ctx.patchState({ books: response.books, pagination: response.pagination });
         }));
+    }
+
+    @Action(LoadBookStats)
+    loadBookStats(ctx: StateContext<BookStateModel>, action: LoadBookStats) {
+        return this.bookService.getBookStats(action.id).pipe(tap(response => ctx.patchState({ bookStats: response.bookStats })));
     }
 
     @Action(CreateBook)
