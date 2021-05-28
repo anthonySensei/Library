@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import moment from 'moment';
 
 import Book from '../schemas/book';
+import Loan from '../schemas/loan';
+
 import { BookSchema } from '../models/book';
 
 import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
@@ -11,8 +14,6 @@ import logger from '../config/logger';
 
 import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
-import moment from 'moment';
-import Loan from '../schemas/loan';
 
 export const getBooks = async (req: Request, res: Response) => {
     const { filterValue, yFrom, yTo, pageSize } = req.query;

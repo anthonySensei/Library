@@ -1,0 +1,33 @@
+<h2 mat-dialog-title class="text-center">{{ getTitle() }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="form" class="d-flex justify-content-center align-items-center flex-column">
+        <mat-form-field class="w-75">
+            <mat-label>Librarian</mat-label>
+            <mat-select formControlName="librarian">
+                <mat-option *ngFor="let librarian of librarians$ | async" [value]="librarian.id">
+                    {{ librarian.name }} ({{ librarian.email }})
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>Start Time</mat-label>
+            <input matInput formControlName="start" [format]="24" [ngxTimepicker]="pickerStart">
+            <ngx-material-timepicker #pickerStart></ngx-material-timepicker>
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>End Time</mat-label>
+            <input matInput formControlName="end" [format]="24" [ngxTimepicker]="pickerEnd">
+            <ngx-material-timepicker #pickerEnd></ngx-material-timepicker>
+        </mat-form-field>
+        <mat-form-field class="w-75">
+            <mat-label>Days</mat-label>
+            <mat-select formControlName="weekDays" multiple>
+                <mat-option *ngFor="let day of days" [value]="day">{{day}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!isValid()" (click)="onDoAction()">{{ getActionTitle() }}</button>
+</mat-dialog-actions>
