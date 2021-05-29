@@ -20,7 +20,7 @@ import { getStatistic } from '../helper/statistic';
 
 export const getLoans = async (req: Request, res: Response) => {
     // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
-    const { sortName, sortOrder, page, pageSize, loanedAt } = req.query;
+    const { sortName, sortOrder, page, pageSize, loanedAt, librarianId } = req.query;
     const showOnlyDebtors = !!req.query.showOnlyDebtors;
     const showOnlyReturned = !!req.query.showOnlyReturned;
     // const regex = new RegExp(filterValue as string, 'i');
@@ -35,6 +35,10 @@ export const getLoans = async (req: Request, res: Response) => {
         // $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
     };
     const filter: any = removedEmptyFields(filterCondition);
+
+    if (librarianId) {
+        filter.$and = [ { librarian: librarianId } ];
+    }
 
     try {
         const quantity = await Loan.countDocuments(filter);

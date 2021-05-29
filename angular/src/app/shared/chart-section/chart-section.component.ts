@@ -1,11 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { BookState } from '../../store/state/book.state';
+import { Observable } from 'rxjs';
+import { Statistic } from '../../models/request/loan';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
 @Component({
     selector: 'app-chart-section',
-    templateUrl: './chart-section.component.html'
+    templateUrl: './chart-section.component.html',
+    styleUrls: ['./chart-section.component.scss']
 })
-export class ChartSectionComponent implements OnInit {
-    @Input() name: string;
+export class ChartSectionComponent implements OnInit, OnDestroy {
 
     showLabels = true;
     animations = true;
@@ -17,22 +22,31 @@ export class ChartSectionComponent implements OnInit {
     yAxisLabel = 'Quantity of books';
     timeline = true;
 
-    colorScheme = {
-        domain: ['#ffaa00']
-    };
+    colorScheme = {  domain: ['#FFDF6C']  };
 
     view: any[] = [700, 300];
 
-    multi: any;
+    statistic = [];
+
+    @Input() name: string;
+    @Input() legend: boolean;
+
+    @Select(BookState.Statistic)
+    statistic$: Observable<Statistic>;
 
     constructor() {}
 
     ngOnInit() {
+        this.getStatistic$();
     }
 
-    onSelect(data): void {}
+    isChartEmpty(): boolean {
+        return !this.statistic[0]?.series?.length;
+    }
 
-    onActivate(data): void {}
+    getStatistic$(): void {
+        this.statistic$.pipe(untilDestroyed(this)).subscribe(stat => this.statistic = [{ name: this.name, series: stat }]);
+    }
 
-    onDeactivate(data): void {}
+    ngOnDestroy() {}
 }

@@ -15,30 +15,20 @@
                 <section class="user-personal-info">
                     <p>Name: <span class="text-main">{{ librarian?.name }}</span></p>
                     <p>Email: <span class="text-main">{{ librarian?.email }}</span></p>
-                    <p>Phone: <span class="text-main">{{ librarian?.email }}</span></p>
+                    <p>Phone: <span class="text-main">{{ librarian?.phone }}</span></p>
                 </section>
             </section>
         </section>
         <mat-divider style="margin: 10px auto 0;"></mat-divider>
-        <mat-tab-group>
+        <mat-tab-group *ngIf="!isLoading">
             <mat-tab label="Loans">
-<!--                <app-loans-section-->
-<!--                    [librarianId]="librarianId"-->
-<!--                    [helperService]="helperService"-->
-<!--                ></app-loans-section>-->
+                <app-loans-section></app-loans-section>
             </mat-tab>
             <mat-tab label="Schedule">
-<!--                <app-schedule-section-->
-<!--                    *ngIf="!isLoading"-->
-<!--                ></app-schedule-section>-->
+                <app-schedule-section></app-schedule-section>
             </mat-tab>
             <mat-tab label="Statistic">
-<!--                <app-chart-section-->
-<!--                    *ngIf="!isLoading"-->
-<!--                    [name]="librarian.name"-->
-<!--                    [helperService]="helperService"-->
-<!--                    [statistic]="librarian.statistic"-->
-<!--                ></app-chart-section>-->
+                <app-chart-section [name]="librarian.name"></app-chart-section>
             </mat-tab>
         </mat-tab-group>
     </div>

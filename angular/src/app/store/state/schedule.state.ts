@@ -19,7 +19,7 @@ export class InitScheduleState {
 export class LoadSchedules {
     static readonly type = '[Schedule] LoadSchedules';
 
-    constructor() {}
+    constructor(public librarianId?: string) {}
 }
 
 export class SetSchedules {
@@ -80,8 +80,10 @@ export class ScheduleState {
     }
 
     @Action(LoadSchedules)
-    loadAuthors(ctx: StateContext<ScheduleStateModel>) {
-        return this.scheduleService.getSchedules().pipe(tap(response => ctx.patchState({ schedules: response.schedules })));
+    loadAuthors(ctx: StateContext<ScheduleStateModel>, action: LoadSchedules) {
+        return this.scheduleService.getSchedules(action.librarianId).pipe(tap(
+            response => ctx.patchState({ schedules: response.schedules })
+        ));
     }
 
     @Action(CreateSchedule)

@@ -52,14 +52,8 @@ export const getLibrarian = async (req: Request, res: Response) => {
     try {
         const librarian = await User.findById(librarianId) as UserSchema;
         const librarianData = {
-            name: librarian.name,
-            email: librarian.email,
-            phone: librarian.phone,
-            image: librarian.image,
-            active: librarian.active,
-            schedule: [],
-            statistic: [],
-            loans: []
+            ...librarian.toJSON(),
+            password: null
         };
         const data = { message: successMessages.SUCCESSFULLY_FETCHED, librarian: librarianData};
         return responseSuccessHandle(res, 200, data);

@@ -1,60 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CalendarEvent } from 'angular-calendar';
 import { addDays, addHours, endOfMonth, startOfDay, subDays } from 'date-fns';
-
-const colors: any = {
-    yellow: {
-        primary: '#FFDF6C',
-        secondary: '#707070'
-    }
-};
+import { Select, Store } from '@ngxs/store';
+import { LoadSchedules, ScheduleState } from '../../../../store/state/schedule.state';
+import { Observable } from 'rxjs';
+import { Schedule } from '../../../../models/schedule.model';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { getCalendarEvents } from '../../../../helper/calendar';
+import { LibrarianState } from '../../../../store/state/librarian.state';
 
 @Component({
     selector: 'app-schedule-section',
     templateUrl: './schedule-section.component.html'
 })
-export class ScheduleSectionComponent implements OnInit {
+export class ScheduleSectionComponent implements OnInit, OnDestroy {
 
-    events: CalendarEvent[] = [
-        {
-            start: subDays(startOfDay(new Date()), 1),
-            end: addDays(new Date(), 1),
-            title: 'Іван Васильович 10.00-18.00',
-            color: colors.yellow,
-            allDay: true,
-            resizable: {
-                beforeStart: true,
-                afterEnd: true
-            },
-            draggable: true
-        },
-        {
-            start: startOfDay(new Date()),
-            title: 'Василь Васильович 12.00-18.00',
-            color: colors.yellow,
-        },
-        {
-            start: subDays(endOfMonth(new Date()), 3),
-            end: addDays(endOfMonth(new Date()), 3),
-            title: 'Іван Олександрович 14.00-18.00',
-            color: colors.blue,
-            allDay: true
-        },
-        {
-            start: addHours(startOfDay(new Date()), 2),
-            end: addHours(new Date(), 2),
-            title: 'Максим Олександрович 14.00-18.00',
-            color: colors.yellow,
-            resizable: {
-                beforeStart: true,
-                afterEnd: true
-            },
-            draggable: true
-        }
-    ];
+    events: CalendarEvent[] = [];
 
-    constructor() {}
+    @Select(ScheduleState.Schedules)
+    schedules$: Observable<Schedule[]>;
+
+    constructor(
+        private store: Store,
+    ) {}
 
     ngOnInit(): void {
+        const librarian = this.store.selectSnapshot(LibrarianState.Librarian);
+        this.store.dispatch(new LoadSchedules(librarian?._id));
+        this.getSchedules$();
     }
+
+    getSchedules$() {
+        this.schedules$.pipe(untilDestroyed(this)).subscribe(schedule => this.updateCalendar(schedule));
+    }
+
+    updateCalendar(schedules: Schedule[]) {
+        this.events = getCalendarEvents(schedules, []);
+    }
+
+    ngOnDestroy() {}
 }
