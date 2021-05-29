@@ -1,11 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-
-import { ScheduleService } from '../../../services/schedule.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Schedule } from '../../../models/schedule.model';
-
-import { Days } from '../../../constants/days';
-import { untilDestroyed } from 'ngx-take-until-destroy';
+import { Select, Store } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { DeleteSchedule, ScheduleState } from '../../../store/state/schedule.state';
+import moment from 'moment';
+import { MatDialog } from '@angular/material/dialog';
+import { SchedulePopupComponent } from '../../popups/schedule-popup/schedule-popup.component';
 
 @Component({
     selector: 'app-schedule-section',
@@ -13,51 +14,39 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
     styleUrls: ['../edit-page.component.sass']
 })
 export class ScheduleSectionComponent implements OnInit, OnDestroy {
-    @Output() nothingToChange = new EventEmitter();
 
     schedules: Schedule[];
-    showedSchedules: Schedule[] = [];
+    displayedColumns: string[] = ['librarian', 'start', 'end', 'weekDays', 'actions'];
 
-    scheduleSelect: number;
-    librarianSelect: string;
-    scheduleDay: string;
-    scheduleLibrarianId: string;
-
-    newScheduleDay: string;
-    newScheduleLibrarianId: number;
-
-    showScheduleAdding = false;
-
-    days = Object.values(Days);
+    @Select(ScheduleState.Schedules)
+    schedules$: Observable<Schedule[]>;
 
     constructor(
-        private scheduleService: ScheduleService,
-    ) {
+        private store: Store,
+        private dialog: MatDialog
+    ) {}
+
+    ngOnInit() {}
+
+    getTime(time: Date): string {
+        return moment(time).format('HH:mm');
     }
 
-    ngOnInit() {
-        this.setSchedules();
+    getDays(weekDays: string[]): string {
+        return weekDays.join(', ');
     }
 
-    setSchedules(): void {
+    onAddSchedule() {
+        this.dialog.open(SchedulePopupComponent, { disableClose: true, width: '768px' });
     }
 
-    getSchedule(): any {
-        return {};
+    onEditSchedule(schedule: Schedule) {
+        this.dialog.open(SchedulePopupComponent, { data: schedule, disableClose: true, width: '768px' });
     }
 
-    setSchedule(): void {
-        if (this.scheduleSelect) {
-        }
+    onDeleteSchedule(id: string) {
+        this.store.dispatch(new DeleteSchedule(id));
     }
-
-    addSchedule(): void {}
-
-    editSchedule(): void {}
-
-    deleteSchedule(): void {}
-
-    openConfirmDeleteDialog(): void {}
 
     ngOnDestroy(): void {}
 }

@@ -1,120 +1,42 @@
-<section class="edit-section">
-    <h3>
-        Please select schedule(left side) and change fields(right side) to edit
-        schedule:
-    </h3>
-    <div class="input-groups flex">
-        <div class="left-side">
-            <mat-form-field class="edit-field">
-                <mat-label>Schedule</mat-label>
-                <mat-select
-                    name="scheduleSelect"
-                    [(ngModel)]="scheduleSelect"
-                    (ngModelChange)="setSchedule()"
-                    [disabled]="!librarianSelect"
-                    required
-                >
-                    <mat-option
-                        *ngFor="let schedule of showedSchedules"
-                        [value]="schedule.id"
-                    >
-                        {{ schedule.day }}
-                    </mat-option>
-                    <mat-divider></mat-divider>
-                    <mat-option (click)="showScheduleAdding = true">
-                        <b>Add schedule</b>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <mat-divider
-            vertical="vertical"
-            style="margin-right: 10px;"
-        ></mat-divider>
-        <div class="right-side">
-            <mat-form-field class="edit-field">
-                <mat-label>Day</mat-label>
-                <mat-select
-                    name="scheduleDay"
-                    [(ngModel)]="scheduleDay"
-                    [disabled]="!scheduleSelect"
-                >
-                    <mat-option *ngFor="let day of days" [value]="day">
-                        {{ day }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <div class="btn-group">
-                <button
-                    mat-raised-button
-                    class="form-btn edit-btn"
-                    color="primary"
-                    type="submit"
-                    [disabled]="
-                        !scheduleSelect ||
-                        !scheduleDay ||
-                        !scheduleLibrarianId
-                    "
-                    (click)="editSchedule()"
-                >
-                    Edit
-                </button>
-                <button
-                    mat-raised-button
-                    class="form-btn edit-btn"
-                    color="warn"
-                    type="button"
-                    [disabled]="!scheduleSelect"
-                    (click)="openConfirmDeleteDialog()"
-                >
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="add-section" *ngIf="showScheduleAdding">
-    <mat-divider style="margin: 10px 0;"></mat-divider>
-    <button
-        mat-button
-        class="close-adding-btn"
-        (click)="showScheduleAdding = false"
-    >
-        <i class="material-icons">close</i>
-    </button>
-    <h3>Please fill in fields to add schedule:</h3>
-    <div class="input-groups">
-        <mat-form-field class="edit-field">
-            <mat-label>Day</mat-label>
-            <mat-select name="schedulePeriod" [(ngModel)]="newScheduleDay">
-                <mat-option *ngFor="let day of days" [value]="day">
-                    {{ day }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
-    <div class="btn-group">
-        <button
-            mat-raised-button
-            class="form-btn edit-btn"
-            color="primary"
-            type="submit"
-            [disabled]="
-                !newScheduleDay ||
-                !newScheduleLibrarianId
-            "
-            (click)="addSchedule()"
-        >
-            Add
+<section>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <button mat-stroked-button color="primary" (click)="onAddSchedule()">
+            <i class="material-icons">add</i> Add Schedule
         </button>
-        <button
-            mat-stroked-button
-            class="form-btn edit-btn"
-            color="primary"
-            type="submit"
-            (click)="showScheduleAdding = false"
-        >
-            Cancel
-        </button>
+<!--        <mat-form-field>-->
+<!--            <mat-label>Search</mat-label>-->
+<!--            <input matInput (keyup)="onApplyFilter($event)" placeholder="Search">-->
+<!--        </mat-form-field>-->
     </div>
+    <table mat-table [dataSource]="schedules$  | async" class="mat-elevation-z8">
+        <ng-container matColumnDef="librarian">
+            <th mat-header-cell *matHeaderCellDef class="w-50"> Librarian </th>
+            <td mat-cell *matCellDef="let element"> {{element.librarian?.name}} ({{ element.librarian?.email }}) </td>
+        </ng-container>
+        <ng-container matColumnDef="start">
+            <th mat-header-cell *matHeaderCellDef class="w-25"> Time Start </th>
+            <td mat-cell *matCellDef="let element"> {{getTime(element.start)}} </td>
+        </ng-container>
+        <ng-container matColumnDef="end">
+            <th mat-header-cell *matHeaderCellDef class="w-25"> Time End </th>
+            <td mat-cell *matCellDef="let element"> {{getTime(element.end)}} </td>
+        </ng-container>
+        <ng-container matColumnDef="weekDays">
+            <th mat-header-cell *matHeaderCellDef class="w-25"> Days </th>
+            <td mat-cell *matCellDef="let element"> {{getDays(element.weekDays)}} </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="w-25"> Actions </th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-button matTooltip="Edit Schedule" class="mr-2" (click)="onEditSchedule(element)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-button matTooltip="Delete Schedule" (click)="onDeleteSchedule(element._id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 </section>

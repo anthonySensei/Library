@@ -68,8 +68,8 @@ export const deleteAuthor = async (req: Request, res: Response) => {
     try {
         await Author.findByIdAndDelete(id);
         const data = { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED };
-        return responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, data);
     } catch (err) {
-        return responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
+        responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
     }
 };

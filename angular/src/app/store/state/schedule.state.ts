@@ -86,7 +86,7 @@ export class ScheduleState {
 
     @Action(CreateSchedule)
     createAuthor(ctx: StateContext<ScheduleStateModel>, action: CreateSchedule) {
-        return this.scheduleService.createSchedules(action.data).pipe(tap(response => {
+        return this.scheduleService.createSchedule(action.data).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadSchedules());
         }));
@@ -95,7 +95,7 @@ export class ScheduleState {
     @Action(EditSchedule)
     editAuthor(ctx: StateContext<ScheduleStateModel>, action: EditSchedule) {
         const { scheduleId, data } = action;
-        return this.scheduleService.editSchedules(scheduleId, data).pipe(tap(response => {
+        return this.scheduleService.editSchedule(scheduleId, data).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadSchedules());
         }));
@@ -103,8 +103,7 @@ export class ScheduleState {
 
     @Action(DeleteSchedule)
     deleteAuthor(ctx: StateContext<StudentStateModel>, action: DeleteSchedule) {
-        const { id } = action;
-        return this.scheduleService.deleteSchedules(id).pipe(tap(response => {
+        return this.scheduleService.deleteSchedule(action.id).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadSchedules());
         }));
