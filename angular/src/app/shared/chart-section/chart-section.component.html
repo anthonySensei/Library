@@ -1,7 +1,8 @@
-<section class="statistic-section">
+<div class="chart" *ngIf="!isChartEmpty()">
     <ngx-charts-line-chart
             [view]="view"
             [scheme]="colorScheme"
+            [legend]="legend"
             [showXAxisLabel]="showXAxisLabel"
             [showYAxisLabel]="showYAxisLabel"
             [xAxis]="xAxis"
@@ -9,10 +10,10 @@
             [xAxisLabel]="xAxisLabel"
             [yAxisLabel]="yAxisLabel"
             [timeline]="timeline"
-            [results]="multi"
-            (select)="onSelect($event)"
-            (activate)="onActivate($event)"
-            (deactivate)="onDeactivate($event)"
+            [results]="statistic"
     >
     </ngx-charts-line-chart>
-</section>
+</div>
+<div class="d-flex justify-content-center align-items-center h-75" *ngIf="isChartEmpty()">
+    <h2>Chart is empty</h2>
+</div>

@@ -10,11 +10,12 @@ import { Select, Store } from '@ngxs/store';
 import { User } from '../../../models/user.model';
 import { LibrarianState, LoadLibrarian } from '../../../store/state/librarian.state';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { LoadStatistic } from '../../../store/state/book.state';
 
 @Component({
     selector: 'app-librarian-details',
     templateUrl: './librarian-details.component.html',
-    styleUrls: ['./librarian-details.component.sass']
+    styleUrls: ['./librarian-details.component.scss']
 })
 export class LibrarianDetailsComponent implements OnInit, OnDestroy {
     isLoading: boolean;
@@ -32,7 +33,19 @@ export class LibrarianDetailsComponent implements OnInit, OnDestroy {
         document.title = PageTitles.LIBRARIAN_DETAILS;
         this.isLoading = true;
         this.route.params.pipe(untilDestroyed(this)).subscribe((params: Params) => {
-            this.store.dispatch(new LoadLibrarian(params.id)).pipe(untilDestroyed(this)).subscribe(() => this.isLoading = false);
+            this.store.dispatch(new LoadLibrarian(params.id)).pipe(untilDestroyed(this));
+            this.getLibrarian$();
+        });
+    }
+
+    getLibrarian$() {
+        this.librarian$.pipe(untilDestroyed(this)).subscribe(librarian => {
+            if (!librarian) {
+                return;
+            }
+
+            this.isLoading = false;
+            this.store.dispatch(new LoadStatistic('librarian', librarian.email));
         });
     }
 

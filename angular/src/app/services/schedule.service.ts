@@ -16,8 +16,9 @@ export class ScheduleService {
 
     constructor(private http: HttpClient) {}
 
-    getSchedules() {
-        return this.http.get(this.SCHEDULES_URL).pipe(map((response: Response) => response.data));
+    getSchedules(librarianId: string) {
+        const params = librarianId ? `?librarianId=${librarianId}` : '';
+        return this.http.get(this.SCHEDULES_URL + params).pipe(map((response: Response) => response.data));
     }
 
     createSchedule(schedule: Schedule) {

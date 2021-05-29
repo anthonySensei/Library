@@ -82,6 +82,7 @@ export class BookService {
                     .set('sortName', params.sortName)
                     .set('sortOrder', params.sortOrder)
                     .set('filterValue', params.filterValue || '')
+                    .set('librarianId', params.librarianId || '')
                     .set('showOnlyDebtors', params.showOnlyDebtors ? 'true' : '')
                     .set('showOnlyReturned', params.showOnlyReturned ? 'true' : '')
             })

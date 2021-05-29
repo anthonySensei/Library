@@ -6,10 +6,13 @@ import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 
 import {responseErrorHandle, responseSuccessHandle} from '../helper/response';
+import {removedEmptyFields} from '../helper/object';
 
 export const getSchedules = async (req: Request, res: Response) => {
     try {
-        const schedules = await Schedule.find().populate('librarian', '-password');
+        const { librarianId } = req.query;
+        const filter = removedEmptyFields({ librarian: librarianId });
+        const schedules = await Schedule.find(filter).populate('librarian', '-password');
         const data = { schedules: schedules.map(schedule => schedule.toJSON()), message: successMessages.SUCCESSFULLY_FETCHED };
         responseSuccessHandle(res, 200, data);
     } catch (err) {

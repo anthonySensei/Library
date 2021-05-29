@@ -4,5 +4,6 @@ export interface Pagination {
     sortName: string;
     sortOrder: string;
     length?: number;
+    librarianId?: string;
 }
 

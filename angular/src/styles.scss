@@ -405,17 +405,6 @@ table {
   }
 }
 
-//Statistic section
-
-.statistic-section {
-  display: flex;
-  justify-content: center;
-
-  ngx-charts-line-chart {
-    margin-top: 5%;
-  }
-}
-
 /* Simple CSS3 Fade-in-down Animation */
 
 .fadeInDown {
