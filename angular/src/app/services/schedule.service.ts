@@ -20,15 +20,15 @@ export class ScheduleService {
         return this.http.get(this.SCHEDULES_URL).pipe(map((response: Response) => response.data));
     }
 
-    createSchedules(schedule: Schedule) {
+    createSchedule(schedule: Schedule) {
         return this.http.post(this.SCHEDULES_URL, { schedule }).pipe(map((response: Response) => response.data));
     }
 
-    editSchedules(id: string, author: Schedule) {
-        return this.http.put(`${this.SCHEDULES_URL}/${id}`, { author }).pipe(map((response: Response) => response.data));
+    editSchedule(id: string, schedule: Schedule) {
+        return this.http.put(`${this.SCHEDULES_URL}/${id}`, { schedule }).pipe(map((response: Response) => response.data));
     }
 
-    deleteSchedules(id: string) {
+    deleteSchedule(id: string) {
         return this.http.delete(`${this.SCHEDULES_URL}/${id}`).pipe(map((response: Response) => response.data));
     }
 }

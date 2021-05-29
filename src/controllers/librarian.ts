@@ -38,11 +38,7 @@ export const getLibrarians = async (req: Request, res: Response) => {
             schedule: []
         }));
 
-        const data = {
-            librarians,
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            quantity: librariansQuantity
-        };
+        const data = { librarians, message: successMessages.SUCCESSFULLY_FETCHED, quantity: librariansQuantity};
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting librarians', err.message);
@@ -65,10 +61,7 @@ export const getLibrarian = async (req: Request, res: Response) => {
             statistic: [],
             loans: []
         };
-        const data = {
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            librarian: librarianData
-        };
+        const data = { message: successMessages.SUCCESSFULLY_FETCHED, librarian: librarianData};
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting librarian', err.message);

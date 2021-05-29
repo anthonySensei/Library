@@ -9,6 +9,8 @@ import { LoadSchedules, ScheduleState } from '../../../store/state/schedule.stat
 import colors from '../../../constants/colors';
 import { Observable } from 'rxjs';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { MatDialog } from '@angular/material/dialog';
+import { SchedulePopupComponent } from '../../../components/popups/schedule-popup/schedule-popup.component';
 
 @Component({
     selector: 'app-librarian-schedule',
@@ -42,7 +44,8 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
     schedules$: Observable<Schedule[]>;
 
     constructor(
-        private store: Store
+        private store: Store,
+        private dialog: MatDialog
     ) {}
 
     ngOnInit(): void {
@@ -82,14 +85,17 @@ export class LibrarianScheduleComponent implements OnInit, OnDestroy {
         });
     }
 
-    onEventEdit(event: CalendarEvent): void {
-        console.log(event);
+    // onEventEdit(event: CalendarEvent): void {
+    //     console.log(event);
+    // }
+    //
+    // onEventDelete(event: CalendarEvent): void {
+    //     console.log(event);
+    // }
+
+    onOpenCreatePopup() {
+        this.dialog.open(SchedulePopupComponent, { disableClose: false, width: '768px' });
     }
 
-    onEventDelete(event: CalendarEvent): void {
-        console.log(event);
-    }
-
-    ngOnDestroy(): void {
-    }
+    ngOnDestroy(): void {}
 }

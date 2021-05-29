@@ -14,6 +14,7 @@ import { UserState } from '../../store/state/user.state';
 import { User } from '../../models/user.model';
 import { LoadAuthors } from '../../store/state/author.state';
 import { LoadGenres } from '../../store/state/genre.state';
+import { LoadSchedules } from '../../store/state/schedule.state';
 
 @Component({
     selector: 'app-edit-page',
@@ -49,6 +50,10 @@ export class EditPageComponent implements OnInit, OnDestroy {
 
     onLoadGenres() {
         this.store.dispatch(new LoadGenres());
+    }
+
+    onLoadSchedules() {
+        this.store.dispatch(new LoadSchedules());
     }
 
     ngOnDestroy(): void {}
