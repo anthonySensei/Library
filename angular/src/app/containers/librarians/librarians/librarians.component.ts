@@ -19,6 +19,7 @@ import { UserPopupComponent } from '@shared/user-popup/user-popup.component';
 import { DeleteUser } from '../../../store/state/user.state';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../models/user.model';
+import { LibrarianState } from '../../../store/state/librarian.state';
 
 @Component({
     selector: 'app-librarians',
@@ -28,11 +29,7 @@ import { User } from '../../../models/user.model';
 export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     filterValue: string;
     links = AngularLinks;
-    columnsToDisplay: string[] = [
-        TableColumns.NAME,
-        TableColumns.EMAIL,
-        TableColumns.PHONE
-    ];
+    columnsToDisplay: string[] = [ TableColumns.NAME, TableColumns.EMAIL, TableColumns.PHONE ];
     expandedElement: User | null;
     tableColumns = TableColumns;
 
@@ -54,6 +51,10 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
         merge(this.sort.sortChange, this.paginator.page).pipe(untilDestroyed(this)).pipe(tap(() => this.loadLibrariansPage())).subscribe();
+    }
+
+    getTotalItems(): number {
+        return this.store.selectSnapshot(LibrarianState.LibrariansTotalItems);
     }
 
     loadLibrariansPage(): void {

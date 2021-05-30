@@ -21,6 +21,10 @@ import { BookPopupComponent } from '../../../components/popups/book-popup/book-p
 import { BookState, LoadBooks } from '../../../store/state/book.state';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDrawer } from '@angular/material/sidenav';
+import { Language } from '../../../models/language.model';
+import { LocalizationState } from '../../../store/state/localization.state';
+import { map, startWith } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-main-page',
@@ -28,16 +32,20 @@ import { MatDrawer } from '@angular/material/sidenav';
     styleUrls: ['./main-page.component.scss']
 })
 export class MainPageComponent implements OnInit, OnDestroy {
-    user: User;
 
     isLoading: boolean;
+    onlyEbooks: boolean;
+    onlyNormalBooks: boolean;
     showFilterButton = true;
-
+    toYear: string;
+    fromYear: string;
+    filterValue: string;
     authors: string[];
     genres: string[];
-    filterValue: string;
-    fromYear: string;
-    toYear: string;
+    user: User;
+    languages: Language[];
+    filteredLanguages: Observable<Language[]>;
+    language = new FormControl(null);
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild('drawer') drawer: MatDrawer;
@@ -54,7 +62,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     @Select(BookState.Pagination)
     pagination$: Observable<Pagination>;
 
-
     constructor(
         private authService: AuthService,
         private bookService: BookService,
@@ -70,7 +77,13 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         document.title = PageTitles.CATALOG;
+        this.languages = this.store.selectSnapshot(LocalizationState.Languages);
         this.store.dispatch([new LoadAuthors(), new LoadGenres()]);
+        this.filteredLanguages = this.language.valueChanges
+            .pipe(
+                startWith(''),
+                map(value => this._filterLanguages(value as Language))
+            );
         this.getUser$();
         this.loadBooks();
     }
@@ -81,10 +94,12 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     loadBooks(): void {
         this.isLoading = true;
+        const { value: language } = this.language;
         this.store
             .dispatch(new LoadBooks({
                 page: this.paginator?.pageIndex || 0, authors: this.authors, filterValue: this.filterValue || '',
-                genres: this.genres, yearFrom: this.fromYear, yearTo: this.toYear, pageSize: this.paginator?.pageSize || 16
+                genres: this.genres, yearFrom: this.fromYear, yearTo: this.toYear, pageSize: this.paginator?.pageSize || 16,
+                onlyEbooks: this.onlyEbooks || false, onlyNormalBooks: this.onlyNormalBooks, language: language?.code
             }))
             .subscribe(() => this.isLoading = false);
     }
@@ -100,6 +115,10 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
     isHasAccess(): boolean {
         return (this.user.admin || this.user.librarian);
+    }
+
+    displayWith(obj?: Language): string | undefined {
+        return obj ? obj.name : undefined;
     }
 
     clearInputs(): void {
@@ -121,6 +140,22 @@ export class MainPageComponent implements OnInit, OnDestroy {
     async onSearch() {
         await this.onToggleFilterButton();
         this.loadBooks();
+    }
+
+    onToggleEbooks(checked: boolean) {
+        this.onlyEbooks = checked;
+        this.onlyNormalBooks = checked ? false : this.onlyNormalBooks;
+    }
+
+    onToggleNormalBooks(checked: boolean) {
+        this.onlyNormalBooks = checked;
+        this.onlyEbooks = checked ? false : this.onlyEbooks;
+    }
+
+    _filterLanguages(value: string | Language): Language[] {
+        const filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
+
+        return this.languages.filter(language => language.name.toLowerCase().includes(filterValue));
     }
 
     ngOnDestroy(): void {}

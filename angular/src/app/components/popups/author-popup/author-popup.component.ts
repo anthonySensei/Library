@@ -34,8 +34,8 @@ export class AuthorPopupComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.isEdit = !!this.data.id;
-        this.isBookAdding = !!(!this.data.id && this.data.language);
+        this.isEdit = !!this.data._id;
+        this.isBookAdding = !!(!this.data._id && this.data.language);
         this.countries = this.store.selectSnapshot(LocalizationState.Countries);
         this.languages = this.store.selectSnapshot(LocalizationState.Languages);
         this.initForm();
@@ -91,7 +91,7 @@ export class AuthorPopupComponent implements OnInit {
 
     editAuthor(): Observable<StoreStateModel> {
         const { name, country, language } = this.form.value;
-        return this.store.dispatch(new EditAuthor(this.data.id, { name, country: country.code, language: language.code }));
+        return this.store.dispatch(new EditAuthor(this.data._id, { name, country: country.code, language: language.code }));
     }
 
     onDoAction() {

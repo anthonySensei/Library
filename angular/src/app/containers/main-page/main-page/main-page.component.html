@@ -27,17 +27,36 @@
             <mat-form-field class="w-100">
                 <mat-label>Author</mat-label>
                 <mat-select [(ngModel)]="authors" multiple>
-                    <mat-option>-</mat-option>
-                    <mat-option [value]="author.id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
+                    <mat-option [value]="author._id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="w-100">
                 <mat-label>Genre</mat-label>
                 <mat-select [(ngModel)]="genres" multiple>
-                    <mat-option>-</mat-option>
-                    <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name.en }}</mat-option>
+                    <mat-option [value]="genre._id" *ngFor="let genre of genres$ | async">{{ genre.name.en }}</mat-option>
                 </mat-select>
             </mat-form-field>
+            <mat-form-field class="w-100">
+                <mat-label>Language</mat-label>
+                <input matInput placeholder="Language" [matAutocomplete]="languageAutoComplete" [formControl]="language">
+                <mat-autocomplete #languageAutoComplete="matAutocomplete" [displayWith]="displayWith">
+                    <mat-option *ngFor="let language of filteredLanguages | async" [value]="language">{{ language.name }}</mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <div class="d-flex justify-content-between mb-3">
+                <mat-slide-toggle class="w-50" color="primary"
+                                  (change)="onToggleEbooks($event.checked)"
+                                  [(ngModel)]="onlyEbooks"
+                >
+                    Ebooks
+                </mat-slide-toggle>
+                <mat-slide-toggle class="w-50" color="primary"
+                                  (change)="onToggleNormalBooks($event.checked)"
+                                  [(ngModel)]="onlyNormalBooks"
+                >
+                    Normal Books
+                </mat-slide-toggle>
+            </div>
             <div class="d-flex justify-content-between">
                 <button mat-stroked-button color="primary" class="w-50 mr-2" (click)="onSearch()">
                     <i class="material-icons">search</i>

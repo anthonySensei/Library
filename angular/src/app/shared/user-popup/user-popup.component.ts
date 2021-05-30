@@ -83,7 +83,7 @@ export class UserPopupComponent implements OnInit {
       return;
     }
 
-    this.store.dispatch(new EditUser({email, name, phone}, user.id)).subscribe(() => this.onClose(true));
+    this.store.dispatch(new EditUser({email, name, phone}, user._id)).subscribe(() => this.onClose(true));
   }
 
   onDoAction() {

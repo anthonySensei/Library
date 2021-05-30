@@ -12,10 +12,7 @@ import logger from '../config/logger';
 export const getGenres = async (req: Request, res: Response) => {
     try {
         const genres = await Genre.find() as GenreSchema[];
-        const data = {
-            genres: genres.map(genre => ({ id: genre._id, name: genre.name })),
-            message: successMessages.SUCCESSFULLY_FETCHED
-        };
+        const data = { genres: genres.map(genre => genre.toJSON()), message: successMessages.SUCCESSFULLY_FETCHED };
         responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error(`Error fetching genres: ${err.message}`);
@@ -35,8 +32,7 @@ export const addGenre = async (req: Request, res: Response) => {
         }
 
         await Genre.create({ name });
-        const data = { message: successMessages.GENRE_SUCCESSFULLY_CREATED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.GENRE_SUCCESSFULLY_CREATED });
     } catch (err) {
         logger.error(`Error adding genres: ${err.message}`);
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -56,8 +52,7 @@ export const editGenre = async (req: Request, res: Response) => {
         }
 
         await Genre.findByIdAndUpdate(id, { name });
-        const data = { message: successMessages.GENRE_SUCCESSFULLY_UPDATED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.GENRE_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error(`Error editing genres: ${err.message}`);
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);
@@ -69,8 +64,7 @@ export const deleteGenre = async (req: Request, res: Response) => {
 
     try {
         await Genre.findByIdAndDelete(id);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED });
     } catch (err) {
         logger.error(`Error deleting genres: ${err.message}`);
         responseErrorHandle(res, 500, errorMessages.SOMETHING_WENT_WRONG);

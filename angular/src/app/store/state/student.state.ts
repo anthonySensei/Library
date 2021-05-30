@@ -31,18 +31,6 @@ export class LoadStudents {
     ) {}
 }
 
-export class SetStudent {
-    static readonly type = '[Student] SetStudent';
-
-    constructor(public student: User) {}
-}
-
-export class SetStudents {
-    static readonly type = '[Student] SetStudents';
-
-    constructor(public students: User[]) {}
-}
-
 /*******************************
  *** UserState            ***
  ********************************/
@@ -70,6 +58,11 @@ export class StudentState {
         return state.students;
     }
 
+    @Selector()
+    static StudentsTotalItems(state: StudentStateModel): number {
+        return state.studentsTotalItems;
+    }
+
     /****************
      *** Resolvers ***
      *****************/
@@ -80,24 +73,14 @@ export class StudentState {
 
     @Action(LoadStudent)
     loadStudent(ctx: StateContext<StudentStateModel>, action: LoadStudent) {
-        return this.studentService.getStudent(action.id).pipe(tap(res => ctx.dispatch(new SetStudent(res.student))));
+        return this.studentService.getStudent(action.id).pipe(tap(res => ctx.patchState({ student: res.student })));
     }
 
     @Action(LoadStudents)
     loadStudents(ctx: StateContext<StudentStateModel>, action: LoadStudents) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.studentService.getStudents(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            ctx.dispatch(new SetStudents(res.students));
+            ctx.patchState({ students: res.students, studentsTotalItems: res.quantity });
         }));
-    }
-
-    @Action(SetStudent)
-    setStudent(ctx: StateContext<StudentStateModel>, action: SetStudent) {
-        return ctx.patchState({ student: action.student });
-    }
-
-    @Action(SetStudents)
-    setStudents(ctx: StateContext<StudentStateModel>, action: SetStudents) {
-        return ctx.patchState({ students: action.students });
     }
 }

@@ -31,18 +31,6 @@ export class LoadLibrarians {
     ) {}
 }
 
-export class SetLibrarian {
-    static readonly type = '[Librarian] SetLibrarian';
-
-    constructor(public librarian: User) {}
-}
-
-export class SetLibrarians {
-    static readonly type = '[Librarian] SetLibrarians';
-
-    constructor(public librarians: User[]) {}
-}
-
 /*******************************
  *** UserState            ***
  ********************************/
@@ -71,6 +59,11 @@ export class LibrarianState {
         return state.librarians;
     }
 
+    @Selector()
+    static LibrariansTotalItems(state: LibrarianStateModel): number {
+        return state.librariansTotalItems;
+    }
+
     /****************
      *** Resolvers ***
      *****************/
@@ -84,8 +77,7 @@ export class LibrarianState {
     loadStudent(ctx: StateContext<LibrarianStateModel>, action: LoadLibrarian) {
         const { id } = action;
         return this.librarianService.getLibrarian(id).pipe(tap(res => {
-            const { librarian } = res;
-            ctx.dispatch(new SetLibrarian(librarian));
+            ctx.patchState({ librarian: res.librarian });
         }));
     }
 
@@ -93,19 +85,7 @@ export class LibrarianState {
     loadStudents(ctx: StateContext<LibrarianStateModel>, action: LoadLibrarians) {
         const { pageSize, pageNumber, filterValue, sortOrder, sortName } = action;
         return this.librarianService.getLibrarians(filterValue, sortName, sortOrder, pageNumber, pageSize).pipe(tap(res => {
-            ctx.dispatch(new SetLibrarians(res.librarians));
+            ctx.patchState({ librarians: res.librarians, librariansTotalItems: res.quantity });
         }));
-    }
-
-    @Action(SetLibrarian)
-    setStudent(ctx: StateContext<LibrarianStateModel>, action: SetLibrarian) {
-        const { librarian } = action;
-        return ctx.patchState({ librarian });
-    }
-
-    @Action(SetLibrarians)
-    setStudents(ctx: StateContext<LibrarianStateModel>, action: SetLibrarians) {
-        const { librarians } = action;
-        return ctx.patchState({ librarians });
     }
 }

@@ -37,10 +37,10 @@ export const login = (req: Request, res: Response, next: any) => {
             }
 
             const secretKey = process.env.SECRET_KEY as string;
-            const userJWT = { id: user.id, email: user.email };
+            const userJWT = { id: user._id, email: user.email };
             const token = jwt.sign(userJWT, secretKey, { expiresIn });
-            const { _id: id, name, email, image, admin, librarian } = user;
-            const userData = { id, name, email, image, admin, librarian };
+            const { _id, name, email, image, admin, librarian, phone } = user;
+            const userData = { _id, name, email, image, admin, librarian, phone };
             jwt.verify(token, secretKey);
             const data = {
                 message: successMessages.SUCCESSFULLY_LOGGED_IN,
@@ -105,8 +105,7 @@ export const checkActivationToken = async (req: Request, res: Response) => {
         user.active = true;
         user.activationToken = '';
         await user.save();
-        const data = { message: successMessages.SUCCESSFULLY_ACTIVATED };
-        return responseSuccessHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_ACTIVATED });
     } catch (err) {
         console.error('Cannot activate user', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);

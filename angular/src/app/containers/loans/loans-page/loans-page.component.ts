@@ -31,7 +31,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     expandedElement: Loan | null;
     loanedAt: Date;
 
-    tableColumns = TableColumns;
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;

@@ -128,7 +128,7 @@
         ></tr>
     </table>
     <mat-paginator
-        [length]="1"
+        [length]="getTotalItems()"
         [pageSize]="paginator.pageSize || 5"
         [pageSizeOptions]="[5, 10]"
         #paginator

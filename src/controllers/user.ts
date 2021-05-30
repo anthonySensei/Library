@@ -137,14 +137,12 @@ export const getUser = async (req: Request, res: Response) => {
 
   try {
       const user = await User.findById(id) as UserSchema;
-      const { _id, email, phone, image, admin, librarian, name } = user;
 
       if (!user) {
           return responseErrorHandle(res, 500, errorMessages.USER_DOES_NOT_EXIST);
       }
 
-      const userData = { id: _id, name, email, image, admin, librarian, phone };
-      responseSuccessHandle(res, 200, { user: userData });
+      responseSuccessHandle(res, 200, { user: { ...user.toJSON(), password: null } });
   } catch (err) {
       logger.error('Error fetching user', err.message);
       responseErrorHandle(res, 500, 'Cannot fetch user');

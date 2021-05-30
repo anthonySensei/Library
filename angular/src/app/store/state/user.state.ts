@@ -137,8 +137,8 @@ export class UserState {
 
     @Action(LoadUser)
     loadUser(ctx: StateContext<UserStateModel>) {
-        const { id } = ctx.getState().user;
-        return this.userService.getUser(id).pipe(tap(async response => ctx.dispatch(new SetUser(response.user))));
+        const { _id } = ctx.getState().user;
+        return this.userService.getUser(_id).pipe(tap(async response => ctx.dispatch(new SetUser(response.user))));
     }
 
     @Action(SetUser)
@@ -212,9 +212,9 @@ export class UserState {
     @Action(EditUser)
     editUser(ctx: StateContext<UserStateModel>, action: EditUser) {
         const { data, userId } = action;
-        const { id: currentUserId } = ctx.getState().user;
-        const id = userId || currentUserId;
-        return this.userService.editUser({ id, body: data }).pipe(tap(async response => {
+        const { _id: currentUserId } = ctx.getState().user;
+        const _id = userId || currentUserId;
+        return this.userService.editUser({ _id, body: data }).pipe(tap(async response => {
             const { message } = response;
 
             if (!userId && currentUserId) {
@@ -227,8 +227,8 @@ export class UserState {
 
     @Action(EditPassword)
     editPassword(ctx: StateContext<UserStateModel>, action: EditPassword) {
-        const { id } = ctx.getState().user;
-        return this.userService.editPassword({ id, body: action.data }).pipe(tap(async response => {
+        const { _id } = ctx.getState().user;
+        return this.userService.editPassword({ _id, body: action.data }).pipe(tap(async response => {
             const { message } = response;
             this.materialService.openSnackbar(message, SnackBarClasses.Success);
         }));
@@ -236,8 +236,8 @@ export class UserState {
 
     @Action(EditImage)
     editImage(ctx: StateContext<UserStateModel>, action: EditImage) {
-        const { id } = ctx.getState().user;
-        return this.userService.editImage(id, action.image).pipe(tap( response => {
+        const { _id } = ctx.getState().user;
+        return this.userService.editImage(_id, action.image).pipe(tap( response => {
             ctx.dispatch(new LoadUser());
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
         }));

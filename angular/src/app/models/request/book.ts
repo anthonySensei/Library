@@ -1,11 +1,14 @@
 export interface GetBooksModel {
     page: number;
     pageSize: number;
-    authors?: string[];
-    genres?: string[];
     yearFrom?: string;
     yearTo?: string;
+    language?: string;
     filterValue?: string;
+    onlyEbooks?: boolean;
+    onlyNormalBooks?: boolean;
+    authors?: string[];
+    genres?: string[];
 }
 
 export interface LoanBookModel {

@@ -1,10 +1,10 @@
 <section class="table-section">
-    <section class="d-flex justify-content-end align-items-center mb-1">
-        <mat-form-field>
-            <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="filterValue" (ngModelChange)="onLoadOrders()" />
-        </mat-form-field>
-    </section>
+<!--    <section class="d-flex justify-content-end align-items-center mb-1">-->
+<!--        <mat-form-field>-->
+<!--            <mat-label>Search</mat-label>-->
+<!--            <input matInput [(ngModel)]="filterValue" (ngModelChange)="onLoadOrders()" />-->
+<!--        </mat-form-field>-->
+<!--    </section>-->
     <section class="mb-1">
         <mat-accordion>
             <mat-expansion-panel>
@@ -78,21 +78,21 @@
                     <div class="loan-diagram">
                         <div class="loan-info">
                             <h4>User:</h4>
-                            <p>name: <b>{{ element.user.name }}</b></p>
-                            <p>email: <b>{{ element.user.email }}</b></p>
-                            <p>phone: <b>{{ element.user.phone }}</b></p>
+                            <p>name: <span class="text-main">{{ element.user.name }}</span></p>
+                            <p>email: <span class="text-main">{{ element.user.email }}</span></p>
+                            <p>phone: <span class="text-main">{{ element.user.phone }}</span></p>
                         </div>
                         <div class="loan-info">
                             <h4>Book:</h4>
-                            <p>title: <b>{{ element.book.title }}</b></p>
-                            <p>year: <b>{{ element.book.year }}</b></p>
-                            <p>isbn: <b>{{ element.book.isbn }}</b></p>
+                            <p>title: <span class="text-main">{{ element.book.title }}</span></p>
+                            <p>year: <span class="text-main">{{ element.book.year }}</span></p>
+                            <p>isbn: <span class="text-main">{{ element.book.isbn }}</span></p>
                         </div>
                         <div class="loan-info" *ngIf="element.librarian">
                             <h4>Librarian:</h4>
-                            <p>name: <b>{{ element.librarian.name }}</b></p>
-                            <p>email: <b>{{ element.librarian.email }}</b></p>
-                            <p>phone: <b>{{ element.librarian.phone }}</b></p>
+                            <p>name: <span class="text-main">{{ element.librarian.name }}</span></p>
+                            <p>email: <span class="text-main">{{ element.librarian.email }}</span></p>
+                            <p>phone: <span class="text-main">{{ element.librarian.phone }}</span></p>
                         </div>
                         <div class="loan-info">
                             <div class="btn-group" *ngIf="!element.returnedAt">

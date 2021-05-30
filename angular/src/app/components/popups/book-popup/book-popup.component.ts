@@ -28,9 +28,10 @@ import { StoreStateModel } from '../../../store/models/store.model';
 })
 export class BookPopupComponent implements OnInit, OnDestroy {
 
-    image: string;
     isEdit: boolean;
     isEbook: boolean;
+    image: string;
+    linkToFile: string;
 
     mainForm: FormGroup;
     detailsForm: FormGroup;
@@ -40,7 +41,6 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     isbnValidation: RegExp;
 
     languages: Language[];
-
     filteredLanguages: Observable<Language[]>;
     @ViewChild('stepper') stepper: MatStepper;
 
@@ -72,9 +72,11 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     initForms() {
-        const { isbn, title, quantity, language } = this.data;
+        const { isbn, title, quantity, language, ebook, file } = this.data;
         const { description, authors, genres, year, image } = this.data;
         this.image = image;
+        this.isEbook = ebook;
+        this.linkToFile = file as string;
         this.mainForm = new FormGroup({
             isbn: new FormControl(isbn || null, [Validators.required, Validators.pattern(this.isbnValidation)]),
             title: new FormControl(title || null, [Validators.required]),
@@ -115,7 +117,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         }
 
         if (this.getStep() === 2) {
-            return !this.image || this.isEbook && !this.bookFile;
+            return !this.image || this.isEbook && !this.isEdit &&  !this.bookFile;
         }
 
         return this.mainForm.invalid;
@@ -144,12 +146,12 @@ export class BookPopupComponent implements OnInit, OnDestroy {
 
     getAuthorsForSummary(ids: string[]): string {
         const authors = this.store.selectSnapshot(AuthorState.Authors);
-        return authors.filter(author => ids?.includes(author.id)).map(author => author.name).join(', ');
+        return authors.filter(author => ids?.includes(author._id)).map(author => author.name).join(', ');
     }
 
     getGenres(ids: string[]): string {
         const genres = this.store.selectSnapshot(GenreState.Genres);
-        return genres.filter(genre => ids?.includes(genre.id)).map(genre => genre.name.en).join(', ');
+        return genres.filter(genre => ids?.includes(genre._id)).map(genre => genre.name.en).join(', ');
     }
 
     getCountryName(code: string): string {
@@ -227,7 +229,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         this.dialog.open(AuthorPopupComponent, { data: { language: value }, disableClose: true, width: '568px' });
     }
 
-    private _filterLanguages(value: string | Language): Language[] {
+    _filterLanguages(value: string | Language): Language[] {
         const filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
 
         return this.languages.filter(language => language.name.toLowerCase().includes(filterValue));

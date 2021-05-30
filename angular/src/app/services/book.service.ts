@@ -33,6 +33,9 @@ export class BookService {
                     .set('authors', params.authors?.length ? params.authors.join(',') : '')
                     .set('genres', params.genres?.length ? params.genres.join(',') : '')
                     .set('filterValue', params.filterValue || '')
+                    .set('language', params.language || '')
+                    .set('onlyEbooks', params.onlyEbooks ? 'true' : '')
+                    .set('onlyNormalBooks', params.onlyNormalBooks ? 'true' : '')
             })
             .pipe(map((response: Response) => response.data));
     }

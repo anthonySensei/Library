@@ -13,10 +13,7 @@ import { responseErrorHandle, responseSuccessHandle } from '../helper/response';
 export const getAuthors = async (req: Request, res: Response) => {
     try {
         const authors = await Author.find() as AuthorSchema[];
-        const data = {
-            authors: authors.map(author => ({id: author._id, name: author.name, country: author.country, language: author.language})),
-            message: successMessages.SUCCESSFULLY_FETCHED
-        };
+        const data = { authors: authors.map(author => author.toJSON()), message: successMessages.SUCCESSFULLY_FETCHED };
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         console.error(`Error fetching authors`, err.message);
@@ -54,8 +51,7 @@ export const editAuthor = async (req: Request, res: Response) => {
         }
 
         await Author.findByIdAndUpdate(id, author);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_UPDATED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.AUTHOR_SUCCESSFULLY_UPDATED });
     } catch (err) {
         logger.error(`Error creating author`, err.message);
         responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
@@ -67,8 +63,7 @@ export const deleteAuthor = async (req: Request, res: Response) => {
 
     try {
         await Author.findByIdAndDelete(id);
-        const data = { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED };
-        responseSuccessHandle(res, 200, data);
+        responseSuccessHandle(res, 200, { message: successMessages.AUTHOR_SUCCESSFULLY_DELETED });
     } catch (err) {
         responseErrorHandle( res, 500, errorMessages.SOMETHING_WENT_WRONG );
     }

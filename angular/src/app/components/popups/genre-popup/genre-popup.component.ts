@@ -23,7 +23,7 @@ export class GenrePopupComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.isEdit = !!this.data.id;
+    this.isEdit = !!this.data._id;
     this.name.patchValue(this.data.name);
   }
 
@@ -40,7 +40,7 @@ export class GenrePopupComponent implements OnInit {
   }
 
   editGenre(): Observable<StoreStateModel> {
-    return this.store.dispatch(new EditGenre(this.data.id, this.name.value));
+    return this.store.dispatch(new EditGenre(this.data._id, this.name.value));
   }
 
   onDoAction() {
