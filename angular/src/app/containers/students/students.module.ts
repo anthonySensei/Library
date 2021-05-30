@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { StudentsRoutingModule } from './students-routing.module';
 
-import { StudentsComponent } from './students/students.component';
-import { StudentDetailsComponent } from './student-details/student-details.component';
+import { UsersComponent } from './users/users.component';
+import { UserDetailsComponent } from './student-details/user-details.component';
 import { OrdersComponent } from './orders/orders.component';
 import { LoanSectionComponent } from './student-details/loan-section/loan-section.component';
 import { OrdersSectionComponent } from './student-details/orders-section/orders-section.component';
@@ -15,8 +15,8 @@ import { StudentState } from '../../store/state/student.state';
 
 @NgModule({
     declarations: [
-        StudentsComponent,
-        StudentDetailsComponent,
+        UsersComponent,
+        UserDetailsComponent,
         OrdersComponent,
         LoanSectionComponent,
         OrdersSectionComponent,

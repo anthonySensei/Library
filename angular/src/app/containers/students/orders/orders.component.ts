@@ -36,7 +36,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     columnsToDisplay: string[] = ['user', 'librarian', 'book', 'orderedAt', 'loanedAt'];
     expandedElement: Order | null;
-    tableColumns = TableColumns;
 
     dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;

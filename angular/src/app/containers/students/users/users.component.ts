@@ -28,10 +28,10 @@ import { DeleteUser } from '../../../store/state/user.state';
 
 @Component({
     selector: 'app-users',
-    templateUrl: './students.component.html',
+    templateUrl: './users.component.html',
     animations: TABLE_ANIMATION
 })
-export class StudentsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     filterValue: string;
     columnsToDisplay: string[] = [TableColumns.NAME, TableColumns.EMAIL, TableColumns.PHONE, TableColumns.STATUS];
     expandedElement: User | null;
