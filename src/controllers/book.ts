@@ -16,10 +16,12 @@ import errorMessages from '../constants/errorMessages';
 import successMessages from '../constants/successMessages';
 
 export const getBooks = async (req: Request, res: Response) => {
-    const { filterValue, yFrom, yTo, pageSize } = req.query;
+    const { filterValue, yFrom, yTo, pageSize, language } = req.query;
     const page = Number(req.query.page);
     const authors = String(req.query.authors).split(',');
     const genres = String(req.query.authors).split(',');
+    const onlyEbooks = !!req.query.onlyEbooks;
+    const onlyNormalBooks = !!req.query.onlyNormalBooks;
 
     const regex = new RegExp(filterValue as string, 'i');
     const filterCondition: any = {
@@ -29,6 +31,14 @@ export const getBooks = async (req: Request, res: Response) => {
     const filter: any = removedEmptyFields(filterCondition);
     authors.forEach(author => filter.$and = filter.$and.concat(removedEmptyFields({ 'authors.author': author })));
     genres.forEach(genre => filter.$and = filter.$and.concat(removedEmptyFields({ 'genres.genre': genre })));
+
+    if (language) {
+        filter.$and = filter.$and.concat({ language });
+    }
+
+    if (onlyEbooks || onlyNormalBooks) {
+        filter.$and = filter.$and.concat({ ebook: onlyEbooks || { $ne: true } });
+    }
 
     if (yFrom || yTo) {
         filter.year = {

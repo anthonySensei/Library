@@ -40,7 +40,6 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     isbnValidation: RegExp;
 
     languages: Language[];
-
     filteredLanguages: Observable<Language[]>;
     @ViewChild('stepper') stepper: MatStepper;
 
@@ -227,7 +226,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         this.dialog.open(AuthorPopupComponent, { data: { language: value }, disableClose: true, width: '568px' });
     }
 
-    private _filterLanguages(value: string | Language): Language[] {
+    _filterLanguages(value: string | Language): Language[] {
         const filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
 
         return this.languages.filter(language => language.name.toLowerCase().includes(filterValue));
