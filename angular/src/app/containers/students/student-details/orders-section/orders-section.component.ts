@@ -8,69 +8,64 @@ import { tap } from 'rxjs/operators';
 import { OrdersDataSource } from '../../../../datasources/orders.datasource';
 
 import { TableColumns } from '../../../../constants/tableColumns';
+import { LoanBookFromOrderModel, Order } from '../../../../models/order.model';
+import { Store } from '@ngxs/store';
+import { PageTitles } from '../../../../constants/pageTitles';
+import { SortOrder } from '../../../../constants/sortOrder';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { BookState, LoanBookFromOrder } from '../../../../store/state/book.state';
+import { Book } from '../../../../models/book.model';
+import { User } from '../../../../models/user.model';
+import { StudentState } from '../../../../store/state/student.state';
 
 @Component({
     selector: 'app-orders-section',
     templateUrl: './orders-section.component.html'
 })
 export class OrdersSectionComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() studentId: number;
 
-    columnsToDisplay: string[] = [
-        TableColumns.ORDER_TIME,
-        TableColumns.LOAN_TIME,
-        TableColumns.BOOK_ISBN,
-    ];
-    tableColumns = TableColumns;
+    filterValue: string;
+    showOnlyNotLoaned: boolean;
+    showOnlyLoaned: boolean;
+    orders: Order[];
+    orderedAt: Date;
+    loanedAt: Date;
+
+    columnsToDisplay: string[] = ['librarian', 'book', 'orderedAt', 'loanedAt'];
 
     dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    isShowingNotLoaned: boolean;
+    constructor(private store: Store) {}
 
-    constructor() {}
-
-    ngOnInit() {
-        // this.dataSource.loadOrders(
-        //     '',
-        //     '',
-        //     SortOrder.DESC,
-        //     0,
-        //     5,
-        //     null,
-        //     null,
-        //     false,
-        //     this.studentId
-        // );
+    ngOnInit(): void {
+        document.title = PageTitles.ORDERS;
+        this.dataSource = new OrdersDataSource(this.store);
+        this.onLoadOrders();
     }
 
     ngAfterViewInit(): void {
-        this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
-
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
         merge(
             this.sort.sortChange,
             this.paginator.page
-        )
-            .pipe(tap(() => this.loadOrdersPage()))
-            .subscribe();
+        ).pipe(tap(() => this.onLoadOrders())).pipe(untilDestroyed(this)).subscribe();
     }
 
-    loadOrdersPage(): void {
-        // this.dataSource.loadOrders(
-        //     null,
-        //     null,
-        //     this.sort.direction,
-        //     this.paginator.pageIndex,
-        //     this.paginator.pageSize,
-        //     null,
-        //     this.isShowingNotLoaned,
-        //     this.studentId
-        // );
+    getTotalItems(): number {
+        return this.store.selectSnapshot(BookState.OrdersTotalItems);
     }
 
-    ngOnDestroy(): void {
+    onLoadOrders(): void {
+        const user = this.store.selectSnapshot(StudentState.Student);
+        this.dataSource.loadOrders({
+            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME,
+            page: this.paginator.pageIndex || 0, pageSize: this.paginator.pageSize || 5,
+            showOnlyNotLoaned: this.showOnlyNotLoaned, showOnlyLoaned: this.showOnlyLoaned,
+            loanedAt: this.loanedAt, orderedAt: this.orderedAt, userId: user?._id
+        });
     }
+
+    ngOnDestroy(): void {}
 }

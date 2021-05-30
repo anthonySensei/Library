@@ -9,6 +9,11 @@ import { LoansDataSource } from '../../../../datasources/loans.datasource';
 
 import { TableColumns } from '../../../../constants/tableColumns';
 import { Store } from '@ngxs/store';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { BookState } from '../../../../store/state/book.state';
+import { LibrarianState } from '../../../../store/state/librarian.state';
+import { SortOrder } from '../../../../constants/sortOrder';
+import { StudentState } from '../../../../store/state/student.state';
 
 @Component({
     selector: 'app-loan-section',
@@ -16,49 +21,43 @@ import { Store } from '@ngxs/store';
     styleUrls: ['./loan-section.component.sass']
 })
 export class LoanSectionComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() studentId: number;
 
-    columnsToDisplay: string[] = [
-        TableColumns.LOAN_TIME,
-        TableColumns.RETURNED_TIME,
-        TableColumns.BOOK_ISBN,
-        TableColumns.EMAIL
-    ];
+    showOnlyDebtors: boolean;
+    showOnlyReturned: boolean;
+    columnsToDisplay: string[] = ['librarian', 'book', 'loanedAt', 'returnedAt'];
+    loanedAt: Date;
+
     tableColumns = TableColumns;
-
     dataSource: LoansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    isShowingDebtors: boolean;
-
-    constructor(private store: Store) {}
+    constructor(public store: Store) {}
 
     ngOnInit(): void {
         this.dataSource = new LoansDataSource(this.store);
-        this.dataSource.loadLoans({
-                sortOrder: this.sort.direction, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
-                pageSize: this.paginator.pageSize || 5,
-            });
+        this.onLoadLoans();
     }
 
     ngAfterViewInit(): void {
-        this.sort.sortChange.subscribe(
-            () => (this.paginator.pageIndex = 0)
-        );
-
+        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
         merge(
             this.sort.sortChange,
             this.paginator.page
-        )
-            .pipe(tap(() => this.onLoadLoansPage()))
-            .subscribe();
+        ).pipe(untilDestroyed(this)).pipe(tap(() => this.onLoadLoans())).subscribe();
     }
 
-    onLoadLoansPage(): void {
+    getTotalItems(): number {
+        return this.store.selectSnapshot(BookState.LoansTotalItems);
+    }
+
+    onLoadLoans(): void {
+        const user = this.store.selectSnapshot(StudentState.Student);
         this.dataSource.loadLoans({
-            sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize
+            sortOrder: this.sort.direction || SortOrder.DESC, sortName: this.sort.active || TableColumns.LOAN_TIME,
+            page: this.paginator.pageIndex || 0, pageSize: this.paginator.pageSize || 0,
+            showOnlyDebtors: this.showOnlyDebtors, showOnlyReturned: this.showOnlyReturned,
+            loanedAt: this.loanedAt, userId: user?._id
         });
     }
 

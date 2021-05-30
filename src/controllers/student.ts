@@ -47,24 +47,12 @@ export const getStudents = async (req: Request, res: Response) => {
 };
 
 export const getStudent = async (req: Request, res: Response) => {
-    const studentId = req.params.id;
-
     try {
+        const studentId = req.params.id;
         const student = await User.findById(studentId) as UserSchema;
-        const studentData = {
-            name: student.name,
-            email: student.email,
-            phone: student.phone,
-            image: student.image,
-            active: student.active,
-            loans: [],
-            statistic: [],
-            orders: []
-        };
-        const data = {
-            message: successMessages.SUCCESSFULLY_FETCHED,
-            student: studentData
-        };
+        const studentData = { ...student.toJSON(), password: null };
+        const data = { message: successMessages.SUCCESSFULLY_FETCHED, student: studentData };
+
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Cannot fetch student', err.message);

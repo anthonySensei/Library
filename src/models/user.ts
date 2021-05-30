@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface UserSchema extends Document {
+    _id?: string;
     name: string;
     email: string;
     phone: string;
@@ -14,6 +15,7 @@ export interface UserSchema extends Document {
 }
 
 export interface UserModel {
+    _id?: string;
     name: string;
     email: string;
     phone: string;

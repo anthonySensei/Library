@@ -47,15 +47,12 @@ export const getLibrarians = async (req: Request, res: Response) => {
 };
 
 export const getLibrarian = async (req: Request, res: Response) => {
-    const librarianId = req.params.id;
-
     try {
+        const librarianId = req.params.id;
         const librarian = await User.findById(librarianId) as UserSchema;
-        const librarianData = {
-            ...librarian.toJSON(),
-            password: null
-        };
+        const librarianData = { ...librarian.toJSON(), password: null };
         const data = { message: successMessages.SUCCESSFULLY_FETCHED, librarian: librarianData};
+
         return responseSuccessHandle(res, 200, data);
     } catch (err) {
         logger.error('Error getting librarian', err.message);

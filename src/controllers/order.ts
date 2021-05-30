@@ -22,7 +22,7 @@ import { removedEmptyFields } from '../helper/object';
 
 export const getOrders = async (req: Request, res: Response) => {
     // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
-    const { sortName, sortOrder, page, pageSize, returnedAt } = req.query;
+    const { sortName, sortOrder, page, pageSize, returnedAt, userId } = req.query;
     const showOnlyNotLoaned = !!req.query.showOnlyNotLoaned;
     const showOnlyLoaned = !!req.query.showOnlyLoaned;
     // const regex = new RegExp(filterValue as string, 'i');
@@ -37,6 +37,10 @@ export const getOrders = async (req: Request, res: Response) => {
         // $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
     };
     const filter: any = removedEmptyFields(filterCondition);
+
+    if (userId) {
+        filter.$and = [ { user: userId } ];
+    }
 
     try {
         const quantity = await Order.countDocuments(filter);
