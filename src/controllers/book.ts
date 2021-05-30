@@ -19,7 +19,7 @@ export const getBooks = async (req: Request, res: Response) => {
     const { filterValue, yFrom, yTo, pageSize, language } = req.query;
     const page = Number(req.query.page);
     const authors = String(req.query.authors).split(',');
-    const genres = String(req.query.authors).split(',');
+    const genres = String(req.query.genres).split(',');
     const onlyEbooks = !!req.query.onlyEbooks;
     const onlyNormalBooks = !!req.query.onlyNormalBooks;
 

@@ -28,9 +28,10 @@ import { StoreStateModel } from '../../../store/models/store.model';
 })
 export class BookPopupComponent implements OnInit, OnDestroy {
 
-    image: string;
     isEdit: boolean;
     isEbook: boolean;
+    image: string;
+    linkToFile: string;
 
     mainForm: FormGroup;
     detailsForm: FormGroup;
@@ -71,9 +72,11 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     initForms() {
-        const { isbn, title, quantity, language } = this.data;
+        const { isbn, title, quantity, language, ebook, file } = this.data;
         const { description, authors, genres, year, image } = this.data;
         this.image = image;
+        this.isEbook = ebook;
+        this.linkToFile = file as string;
         this.mainForm = new FormGroup({
             isbn: new FormControl(isbn || null, [Validators.required, Validators.pattern(this.isbnValidation)]),
             title: new FormControl(title || null, [Validators.required]),
@@ -114,7 +117,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         }
 
         if (this.getStep() === 2) {
-            return !this.image || this.isEbook && !this.bookFile;
+            return !this.image || this.isEbook && !this.isEdit &&  !this.bookFile;
         }
 
         return this.mainForm.invalid;

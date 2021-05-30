@@ -27,15 +27,13 @@
             <mat-form-field class="w-100">
                 <mat-label>Author</mat-label>
                 <mat-select [(ngModel)]="authors" multiple>
-                    <mat-option>-</mat-option>
-                    <mat-option [value]="author.id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
+                    <mat-option [value]="author._id" *ngFor="let author of authors$ | async">{{ author.name }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="w-100">
                 <mat-label>Genre</mat-label>
                 <mat-select [(ngModel)]="genres" multiple>
-                    <mat-option>-</mat-option>
-                    <mat-option [value]="genre.id" *ngFor="let genre of genres$ | async">{{ genre.name.en }}</mat-option>
+                    <mat-option [value]="genre._id" *ngFor="let genre of genres$ | async">{{ genre.name.en }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <mat-form-field class="w-100">
