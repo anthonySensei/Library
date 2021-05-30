@@ -143,12 +143,12 @@ export class BookPopupComponent implements OnInit, OnDestroy {
 
     getAuthorsForSummary(ids: string[]): string {
         const authors = this.store.selectSnapshot(AuthorState.Authors);
-        return authors.filter(author => ids?.includes(author.id)).map(author => author.name).join(', ');
+        return authors.filter(author => ids?.includes(author._id)).map(author => author.name).join(', ');
     }
 
     getGenres(ids: string[]): string {
         const genres = this.store.selectSnapshot(GenreState.Genres);
-        return genres.filter(genre => ids?.includes(genre.id)).map(genre => genre.name.en).join(', ');
+        return genres.filter(genre => ids?.includes(genre._id)).map(genre => genre.name.en).join(', ');
     }
 
     getCountryName(code: string): string {

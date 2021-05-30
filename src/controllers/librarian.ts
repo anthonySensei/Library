@@ -29,15 +29,10 @@ export const getLibrarians = async (req: Request, res: Response) => {
             sort
         }) as UserSchema[];
 
-        const librarians: UserModel[] = librariansDb.map(student => ({
-            id: student._id,
-            name: student.name,
-            email: student.email,
-            image: student.image,
-            phone: student.phone,
-            schedule: []
+        const librarians = librariansDb.map(librarian => ({
+            ...librarian.toJSON(),
+            password: null
         }));
-
         const data = { librarians, message: successMessages.SUCCESSFULLY_FETCHED, quantity: librariansQuantity};
         return responseSuccessHandle(res, 200, data);
     } catch (err) {

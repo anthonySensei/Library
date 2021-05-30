@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     openMyOrdersModal(): void {
         this.dialog.open(MyOrdersModalComponent, {
-            data: { studentId: this.user.id },
+            data: { studentId: this.user._id },
             width: ModalWidth.W70P
         });
     }

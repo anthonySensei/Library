@@ -21,12 +21,12 @@ export class UserService {
         return this.http.post(`${this.USERS_URL}`, body).pipe(map((response: Response) => response.data));
     }
 
-    editUser(data: { id: string, body: UpdateUserPayload }) {
-        return this.http.put(`${this.USERS_URL}/${data.id}`, data.body).pipe(map((response: Response) => response.data));
+    editUser(data: { _id: string, body: UpdateUserPayload }) {
+        return this.http.put(`${this.USERS_URL}/${data._id}`, data.body).pipe(map((response: Response) => response.data));
     }
 
-    editPassword(data: { id: string, body: UpdatePasswordPayload }) {
-        return this.http.post(`${this.USERS_URL}/${data.id}`, data.body).pipe(map((response: Response) => response.data));
+    editPassword(data: { _id: string, body: UpdatePasswordPayload }) {
+        return this.http.post(`${this.USERS_URL}/${data._id}`, data.body).pipe(map((response: Response) => response.data));
     }
 
     editImage(id: string, image: string) {

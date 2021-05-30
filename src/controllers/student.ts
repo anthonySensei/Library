@@ -30,13 +30,9 @@ export const getStudents = async (req: Request, res: Response) => {
             sort
         }) as UserSchema[];
 
-        const students: UserModel[] = studentsDb.map(student => ({
-            id: student._id,
-            name: student.name,
-            email: student.email,
-            image: student.image,
-            phone: student.phone,
-            active: student.active
+        const students = studentsDb.map(student => ({
+            ...student.toJSON(),
+            password: null,
         }));
         const data = { students, quantity, message: successMessages.SUCCESSFULLY_FETCHED };
         return responseSuccessHandle(res, 200, data);
@@ -51,9 +47,8 @@ export const getStudent = async (req: Request, res: Response) => {
         const studentId = req.params.id;
         const student = await User.findById(studentId) as UserSchema;
         const studentData = { ...student.toJSON(), password: null };
-        const data = { message: successMessages.SUCCESSFULLY_FETCHED, student: studentData };
 
-        return responseSuccessHandle(res, 200, data);
+        return responseSuccessHandle(res, 200, { message: successMessages.SUCCESSFULLY_FETCHED, student: studentData });
     } catch (err) {
         logger.error('Cannot fetch student', err.message);
         return responseErrorHandle(res, 400, errorMessages.SOMETHING_WENT_WRONG);
