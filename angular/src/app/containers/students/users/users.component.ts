@@ -24,7 +24,8 @@ import { StudentsDataSource } from '../../../datasources/students.datasource';
 
 
 import { User } from '../../../models/user.model';
-import { DeleteUser } from '../../../store/state/user.state';
+import { DeleteUser, UserState } from '../../../store/state/user.state';
+import { StudentState } from '../../../store/state/student.state';
 
 @Component({
     selector: 'app-users',
@@ -57,6 +58,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
         merge(this.sort.sortChange, this.paginator.page).pipe(tap(() => this.loadStudentsPage())).pipe(untilDestroyed(this)).subscribe();
+    }
+
+    getTotalItems(): number {
+        return this.store.selectSnapshot(StudentState.StudentsTotalItems);
     }
 
     loadStudentsPage(): void {
