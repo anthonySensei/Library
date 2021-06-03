@@ -8,7 +8,7 @@ export enum AngularLinks {
     ADD_BOOK = 'add-book',
     LOANS_CHART = 'loans-chart',
     REGISTRATION = 'registration',
-    STUDENTS = 'students',
+    USERS = 'users',
     LIBRARIANS = 'librarians',
     LIBRARIAN_SCHEDULE = 'librarian-schedule',
     EDIT_PAGE = 'edit-page'

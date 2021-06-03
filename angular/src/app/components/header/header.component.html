@@ -1,21 +1,21 @@
 <mat-toolbar class="navbar">
     <img src="assets/main.png" alt="logo" class="navbar__icon" [routerLink]="links.HOME" />
     <div class="not-small-screen-container d-flex" *ngIf="!isSmallScreen">
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.BOOKS">Books</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">Schedule</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS" *ngIf="isNotUser()">Loans</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.ORDERS" *ngIf="isNotUser()">Orders</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS_CHART" *ngIf="isManager()">Statistic</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIANS" *ngIf="isManager()">Librarians</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.STUDENTS" *ngIf="isManager()">Students</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.EDIT_PAGE" *ngIf="isNotUser()">Managing</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.BOOKS">BOOKS</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">SCHEDULE</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS" *ngIf="isNotUser()">LOANS</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.ORDERS" *ngIf="isNotUser()">ORDERS</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS_CHART" *ngIf="isManager()">STATISTIC</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIANS" *ngIf="isManager()">LIBRARIANS</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.USERS" *ngIf="isManager()">USERS</a>
+        <a l10nTranslate class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.EDIT_PAGE" *ngIf="isNotUser()">MANAGING</a>
     </div>
 
     <span class="fill-remaining-space"></span>
 
     <div class="d-flex">
-        <a class="navbar__item" [routerLink]="'/' + links.LOGIN" *ngIf="!isLoggedIn; else logout">Login</a>
-        <ng-template #logout>
+        <a class="navbar__item" [routerLink]="'/' + links.LOGIN" *ngIf="!isLoggedIn; else authenticated">Login</a>
+        <ng-template #authenticated>
             <mat-menu #appMenu="matMenu">
                 <a mat-menu-item routerLinkActive="menu-active" class="mat-menu-item" [routerLink]="'/' + links.MY_ACCOUNT">
                     Profile
@@ -40,7 +40,7 @@
                         Librarians
                     </a>
                     <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">Schedule</a>
-                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.STUDENTS" *ngIf="isNotUser()">
+                    <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.USERS" *ngIf="isNotUser()">
                         Students
                     </a>
                     <a routerLinkActive="menu-active" mat-menu-item class="mat-menu-item" [routerLink]="'/' + links.EDIT_PAGE" *ngIf="isNotUser()">
@@ -49,6 +49,15 @@
                 </div>
                 <button mat-menu-item class="mat-menu-item" (click)="onLogoutUser()">
                     Logout
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="onSetLocale(schema[0].locale)">
+                    <span class="flag-icon flag-icon-gb  mr-1"></span>
+                    <span>English</span>
+                </button>
+                <button mat-menu-item (click)="onSetLocale(schema[1].locale)">
+                    <span class="flag-icon flag-icon-ua mr-1"></span>
+                    <span>Українська</span>
                 </button>
             </mat-menu>
 

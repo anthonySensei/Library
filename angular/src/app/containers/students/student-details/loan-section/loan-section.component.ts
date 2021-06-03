@@ -11,7 +11,6 @@ import { TableColumns } from '../../../../constants/tableColumns';
 import { Store } from '@ngxs/store';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { BookState } from '../../../../store/state/book.state';
-import { LibrarianState } from '../../../../store/state/librarian.state';
 import { SortOrder } from '../../../../constants/sortOrder';
 import { StudentState } from '../../../../store/state/student.state';
 

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -44,6 +44,8 @@ import { LocalizationState } from './store/state/localization.state';
 import { ScheduleState } from './store/state/schedule.state';
 import { ReadPopupComponent } from './components/popups/read-popup/read-popup.component';
 import { SchedulePopupComponent } from './components/popups/schedule-popup/schedule-popup.component';
+import { initL10n, l10nConfig } from './config/l10n-config';
+import { L10nIntlModule, L10nLoader, L10nTranslationModule } from 'angular-l10n';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -80,6 +82,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         LibrariansModule,
         StudentsModule,
         AppRoutingModule,
+        L10nTranslationModule.forRoot(l10nConfig),
+        L10nIntlModule,
         NgxsModule.forRoot([
             UserState,
             StudentState,
@@ -91,9 +95,16 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         ], {
             executionStrategy: NoopNgxsExecutionStrategy,
             developmentMode: !environment.production
-        })
+        }),
+        L10nTranslationModule
     ],
     providers: [
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initL10n,
+            deps: [L10nLoader],
+            multi: true
+        },
         {
             provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
             useFactory: scrollFactory,

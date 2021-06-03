@@ -54,7 +54,7 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     getTotalItems(): number {
-        return this.store.selectSnapshot(LibrarianState.LibrariansTotalItems);
+        return this.store.selectSnapshot(LibrarianState.LibrariansTotalItems) || 0;
     }
 
     loadLibrariansPage(): void {

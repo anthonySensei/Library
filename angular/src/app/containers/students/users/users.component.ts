@@ -24,7 +24,7 @@ import { StudentsDataSource } from '../../../datasources/students.datasource';
 
 
 import { User } from '../../../models/user.model';
-import { DeleteUser, UserState } from '../../../store/state/user.state';
+import { DeleteUser } from '../../../store/state/user.state';
 import { StudentState } from '../../../store/state/student.state';
 
 @Component({

@@ -7,7 +7,7 @@ export enum PageTitles {
     LIBRARIAN_DETAILS = 'Librarian',
     STUDENT_DETAILS = 'Student',
     LIBRARIANS = 'Librarians',
-    STUDENTS = 'Students',
+    STUDENTS = 'Users',
     STATISTIC = 'Statistic',
     LOANS = 'Loans',
     BOOK_DETAILS = 'Book',

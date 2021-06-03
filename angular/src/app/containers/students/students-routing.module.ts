@@ -14,12 +14,12 @@ import { AngularLinks } from '../../constants/angularLinks';
 
 const routes: Routes = [
     {
-        path: AngularLinks.STUDENTS,
+        path: AngularLinks.USERS,
         component: UsersComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },
     {
-        path: AngularLinks.STUDENTS + '/:id',
+        path: AngularLinks.USERS + '/:id',
         component: UserDetailsComponent,
         canActivate: [AuthGuard, LibrarianGuard]
     },

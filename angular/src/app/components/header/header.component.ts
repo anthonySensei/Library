@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -16,6 +16,7 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Select, Store } from '@ngxs/store';
 import { Logout, UserState } from '../../store/state/user.state';
 import { Observable } from 'rxjs';
+import { L10N_CONFIG, L10nConfig, L10nLocale, L10nTranslationService } from 'angular-l10n';
 
 @Component({
     selector: 'app-header',
@@ -28,11 +29,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     isSmallScreen: boolean;
     user: User;
     links = AngularLinks;
+    schema = this.l10nConfig.schema;
 
     @Select(UserState.User)
     user$: Observable<User>;
 
     constructor(
+        @Inject(L10N_CONFIG) private l10nConfig: L10nConfig,
+        private translation: L10nTranslationService,
         private breakpointObserver: BreakpointObserver,
         private authService: AuthService,
         private router: Router,
@@ -76,6 +80,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     onLogoutUser(): void {
         this.store.dispatch(new Logout());
+    }
+
+    onSetLocale(locale: L10nLocale): void {
+        this.translation.setLocale(locale);
     }
 
     ngOnDestroy(): void {}

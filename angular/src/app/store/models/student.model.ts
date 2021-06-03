@@ -1,7 +1,7 @@
 import { User } from '../../models/user.model';
 
 export class StudentStateModel {
-    studentsTotalItems: number;
+    studentsTotalItems = 0;
     students: User[] = [];
     student: User = null;
 }

@@ -1,7 +1,7 @@
 import { User } from '../../models/user.model';
 
 export class LibrarianStateModel {
-    librariansTotalItems: number;
+    librariansTotalItems = 0;
     librarians: User[] = [];
     librarian: User = null;
 }

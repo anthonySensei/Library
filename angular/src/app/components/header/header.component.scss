@@ -7,7 +7,7 @@ $right-margin: 22px;
   background: linear-gradient(145deg, $color-background calc(100% - 107px), $color-secondary 107px);
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
   color: $font-color-main;
-  z-index: 1000;
+  z-index: 5;
 
   &__icon {
     width: 40px;
@@ -98,3 +98,4 @@ $right-margin: 22px;
   top: 0;
   z-index: 1;
 }
+
