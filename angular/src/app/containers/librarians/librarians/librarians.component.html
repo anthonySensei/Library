@@ -72,7 +72,7 @@
                                 color="primary"
                                 class="user-link-button mr-2"
                                 matTooltip="Delete Student"
-                                (click)="onDeleteStudent(element.id)"
+                                (click)="onDeleteStudent(element._id)"
                         >
                             Delete
                         </button>
@@ -90,7 +90,7 @@
                             color="primary"
                             class="user-link-button"
                             matTooltip="See More Information"
-                            [routerLink]="'/' + links.LIBRARIANS + '/' + element.id"
+                            [routerLink]="'/' + links.LIBRARIANS + '/' + element._id"
                         >
                             More
                         </a>

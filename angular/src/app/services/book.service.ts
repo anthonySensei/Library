@@ -58,8 +58,6 @@ export class BookService {
             formData.append('file', book.file);
         }
 
-        console.log(book.file);
-        console.log(formData.get('file'));
         return this.http.post(this.BOOKS_URL, formData, { headers }).pipe(map((response: Response) => response.data));
     }
 

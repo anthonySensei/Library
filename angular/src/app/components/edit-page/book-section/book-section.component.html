@@ -9,7 +9,7 @@
             >
                 <mat-option
                     *ngFor="let book of booksForSelect"
-                    [value]="book.id"
+                    [value]="book._id"
                 >
                     {{ book.isbn }}
                 </mat-option>

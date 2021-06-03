@@ -4,42 +4,15 @@ import bcrypt from 'bcryptjs';
 const PASSWORD_SALT = 8;
 
 const userSchema: mongoose.Schema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    phone: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: false
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    admin: {
-        type: Boolean,
-        default: false
-    },
-    librarian: {
-        type: Boolean,
-        default: false
-    },
-    active: {
-        type: Boolean,
-        default: false
-    },
-    activationToken: {
-        type: String,
-        required: false
-    }
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    image: { type: String, required: false },
+    password: { type: String, required: true },
+    admin: { type: Boolean, default: false },
+    librarian: { type: Boolean, default: false },
+    active: { type: Boolean, default: false },
+    activationToken: { type: String, required: false }
 }, {
     timestamps: true
 });
