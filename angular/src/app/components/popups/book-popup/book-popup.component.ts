@@ -20,6 +20,7 @@ import { Language } from '../../../models/language.model';
 import { map, startWith } from 'rxjs/operators';
 import { LocalizationService } from '../../../services/localization.service';
 import { StoreStateModel } from '../../../store/models/store.model';
+import { GenrePopupComponent } from '../genre-popup/genre-popup.component';
 
 @Component({
     selector: 'app-book-popup',
@@ -35,6 +36,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
 
     mainForm: FormGroup;
     detailsForm: FormGroup;
+    quantity = new FormControl(null, [Validators.required, Validators.max(420)]);
 
     bookFile: File;
     imageFile: Event;
@@ -64,6 +66,10 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         return this.detailsForm?.controls?.authors;
     }
 
+    get genresControl(): AbstractControl {
+        return this.detailsForm?.controls?.genres;
+    }
+
     ngOnInit(): void {
         this.isEdit = !!this.data._id;
         this.isbnValidation = this.validationService.getIsbnValidation();
@@ -74,13 +80,13 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     initForms() {
         const { isbn, title, quantity, language, ebook, file } = this.data;
         const { description, authors, genres, year, image } = this.data;
+        this.quantity.patchValue(quantity);
         this.image = image;
         this.isEbook = ebook;
         this.linkToFile = file as string;
         this.mainForm = new FormGroup({
             isbn: new FormControl(isbn || null, [Validators.required, Validators.pattern(this.isbnValidation)]),
             title: new FormControl(title || null, [Validators.required]),
-            quantity: new FormControl(quantity || null, [Validators.required, Validators.max(420)]),
             language: new FormControl(this.localizationService.getLanguage(language), [Validators.required])
         });
         this.detailsForm = new FormGroup({
@@ -90,8 +96,10 @@ export class BookPopupComponent implements OnInit, OnDestroy {
             year: new FormControl(year || null, [Validators.required])
         });
         this.languageControl.valueChanges.pipe(untilDestroyed(this)).subscribe(value => {
-           value ? this.authorsControl.enable() : this.authorsControl.disable();
+            value ? this.authorsControl.enable() : this.authorsControl.disable();
         });
+        this.authorsControl.valueChanges.pipe(untilDestroyed(this)).subscribe(value => this.removeAddOption(value));
+        this.genresControl.valueChanges.pipe(untilDestroyed(this)).subscribe(value => this.removeAddOption(value, true));
         this.filteredLanguages = this.languageControl.valueChanges
             .pipe(
                 startWith(''),
@@ -117,10 +125,19 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         }
 
         if (this.getStep() === 2) {
-            return !this.image || this.isEbook && !this.isEdit &&  !this.bookFile;
+            return !this.image || ( this.isEbook && !this.isEdit && !this.bookFile ) || (!this.isEbook && this.quantity.invalid);
         }
 
         return this.mainForm.invalid;
+    }
+
+    removeAddOption(values: string[], isGenre: boolean = false) {
+        if (values?.length && values.includes('_add_')) {
+            const v = [...values];
+            const index = v.findIndex(a => a === '_add_');
+            v.splice(index, 1);
+            isGenre ? this.genresControl.patchValue(v) : this.authorsControl.patchValue(v);
+        }
     }
 
     displayWith(obj?: Country | Language): string | undefined {
@@ -183,10 +200,10 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     doAction(): Observable<StoreStateModel> {
-        const { isbn, title, quantity, language } = this.mainForm.value;
+        const { isbn, title, language } = this.mainForm.value;
         const { description, authors: authorsIds, genres: genresIds, year } = this.detailsForm.value;
         const book: Book = {
-            isbn, title, quantity, description, image: this.image, language: language.code, ebook: this.isEbook,
+            isbn, title, quantity: this.quantity.value, description, image: this.image, language: language.code, ebook: this.isEbook,
             authors: authorsIds.map(id => ({ id })), genres: genresIds.map(id => ({ id })), year, file: this.bookFile
         };
         return this.store.dispatch(this.isEdit ? new EditBook(this.data._id, book) : new CreateBook(book));
@@ -225,8 +242,12 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     }
 
     onAddAuthors() {
-        const { value } = this.detailsForm.controls.language;
-        this.dialog.open(AuthorPopupComponent, { data: { language: value }, disableClose: true, width: '568px' });
+        const { language } = this.mainForm.value;
+        this.dialog.open(AuthorPopupComponent, { data: { language: language.code }, disableClose: true, width: '568px' });
+    }
+
+    onAddGenres() {
+        this.dialog.open(GenrePopupComponent, { data: { }, disableClose: true, width: '568px' });
     }
 
     _filterLanguages(value: string | Language): Language[] {

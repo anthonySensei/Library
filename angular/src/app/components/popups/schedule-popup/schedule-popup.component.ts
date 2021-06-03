@@ -80,7 +80,7 @@ export class SchedulePopupComponent implements OnInit {
   getDate(time: string): Date {
     const now = new Date();
     const [ timePart1, timePart2 ] = time.split(':');
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), +timePart1, +timePart2);
+    return new Date(new Date(now.getFullYear(), now.getMonth(), now.getDate(), +timePart1, +timePart2).toISOString());
   }
 
   createSchedule() {

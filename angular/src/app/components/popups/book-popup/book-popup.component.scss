@@ -6,3 +6,7 @@
   background-size: cover;
   overflow: auto;
 }
+
+::ng-deep .mat-option:last-child .mat-pseudo-checkbox {
+  display: none;
+}

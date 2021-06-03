@@ -4,7 +4,7 @@
         <mat-form-field class="w-75">
             <mat-label>Librarian</mat-label>
             <mat-select formControlName="librarian">
-                <mat-option *ngFor="let librarian of librarians$ | async" [value]="librarian.id">
+                <mat-option *ngFor="let librarian of librarians$ | async" [value]="librarian._id">
                     {{ librarian.name }} ({{ librarian.email }})
                 </mat-option>
             </mat-select>

@@ -73,7 +73,7 @@ export class AuthorPopupComponent implements OnInit {
     }
 
     getCountry(code: string): Country | undefined {
-        return this.countries.find(country => country.code.toLowerCase() === code?.toLowerCase());
+        return this.countries.find(country => country?.code?.toLowerCase() === code?.toLowerCase());
     }
 
     getLanguage(code: string): Language | undefined {

@@ -16,12 +16,6 @@
                     <mat-error *ngIf="hasError('title', 'required')">Title is required</mat-error>
                 </mat-form-field>
                 <mat-form-field class="w-50">
-                    <mat-label>Quantity</mat-label>
-                    <input matInput type="number" name="quantity" formControlName="quantity" placeholder="Quantity" />
-                    <mat-error *ngIf="hasError('quantity', 'required')">Quantity is required</mat-error>
-                    <mat-error *ngIf="hasError('quantity', 'max')">You cannot add so much books</mat-error>
-                </mat-form-field>
-                <mat-form-field class="w-50">
                     <mat-label>Language</mat-label>
                     <input matInput type="text" name="language" formControlName="language" placeholder="Language" [matAutocomplete]="languageAutoComplete">
                     <mat-autocomplete #languageAutoComplete="matAutocomplete" [displayWith]="displayWith">
@@ -53,7 +47,7 @@
                             {{ author.name }} ({{ getCountryName(author.country) }})
                         </mat-option>
                         <mat-divider></mat-divider>
-                        <mat-option (click)="onAddAuthors()">Add Author</mat-option>
+                        <mat-option value="_add_" (click)="onAddAuthors()">Add Author</mat-option>
                     </mat-select>
                     <mat-error *ngIf="hasError('authors', 'required')" >
                         Authors are required
@@ -66,7 +60,7 @@
                             {{ genre.name.en }}
                         </mat-option>
                         <mat-divider></mat-divider>
-                        <mat-option (click)="onAddAuthors()">Add Genre</mat-option>
+                        <mat-option value="_add_" (click)="onAddGenres()">Add Genre</mat-option>
                     </mat-select>
                     <mat-error *ngIf="hasError('genres', 'required')">
                         Genres are required
@@ -84,6 +78,13 @@
         <mat-step>
             <ng-template matStepLabel>File</ng-template>
             <div class="d-flex flex-column">
+                <mat-slide-toggle class="mb-2" color="primary" [(ngModel)]="isEbook">Ebook</mat-slide-toggle>
+                <mat-form-field class="w-50" *ngIf="!isEbook">
+                    <mat-label>Quantity</mat-label>
+                    <input matInput type="number" name="quantity" placeholder="Quantity" [formControl]="quantity" />
+                    <mat-error *ngIf="quantity.hasError('required')">Quantity is required</mat-error>
+                    <mat-error *ngIf="quantity.hasError( 'max')">You cannot add so much books</mat-error>
+                </mat-form-field>
                 <input class="mb-2" type="file" (change)="onImageChanged($event)" />
                 <image-cropper
                         class="mb-2"
@@ -97,7 +98,6 @@
                         (imageCropped)="onImageCropped($event)"
                         *ngIf="imageFile"
                 ></image-cropper>
-                <mat-slide-toggle class="mb-2" color="primary" [(ngModel)]="isEbook">Ebook</mat-slide-toggle>
                 <input type="file" (change)="onBookFileChanged($event)" *ngIf="isEbook" />
                 <p class="mt-2" *ngIf="isEdit && linkToFile">File: <span class="text-main"><a [href]="linkToFile">{{ linkToFile }}</a></span></p>
             </div>
@@ -109,7 +109,7 @@
             </div>
             <p>ISBN: <span class="text-main">{{ mainForm?.value?.isbn }}</span></p>
             <p>Title: <span class="text-main">{{ mainForm?.value?.title }}</span></p>
-            <p>Quantity: <span class="text-main">{{ mainForm?.value?.quantity }}</span></p>
+            <p *ngIf="!isEbook">Quantity: <span class="text-main">{{ quantity.value }}</span></p>
             <p>Language: <span class="text-main">{{ languageControl.value?.name }}</span></p>
             <p>Description: <span class="text-main">{{ detailsForm?.value?.description }}</span></p>
             <p>Authors: <span class="text-main">{{ getAuthorsForSummary(authorsControl.value) }}</span></p>
