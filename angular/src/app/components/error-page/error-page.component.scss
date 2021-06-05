@@ -9,59 +9,59 @@
     padding: 0;
   }
 
-  .mainbox {
-    margin: auto;
+  .error-container {
+    position: relative;
     height: 600px;
     width: 600px;
-    position: relative;
+    margin: auto;
 
     @media screen and (max-width: 425px) {
       width: 100%;
       margin: 0;
     }
 
-    .err {
+    .number-1 {
+      position: absolute;
       color: $color-main;
       font-family: 'Nunito Sans', sans-serif;
       font-size: 11rem;
-      position:absolute;
-      left: 20%;
       top: 8%;
+      left: 20%;
 
       @media screen and (max-width: 425px) {
         left: 4%;
       }
     }
 
-    .far {
+    .number-2 {
       position: absolute;
-      font-size: 8.5rem;
-      left: 42%;
-      top: 15%;
       color: $color-main;
+      font-size: 8.5rem;
+      top: 15%;
+      left: 42%;
 
       @media screen and (max-width: 425px) {
         left: 32%;
       }
     }
 
-    .err2 {
+    .number-3 {
+      position:absolute;
       color: $color-main;
       font-family: 'Nunito Sans', sans-serif;
       font-size: 11rem;
-      position:absolute;
-      left: 68%;
       top: 8%;
+      left: 68%;
     }
 
-    .msg {
+    .message {
+      position:absolute;
+      width: 75%;
       text-align: center;
       font-family: 'Nunito Sans', sans-serif;
       font-size: 1.6rem;
-      position:absolute;
-      left: 16%;
       top: 45%;
-      width: 75%;
+      left: 16%;
 
       @media screen and (max-width: 425px) {
         left: 5%;
@@ -69,8 +69,8 @@
       }
 
       a {
-        text-decoration: none;
         color: $color-main;
+        text-decoration: none;
 
         &:hover {
           text-decoration: underline;
