@@ -1,0 +1,81 @@
+@import "../../../styles";
+
+.container {
+  width: 100%;
+  height: calc(100% - 64px);
+  max-width: none;
+
+  @media screen and (max-width: 425px) {
+    padding: 0;
+  }
+
+  .mainbox {
+    margin: auto;
+    height: 600px;
+    width: 600px;
+    position: relative;
+
+    @media screen and (max-width: 425px) {
+      width: 100%;
+      margin: 0;
+    }
+
+    .err {
+      color: $color-main;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 11rem;
+      position:absolute;
+      left: 20%;
+      top: 8%;
+
+      @media screen and (max-width: 425px) {
+        left: 4%;
+      }
+    }
+
+    .far {
+      position: absolute;
+      font-size: 8.5rem;
+      left: 42%;
+      top: 15%;
+      color: $color-main;
+
+      @media screen and (max-width: 425px) {
+        left: 32%;
+      }
+    }
+
+    .err2 {
+      color: $color-main;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 11rem;
+      position:absolute;
+      left: 68%;
+      top: 8%;
+    }
+
+    .msg {
+      text-align: center;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 1.6rem;
+      position:absolute;
+      left: 16%;
+      top: 45%;
+      width: 75%;
+
+      @media screen and (max-width: 425px) {
+        left: 5%;
+        width: 90%;
+      }
+
+      a {
+        text-decoration: none;
+        color: $color-main;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
