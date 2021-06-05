@@ -1,0 +1,81 @@
+@import "../../../styles";
+
+.container {
+  width: 100%;
+  height: calc(100% - 64px);
+  max-width: none;
+
+  @media screen and (max-width: 425px) {
+    padding: 0;
+  }
+
+  .error-container {
+    position: relative;
+    height: 600px;
+    width: 600px;
+    margin: auto;
+
+    @media screen and (max-width: 425px) {
+      width: 100%;
+      margin: 0;
+    }
+
+    .number-1 {
+      position: absolute;
+      color: $color-main;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 11rem;
+      top: 8%;
+      left: 20%;
+
+      @media screen and (max-width: 425px) {
+        left: 4%;
+      }
+    }
+
+    .number-2 {
+      position: absolute;
+      color: $color-main;
+      font-size: 8.5rem;
+      top: 15%;
+      left: 42%;
+
+      @media screen and (max-width: 425px) {
+        left: 32%;
+      }
+    }
+
+    .number-3 {
+      position:absolute;
+      color: $color-main;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 11rem;
+      top: 8%;
+      left: 68%;
+    }
+
+    .message {
+      position:absolute;
+      width: 75%;
+      text-align: center;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 1.6rem;
+      top: 45%;
+      left: 16%;
+
+      @media screen and (max-width: 425px) {
+        left: 5%;
+        width: 90%;
+      }
+
+      a {
+        color: $color-main;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
