@@ -31,6 +31,13 @@
       }
     }
 
+    .spinner {
+      position: absolute;
+      left: 30%;
+      top: 30%;
+      transform: translate(-50%, -50%);
+    }
+
     .image {
       opacity: 1;
       display: block;

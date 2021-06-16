@@ -78,7 +78,7 @@
             </a>
         </div>
         <mat-divider class="my-2"></mat-divider>
-        <div *ngIf="isLoading" class="spinner-container">
+        <div *ngIf="isLoading" class="spinner-container min-vh-50">
             <mat-spinner class="spinner"></mat-spinner>
         </div>
         <app-books-list *ngIf="!isLoading"></app-books-list>

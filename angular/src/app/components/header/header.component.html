@@ -1,6 +1,7 @@
 <mat-toolbar class="navbar">
     <img src="assets/main.png" alt="logo" class="navbar__icon" [routerLink]="links.HOME" />
     <div class="not-small-screen-container d-flex" *ngIf="!isSmallScreen">
+        <a class="navbar__item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="'/' + links.HOME">Home</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.BOOKS">Books</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">Schedule</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS" *ngIf="isNotUser()">Loans</a>
