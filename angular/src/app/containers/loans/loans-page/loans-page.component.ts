@@ -41,10 +41,6 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
         document.title = PageTitles.LOANS;
         this.dataSource = new LoansDataSource(this.store);
         this.onLoadLoans();
-        this.dataSource.loadLoans({
-            sortOrder: this.sort.direction || SortOrder.DESC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
-            pageSize: this.paginator.pageSize || 5,
-        });
     }
 
     ngAfterViewInit(): void {
@@ -66,7 +62,7 @@ export class LoansPageComponent implements OnInit, AfterViewInit, OnDestroy {
     onLoadLoans(): void {
         this.dataSource.loadLoans({
             sortOrder: this.sort.direction || SortOrder.DESC, sortName: this.sort.active || TableColumns.LOAN_TIME,
-            page: this.paginator.pageIndex || 0, pageSize: this.paginator.pageSize || 0,
+            page: this.paginator.pageIndex || 0, pageSize: this.paginator.pageSize || 5,
             showOnlyDebtors: this.showOnlyDebtors, showOnlyReturned: this.showOnlyReturned,
             loanedAt: this.loanedAt
         });

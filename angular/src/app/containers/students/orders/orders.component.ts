@@ -46,10 +46,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         document.title = PageTitles.ORDERS;
         this.dataSource = new OrdersDataSource(this.store);
-        this.dataSource.loadOrders({
-            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME, page: 0,
-            pageSize: this.paginator.pageSize || 5,
-        });
+        this.onLoadOrders();
     }
 
     ngAfterViewInit(): void {
@@ -72,7 +69,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     onLoadOrders(): void {
         this.dataSource.loadOrders({
             sortOrder: this.sort.direction, sortName: this.sort.active, page: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize, showOnlyNotLoaned: this.showOnlyNotLoaned, showOnlyLoaned: this.showOnlyLoaned,
+            pageSize: this.paginator.pageSize || 5, showOnlyNotLoaned: this.showOnlyNotLoaned, showOnlyLoaned: this.showOnlyLoaned,
             loanedAt: this.loanedAt, orderedAt: this.orderedAt
         });
     }
