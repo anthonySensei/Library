@@ -44,6 +44,7 @@ import { LocalizationState } from './store/state/localization.state';
 import { ScheduleState } from './store/state/schedule.state';
 import { ReadPopupComponent } from './components/popups/read-popup/read-popup.component';
 import { SchedulePopupComponent } from './components/popups/schedule-popup/schedule-popup.component';
+import { HomeComponent } from './components/home/home.component';
 
 export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
     return () => overlay.scrollStrategies.close();
@@ -65,7 +66,8 @@ export function scrollFactory(overlay: Overlay): () => CloseScrollStrategy {
         BookPopupComponent,
         DisableFormControlDirective,
         ReadPopupComponent,
-        SchedulePopupComponent
+        SchedulePopupComponent,
+        HomeComponent
     ],
     imports: [
         BrowserModule,

@@ -56,10 +56,10 @@ export const getCalendarEvents = (schedules: Schedule[], actions: CalendarEventA
                 color: colors.yellow,
                 actions,
                 resizable: {
-                    beforeStart: true,
-                    afterEnd: true
+                    beforeStart: false,
+                    afterEnd: false
                 },
-                draggable: true
+                draggable: false
             });
         });
     });

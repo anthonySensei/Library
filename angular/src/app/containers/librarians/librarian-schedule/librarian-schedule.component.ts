@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { MatDialog } from '@angular/material/dialog';
 import { SchedulePopupComponent } from '../../../components/popups/schedule-popup/schedule-popup.component';
+import {UserState} from '../../../store/state/user.state';
+import {User} from '../../../models/user.model';
 
 @Component({
     selector: 'app-librarian-schedule',
@@ -16,27 +18,14 @@ import { SchedulePopupComponent } from '../../../components/popups/schedule-popu
 })
 export class LibrarianScheduleComponent implements OnInit, OnDestroy {
 
-    actions: CalendarEventAction[] = [
-        // {
-        //     label: '<span class="ml-1 text-main">Edit</span>',
-        //     a11yLabel: 'Edit',
-        //     onClick: ({ event }: { event: CalendarEvent }): void => {
-        //         this.onEventEdit(event);
-        //     }
-        // },
-        // {
-        //     label: '<span class="ml-1 text-main">Delete</span>',
-        //     a11yLabel: 'Delete',
-        //     onClick: ({ event }: { event: CalendarEvent }): void => {
-        //         this.onEventDelete(event);
-        //     }
-        // }
-    ];
-
+    actions: CalendarEventAction[] = [];
     events: CalendarEvent[] = [];
 
     @Select(ScheduleState.Schedules)
     schedules$: Observable<Schedule[]>;
+
+    @Select(UserState.User)
+    user$: Observable<User>;
 
     constructor(
         private store: Store,

@@ -9,6 +9,11 @@ import { tap } from 'rxjs/operators';
 import { OrdersDataSource } from '../../../datasources/orders.datasource';
 
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import {Store} from '@ngxs/store';
+import {BookState} from '../../../store/state/book.state';
+import {StudentState} from '../../../store/state/student.state';
+import {SortOrder} from '../../../constants/sortOrder';
+import {TableColumns} from '../../../constants/tableColumns';
 
 @Component({
     selector: 'app-add-option-dialog',
@@ -16,61 +21,42 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 })
 export class MyOrdersModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    columnsToDisplay: string[] = [
-        'orderTime',
-        'loanTime',
-        'bookISBN',
-    ];
-
+    columnsToDisplay: string[] = ['librarian', 'book', 'orderedAt', 'loanedAt'];
     dataSource: OrdersDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
         public dialogRef: MatDialogRef<MyOrdersModalComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { studentId: number }
+        @Inject(MAT_DIALOG_DATA) public data: { studentId: number },
+        private store: Store
     ) {
     }
 
     ngOnInit(): void {
-        // this.dataSource.loadOrders(
-        //     '',
-        //     '',
-        //     SortOrder.DESC,
-        //     0,
-        //     5,
-        //     null,
-        //     null,
-        //     true,
-        //     this.data.studentId
-        // );
+        this.dataSource = new OrdersDataSource(this.store);
+        this.onLoadOrders();
     }
 
     ngAfterViewInit(): void {
-        this.sort.sortChange.pipe(untilDestroyed(this)).subscribe(() => (this.paginator.pageIndex = 0));
-
+        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
         merge(
             this.sort.sortChange,
             this.paginator.page
-        )
-            .pipe(tap(() => this.loadOrdersPage()))
-            .pipe(untilDestroyed(this))
-            .subscribe();
+        ).pipe(tap(() => this.onLoadOrders())).pipe(untilDestroyed(this)).subscribe();
     }
 
-    loadOrdersPage(): void {
-        // this.dataSource.loadOrders(
-        //     null,
-        //     null,
-        //     this.sort.direction,
-        //     this.paginator.pageIndex,
-        //     this.paginator.pageSize,
-        //     null,
-        //     true,
-        //     this.data.studentId
-        // );
+    getTotalItems(): number {
+        return this.store.selectSnapshot(BookState.OrdersTotalItems);
     }
 
-    ngOnDestroy(): void {
+    onLoadOrders(): void {
+        const user = this.store.selectSnapshot(StudentState.Student);
+        this.dataSource.loadOrders({
+            sortOrder: this.sort.direction || SortOrder.ASC, sortName: this.sort.active || TableColumns.LOAN_TIME,
+            page: this.paginator.pageIndex || 0, pageSize: this.paginator.pageSize || 5, userId: user?._id
+        });
     }
+
+    ngOnDestroy(): void {}
 }

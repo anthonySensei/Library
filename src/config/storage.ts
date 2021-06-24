@@ -1,6 +1,5 @@
 import { Storage } from '@google-cloud/storage';
 import { config } from 'dotenv';
-import { writeFileSync } from 'fs';
 
 import { getStorageKeyFilePath } from '../helper/path';
 

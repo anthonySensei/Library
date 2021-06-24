@@ -20,6 +20,7 @@ import { models } from '../../../constants/models';
 })
 export class LoansChartComponent implements OnInit, OnDestroy {
     isManager: boolean;
+    showChart: boolean;
 
     view: number[] = [700, 300];
     view2: number[] = [200, 400];
@@ -109,6 +110,7 @@ export class LoansChartComponent implements OnInit, OnDestroy {
     }
 
     onShowStatistic(): void {
+        this.showChart = true;
         this.store.dispatch(new LoadStatistic(this.model, this.value));
     }
 

@@ -1,13 +1,14 @@
 <mat-toolbar class="navbar">
     <img src="assets/main.png" alt="logo" class="navbar__icon" [routerLink]="links.HOME" />
     <div class="not-small-screen-container d-flex" *ngIf="!isSmallScreen">
+        <a class="navbar__item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" [routerLink]="'/' + links.HOME">Home</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.BOOKS">Books</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIAN_SCHEDULE" *ngIf="isNotUser()">Schedule</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS" *ngIf="isNotUser()">Loans</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.ORDERS" *ngIf="isNotUser()">Orders</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS_CHART" *ngIf="isManager()">Statistic</a>
+        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LOANS_CHART" *ngIf="isNotUser()">Statistic</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.LIBRARIANS" *ngIf="isManager()">Librarians</a>
-        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.STUDENTS" *ngIf="isManager()">Students</a>
+        <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.STUDENTS" *ngIf="isNotUser()">Users</a>
         <a class="navbar__item" routerLinkActive="active" [routerLink]="'/' + links.EDIT_PAGE" *ngIf="isNotUser()">Managing</a>
     </div>
 

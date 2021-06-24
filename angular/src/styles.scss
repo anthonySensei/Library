@@ -137,6 +137,10 @@ table {
   color: $font-color-secondary;
 }
 
+.min-vh-50 {
+  min-height: 50vh;
+}
+
 .w-78-center {
   width: 78%;
   margin: 10px auto;
@@ -153,8 +157,8 @@ table {
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  max-height: 100%;
-  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  padding: 0 20px;
 }
 
 .form {

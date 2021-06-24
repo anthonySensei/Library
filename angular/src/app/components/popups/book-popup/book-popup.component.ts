@@ -46,6 +46,9 @@ export class BookPopupComponent implements OnInit, OnDestroy {
     filteredLanguages: Observable<Language[]>;
     @ViewChild('stepper') stepper: MatStepper;
 
+    @Select(AuthorState.Authors)
+    authors$: Observable<Author[]>;
+
     @Select(GenreState.Genres)
     genres$: Observable<Genre[]>;
 
@@ -156,11 +159,6 @@ export class BookPopupComponent implements OnInit, OnDestroy {
         return this.stepper?.selectedIndex;
     }
 
-    getFilteredAuthors(): Author[] {
-        const authors = this.store.selectSnapshot(AuthorState.Authors);
-        return authors.filter(author => author.language === this.languageControl.value?.code);
-    }
-
     getAuthorsForSummary(ids: string[]): string {
         const authors = this.store.selectSnapshot(AuthorState.Authors);
         return authors.filter(author => ids?.includes(author._id)).map(author => author.name).join(', ');
@@ -168,7 +166,7 @@ export class BookPopupComponent implements OnInit, OnDestroy {
 
     getGenres(ids: string[]): string {
         const genres = this.store.selectSnapshot(GenreState.Genres);
-        return genres.filter(genre => ids?.includes(genre._id)).map(genre => genre.name.en).join(', ');
+        return genres.filter(genre => ids?.includes(genre._id)).map(genre => genre.name).join(', ');
     }
 
     getCountryName(code: string): string {

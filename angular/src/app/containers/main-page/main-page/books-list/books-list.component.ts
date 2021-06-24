@@ -16,6 +16,7 @@ import { LocalizationService } from '../../../../services/localization.service';
 export class BooksListComponent implements OnInit {
 
     links = AngularLinks;
+    booksLoaded: string[] = [];
 
     @Select(BookState.Books)
     books$: Observable<Book[]>;
@@ -26,15 +27,23 @@ export class BooksListComponent implements OnInit {
 
     ngOnInit() {}
 
+    isBookLoaded(id: string): boolean {
+        return this.booksLoaded.includes(id);
+    }
+
     getAuthors(authors: Author[]): string {
         return authors.map(author => author.name).join(', ');
     }
 
     getGenres(genres: Genre[]): string {
-        return genres.map(genre => genre.name.en).join(', ');
+        return genres.map(genre => genre.name).join(', ');
     }
 
     getLanguage(code: string): string {
        return this.localizationService.getLanguageName(code);
+    }
+
+    onLoad(id: string) {
+        this.booksLoaded.push(id);
     }
 }

@@ -57,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     isUser(): boolean {
-        return !this.user.admin && this.user.librarian;
+        return !this.user.admin && !this.user.librarian;
     }
 
     getUser$(): void {

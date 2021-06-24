@@ -235,7 +235,7 @@ export class BookState {
         const librarianId = this.store.selectSnapshot(UserState.User)._id;
         return this.bookService.loanBook({ userCredentials: credentials, bookId: id, librarianId }).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
-            ctx.dispatch(new LoadBook(id));
+            ctx.dispatch([new LoadBook(id), new LoadBookStats(id)]);
         }));
     }
 

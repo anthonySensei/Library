@@ -130,7 +130,11 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
 
     onAddBook() {
-        this.dialog.open(BookPopupComponent, { data: {} as Book, disableClose: true, width: '768px' });
+        this.showFilterButton = false;
+        const dialog = this.dialog.open(BookPopupComponent, {
+            data: {} as Book, disableClose: true, width: '768px', maxWidth: '100vw',
+          });
+        dialog.afterClosed().subscribe(() => this.showFilterButton = true);
     }
 
     onPaginate(event: PageEvent) {

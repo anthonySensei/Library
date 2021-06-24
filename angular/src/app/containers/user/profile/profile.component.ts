@@ -39,7 +39,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     emailValidation: RegExp;
     phoneValidation: RegExp;
 
-    changePasswordModalWidth = ModalWidth.W35P;
+    changePasswordModalWidth = '468px';
     changePictureModal = ModalWidth.W40P;
 
     @Select(UserState.User)
@@ -50,29 +50,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
         private userService: UserService,
         private materialService: MaterialService,
         private validationService: ValidationService,
-        private breakpointObserver: BreakpointObserver,
         public dialog: MatDialog,
         private store: Store
-    ) {
-        breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(untilDestroyed(this)).subscribe(result => {
-                if (result.matches) {
-                    this.changePasswordModalWidth = ModalWidth.W95P;
-                    this.changePictureModal = ModalWidth.W95P;
-                }
-            });
-        breakpointObserver.observe([Breakpoints.Medium, Breakpoints.Tablet]).pipe(untilDestroyed(this)).subscribe(result => {
-                if (result.matches) {
-                    this.changePasswordModalWidth = ModalWidth.W75P;
-                    this.changePictureModal = ModalWidth.W85P;
-                }
-            });
-        breakpointObserver.observe([Breakpoints.Large, Breakpoints.XLarge]).pipe(untilDestroyed(this)).subscribe(result => {
-                if (result.matches) {
-                    this.changePasswordModalWidth = ModalWidth.W35P;
-                    this.changePictureModal = ModalWidth.W40P;
-                }
-            });
-    }
+    ) {}
 
     ngOnInit(): void {
         document.title = PageTitles.PROFILE;
@@ -107,6 +87,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+        // TODO fix canDeactivate
         // if (this.profileForm.touched && !this.done) {
         //     this.materialService.openDiscardChangesDialog(
         //         this.discard,

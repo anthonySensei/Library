@@ -1,36 +1,39 @@
 <section class="position-relative overflow-hidden" *ngIf="(books$ | async)?.length > 0; else noBooks">
-    <div class="d-flex flex-wrap justify-content-center">
+    <div class="book-list">
         <div class="card" *ngFor="let book of books$ | async">
             <div class="image-container">
+                <mat-spinner class="spinner" *ngIf="!isBookLoaded(book._id)"></mat-spinner>
                 <img
-                    src="{{ book.image ? book.image : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png' }}"
                     alt="Book image"
                     class="image"
+                    [class.invisible]="!isBookLoaded(book._id)"
+                    [src]="book?.image ? book?.image : 'https://www.adazing.com/wp-content/uploads/2019/02/open-book-clipart-06-1-300x300.png'"
+                    (load)="onLoad(book._id)"
                 />
-                <div class="image-data">
+                <div class="image-data" [class.invisible]="!isBookLoaded(book._id)">
                     <a class="image-data__link" [routerLink]="['/', links.BOOKS, book._id]">Details</a>
                 </div>
             </div>
             <div class="p-2">
                 <div class="mt-2">
                     <span class="card__label">Title:</span>
-                    {{ book.title }}
+                    <span class="text-main">{{ book.title }}</span>
                 </div>
                 <div class="mt-2">
                     <span class="card__label">Author:</span>
-                    {{ getAuthors(book.authors) }}
+                    <span class="text-main">{{ getAuthors(book.authors) }}</span>
                 </div>
                 <div class="mt-2">
                     <span class="card__label">Genre:</span>
-                    {{ getGenres(book.genres) }}
+                    <span class="text-main">{{ getGenres(book.genres) }}</span>
                 </div>
                 <div class="mt-2">
                     <span class="card__label">Year:</span>
-                    {{ book.year }}
+                    <span class="text-main">{{ book.year }}</span>
                 </div>
                 <div class="mt-2">
                     <span class="card__label">Language:</span>
-                    {{ getLanguage(book.language) }}
+                    <span class="text-main">{{ getLanguage(book.language) }}</span>
                 </div>
                 <div class="mt-2" *ngIf="book.ebook">
                     <span class="card__label">Ebook</span>

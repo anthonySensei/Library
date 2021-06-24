@@ -9,6 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { untilDestroyed } from 'ngx-take-until-destroy';
 import { AuthorPopupComponent } from '../../popups/author-popup/author-popup.component';
 import { LocalizationService } from '../../../services/localization.service';
+import {ConfirmPopupComponent} from '@shared/confirm-popup/confirm-popup.component';
 
 @Component({
     selector: 'app-author-section',
@@ -18,7 +19,7 @@ import { LocalizationService } from '../../../services/localization.service';
 export class AuthorSectionComponent implements OnInit, OnDestroy {
 
     dataSource = new MatTableDataSource([]);
-    displayedColumns: string[] = ['name', 'country', 'language', 'actions'];
+    displayedColumns: string[] = ['name', 'country', 'actions'];
 
     @Select(AuthorState.Authors)
     authors$: Observable<Author[]>;
@@ -45,18 +46,6 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
         return this.localizationService.getLanguageName(languageCode);
     }
 
-    openConfirmDeleteDialog(): void {
-        // const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
-        //     width: ModalWidth.W30P
-        // });
-        //
-        // dialogRef.afterClosed().subscribe(result => {
-        //     if (result) {
-        //         this.onDeleteAuthor();
-        //     }
-        // });
-    }
-
     openAuthorPopup(data: Author) {
         this.dialog.open(AuthorPopupComponent, {data, disableClose: true, width: `569px`});
     }
@@ -75,7 +64,12 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     }
 
     onDeleteAuthor(id: string): void {
-        this.store.dispatch(new DeleteAuthor(id));
+        const author = this.store.selectSnapshot(AuthorState.Authors).find(a => a._id === id);
+        const dialogRef = this.dialog.open(ConfirmPopupComponent, {
+            data: { title: 'Delete Author', text: 'Are you sure you want to delete this author: ', entity: author.name },
+            width: '468px'
+        });
+        dialogRef.afterClosed().subscribe(result => result && this.store.dispatch(new DeleteAuthor(id)));
     }
 
     ngOnDestroy(): void {}

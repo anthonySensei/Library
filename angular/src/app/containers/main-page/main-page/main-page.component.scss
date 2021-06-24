@@ -36,6 +36,15 @@
 
 .sidenav {
   padding: 20px;
+  width: 25%;
+
+  @include media-breakpoint-down(sm) {
+    width: 100%;
+  }
+
+  @include media-breakpoint-between(sm, lg) {
+    width: 35%;
+  }
 }
 
 .filter-button {

@@ -1,5 +1,5 @@
 <div class="container py-5">
-    <button class="mb-3" mat-stroked-button color="primary" (click)="onOpenCreatePopup()">
+    <button class="mb-3" mat-stroked-button color="primary" (click)="onOpenCreatePopup()" *ngIf="(user$ | async).admin">
         <i class="material-icons">add</i> Add Schedule
     </button>
     <mat-card>

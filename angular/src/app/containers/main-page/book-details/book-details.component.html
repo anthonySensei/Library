@@ -19,14 +19,15 @@
                 </mat-card-content>
                 <mat-divider class="position-relative"></mat-divider>
                 <mat-card-actions class="w-100 mt-3 p-0" *ngIf="!isLoading">
-                        <p class="text-main" *ngIf="book?.ebook && !user.name">Please login to read book?.</p>
+                        <p class="text-main" *ngIf="book?.ebook && !user.name">Please login to read book</p>
+                        <p class="text-main" *ngIf="!book?.ebook && !user.name">Please login to order book</p>
                         <a mat-stroked-button color="primary" class="mr-2" target="_blank"
                            [href]="book?.file" *ngIf="user.name && book?.ebook"
                         >
                             Read
                         </a>
                         <button mat-stroked-button color="primary" class="mr-2"
-                                [disabled]="!book?.quantity" (click)="onOpenLoanBookModal()" *ngIf="user.librarian && !book?.ebook"
+                                [disabled]="!book?.quantity" (click)="onOpenLoanBookModal()" *ngIf="(user?.librarian  || user?.admin) && !book?.ebook"
                         >
                             Loan
                         </button>
@@ -41,7 +42,7 @@
                             Delete
                         </button>
                         <button mat-stroked-button color="primary" class="mr-2"
-                                (click)="onOrderBook()" *ngIf="!user.admin && !user.librarian && !book?.ebook"
+                                (click)="onOrderBook()" *ngIf="user.name && !user.admin && !user.librarian && !book?.ebook"
                         >
                             Order
                         </button>

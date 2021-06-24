@@ -11,7 +11,6 @@ import { SnackBarClasses } from '../../constants/snackBarClasses';
 import { RegisterUserPayload, UpdatePasswordPayload, UpdateUserPayload } from '../../models/request/user';
 import { UserService } from '../../services/user.service';
 import { StudentStateModel } from '../models/student.model';
-import { Response } from '../../models/response.model';
 
 
 /*********************************

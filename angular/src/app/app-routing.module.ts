@@ -8,11 +8,12 @@ import { AngularLinks } from './constants/angularLinks';
 
 import { AuthGuard } from './guards/auth.guard';
 import { LibrarianGuard } from './guards/librarian.guard';
+import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
     {
         path: AngularLinks.HOME,
-        redirectTo: AngularLinks.BOOKS,
+        component: HomeComponent,
         pathMatch: 'full'
     },
     {

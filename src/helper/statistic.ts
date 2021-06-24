@@ -1,6 +1,5 @@
 import { LoanSchema, Statistic } from '../models/loan';
 import moment from 'moment';
-import successMessages from '../constants/successMessages';
 
 export const getStatistic = (loans: LoanSchema[]): Statistic[] => {
     const dates = loans.map(loan => moment(loan.loanedAt).format('DD/MM/YYYY'));

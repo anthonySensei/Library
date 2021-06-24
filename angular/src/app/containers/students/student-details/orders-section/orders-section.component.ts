@@ -1,22 +1,20 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 
-import { merge } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {merge} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
-import { OrdersDataSource } from '../../../../datasources/orders.datasource';
+import {OrdersDataSource} from '../../../../datasources/orders.datasource';
 
-import { TableColumns } from '../../../../constants/tableColumns';
-import { LoanBookFromOrderModel, Order } from '../../../../models/order.model';
-import { Store } from '@ngxs/store';
-import { PageTitles } from '../../../../constants/pageTitles';
-import { SortOrder } from '../../../../constants/sortOrder';
-import { untilDestroyed } from 'ngx-take-until-destroy';
-import { BookState, LoanBookFromOrder } from '../../../../store/state/book.state';
-import { Book } from '../../../../models/book.model';
-import { User } from '../../../../models/user.model';
-import { StudentState } from '../../../../store/state/student.state';
+import {TableColumns} from '../../../../constants/tableColumns';
+import {Order} from '../../../../models/order.model';
+import {Store} from '@ngxs/store';
+import {PageTitles} from '../../../../constants/pageTitles';
+import {SortOrder} from '../../../../constants/sortOrder';
+import {untilDestroyed} from 'ngx-take-until-destroy';
+import {BookState} from '../../../../store/state/book.state';
+import {StudentState} from '../../../../store/state/student.state';
 
 @Component({
     selector: 'app-orders-section',

@@ -91,7 +91,7 @@ export class GenreState {
 
     @Action(CreateGenre)
     createGenre(ctx: StateContext<GenreStateModel>, action: CreateGenre) {
-        return this.genreService.createGenre({ name: { en: action.name, uk: 'Not Provided' } }).pipe(tap(response => {
+        return this.genreService.createGenre({ name: action.name }).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadGenres());
         }));
@@ -100,7 +100,7 @@ export class GenreState {
     @Action(EditGenre)
     editAuthor(ctx: StateContext<GenreStateModel>, action: EditGenre) {
         const { id, name } = action;
-        return this.genreService.ediGenre(id, { name: { en: name, uk: 'Not Provided' } }).pipe(tap(response => {
+        return this.genreService.ediGenre(id, { name }).pipe(tap(response => {
             this.materialService.openSnackbar(response.message, SnackBarClasses.Success);
             ctx.dispatch(new LoadGenres());
         }));

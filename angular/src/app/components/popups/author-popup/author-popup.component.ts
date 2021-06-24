@@ -19,12 +19,10 @@ import { LocalizationState } from '../../../store/state/localization.state';
 })
 export class AuthorPopupComponent implements OnInit {
     isEdit: boolean;
-    isBookAdding: boolean;
     form: FormGroup;
     countries: Country[];
     filteredCountries: Observable<Country[]>;
     languages: Language[];
-    filteredLanguages: Observable<Language[]>;
 
     constructor(
         private store: Store,
@@ -35,32 +33,22 @@ export class AuthorPopupComponent implements OnInit {
 
     ngOnInit(): void {
         this.isEdit = !!this.data._id;
-        this.isBookAdding = !!(!this.data._id && this.data.language);
         this.countries = this.store.selectSnapshot(LocalizationState.Countries);
         this.languages = this.store.selectSnapshot(LocalizationState.Languages);
         this.initForm();
     }
 
     initForm() {
-        const { name, country, language } = this.data;
+        const { name, country } = this.data;
         const { RequireMatch } = this.validationService;
         this.form = new FormGroup({
             name: new FormControl(name || '', [Validators.required]),
             country: new FormControl(this.getCountry(country) || '', [Validators.required, RequireMatch]),
-            language: new FormControl(
-                { value: this.getLanguage(language) || '', disabled: this.isBookAdding },
-                [Validators.required, RequireMatch]
-            ),
         });
         this.filteredCountries = this.form.controls.country.valueChanges
             .pipe(
                 startWith(''),
                 map(value => this._filterCountries(value))
-            );
-        this.filteredLanguages = this.form.controls.language.valueChanges
-            .pipe(
-                startWith(''),
-                map(value => this._filterLanguages(value))
             );
     }
 
@@ -85,13 +73,13 @@ export class AuthorPopupComponent implements OnInit {
     }
 
     addAuthor(): Observable<StoreStateModel> {
-        const { name, country, language } = this.form.value;
-        return this.store.dispatch(new CreateAuthor({ name, country: country.code, language: language.code }));
+        const { name, country } = this.form.value;
+        return this.store.dispatch(new CreateAuthor({ name, country: country.code }));
     }
 
     editAuthor(): Observable<StoreStateModel> {
-        const { name, country, language } = this.form.value;
-        return this.store.dispatch(new EditAuthor(this.data._id, { name, country: country.code, language: language.code }));
+        const { name, country } = this.form.value;
+        return this.store.dispatch(new EditAuthor(this.data._id, { name, country: country.code }));
     }
 
     onDoAction() {
@@ -110,11 +98,5 @@ export class AuthorPopupComponent implements OnInit {
         const filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
 
         return this.countries.filter(country => country.name.toLowerCase().includes(filterValue));
-    }
-
-    private _filterLanguages(value: string | Language): Language[] {
-        const filterValue = typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase();
-
-        return this.languages.filter(language => language.name.toLowerCase().includes(filterValue));
     }
 }
