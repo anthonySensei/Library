@@ -6,12 +6,6 @@
             </mat-expansion-panel-header>
             <app-author-section></app-author-section>
         </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>Books</mat-panel-title>
-            </mat-expansion-panel-header>
-            <app-book-section></app-book-section>
-        </mat-expansion-panel>
         <mat-expansion-panel (click)="genres.expanded && onLoadGenres()" #genres>
             <mat-expansion-panel-header>
                 <mat-panel-title>Genres</mat-panel-title>

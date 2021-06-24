@@ -46,12 +46,11 @@ $right-margin: 22px;
   background-color: inherit;
   font-size: inherit;
   font-weight: 600;
-}
 
-.navbar-logout:hover {
-  color: $color-main;
+  &:hover {
+    color: $color-main;
+  }
 }
-
 
 .image-cropper {
   display: inline-block;
@@ -72,11 +71,12 @@ $right-margin: 22px;
 .mat-menu-item {
   display: block;
   background-color: $color-background;
-}
+  color: #fff !important;
 
-.mat-menu-item:hover {
-  background-color: $color-main;
-  color: $color-background;
+  &:hover {
+    background-color: $color-main;
+    color: $color-background !important;
+  }
 }
 
 /**/

@@ -4,18 +4,18 @@
         <mat-step [stepControl]="mainForm">
             <form class="d-flex flex-column align-items-center" [formGroup]="mainForm">
                 <ng-template matStepLabel>Main</ng-template>
-                <mat-form-field class="w-50">
+                <mat-form-field class="input">
                     <input type="text" formControlName="isbn" placeholder="ISBN" matInput />
                     <span matPrefix>ISBN</span>
                     <mat-error *ngIf="hasError('isbn', 'pattern')">ISBN is not valid</mat-error>
                     <mat-error *ngIf="hasError('isbn', 'required')">ISBN is required</mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-50">
+                <mat-form-field class="input">
                     <mat-label>Title</mat-label>
                     <input type="text" formControlName="title" placeholder="title" matInput />
                     <mat-error *ngIf="hasError('title', 'required')">Title is required</mat-error>
                 </mat-form-field>
-                <mat-form-field class="w-50">
+                <mat-form-field class="input">
                     <mat-label>Language</mat-label>
                     <input matInput type="text" name="language" formControlName="language" placeholder="Language" [matAutocomplete]="languageAutoComplete">
                     <mat-autocomplete #languageAutoComplete="matAutocomplete" [displayWith]="displayWith">
@@ -85,6 +85,7 @@
                     <mat-error *ngIf="quantity.hasError('required')">Quantity is required</mat-error>
                     <mat-error *ngIf="quantity.hasError( 'max')">You cannot add so much books</mat-error>
                 </mat-form-field>
+                <p class="my-1">Please select image:</p>
                 <input class="mb-2" type="file" (change)="onImageChanged($event)" />
                 <image-cropper
                         class="mb-2"

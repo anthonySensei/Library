@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import User from '../schemas/user';
 
-import { UserModel, UserSchema } from '../models/user';
+import { UserSchema } from '../models/user';
 
 import logger from '../config/logger';
 

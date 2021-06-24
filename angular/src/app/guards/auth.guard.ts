@@ -8,7 +8,6 @@ import { Injectable } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { AuthService } from '../services/auth.service';
 import { AngularLinks } from '../constants/angularLinks';
 import { Store } from '@ngxs/store';
 import { UserState } from '../store/state/user.state';

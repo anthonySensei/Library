@@ -19,11 +19,9 @@ import successMessages from '../constants/successMessages';
 import { getStatistic } from '../helper/statistic';
 
 export const getLoans = async (req: Request, res: Response) => {
-    // const { filterValue, sortName, sortOrder, page, pageSize, loanedAt } = req.query;
     const { sortName, sortOrder, page, pageSize, loanedAt, librarianId, userId } = req.query;
     const showOnlyDebtors = !!req.query.showOnlyDebtors;
     const showOnlyReturned = !!req.query.showOnlyReturned;
-    // const regex = new RegExp(filterValue as string, 'i');
 
     const sort: any = {};
     sort[sortName as string] = sortOrder;
@@ -32,7 +30,6 @@ export const getLoans = async (req: Request, res: Response) => {
     const filterCondition = {
         loanedAt: loanedAt && { $gte: filterDate, $lt: tomorrow },
         returnedAt: (showOnlyReturned && { $exists: true, $ne: null }) || (showOnlyDebtors && { $exists: false }) || null
-        // $and: [ { $or: [{name: regex }, { email: regex }, { phone: regex }] } ]
     };
     const filter: any = removedEmptyFields(filterCondition);
 

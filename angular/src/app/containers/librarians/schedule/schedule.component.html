@@ -56,15 +56,11 @@
     <mwl-calendar-month-view
             [weekStartsOn]="1"
             *ngSwitchCase="CalendarView.Month"
-            (dragend)="onEventDrag($event)"
             [viewDate]="viewDate"
             [events]="events"
             [refresh]="refresh"
             [activeDayIsOpen]="activeDayIsOpen"
             (dayClicked)="onDayClick($event.day)"
-            (eventClicked)="onEventClick($event.event)"
-            (resize)="onEventResize($event)"
-            (eventTimesChanged)="onTimeChanged($event)"
     >
     </mwl-calendar-month-view>
     <mwl-calendar-week-view
@@ -73,8 +69,6 @@
             [viewDate]="viewDate"
             [events]="events"
             [refresh]="refresh"
-            (eventClicked)="onEventClick($event.event)"
-            (eventTimesChanged)="onTimeChanged($event)"
     >
     </mwl-calendar-week-view>
     <mwl-calendar-day-view
@@ -82,8 +76,6 @@
             [viewDate]="viewDate"
             [events]="events"
             [refresh]="refresh"
-            (eventClicked)="onEventClick($event.event)"
-            (eventTimesChanged)="onTimeChanged($event)"
     >
     </mwl-calendar-day-view>
 </div>

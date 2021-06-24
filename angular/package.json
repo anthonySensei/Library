@@ -27,7 +27,6 @@
     "@angular/material": "^10.2.7",
     "@cospired/i18n-iso-languages": "^3.0.0",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
-    "@ngxs/logger-plugin": "^3.7.1",
     "@ngxs/store": "^3.7.0",
     "@swimlane/ngx-charts": "^17.0.1",
     "@types/moment": "^2.13.0",

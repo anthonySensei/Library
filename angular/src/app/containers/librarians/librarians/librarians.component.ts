@@ -33,7 +33,6 @@ export class LibrariansComponent implements OnInit, AfterViewInit, OnDestroy {
     expandedElement: User | null;
     tableColumns = TableColumns;
 
-
     dataSource: LibrariansDataSource;
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;

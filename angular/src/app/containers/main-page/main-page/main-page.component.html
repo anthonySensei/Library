@@ -5,25 +5,27 @@
     <i class="material-icons">arrow_forward_ios</i>
 </button>
 <mat-drawer-container class="page-container bg-main" autosize>
-    <mat-drawer #drawer [disableClose]="true" class="sidenav w-25" mode="over">
+    <mat-drawer #drawer [disableClose]="true" class="sidenav" mode="over">
         <div>
             <button mat-button class="close-sidenav" (click)="onToggleFilterButton()">
                 <i class="material-icons">close</i>
             </button>
-            <h2>Choose filter</h2>
+            <h2>Choose a filter</h2>
             <mat-form-field class="w-100">
                 <mat-label>Search</mat-label>
                 <input matInput name="search" placeholder="Search" [(ngModel)]="filterValue" />
             </mat-form-field>
             <mat-divider></mat-divider>
-            <mat-form-field class="w-100">
-                <mat-label>From</mat-label>
+            <div class="d-flex justify-content-between">
+              <mat-form-field class="w-50">
+                <mat-label>Year From</mat-label>
                 <input matInput type="number" name="yearFrom" placeholder="Ex. 1689"[(ngModel)]="fromYear" />
-            </mat-form-field>
-            <mat-form-field class="w-100">
-                <mat-label>To</mat-label>
+              </mat-form-field>
+              <mat-form-field class="w-50 ml-2">
+                <mat-label>Year To</mat-label>
                 <input matInput name="yearTo" placeholder="Ex. 2010" [(ngModel)]="toYear" />
-            </mat-form-field>
+              </mat-form-field>
+            </div>
             <mat-form-field class="w-100">
                 <mat-label>Author</mat-label>
                 <mat-select [(ngModel)]="authors" multiple>
