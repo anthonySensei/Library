@@ -1,19 +1,6 @@
 <h2 mat-dialog-title class="text-center">{{ getTitle() }}</h2>
 <mat-dialog-content>
     <form [formGroup]="form" class="d-flex justify-content-center align-items-center flex-column">
-        <mat-form-field class="w-75" matTooltip="Please enter language in which author name has been written">
-            <mat-label>Language</mat-label>
-            <input matInput type="text" name="language" formControlName="language" placeholder="Language" [matAutocomplete]="languageAutoComplete">
-            <mat-autocomplete #languageAutoComplete="matAutocomplete" [displayWith]="displayWith">
-                <mat-option *ngFor="let language of filteredLanguages | async" [value]="language">
-                    {{ language.name }}
-                </mat-option>
-            </mat-autocomplete>
-
-            <mat-error *ngIf="form?.controls['language'].hasError('incorrect')">
-                Please select a language
-            </mat-error>
-        </mat-form-field>
         <mat-form-field class="w-75">
             <mat-label>Name</mat-label>
             <input matInput type="text" name="name" formControlName="name" placeholder="Name" />

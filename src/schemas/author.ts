@@ -4,7 +4,6 @@ import { Schema } from 'mongoose';
 const authorSchema: Schema = new Schema({
     name: { type: String, required: true },
     country: { type: String, required: true },
-    language: { type: String, required: true }
 });
 
 export default mongoose.model('Author', authorSchema);

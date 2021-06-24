@@ -51,6 +51,7 @@ import { UserState } from '../store/state/user.state';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { UserPopupComponent } from './user-popup/user-popup.component';
 import { VarDirective } from '../directives/ng-var.directive';
+import { ConfirmPopupComponent } from './confirm-popup/confirm-popup.component';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { VarDirective } from '../directives/ng-var.directive';
         LoaderComponent,
         UserPopupComponent,
         VarDirective,
+        ConfirmPopupComponent,
     ],
     imports: [
         CommonModule,

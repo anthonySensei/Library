@@ -94,7 +94,7 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
 
     getGenres(genres: Genre[]): string {
-        return genres?.map(genre => genre?.name?.en).join(', ') || '';
+        return genres?.map(genre => genre?.name).join(', ') || '';
     }
 
     loadBook(id?: string) {

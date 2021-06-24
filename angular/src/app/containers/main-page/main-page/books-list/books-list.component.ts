@@ -36,7 +36,7 @@ export class BooksListComponent implements OnInit {
     }
 
     getGenres(genres: Genre[]): string {
-        return genres.map(genre => genre.name.en).join(', ');
+        return genres.map(genre => genre.name).join(', ');
     }
 
     getLanguage(code: string): string {

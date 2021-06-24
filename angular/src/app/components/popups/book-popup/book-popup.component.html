@@ -43,7 +43,7 @@
                 <mat-form-field class="w-50">
                     <mat-label>Authors</mat-label>
                     <mat-select name="authors" formControlName="authors" multiple>
-                        <mat-option *ngFor="let author of getFilteredAuthors()" [value]="author._id">
+                        <mat-option *ngFor="let author of authors$ | async" [value]="author._id">
                             {{ author.name }} ({{ getCountryName(author.country) }})
                         </mat-option>
                         <mat-divider></mat-divider>
@@ -57,7 +57,7 @@
                     <mat-label>Genres</mat-label>
                     <mat-select name="genres" formControlName="genres" multiple>
                         <mat-option *ngFor="let genre of genres$ | async" [value]="genre._id">
-                            {{ genre.name.en }}
+                            {{ genre.name }}
                         </mat-option>
                         <mat-divider></mat-divider>
                         <mat-option value="_add_" (click)="onAddGenres()">Add Genre</mat-option>

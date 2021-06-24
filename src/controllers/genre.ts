@@ -25,7 +25,7 @@ export const addGenre = async (req: Request, res: Response) => {
     const { name } = genre;
 
     try {
-        const isNotUnique = !!(await Genre.findOne({ 'name.en': name.en }));
+        const isNotUnique = !!(await Genre.findOne({ name }));
 
         if (isNotUnique) {
             return responseErrorHandle(res, 400, errorMessages.GENRE_EXIST);
