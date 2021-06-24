@@ -8,8 +8,6 @@ import { UsersComponent } from './users/users.component';
 import { UserDetailsComponent } from './student-details/user-details.component';
 import { OrdersComponent } from './orders/orders.component';
 
-import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
-
 import { AngularLinks } from '../../constants/angularLinks';
 
 const routes: Routes = [

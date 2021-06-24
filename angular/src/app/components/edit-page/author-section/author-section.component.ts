@@ -66,7 +66,7 @@ export class AuthorSectionComponent implements OnInit, OnDestroy {
     onDeleteAuthor(id: string): void {
         const author = this.store.selectSnapshot(AuthorState.Authors).find(a => a._id === id);
         const dialogRef = this.dialog.open(ConfirmPopupComponent, {
-            data: { title: 'Delete Author', text: 'Are you sure you want to delete this author', entity: author.name },
+            data: { title: 'Delete Author', text: 'Are you sure you want to delete this author: ', entity: author.name },
             width: '468px'
         });
         dialogRef.afterClosed().subscribe(result => result && this.store.dispatch(new DeleteAuthor(id)));

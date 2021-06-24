@@ -19,7 +19,7 @@
     }
 
     @include media-breakpoint-between(sm, lg) {
-      max-width: none;
+      max-width: 30%;
       flex: 25%
     }
 

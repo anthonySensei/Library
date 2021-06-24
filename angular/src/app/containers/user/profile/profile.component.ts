@@ -87,6 +87,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     canDeactivate(): Observable<boolean> | Promise<boolean> | boolean {
+        // TODO fix canDeactivate
         // if (this.profileForm.touched && !this.done) {
         //     this.materialService.openDiscardChangesDialog(
         //         this.discard,

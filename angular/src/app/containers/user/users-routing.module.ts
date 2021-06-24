@@ -5,7 +5,7 @@ import { AuthGuard } from '../../guards/auth.guard';
 
 import { ProfileComponent } from './profile/profile.component';
 
-import { CanDeactivateGuard } from '../../shared/can-deactivate-guard.service';
+import { CanDeactivateGuard } from '@shared/can-deactivate-guard.service';
 
 import { AngularLinks } from '../../constants/angularLinks';
 

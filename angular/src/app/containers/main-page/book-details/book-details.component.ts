@@ -22,8 +22,9 @@ import { Author } from '../../../models/author.model';
 import { Genre } from '../../../models/genre.model';
 import { LocalizationService } from '../../../services/localization.service';
 import { BookPopupComponent } from '../../../components/popups/book-popup/book-popup.component';
-import { LoadAuthors } from '../../../store/state/author.state';
+import {AuthorState, DeleteAuthor, LoadAuthors} from '../../../store/state/author.state';
 import { LoadGenres } from '../../../store/state/genre.state';
+import {ConfirmPopupComponent} from '@shared/confirm-popup/confirm-popup.component';
 
 // import { ReadPopupComponent } from '../../../components/popups/read-popup/read-popup.component';
 
@@ -117,7 +118,12 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
 
     onOrderBook(): void {
-        this.store.dispatch(new OrderBook());
+        const book = this.store.selectSnapshot(BookState.Book);
+        const dialogRef = this.dialog.open(ConfirmPopupComponent, {
+            data: { title: 'Order Book', text: 'Are you sure you want to order this book: ', entity: book.title },
+            width: '468px'
+        });
+        dialogRef.afterClosed().subscribe(result => result && this.store.dispatch(new OrderBook()));
     }
 
     onEditBook() {
@@ -126,7 +132,14 @@ export class BookDetailsComponent implements OnInit, OnDestroy {
     }
 
     onDeleteBook() {
-        this.store.dispatch(new DeleteBook(this.bookId)).subscribe(() => this.router.navigate([this.links.BOOKS]));
+        const book = this.store.selectSnapshot(BookState.Book);
+        const dialogRef = this.dialog.open(ConfirmPopupComponent, {
+            data: { title: 'Delete Book', text: 'Are you sure you want to delete this book: ', entity: book.title },
+            width: '468px'
+        });
+        dialogRef.afterClosed().subscribe(
+            result => result && this.store.dispatch(new DeleteBook(this.bookId)).subscribe(() => this.router.navigate([this.links.BOOKS]))
+        );
     }
 
     ngOnDestroy(): void {}
