@@ -25,7 +25,7 @@
                 </button>
             </section>
           <mat-divider></mat-divider>
-          <div class="chart" *ngIf="!isChartEmpty()">
+          <div class="chart" *ngIf="!isChartEmpty() && showChart">
                 <ngx-charts-line-chart
                         [view]="view"
                         [scheme]="colorScheme"
@@ -37,15 +37,18 @@
                         [xAxisLabel]="xAxisLabel"
                         [yAxisLabel]="yAxisLabel"
                         [timeline]="timeline"
-                        [results]="statistic"
+                        [results]="statistic || []"
                 >
                 </ngx-charts-line-chart>
             </div>
-            <div class="d-flex justify-content-center align-items-center h-75" *ngIf="isChartEmpty()">
+            <div class="d-flex justify-content-center align-items-center h-75" *ngIf="showChart && isChartEmpty()">
                 <h2>Chart is empty</h2>
             </div>
+            <div class="d-flex justify-content-center align-items-center h-75" *ngIf="!showChart">
+                <h2>Please select an option to see statistic</h2>
+            </div>
         </mat-card>
-        <mat-card *ngIf="summaryStatistic.length">
+        <mat-card *ngIf="summaryStatistic?.length">
             <ngx-charts-number-card
                     [view]="view2"
                     [scheme]="colorScheme2"
