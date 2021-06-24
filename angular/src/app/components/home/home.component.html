@@ -43,38 +43,30 @@
     <section id="about" class="pb-5">
         <div class="row about-intro">
             <div class="col-12 col-md-4 p-0">
-                <h1 class="intro-header">About Our Website</h1>
+                <h1 class="intro-header">About our "Library"</h1>
             </div>
             <div class="col-12 col-md-8 p-0">
                 <p class="lead">
-                    Excepteur enim magna veniam labore veniam sint. Ex aliqua
-                    esse proident ullamco voluptate. Nisi nisi nisi aliqua
-                    eiusmod dolor dolor proident deserunt occaecat elit Lorem
-                    reprehenderit. Id culpa veniam ex aliqua magna elit pariatur
-                    do nulla. Excepteur enim magna veniam labore veniam sint.
+                    Get easy access to books, use a clear search for the necessary literature, order the necessary paper books online and pick them up quickly without queuing in the library - all these steps will be simple and easy for you to do on our website. Easy registration and convenient management of your own account, the availability of statistics on books and debts - all this will make it convenient for you to use the "Library". Read books, and all other questions related to the search, access, ordering books - let us do it for you!
                 </p>
             </div>
         </div>
         <div class="row about-features">
             <div class="row">
-                <div class="col-sm-12 col-md-6 col-lg-4 feature" *ngFor="let feature of [1, 2, 3, 4, 5, 6]">
-
-                    <span class="icon"><i class="icon-window"></i></span>
-
+                <div class="col-sm-12 col-md-6 col-lg-4 feature" *ngFor="let feature of features">
                     <div class="service-content">
-
-                        <h3 class="font-weight-bold">Feature #{{ feature }}</h3>
-
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit
-                            voluptatem accusantium doloremque laudantium, totam
-                            rem aperiam, eaque ipsa quae ab illo inventore
-                            veritatis et quasi architecto beatae vitae dicta sunt
-                            explicabo. Nemo enim ipsam voluptatem quia voluptas
-                            sit aspernatur aut odit aut fugit.
+                        <mat-icon class="my-4" style="font-size: 45px">{{ feature.icon }}</mat-icon>
+                        <h3 class="d-flex align-items-center font-weight-bold">
+                            {{ feature.title }}
+                        </h3>
+                        <p>
+                            <span>{{ feature.description }}</span>
+                            <a [routerLink]="feature.link" class="try-it d-flex align-items-center cursor-pointer">
+                                {{ feature.linkTitle }}
+                                <mat-icon class="ml-1">arrow_forward</mat-icon>
+                            </a>
                         </p>
-
                     </div>
-
                 </div>
             </div>
         </div>
@@ -85,10 +77,7 @@
                 <div class="col-12 col-md-4 footer-info">
                     <h4>Library</h4>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Pellentesque in ipsum id orci porta dapibus. Vivamus
-                        magna justo, lacinia eget consectetur sed, convallis at
-                        tellus.
+                        Multiplayer software - a web application to facilitate the work of library staff and users.
                     </p>
                     <ul class="footer-social-list">
                         <li>
@@ -105,14 +94,14 @@
                 <div class="col-12 col-md-4 footer-contact">
                     <h4>Contact</h4>
                     <p>
-                        1600 Amphitheatre Parkway<br>
-                        Mountain View, CA <br>
-                        94043 US<br>
+                        x Street<br>
+                        Chernivtsi, CE <br>
+                        58000 Ukraine<br>
                     </p>
                     <p>
-                        someone@dazzlesite.com <br>
-                        Phone: (+63) 555 1212 <br>
-                        Fax: (+63) 555 0100
+                        shevchuk.anton@chnu.edu.ua<br>
+                        Phone: +(380) xxxxxxxxxx <br>
+                        Fax: (+380) xxxxxxxxxx
                     </p>
                 </div>
                 <div class="col-12 col-md-4 footer-site-links">
@@ -128,7 +117,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="copyright">
-                        <span>© Copyright Dazzle 2018.</span>
+                        <span>© Copyright Library 2021.</span>
                         <span>Design by <a href="#">Anthony</a></span>
                     </div>
                 </div>
