@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+
+  server:
+    build: .
+    image: anthony/backend
+    ports:
+      - '3000:3000'
+
+  angular:
+    build: angular
+    image: anthony/frontend
+    ports:
+      - '80:80'
