@@ -38,7 +38,7 @@
     "mongodb": "^3.6.6",
     "mongoose": "^5.12.5",
     "multer": "^1.4.2",
-    "nodemailer": "^6.4.2",
+    "nodemailer": "^6.4.16",
     "passport": "*",
     "passport-jwt": "*",
     "passport-local": "^1.0.0",
