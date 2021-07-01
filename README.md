@@ -1,4 +1,5 @@
-# Library
+#OUTDATED (05.2020)
+# Library 
 Single-page application for managing student library. There are four type of users: *manager, librarian, student, unauthorized user*. 
 1. **All users**. Every user can see a list of books and filter them and see all information about book on separate page.
 2. **Authorized users**. Authorized user can edit personal information, login informarion and change profile photo. 
