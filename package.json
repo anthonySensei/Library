@@ -32,7 +32,7 @@
     "bunyan": "^1.8.15",
     "dotenv": "^8.2.0",
     "express": "*",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "mongodb": "^3.6.6",
